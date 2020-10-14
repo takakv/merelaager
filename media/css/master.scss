@@ -1,0 +1,110 @@
+// Variables and colours
+:root {
+  --primary: #23408e;
+  --default-bg: #fff;
+}
+
+// Mixins and SCSS variables
+$max-width: 700px;
+
+// Resets and defaults
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+  display: block;
+}
+
+audio,
+canvas,
+video {
+  display: inline-block;
+}
+
+blockquote,
+body,
+dd,
+dl,
+dt,
+figcaption,
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+html,
+li,
+ol,
+p,
+pre,
+table,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+embed,
+img,
+object,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+figure img {
+  display: block;
+}
+
+// General
+html {
+  font-size: 100%;
+  overflow-x: hidden;
+  height: 100%;
+  background: var(--default-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  min-width: 300px;
+  color: var(--primary);
+  background-color: var(--default-bg);
+}
+
+.o-container {
+  max-width: $max-width;
+  margin: auto;
+}
+
+// Primary navigation
+.primary-nav {
+  display: flex;
+  justify-content: space-between;
+
+  &__item {
+    display: inline-block;
+    text-transform: uppercase;
+  }
+}
+
+// Landing
