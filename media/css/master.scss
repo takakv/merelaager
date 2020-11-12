@@ -94,6 +94,10 @@ h3 {
   letter-spacing: 4px;
 }
 
+b {
+  font-weight: 600;
+}
+
 // General
 ::-moz-selection,
 ::selection {
@@ -311,6 +315,17 @@ a {
 
   .title {
     text-transform: uppercase;
+  }
+
+  .contacts {
+    .title {
+      padding-bottom: 1rem;
+    }
+
+    .contact {
+      padding-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
   }
 
   .logo img {
