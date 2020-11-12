@@ -111,6 +111,7 @@ body {
 .section-title {
   text-transform: uppercase;
   text-align: center;
+  margin-bottom: 3rem;
 }
 
 .cta {
@@ -121,6 +122,28 @@ body {
 
     &.read-more {
       width: 40%;
+    }
+  }
+}
+
+.sponsors {
+  display: flex;
+  justify-content: space-evenly;
+  list-style: none;
+
+  .sponsor {
+    &__link {
+      display: flex;
+      align-items: center;
+    }
+
+    &__img {
+      height: 100px;
+      filter: grayscale(100%);
+
+      &--tallink {
+        padding: 30px 0;
+      }
     }
   }
 }
