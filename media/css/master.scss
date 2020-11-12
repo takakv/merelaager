@@ -95,6 +95,12 @@ h3 {
 }
 
 // General
+::-moz-selection,
+::selection {
+  color: #fff;
+  background-color: #7993db;
+}
+
 html {
   font-size: 100%;
   overflow-x: hidden;
