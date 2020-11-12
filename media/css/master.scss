@@ -370,6 +370,9 @@ a {
       padding: 5px 8px;
       border: 1px transparent;
       border-radius: 20px;
+      @media screen and (max-width: $tablet-break) {
+        padding: 8px;
+      }
     }
   }
 
