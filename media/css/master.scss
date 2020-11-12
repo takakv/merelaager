@@ -339,6 +339,32 @@ main > section {
   }
 }
 
+// Pictures
+.picbox {
+  display: grid;
+  width: 800px;
+  height: 800px;
+  margin: 50px auto;
+  color: #fff;
+  background-color: var(--primary);
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+
+  &__sec {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    &:hover {
+      cursor: pointer;
+      text-decoration: none;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
 // Footer
 .footer {
   padding: 30px 0;
