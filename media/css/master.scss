@@ -9,6 +9,7 @@
 }
 
 // Mixins and SCSS variables
+$tablet-break: 700px;
 $max-width: 1000px;
 $hero-height: 850px;
 
@@ -135,6 +136,9 @@ a {
 .o-container {
   max-width: $max-width;
   margin: auto;
+  @media screen and (max-width: $tablet-break){
+    padding: 0 30px;
+  }
 }
 
 // Primary navigation
@@ -307,10 +311,19 @@ a {
   &__content {
     display: flex;
     justify-content: space-between;
+    @media screen and (max-width: $tablet-break) {
+      flex-direction: column;
+    }
   }
 
   &__col {
     display: inline-block;
+    @media screen and (max-width: $tablet-break) {
+      padding-bottom: 30px;
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
   }
 
   .title {
@@ -340,6 +353,12 @@ a {
 
     .title {
       padding-bottom: 0.5rem;
+    }
+
+    .search {
+      @media screen and (max-width: $tablet-break) {
+        padding-bottom: 1rem;
+      }
     }
 
     .search-box {
@@ -373,6 +392,7 @@ a {
   .logo {
     display: flex;
     align-items: center;
+    justify-content: center;
 
     img {
       width: 200px;
