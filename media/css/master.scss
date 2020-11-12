@@ -139,18 +139,18 @@ a {
 
 // Primary navigation
 .primary-nav {
-  padding-top: 20px;
   position: relative;
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 86px;
+  padding-top: 20px;
   --item-spacing: 70px;
 
   &__sec {
-    width: calc(50% - 75px);
     display: flex;
+    width: calc(50% - 75px);
 
     &--left {
       justify-content: flex-end;
@@ -163,11 +163,11 @@ a {
   }
 
   &__item {
-    display: inline-block;
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.5px;
     font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
 
   &__logo {
@@ -183,17 +183,17 @@ a {
 }
 
 .section-title {
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 1rem;
   position: relative;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-transform: uppercase;
 
   &::after {
     display: block;
-    content: "";
-    height: 10px;
     width: 100px;
+    height: 10px;
     margin: auto;
+    content: "";
     background-image: url(../img/waves_o.svg);
   }
 
@@ -203,21 +203,21 @@ a {
 }
 
 .landing-hero {
+  position: relative;
+  height: $hero-height;
   text-align: center;
+  color: #fff;
   background-image: url(../img/homehero.jpg);
   background-repeat: no-repeat;
   background-position: center 70%;
   background-size: cover;
-  height: $hero-height;
-  position: relative;
-  color: #fff;
 
   &__content {
+    font-family: "Bebas Neue", Raleway, sans-serif;
     position: relative;
     z-index: 5;
     padding-top: 120px;
     text-transform: uppercase;
-    font-family: "Bebas Neue", Raleway, sans-serif;
 
     h1 {
       font-size: 6rem;
@@ -232,22 +232,22 @@ a {
 }
 
 .landing-waves {
-  z-index: 2;
   position: absolute;
-  left: 0;
+  z-index: 2;
   right: 0;
-  width: 100%;
   bottom: -80px;
+  left: 0;
+  width: 100%;
 }
 
 .landing-overlay {
+  position: absolute;
+  z-index: 2;
+  display: block;
   width: 100%;
   height: $hero-height;
-  display: block;
-  position: absolute;
-  background-color: #23408e;
   opacity: 0.7;
-  z-index: 2;
+  background-color: #23408e;
 }
 
 .meist {
@@ -264,8 +264,8 @@ a {
 
 .cta {
   display: flex;
-  background-color: var(--primary);
   color: #fff;
+  background-color: var(--primary);
 
   &__block {
     width: 100%;
@@ -301,8 +301,8 @@ a {
 // Footer
 .footer {
   padding: 30px 0;
-  background-color: var(--primary);
   color: #fff;
+  background-color: var(--primary);
 
   &__content {
     display: flex;
@@ -323,13 +323,31 @@ a {
     }
 
     .contact {
-      padding-bottom: 0.5rem;
       font-size: 0.875rem;
+      padding-bottom: 0.5rem;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
     }
   }
 
-  .snippets .title {
-    padding-bottom: 0.5rem;
+  .snippets {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 250px;
+
+    .title {
+      padding-bottom: 0.5rem;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 5px 8px;
+      border: 1px transparent;
+      border-radius: 20px;
+    }
   }
 
   .social .icons {
@@ -352,7 +370,12 @@ a {
     }
   }
 
-  .logo img {
-    width: 200px;
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 200px;
+    }
   }
 }
