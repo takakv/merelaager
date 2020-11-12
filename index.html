@@ -11,25 +11,32 @@
     <link href="media/css/master.min.css" rel="stylesheet" type="text/css" />
   </head>
   <body class="landing">
-    <header class="header">
-      <div class="o-container">
-        <nav class="primary-nav">
-          <ul class="primary-nav__sec primary-nav__sec--left">
-            <li class="primary-nav__item"><a href="">Info</a></li>
-            <li class="primary-nav__item"><a href="">Pildid</a></li>
-          </ul>
-          <ul class="primary-nav__sec primary-nav__sec--right">
-            <li class="primary-nav__item"><a href="">Ajalugu</a></li>
-            <li class="primary-nav__item"><a href="">Meeskond</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
     <main role="main">
-      <section class="landing__hero">
-        <h1>Mega mvp</h1>
-        <h2>Vid / Bänner / Uudis</h2>
-      </section>
+      <div class="landing-overlay"></div>
+        <header class="header">
+          <div class="o-container">
+            <nav class="primary-nav">
+              <ul class="primary-nav__sec primary-nav__sec--left">
+                <li class="primary-nav__item"><a href="">Info</a></li>
+                <li class="primary-nav__item"><a href="">Pildid</a></li>
+              </ul>
+              <div class="primary-nav__logo">
+                <img
+                  alt="Merelaagri logo"
+                  src="media/img/merelaager_logo_white.png"
+                />
+              </div>
+              <ul class="primary-nav__sec primary-nav__sec--right">
+                <li class="primary-nav__item"><a href="">Ajalugu</a></li>
+                <li class="primary-nav__item"><a href="">Meeskond</a></li>
+              </ul>
+            </nav>
+          </div>
+        </header>
+        <section class="landing-hero">
+          <h1>Mega mvp</h1>
+          <h2>Vid / Bänner / Uudis</h2>
+        </section>
       <section class="meist">
         <h3 class="section-title">Meist</h3>
         <p>
@@ -44,7 +51,7 @@
           tegevused - lõkkeõhtud, diskod, matkad ja erinevad võistlused.
         </p>
         <p>
-          VÕimaluse korral aitavad laagrit pünevamakas muuta ka meie toredad
+          Võimaluse korral aitavad laagrit pünevamakas muuta ka meie toredad
           koostööpartnerid Eesti Kaitsejõududest ja erinevatest merendusega
           seotud organisatsioonidest. Suur aitäh neile!
         </p>
@@ -58,20 +65,89 @@
         </p>
       </section>
       <section class="cta">
-        <div class="cta__block read-more"><h3 class="section-title">Vaata veel</h3></div>
+        <div class="cta__block read-more">
+          <h3 class="section-title">Vaata veel</h3>
+        </div>
         <div class="cta__block map"><h3 class="section-title">Asukoht</h3></div>
       </section>
       <section class="sponsorid">
         <h3 class="section-title">Meid Toetavad</h3>
         <ul class="sponsors">
-          <li class="sponsor"><a class="sponsor__link" href="https://www.hm.ee/et" target="_blank"><img class="sponsor__img" src="media/img/hm_600px.png" alt="Haridus- ja Teadusministeerium"></a></li>
-          <li class="sponsor"><a class="sponsor__link" href="https://mil.ee/uksused/ohuvagi/lennubaas/" target="_blank"><img class="sponsor__img" src="media/img/lennubaas_600px.png" alt="Lennubaas"></a></li>
-          <li class="sponsor"><a class="sponsor__link" href="https://veeteedeamet.ee/et" target="_blank"><img class="sponsor__img" src="media/img/va_600px.png" alt="Veeteede amet"></a></li>
-          <li class="sponsor"><a class="sponsor__link" href="https://www.tallink.ee" target="_blank"><img class="sponsor__img sponsor__img--tallink" src="media/img/tallink.svg" alt="Tallink"></a></li>
-          <li class="sponsor"><a class="sponsor__link" href="https://emsa.ee/" target="_blank"><img class="sponsor__img" src="media/img/emsa_600px.png" alt="EMSA"></a></li>
+          <li class="sponsor">
+            <a class="sponsor__link" href="https://www.hm.ee/et" target="_blank"
+              ><img
+                alt="Haridus- ja Teadusministeerium"
+                class="sponsor__img"
+                src="media/img/hm_600px.png"
+            /></a>
+          </li>
+          <li class="sponsor">
+            <a
+              class="sponsor__link"
+              href="https://mil.ee/uksused/ohuvagi/lennubaas/"
+              target="_blank"
+              ><img
+                alt="Lennubaas"
+                class="sponsor__img"
+                src="media/img/lennubaas_600px.png"
+            /></a>
+          </li>
+          <li class="sponsor">
+            <a
+              class="sponsor__link"
+              href="https://veeteedeamet.ee/et"
+              target="_blank"
+              ><img
+                alt="Veeteede amet"
+                class="sponsor__img"
+                src="media/img/va_600px.png"
+            /></a>
+          </li>
+          <li class="sponsor">
+            <a
+              class="sponsor__link"
+              href="https://www.tallink.ee"
+              target="_blank"
+              ><img
+                alt="Tallink"
+                class="sponsor__img sponsor__img--tallink"
+                src="media/img/tallink.svg"
+            /></a>
+          </li>
+          <li class="sponsor">
+            <a class="sponsor__link" href="https://emsa.ee/" target="_blank"
+              ><img
+                alt="EMSA"
+                class="sponsor__img"
+                src="media/img/emsa_600px.png"
+            /></a>
+          </li>
         </ul>
       </section>
     </main>
-    <footer></footer>
+    <footer class="footer">
+      <div class="footer__col contacts">
+        <h4 class="title">Kontaktid</h4>
+        <div class="contact">
+          <b>MTÜ Noorte Mereklubi</b>
+          <p>Reg. Nr. 80067875</p>
+        </div>
+        <div class="contact">
+          <b>Sõudebaasi tee 23</b>
+          <p>13517 Tallinn</p>
+        </div>
+        <div class="contact">
+          <b>Ahto Aaslav-Kaasik</b>
+          <p>+372 5628 6586</p>
+        </div>
+      </div>
+      <div class="footer__col snippets">
+        <div class="search"><h4 class="title">Otsi</h4></div>
+        <div class="social"><h4 class="title">Jälgi meid</h4></div>
+      </div>
+      <div class="footer__col logo">
+        <img alt="Merelaagri logo" src="media/img/merelaager_logo_white.png" />
+      </div>
+    </footer>
   </body>
 </html>
