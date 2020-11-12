@@ -142,6 +142,10 @@ a {
 }
 
 // Primary navigation
+.header {
+  padding-top: 30px;
+}
+
 .primary-nav {
   position: relative;
   z-index: 5;
@@ -377,8 +381,8 @@ a {
   }
 
   .social .icons {
+    padding-top: 0.5rem;
     list-style: none;
-    padding-top: .5rem;
     @media screen and (max-width: $tablet-break) {
       display: flex;
       justify-content: space-around;
