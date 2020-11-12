@@ -284,6 +284,7 @@ main > section {
   }
 }
 
+// Sponsors
 .sponsors {
   display: flex;
   justify-content: space-evenly;
@@ -293,6 +294,12 @@ main > section {
     &__link {
       display: flex;
       align-items: center;
+
+      &:hover {
+        img {
+          filter: none;
+        }
+      }
     }
 
     &__img {
@@ -307,7 +314,6 @@ main > section {
 }
 
 // Crewmates
-
 .crewmate {
   p {
     padding-bottom: 1rem;
