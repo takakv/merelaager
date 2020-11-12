@@ -1,5 +1,5 @@
 // Fonts
-@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;800&display=swap");
 
 // Variables and colours
 :root {
@@ -10,7 +10,7 @@
 
 // Mixins and SCSS variables
 $max-width: 1000px;
-$hero-height: 950px;
+$hero-height: 850px;
 
 // Resets and defaults
 *,
@@ -103,6 +103,15 @@ body {
   background-color: var(--default-bg);
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .o-container {
   max-width: $max-width;
   margin: auto;
@@ -110,20 +119,41 @@ body {
 
 // Primary navigation
 .primary-nav {
+  padding-top: 20px;
   position: relative;
   z-index: 5;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
   height: 86px;
+  --item-spacing: 70px;
+
+  &__sec {
+    width: calc(50% - 75px);
+    display: flex;
+
+    &--left {
+      justify-content: flex-end;
+    }
+  }
+
+  &__sec--left &__item:first-child,
+  &__sec--right &__item:first-child {
+    margin-right: var(--item-spacing);
+  }
 
   &__item {
     display: inline-block;
     text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 0.875rem;
   }
 
   &__logo {
     display: inline-block;
-    width: 100px;
+    width: 120px;
+    margin: 0 var(--item-spacing);
   }
 }
 
@@ -156,10 +186,11 @@ body {
   text-align: center;
   background-image: url(../img/homehero.jpg);
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center 70%;
   background-size: cover;
   height: $hero-height;
   position: relative;
+  color: #fff;
 }
 
 .landing-waves {
