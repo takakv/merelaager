@@ -1,3 +1,6 @@
+// Fonts
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;800&display=swap");
+
 // Variables and colours
 :root {
   --primary: #23408e;
@@ -83,7 +86,7 @@ html {
 }
 
 body {
-  font-family: sans-serif;
+  font-family: Raleway, sans-serif;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -123,7 +126,21 @@ body {
 .section-title {
   text-transform: uppercase;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
+  position: relative;
+
+  &::after {
+    display: block;
+    content: "";
+    height: 10px;
+    width: 100px;
+    margin: auto;
+    background-image: url(../img/waves_o.svg);
+  }
+
+  &.t-white::after {
+    background-image: url(../img/waves_w.svg);
+  }
 }
 
 .landing-hero {
