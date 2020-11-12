@@ -108,3 +108,19 @@ body {
 }
 
 // Landing
+.section-title {
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.cta {
+  display: flex;
+
+  &__block {
+    width: 100%;
+
+    &.read-more {
+      width: 40%;
+    }
+  }
+}
