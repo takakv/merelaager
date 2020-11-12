@@ -9,7 +9,7 @@
 }
 
 // Mixins and SCSS variables
-$max-width: 700px;
+$max-width: 1000px;
 
 // Resets and defaults
 *,
@@ -205,13 +205,21 @@ body {
   padding: 30px 0;
   background-color: var(--primary);
   color: #fff;
-  display: flex;
+
+  &__content {
+    display: flex;
+    justify-content: space-between;
+  }
 
   &__col {
-    width: 33.3333%;
+    display: inline-block;
   }
 
   .title {
     text-transform: uppercase;
+  }
+
+  .logo img {
+    width: 200px;
   }
 }
