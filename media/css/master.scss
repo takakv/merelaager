@@ -328,6 +328,17 @@ main > section {
   }
 }
 
+// History
+.ajalugu {
+  p {
+    padding-bottom: 1rem;
+
+    &:last-of-type {
+      padding-bottom: 0;
+    }
+  }
+}
+
 // Footer
 .footer {
   padding: 30px 0;
