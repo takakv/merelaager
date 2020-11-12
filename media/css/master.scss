@@ -136,7 +136,7 @@ a {
 .o-container {
   max-width: $max-width;
   margin: auto;
-  @media screen and (max-width: $tablet-break){
+  @media screen and (max-width: $tablet-break) {
     padding: 0 30px;
   }
 }
@@ -319,7 +319,9 @@ a {
   &__col {
     display: inline-block;
     @media screen and (max-width: $tablet-break) {
-      padding-bottom: 30px;
+      width: 100%;
+      padding-bottom: 2rem;
+
       &:last-child {
         padding-bottom: 0;
       }
@@ -349,7 +351,9 @@ a {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 250px;
+    @media screen and (min-width: $tablet-break) {
+      width: 250px;
+    }
 
     .title {
       padding-bottom: 0.5rem;
@@ -357,7 +361,7 @@ a {
 
     .search {
       @media screen and (max-width: $tablet-break) {
-        padding-bottom: 1rem;
+        padding-bottom: 2rem;
       }
     }
 
@@ -371,6 +375,11 @@ a {
 
   .social .icons {
     list-style: none;
+    padding-top: .5rem;
+    @media screen and (max-width: $tablet-break) {
+      display: flex;
+      justify-content: space-around;
+    }
 
     .icon {
       display: inline-block;
@@ -384,6 +393,12 @@ a {
 
         &:hover {
           opacity: 0.8;
+        }
+      }
+
+      @media screen and (max-width: $tablet-break) {
+        img {
+          width: 50px;
         }
       }
     }
