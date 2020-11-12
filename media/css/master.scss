@@ -186,7 +186,7 @@ a {
 }
 
 // Landing
-.landing main > section {
+main > section {
   padding: 30px 0;
 }
 
@@ -302,6 +302,22 @@ a {
       &--tallink {
         padding: 30px 0;
       }
+    }
+  }
+}
+
+// Crewmates
+
+.crewmate {
+  p {
+    padding-bottom: 1rem;
+
+    &:first-of-type {
+      text-indent: 1rem;
+    }
+
+    &:last-of-type {
+      padding-bottom: 0;
     }
   }
 }
