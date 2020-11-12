@@ -328,6 +328,30 @@ a {
     }
   }
 
+  .snippets .title {
+    padding-bottom: 0.5rem;
+  }
+
+  .social .icons {
+    list-style: none;
+
+    .icon {
+      display: inline-block;
+
+      &:nth-child(2) {
+        margin: 0 3px;
+      }
+
+      img {
+        width: 30px;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
   .logo img {
     width: 200px;
   }
