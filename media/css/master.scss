@@ -457,6 +457,19 @@ main > section {
   }
 }
 
+// Payment info
+.payment-info {
+  .info-block {
+    &__title {
+      letter-spacing: 0.5px;
+    }
+
+    &__content {
+      list-style: none;
+    }
+  }
+}
+
 // Footer
 .footer {
   padding: 30px 0;
