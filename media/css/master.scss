@@ -377,7 +377,7 @@ main > section {
   text-align: center;
 
   &__name {
-    padding-bottom: 1em;
+    padding-bottom: 0.875em;
     letter-spacing: 4px;
     text-transform: uppercase;
   }
@@ -394,6 +394,37 @@ main > section {
       opacity: 0.5;
       color: var(--highlight);
     }
+  }
+}
+
+.dates .details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 3em;
+
+  &-card {
+    width: 350px;
+    margin-bottom: 2em;
+  }
+
+  &-card__header {
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.875em;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .u-wave {
+    display: inline-block;
+    width: 20px;
+    height: 8px;
+    margin-top: 2px;
+    background-image: url(../img/smallwave_o.svg);
+    background-repeat: no-repeat;
   }
 }
 
