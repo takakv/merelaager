@@ -11,6 +11,7 @@
 }
 
 // Mixins and SCSS variables
+$phone-break: 500px;
 $tablet-break: 700px;
 $max-width: 1000px;
 $hero-height: 850px;
@@ -177,27 +178,52 @@ a {
 }
 
 .primary-nav {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 86px;
   padding-top: 20px;
   --item-spacing: 70px;
+  @media screen and (max-width: $phone-break) {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @media screen and (max-width: $phone-break) {
+      flex-direction: column;
+      width: 70%;
+    }
+  }
 
   &__sec {
     display: flex;
     width: calc(50% - 75px);
+    @media screen and (max-width: $phone-break) {
+      justify-content: space-around;
+      order: 2;
+      width: 100%;
+    }
 
     &--left {
-      justify-content: flex-end;
+      @media screen and (min-width: $phone-break - 1) {
+        justify-content: flex-end;
+      }
+      @media screen and (max-width: $phone-break) {
+        padding-bottom: 1em;
+      }
     }
   }
 
   &__sec--left &__item:first-child,
   &__sec--right &__item:first-child {
     margin-right: var(--item-spacing);
+    @media screen and (max-width: $phone-break) {
+      margin-right: 0;
+    }
   }
 
   &__item {
@@ -212,6 +238,27 @@ a {
     display: inline-block;
     width: 120px;
     margin: 0 var(--item-spacing);
+    @media screen and (max-width: $phone-break) {
+      display: none;
+      order: 1;
+      margin: 0;
+    }
+  }
+
+  &__vector {
+    display: none;
+    @media screen and (max-width: $phone-break) {
+      position: relative;
+      z-index: 5;
+      display: inline-block;
+      width: 30%;
+      height: 100%;
+      img {
+        display: block;
+        height: 86px;
+        margin: auto;
+      }
+    }
   }
 }
 
@@ -300,6 +347,7 @@ main > section {
   }
 }
 
+// CTA
 .cta {
   display: flex;
   color: #fff;
@@ -310,6 +358,26 @@ main > section {
 
     &.read-more {
       width: 40%;
+    }
+  }
+
+  &__links {
+    font-weight: 600;
+    list-style: none;
+    text-transform: uppercase;
+
+    a {
+      &::after {
+        font-size: 1.5rem;
+        font-weight: 600;
+        padding-left: 5px;
+        content: ">";
+        color: var(--highlight);
+      }
+
+      &:hover::after {
+        text-decoration: none;
+      }
     }
   }
 }
