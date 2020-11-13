@@ -97,8 +97,17 @@ h3 {
   letter-spacing: 4px;
 }
 
-b {
+b,
+strong {
   font-weight: 600;
+}
+
+a.t-visible {
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--highlight);
+  }
 }
 
 // General
@@ -144,7 +153,6 @@ a {
 }
 
 // Utilities
-
 .u-banner {
   display: block;
   width: 100%;
