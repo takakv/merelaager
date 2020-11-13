@@ -7,6 +7,7 @@
   --primary-rgb: 35, 64, 142;
   --default-bg: #fff;
   --highlight: #d7591e;
+  --highlight-rgb: 215, 89, 30;
 }
 
 // Mixins and SCSS variables
@@ -139,6 +140,26 @@ a {
   margin: auto;
   @media screen and (max-width: $tablet-break) {
     padding: 0 30px;
+  }
+}
+
+// Utilities
+
+.u-banner {
+  display: block;
+  width: 100%;
+  padding: 0.25em 1em;
+  border-left: 0.25em solid #222;
+  background-color: rgba(150, 150, 150, 0.1);
+
+  &--info {
+    border-left-color: var(--primary);
+    background-color: rgba(var(--primary-rgb), 0.1);
+  }
+
+  &--warning {
+    border-left-color: var(--highlight);
+    background-color: rgba(var(--highlight-rgb), 0.1);
   }
 }
 
