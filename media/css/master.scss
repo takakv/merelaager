@@ -181,7 +181,7 @@ a {
   height: 86px;
   padding-top: 20px;
   --item-spacing: 70px;
-  @media screen and (max-width: $phone-break) {
+  @media screen and (max-width: $tablet-break) {
     display: flex;
     justify-content: space-between;
     padding-top: 0;
@@ -193,7 +193,7 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    @media screen and (max-width: $phone-break) {
+    @media screen and (max-width: $tablet-break) {
       flex-direction: column;
       width: 70%;
     }
@@ -202,17 +202,17 @@ a {
   &__sec {
     display: flex;
     width: calc(50% - 75px);
-    @media screen and (max-width: $phone-break) {
+    @media screen and (max-width: $tablet-break) {
       justify-content: space-around;
       order: 2;
       width: 100%;
     }
 
     &--left {
-      @media screen and (min-width: $phone-break - 1) {
+      @media screen and (min-width: $tablet-break - 1) {
         justify-content: flex-end;
       }
-      @media screen and (max-width: $phone-break) {
+      @media screen and (max-width: $tablet-break) {
         padding-bottom: 1em;
       }
     }
@@ -221,7 +221,7 @@ a {
   &__sec--left &__item:first-child,
   &__sec--right &__item:first-child {
     margin-right: var(--item-spacing);
-    @media screen and (max-width: $phone-break) {
+    @media screen and (max-width: $tablet-break) {
       margin-right: 0;
     }
   }
@@ -238,7 +238,7 @@ a {
     display: inline-block;
     width: 120px;
     margin: 0 var(--item-spacing);
-    @media screen and (max-width: $phone-break) {
+    @media screen and (max-width: $tablet-break) {
       display: none;
       order: 1;
       margin: 0;
@@ -247,7 +247,7 @@ a {
 
   &__vector {
     display: none;
-    @media screen and (max-width: $phone-break) {
+    @media screen and (max-width: $tablet-break) {
       position: relative;
       z-index: 5;
       display: inline-block;
