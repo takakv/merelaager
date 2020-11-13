@@ -6,6 +6,7 @@
   --primary: #23408e;
   --primary-rgb: 35, 64, 142;
   --default-bg: #fff;
+  --highlight: #d7591e;
 }
 
 // Mixins and SCSS variables
@@ -347,8 +348,8 @@ main > section {
   margin: 50px auto;
   color: #fff;
   background-color: var(--primary);
-  grid-template-rows: 1fr 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 
   &__sec {
     display: flex;
@@ -361,6 +362,37 @@ main > section {
       cursor: pointer;
       text-decoration: none;
       background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+// Calendar
+.schedule {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.5em;
+}
+
+.month {
+  text-align: center;
+
+  &__name {
+    padding-bottom: 1em;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  &__calendar {
+    font-weight: 800;
+    display: grid;
+    width: 250px;
+    height: 250px;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+
+    .not {
+      opacity: 0.5;
+      color: var(--highlight);
     }
   }
 }
