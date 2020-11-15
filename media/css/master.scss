@@ -350,14 +350,37 @@ main > section {
 // CTA
 .cta {
   display: flex;
+  padding: 0;
   color: #fff;
   background-color: var(--primary);
 
   &__block {
     width: 100%;
+    padding: 30px 0;
 
     &.read-more {
-      width: 40%;
+      display: flex;
+      justify-content: flex-end;
+      width: 70%;
+      text-align: center;
+    }
+
+    .read-more__wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 400px;
+    }
+  }
+
+  .map {
+    display: flex;
+    align-items: center;
+    background-image: url(../img/landingmap.png);
+    background-repeat: no-repeat;
+    background-position: center left;
+
+    h3 {
+      padding-left: 8.5em;
     }
   }
 
