@@ -561,6 +561,11 @@ main > section {
   .info-block {
     margin-bottom: 2em;
 
+    &:not(:first-child),
+    &:not(:last-child) {
+      margin: 0 1em 2em;
+    }
+
     &__title {
       letter-spacing: 0.5px;
     }
