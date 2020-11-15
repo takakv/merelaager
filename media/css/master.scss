@@ -551,7 +551,16 @@ main > section {
 
 // Payment info
 .payment-info {
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 2em 0 0;
+  }
+
   .info-block {
+    margin-bottom: 2em;
+
     &__title {
       letter-spacing: 0.5px;
     }
