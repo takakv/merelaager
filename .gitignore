@@ -9,3 +9,7 @@
 # FullRes images
 *_og.png
 *_og.svg
+
+#.NET stuff
+bin/
+obj/
