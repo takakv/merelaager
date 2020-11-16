@@ -5,21 +5,16 @@ using Website.Models;
 
 namespace Website.Controllers
 {
-    public class HomeController : Controller
+    public class MeeskondController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<MeeskondController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public MeeskondController(ILogger<MeeskondController> logger)
         {
             _logger = logger;
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }

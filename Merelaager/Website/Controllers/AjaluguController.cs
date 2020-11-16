@@ -5,21 +5,16 @@ using Website.Models;
 
 namespace Website.Controllers
 {
-    public class HomeController : Controller
+    public class AjaluguController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<AjaluguController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public AjaluguController(ILogger<AjaluguController> logger)
         {
             _logger = logger;
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }
