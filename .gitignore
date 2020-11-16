@@ -1,3 +1,11 @@
 .idea/
 
 *.swp
+
+# Source media
+*.afdesign
+*.afphoto
+
+# FullRes images
+*_og.png
+*_og.svg

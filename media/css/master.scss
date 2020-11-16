@@ -1,0 +1,749 @@
+// Fonts
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@400;600;800&display=swap");
+
+// Variables and colours
+:root {
+  --primary: #23408e;
+  --primary-rgb: 35, 64, 142;
+  --default-bg: #fff;
+  --highlight: #d7591e;
+  --highlight-rgb: 215, 89, 30;
+}
+
+// Mixins and SCSS variables
+$phone-break: 500px;
+$tablet-break: 700px;
+$max-width: 1000px;
+$hero-height: 850px;
+
+// Resets and defaults
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+  display: block;
+}
+
+audio,
+canvas,
+video {
+  display: inline-block;
+}
+
+blockquote,
+body,
+dd,
+dl,
+dt,
+figcaption,
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+html,
+li,
+ol,
+p,
+pre,
+table,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+embed,
+img,
+object,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+figure img {
+  display: block;
+}
+
+// Typography
+h1 {
+  font-size: 3rem;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+b,
+strong {
+  font-weight: 600;
+}
+
+a.t-visible {
+  text-decoration: underline;
+
+  &:hover {
+    color: var(--highlight);
+  }
+}
+
+// General
+::-moz-selection,
+::selection {
+  color: #fff;
+  background-color: #7993db;
+}
+
+html {
+  font-size: 100%;
+  overflow-x: hidden;
+  height: 100%;
+  background: var(--default-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Raleway, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  min-width: 300px;
+  color: var(--primary);
+  background-color: var(--default-bg);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.o-container {
+  max-width: $max-width;
+  margin: auto;
+  @media screen and (max-width: $tablet-break) {
+    padding: 0 30px;
+  }
+}
+
+// Utilities
+.u-banner {
+  display: block;
+  width: 100%;
+  padding: 0.25em 1em;
+  border-left: 0.25em solid #222;
+  background-color: rgba(150, 150, 150, 0.1);
+
+  &--info {
+    border-left-color: var(--primary);
+    background-color: rgba(var(--primary-rgb), 0.1);
+  }
+
+  &--warning {
+    border-left-color: var(--highlight);
+    background-color: rgba(var(--highlight-rgb), 0.1);
+
+    p:first-child::before {
+      font-weight: 600;
+      content: "Tähelepanu! ";
+    }
+  }
+}
+
+// Primary navigation
+.header {
+  padding-top: 30px;
+}
+
+.primary-nav {
+  height: 86px;
+  padding-top: 20px;
+  --item-spacing: 70px;
+  @media screen and (max-width: $tablet-break) {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @media screen and (max-width: $tablet-break) {
+      flex-direction: column;
+      width: 70%;
+    }
+  }
+
+  &__sec {
+    display: flex;
+    width: calc(50% - 75px);
+    @media screen and (max-width: $tablet-break) {
+      justify-content: space-around;
+      order: 2;
+      width: 100%;
+    }
+
+    &--left {
+      @media screen and (min-width: $tablet-break - 1) {
+        justify-content: flex-end;
+      }
+      @media screen and (max-width: $tablet-break) {
+        padding-bottom: 1em;
+      }
+    }
+  }
+
+  &__sec--left &__item:first-child,
+  &__sec--right &__item:first-child {
+    margin-right: var(--item-spacing);
+    @media screen and (max-width: $tablet-break) {
+      margin-right: 0;
+    }
+  }
+
+  &__item {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  &__logo {
+    display: inline-block;
+    width: 120px;
+    margin: 0 var(--item-spacing);
+    @media screen and (max-width: $tablet-break) {
+      display: none;
+      order: 1;
+      margin: 0;
+    }
+  }
+
+  &__vector {
+    display: none;
+    @media screen and (max-width: $tablet-break) {
+      position: relative;
+      z-index: 5;
+      display: inline-block;
+      width: 30%;
+      height: 100%;
+      img {
+        display: block;
+        height: 86px;
+        margin: auto;
+      }
+    }
+  }
+}
+
+// Landing
+main > section {
+  padding: 30px 0;
+}
+
+.section-title {
+  position: relative;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-transform: uppercase;
+
+  &::after {
+    display: block;
+    width: 100px;
+    height: 10px;
+    margin: auto;
+    content: "";
+    background-image: url(../img/waves_o.svg);
+  }
+
+  &.t-white::after {
+    background-image: url(../img/waves_w.svg);
+  }
+}
+
+.landing-hero {
+  position: relative;
+  height: $hero-height;
+  text-align: center;
+  color: #fff;
+  background-image: url(../img/homehero.jpg);
+  background-repeat: no-repeat;
+  background-position: center 70%;
+  background-size: cover;
+
+  &__content {
+    font-family: "Bebas Neue", Raleway, sans-serif;
+    position: relative;
+    z-index: 5;
+    padding-top: 120px;
+    text-transform: uppercase;
+
+    h1 {
+      font-size: 6rem;
+      font-weight: 400;
+    }
+
+    h2 {
+      font-size: 4.5rem;
+      font-weight: 400;
+    }
+  }
+}
+
+.landing-waves {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: -80px;
+  left: 0;
+  width: 100%;
+  @media screen and (max-width: $tablet-break) {
+    bottom: -20px;
+  }
+}
+
+.landing-overlay {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: $hero-height;
+  opacity: 0.7;
+  background-color: #23408e;
+}
+
+.meist {
+  text-align: center;
+
+  .section-title {
+    z-index: 5;
+  }
+
+  p {
+    padding-bottom: 15px;
+  }
+}
+
+// CTA
+.cta {
+  display: flex;
+  padding: 0;
+  color: #fff;
+  background-color: var(--primary);
+  @media screen and (max-width: $phone-break) {
+    flex-direction: column;
+  }
+
+  &__block {
+    width: 100%;
+    padding: 30px 0;
+
+    &.read-more {
+      display: flex;
+      justify-content: flex-end;
+      width: 70%;
+      text-align: center;
+      @media screen and (max-width: $phone-break) {
+        width: 100%;
+      }
+    }
+
+    .read-more__wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 400px;
+    }
+  }
+
+  .map {
+    display: flex;
+    align-items: center;
+    background-image: url(../img/landingmap.png);
+    background-repeat: no-repeat;
+    background-position: center left;
+    @media screen and (max-width: $phone-break) {
+      background-position: 23% center;
+    }
+
+    h3 {
+      padding-left: 8.5em;
+      @media screen and (max-width: $phone-break) {
+        padding-left: 2em;
+      }
+    }
+  }
+
+  &__links {
+    font-weight: 600;
+    list-style: none;
+    text-transform: uppercase;
+
+    a {
+      &::after {
+        font-size: 1.5rem;
+        font-weight: 600;
+        padding-left: 5px;
+        content: ">";
+        color: var(--highlight);
+      }
+
+      &:hover::after {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+// Sponsors
+.sponsors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  list-style: none;
+
+  .sponsor {
+    &__link {
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        img {
+          filter: none;
+        }
+      }
+    }
+
+    &__img {
+      height: 100px;
+      filter: grayscale(100%);
+
+      &--tallink {
+        padding: 30px 0;
+      }
+    }
+  }
+}
+
+// Crewmates
+.crewmate {
+  p {
+    padding-bottom: 1rem;
+
+    &:first-of-type {
+      text-indent: 1rem;
+    }
+
+    &:last-of-type {
+      padding-bottom: 0;
+    }
+  }
+}
+
+// History
+.ajalugu {
+  p {
+    padding-bottom: 1rem;
+
+    &:last-of-type {
+      padding-bottom: 0;
+    }
+  }
+}
+
+// Pictures
+.pildid .u-banner {
+  margin-top: 3em;
+}
+
+.picbox {
+  display: grid;
+  width: 800px;
+  height: 800px;
+  margin: 50px auto;
+  color: #fff;
+  background-color: var(--primary);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+
+  &__sec {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    &:hover {
+      cursor: pointer;
+      text-decoration: none;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+// Calendar
+.schedule {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 1.5em;
+  @media screen and (max-width: $tablet-break) {
+    justify-content: center;
+  }
+}
+
+.month {
+  text-align: center;
+
+  &__name {
+    padding-bottom: 0.875em;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  &__calendar {
+    font-weight: 800;
+    display: grid;
+    width: 250px;
+    height: 250px;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+
+    .not {
+      opacity: 0.5;
+      color: var(--highlight);
+    }
+  }
+}
+
+.dates .details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 3em;
+
+  &-card {
+    width: 350px;
+    margin-bottom: 2em;
+  }
+
+  &-card__header {
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.875em;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .u-wave {
+    display: inline-block;
+    width: 20px;
+    height: 8px;
+    margin-top: 2px;
+    background-image: url(../img/smallwave_o.svg);
+    background-repeat: no-repeat;
+  }
+}
+
+// Info listing
+.info .tree {
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style: none;
+
+    .link {
+      overflow: hidden;
+      width: 300px;
+      margin: 1em 2em;
+      border-radius: 4px;
+
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 1em;
+        text-align: center;
+        background-color: rgba(var(--primary-rgb), 0.2);
+      }
+    }
+  }
+}
+
+// Payment info
+.payment-info {
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 2em 0 0;
+  }
+
+  .info-block {
+    margin-bottom: 2em;
+    text-align: center;
+
+    &:not(:first-child),
+    &:not(:last-child) {
+      margin: 0 1em 2em;
+    }
+
+    &__title {
+      letter-spacing: 0.5px;
+    }
+
+    &__content {
+      list-style: none;
+    }
+  }
+}
+
+// Footer
+.footer {
+  padding: 30px 0;
+  color: #fff;
+  background-color: var(--primary);
+
+  &__content {
+    display: flex;
+    justify-content: space-between;
+    @media screen and (max-width: $tablet-break) {
+      flex-direction: column;
+    }
+  }
+
+  &__col {
+    display: inline-block;
+    @media screen and (max-width: $tablet-break) {
+      width: 100%;
+      padding-bottom: 2rem;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  .title {
+    text-transform: uppercase;
+  }
+
+  .contacts {
+    .title {
+      padding-bottom: 1rem;
+    }
+
+    .contact {
+      font-size: 0.875rem;
+      padding-bottom: 0.5rem;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  .snippets {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    @media screen and (min-width: $tablet-break) {
+      width: 250px;
+    }
+
+    .title {
+      padding-bottom: 0.5rem;
+    }
+
+    .search {
+      @media screen and (max-width: $tablet-break) {
+        padding-bottom: 2rem;
+      }
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 5px 8px;
+      border: 1px transparent;
+      border-radius: 20px;
+      @media screen and (max-width: $tablet-break) {
+        padding: 8px;
+      }
+    }
+  }
+
+  .social .icons {
+    padding-top: 0.5rem;
+    list-style: none;
+    @media screen and (max-width: $tablet-break) {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .icon {
+      display: inline-block;
+
+      &:nth-child(2) {
+        margin: 0 3px;
+      }
+
+      img {
+        width: 30px;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      @media screen and (max-width: $tablet-break) {
+        img {
+          width: 50px;
+        }
+      }
+    }
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 200px;
+    }
+  }
+}
