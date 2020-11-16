@@ -20,27 +20,39 @@
     <link href="~/css/master.min.css" rel="stylesheet" type="text/css"/>
 </head>
 <body class="@ViewData["BodyClass"]">
-<header>
-    @* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"> *@
-    @*     <div class="container"> *@
-    @*         <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Website</a> *@
-    @*         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent" *@
-    @*                 aria-expanded="false" aria-label="Toggle navigation"> *@
-    @*             <span class="navbar-toggler-icon"></span> *@
-    @*         </button> *@
-    @*         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"> *@
-    @*             <partial name="_LoginPartial"/> *@
-    @*             <ul class="navbar-nav flex-grow-1"> *@
-    @*                 <li class="nav-item"> *@
-    @*                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a> *@
-    @*                 </li> *@
-    @*                 <li class="nav-item"> *@
-    @*                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
-    @*                 </li> *@
-    @*             </ul> *@
-    @*         </div> *@
-    @*     </div> *@
-    @* </nav> *@
+<header class="header">
+    <div class="o-container">
+        <nav class="primary-nav">
+            <a class="primary-nav__vector" asp-area="" asp-controller="Home" asp-action="Index">
+                <img alt="" src="~/img/merelaager_ship.svg"/>
+            </a>
+            <div class="primary-nav__content">
+                <ul class="primary-nav__sec primary-nav__sec--left">
+                    <li class="primary-nav__item">
+                        <a asp-area="" asp-controller="Info" asp-action="Index">Info</a>
+                    </li>
+                    <li class="primary-nav__item">
+                        <a asp-area="" asp-controller="Pildid" asp-action="Index">Pildid</a>
+                    </li>
+                </ul>
+                <div class="primary-nav__logo">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img
+                            alt="Merelaagri logo"
+                            src="~/img/merelaager_logo_blue.svg"/>
+                    </a>
+                </div>
+                <ul class="primary-nav__sec primary-nav__sec--right">
+                    <li class="primary-nav__item">
+                        <a asp-area="" asp-controller="Ajalugu" asp-action="Index">Ajalugu</a>
+                    </li>
+                    <li class="primary-nav__item">
+                        <a asp-area="" asp-controller="Meeskond" asp-action="Index">Meeskond</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
 </header>
 <main role="main">
     @RenderBody()
@@ -97,7 +109,7 @@
                 </div>
             </div>
             <div class="footer__col logo">
-                <a asp-area="" asp-controller="" asp-action="">
+                <a asp-area="" asp-controller="Home" asp-action="Index">
                     <img alt="Merelaagri logo" src="~/img/merelaager_logo_white.svg"/>
                 </a>
             </div>
