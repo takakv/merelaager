@@ -328,6 +328,9 @@ main > section {
   bottom: -80px;
   left: 0;
   width: 100%;
+  @media screen and (max-width: $tablet-break) {
+    bottom: -20px;
+  }
 }
 
 .landing-overlay {
@@ -511,8 +514,12 @@ main > section {
 // Calendar
 .schedule {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   padding-top: 1.5em;
+  @media screen and (max-width: $tablet-break) {
+    justify-content: center;
+  }
 }
 
 .month {
