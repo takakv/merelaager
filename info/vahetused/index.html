@@ -9,19 +9,27 @@
       name="description"
     />
     <!-- Open Graph -->
+    <meta content="website" property="og:type" />
+    <meta content="Laoküla Merelaager" property="og:site_name" />
+    <meta content="et" property="og:locale" />
+    <meta content="https://merelaager.ee/info/vahetused/" property="og:url" />
+    <meta
+      content="https://merelaager.ee/media/img/merelaager_banner.jpg"
+      property="og:image"
+    />
     <meta content="Laagrivahetuste ajad ja broneerimine" property="og:title" />
     <meta
       content="Vahetuste kuupäevad, juhatajate kontaktandmed ja info broneerimise kohta."
       property="og:description"
     />
-    <meta
-      content="https://uus.merelaager.ee/info/vahetused/"
-      property="og:url"
+    <!-- Site health -->
+    <link
+      href="https://merelaager.ee/media/img/favicons/favicon-196x196.png"
+      rel="icon"
+      sizes="196x196"
+      type="image/png"
     />
-    <meta
-      content="https://uus.merelaager.ee/media/img/merelaager_banner.jpg"
-      property="og:image"
-    />
+    <link href="https://merelaager.ee/info/vahetused/" rel="canonical" />
     <!-- Stylesheets -->
     <link
       href="../../media/css/master.min.css"
@@ -68,6 +76,12 @@
       <section class="dates">
         <div class="o-container">
           <h3 class="section-title">Laagrivahetuste ajad</h3>
+          <div class="u-banner u-banner--warning">
+            <p>
+              Laagrivahetuste ajad ei ole veel kindlad ning võivad enne
+              detsembri lõppu muutuda.
+            </p>
+          </div>
           <div class="schedule">
             <div class="month">
               <h4 class="month__name">Juuni</h4>
@@ -406,7 +420,7 @@
             </div>
           </div>
           <div class="footer__col logo">
-            <a href="https://uus.merelaager.ee">
+            <a href="../../">
               <img
                 alt="Merelaagri logo"
                 src="../../media/img/merelaager_logo_white.svg"

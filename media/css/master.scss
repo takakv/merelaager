@@ -169,6 +169,11 @@ a {
   &--warning {
     border-left-color: var(--highlight);
     background-color: rgba(var(--highlight-rgb), 0.1);
+
+    p:first-child::before {
+      font-weight: 600;
+      content: "Tähelepanu: ";
+    }
   }
 }
 
