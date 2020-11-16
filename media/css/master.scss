@@ -358,6 +358,9 @@ main > section {
   padding: 0;
   color: #fff;
   background-color: var(--primary);
+  @media screen and (max-width: $phone-break) {
+    flex-direction: column;
+  }
 
   &__block {
     width: 100%;
@@ -368,6 +371,9 @@ main > section {
       justify-content: flex-end;
       width: 70%;
       text-align: center;
+      @media screen and (max-width: $phone-break) {
+        width: 100%;
+      }
     }
 
     .read-more__wrapper {
@@ -383,9 +389,15 @@ main > section {
     background-image: url(../img/landingmap.png);
     background-repeat: no-repeat;
     background-position: center left;
+    @media screen and (max-width: $phone-break) {
+      background-position: 23% center;
+    }
 
     h3 {
       padding-left: 8.5em;
+      @media screen and (max-width: $phone-break) {
+        padding-left: 2em;
+      }
     }
   }
 
