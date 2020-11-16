@@ -3,7 +3,21 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - Website</title>
+    <title>@ViewData["Title"]</title>
+    <meta name="description" content="@ViewData["Description"]"/>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="Laoküla merelaager"/>
+    <meta property="og:locale" content="et"/>
+    <meta property="og:url" content="https://merelaager.ee/@ViewData["URL"]"/>
+    <meta property="og:image" content="https://merelaager.ee/media/img/merelaager_banner.jpg"/>
+    <meta property="og:title" content="@ViewData["Title"]"/>
+    <meta property="og:description" content="@ViewData["Description"]"/>
+    <!-- Site Health -->
+    <link href="https://merelaager.ee/media/img/favicons/favicon-196x196.png" rel="icon" sizes="196x196" type="image/png"/>
+    <link href="https://merelaager.ee/@ViewData["URL"]" rel="canonical"/>
+    <!-- Stylesheets -->
+    <link href="~/css/master.min.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <header>
@@ -33,13 +47,68 @@
         @RenderBody()
     </main>
 </div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2020 - Website - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+<footer class="footer">
+    <div class="o-container">
+        <div class="footer__content">
+            <div class="footer__col contacts">
+                <h4 class="title">Kontakt</h4>
+                <div class="contact">
+                    <b>MTÜ Noorte Mereklubi</b>
+                    <p>Reg. Nr. 80067875</p>
+                </div>
+                <div class="contact">
+                    <b>Sõudebaasi tee 23</b>
+                    <p>13517 Tallinn</p>
+                </div>
+                <div class="contact">
+                    <b>Ahto Aaslav-Kaasik</b>
+                    <p>+372 5628 6586</p>
+                </div>
+            </div>
+            <div class="footer__col snippets">
+                <div class="search">
+                    <h4 class="title">
+                        <label for="search">Otsi</label>
+                    </h4>
+                    <input
+                        class="search-box"
+                        id="search"
+                        name="search"
+                        placeholder="See veel ei tööta :)"
+                        type="search"/>
+                </div>
+                <div class="social">
+                    <h4 class="title">Jälgi meid</h4>
+                    <ul class="icons">
+                        <li class="icon">
+                            <a href="https://www.facebook.com/merelaager/">
+                                <img alt="Facebook" src="~/img/fb_icon.svg"/>
+                            </a>
+                        </li>
+                        <li class="icon">
+                            <a href="https://www.instagram.com/merelaager/">
+                                <img alt="Instagram" src="~/img/ig_icon.svg"/>
+                            </a>
+                        </li>
+                        <li class="icon">
+                            <a href="https://youtu.be/traAY8Hqg_U">
+                                <img alt="Youtube" src="~/img/yt_icon.svg"/>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__col logo">
+                <a asp-area="" asp-controller="" asp-action="">
+                    <img
+                        alt="Merelaagri logo"
+                        src="~/img/merelaager_logo_white.svg"/>
+                </a>
+            </div>
+        </div>
     </div>
 </footer>
 <script src="~/js/site.js" asp-append-version="true"></script>
-@RenderSection("Scripts", required: false)
+@RenderSection("Scripts", false)
 </body>
 </html>
