@@ -292,6 +292,10 @@ main > section {
   }
 }
 
+.landing .header {
+  display: none;
+}
+
 .landing-hero {
   position: relative;
   height: $hero-height;
