@@ -9,3 +9,11 @@
 # FullRes images
 *_og.png
 *_og.svg
+
+#.NET stuff
+bin/
+obj/
+
+#node stuff
+node_modules/
+package-lock.json
