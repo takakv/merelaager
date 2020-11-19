@@ -177,6 +177,39 @@ a {
   }
 }
 
+.u-popup {
+  position: unset;
+  z-index: 10;
+  bottom: 0;
+  display: none;
+  width: 100%;
+  padding: 3em 0;
+  color: #fff;
+  border-top: 5px solid #fff;
+
+  &.is-active {
+    position: fixed;
+    display: block;
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  &--notice {
+    background-color: rgba(var(--primary-rgb), 0.95);
+  }
+}
+
 // Primary navigation
 .header {
   padding-top: 30px;
