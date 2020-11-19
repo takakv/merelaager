@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="et">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, inital-scale=1.0, viewport-fit=conver" />
-  <title>Index</title>
-  <link href="./master.css" rel="stylesheet" type="text/css" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Laoküla merelaager">
+    <meta property="og:locale" content="et">
+    <meta property="og:url" content="https://merelaager.ee/{{urlpath}}">
+    <meta property="og:image" content="https://merelaager.ee/media/img/merelaager_banner.jpg">
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:description" content="{{description}}">
+    <!-- Browser -->
+    <link href="https://merelaager.ee/media/img/favicons/favicon-196x196.png" rel="icon" sizes="196x196"
+          type="image/png"/>
+    <link href="https://merelaager.ee/{{urlpath}}" rel="canonical"/>
+    <!-- Stylesheets -->
+    <link href="./master.css" rel="stylesheet" type="text/css"/>
 </head>
-<body>
-  {{{body}}}
+<body class="{{body-class}}">
+{{{body}}}
 </body>
 </html>
 
