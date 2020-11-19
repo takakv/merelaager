@@ -14,5 +14,25 @@
   "pildid": {
     "title": "Pildid",
     "description": "Vanad ajad, head mälestused, rõõmsad lapsed."
+  },
+  "info": {
+    "title": "Info",
+    "description": "Erinevad ressursid nii laagrilisele kui ka lapsevanemale.",
+    "vahetused": {
+      "title": "Laagrivahetuste ajad ja broneerimine",
+      "description": "Vahetuste kuupäevad, juhatajate kontaktandmed ja info broneerimise kohta."
+    },
+    "laagrist": {
+      "title": "Elu laagris",
+      "dscription": "Info laagrielu kohta: päevakava, kodukord, asukoht jms."
+    },
+    "maksmine": {
+      "title": "Maksmine",
+      "dscription": "Info laagrikoha eest tasumise kohta."
+    },
+    "kkk": {
+      "title": "Korduma kippuvad küsimused",
+      "dscription": "Küsimused ja vastused."
+    }
   }
 }

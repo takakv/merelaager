@@ -24,6 +24,7 @@ let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
 app.get("/", (req, res, next) => {
   res.render("index", {
+    layout: "landing",
     title: meta.homepage.title,
     description: meta.homepage.description,
   });
@@ -43,5 +44,16 @@ app.get("/ajalugu/", (req, res, next) => {
     body_class: "ajalugu",
   });
 });
+
+app.get("/pildid/", (req, res, next) => {
+  res.render("pildid", {
+    title: meta.pildid.title,
+    description: meta.pildid.description,
+    body_class: "pildid",
+  });
+});
+
+const infoRouter = require("./routes/info");
+app.use("/info/", infoRouter);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
