@@ -1,0 +1,24 @@
+{
+  "name": "merelaager",
+  "version": "1.0.0",
+  "description": "Merelaagri veebisait",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takakv/merelaager.git"
+  },
+  "author": "Taka Kv",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/takakv/merelaager/issues"
+  },
+  "homepage": "https://github.com/takakv/merelaager#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.0",
+    "prettier": "^2.1.2"
+  }
+}
