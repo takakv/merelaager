@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+
+const dotenv = require("dotenv");
+dotenv.config();
 
 const handlebars = require("express-handlebars");
 const fs = require("fs");
@@ -58,4 +60,5 @@ app.get("/pildid/", (req, res, next) => {
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
+const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
