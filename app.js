@@ -27,6 +27,7 @@ app.get("/", (req, res, next) => {
     layout: "landing",
     title: meta.homepage.title,
     description: meta.homepage.description,
+    body_class: "landing",
   });
 });
 
@@ -34,6 +35,7 @@ app.get("/meeskond/", (req, res, next) => {
   res.render("meeskond", {
     title: meta.meeskond.title,
     description: meta.meeskond.description,
+    body_class: "meeskond",
   });
 });
 
