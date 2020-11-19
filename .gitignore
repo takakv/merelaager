@@ -13,3 +13,7 @@
 #.NET stuff
 bin/
 obj/
+
+#node stuff
+node_modules/
+package-lock.json
