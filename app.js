@@ -11,7 +11,8 @@ app.engine(
   "hbs",
   handlebars({
     extname: "hbs",
-    defaultView: "default",
+    defaultView: "index",
+    defaultLayout: "default",
     layoutsDir: __dirname + "/views/layouts/",
     partialsDir: __dirname + "/views/partials/",
   })
@@ -23,9 +24,23 @@ let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
 app.get("/", (req, res, next) => {
   res.render("index", {
-    layout: "default",
     title: meta.homepage.title,
     description: meta.homepage.description,
+  });
+});
+
+app.get("/meeskond/", (req, res, next) => {
+  res.render("meeskond", {
+    title: meta.meeskond.title,
+    description: meta.meeskond.description,
+  });
+});
+
+app.get("/ajalugu/", (req, res, next) => {
+  res.render("ajalugu", {
+    title: meta.ajalugu.title,
+    description: meta.ajalugu.description,
+    body_class: "ajalugu",
   });
 });
 

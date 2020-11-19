@@ -18,10 +18,14 @@
           type="image/png"/>
     <link href="https://merelaager.ee/{{urlpath}}" rel="canonical"/>
     <!-- Stylesheets -->
-    <link href="./master.css" rel="stylesheet" type="text/css"/>
+    <link href="/media/css/master.min.css" rel="stylesheet" type="text/css"/>
 </head>
-<body class="{{body-class}}">
-{{{body}}}
+<body class="{{body_class}}">
+{{>header}}
+<main role="main">
+    {{{body}}}
+</main>
+{{>footer}}
 </body>
 </html>
 
