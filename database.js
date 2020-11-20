@@ -41,6 +41,18 @@ const Camper = sequelize.define("Camper", {
     },
     isikukood: {
         type: DataTypes.STRING,
+    },
+    sugu: {
+        type: DataTypes.ENUM("tüdruk", "poiss"),
+        allowNull: false
+    },
+    synnipaev: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    },
+    vana_olija: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
 }, {
     tableName: "Laagrilapsed"
