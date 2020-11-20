@@ -60,5 +60,18 @@ app.get("/pildid/", (req, res, next) => {
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
+const mysql = require("mysql");
+
+const dbCon = mysql.createConnection({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PWD,
+});
+
+dbCon.connect((err) => {
+  if (err) throw err;
+  console.log("Connected");
+});
+
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
