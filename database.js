@@ -43,7 +43,7 @@ const Camper = sequelize.define("Camper", {
         type: DataTypes.STRING,
     },
     sugu: {
-        type: DataTypes.ENUM("tüdruk", "poiss"),
+        type: DataTypes.ENUM("T", "P"),
         allowNull: false
     },
     synnipaev: {
