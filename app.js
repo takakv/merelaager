@@ -60,6 +60,9 @@ app.get("/pildid/", (req, res, next) => {
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
+const adminRouter = require("./routes/admin");
+app.use("/kambuus/", adminRouter);
+
 const mysql = require("mysql");
 
 const dbCon = mysql.createConnection({
@@ -76,6 +79,3 @@ dbCon.connect((err) => {
 
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
-
-const passport = require("passport"),
-  LocalStrategy = require("passport-local").Strategy;
