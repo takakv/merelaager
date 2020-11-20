@@ -66,6 +66,7 @@ const dbCon = mysql.createConnection({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PWD,
+  database: process.env.MYSQL_DB,
 });
 
 dbCon.connect((err) => {
@@ -75,3 +76,6 @@ dbCon.connect((err) => {
 
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
+
+const passport = require("passport"),
+  LocalStrategy = require("passport-local").Strategy;
