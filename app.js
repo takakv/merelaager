@@ -63,19 +63,10 @@ app.use("/info/", infoRouter);
 const adminRouter = require("./routes/admin");
 app.use("/kambuus/", adminRouter);
 
-const mysql = require("mysql");
-
-const dbCon = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PWD,
-  database: process.env.MYSQL_DB,
-});
-
-dbCon.connect((err) => {
-  if (err) throw err;
-  console.log("Connected");
-});
+const registerRouter = require("./routes/register");
+app.use("/broneeri/", registerRouter);
 
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
+
+const db = require("./database");
