@@ -2,11 +2,11 @@ const db = require("../models/database");
 const Camper = db.campers;
 
 exports.create = (req, res) => {
-  let idcode = req.body.idcode;
-  let gender;
-  let bday;
-  if (idcode) {
-    switch (idcode.charAt(0)) {
+  let idCode = req.body["idCode-1"];
+  let gender = req.body["gender-1"];
+  let birthday;
+  if (idCode) {
+    switch (idCode.charAt(0)) {
       case "5":
         gender = "Poiss";
         break;
@@ -14,18 +14,23 @@ exports.create = (req, res) => {
         gender = "Tüdruk";
         break;
     }
-    const year = 2000 + parseInt(idcode.slice(1, 3));
+    const year = 2000 + parseInt(idCode.slice(1, 3));
     // Js counts month from 0 - 11.
-    const month = parseInt(idcode.slice(3, 5)) - 1;
-    const day = parseInt(idcode.slice(5, 7));
-    bday = new Date(year, month, day);
+    const month = parseInt(idCode.slice(3, 5)) - 1;
+    const day = parseInt(idCode.slice(5, 7));
+    birthday = new Date(year, month, day);
   }
   const camper = {
-    nimi: req.body.name,
-    isikukood: idcode,
+    nimi: req.body["name-1"],
+    isikukood: idCode,
     sugu: gender,
-    synnipaev: bday,
-    vana_olija: !!req.body.isFamiliar,
+    synnipaev: birthday,
+    aasta_laagris: req.body["yearsAtCamp-1"],
+    vahetus: req.body["vahetus-1"],
+    ts_suurus: req.body["shirtsize-1"],
+    linn: req.body["city-1"],
+    maakond: req.body["county-1"],
+    riik: req.body["country-1"],
     kontakt_nimi: req.body.guardian_name,
     kontakt_number: req.body.guardian_phone,
     kontakt_email: req.body.guardian_email,

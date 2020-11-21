@@ -32,7 +32,7 @@
         <div class="registration-form__row">
             <div class="registration-form__field">
                 <label for="vahetus-{{this}}">Laagrivahetus</label>
-                <select id="vahetus-{{this}}" required>
+                <select id="vahetus-{{this}}" class="shiftField" name="vahetus-{{this}}" required>
                     <option value="">--Valige vahetus--</option>
                     <option value="1v">I vahetus</option>
                     <option value="2v">II vahetus</option>
@@ -42,16 +42,16 @@
             </div>
             <div class="registration-form__field">
                 <label for="shirtsize-{{this}}">T-särgi suurus</label>
-                <select id="shirtsize-{{this}}" required>
+                <select id="shirtsize-{{this}}" class="shirtSizeField" name="shirtsize-{{this}}" required>
                     <option value="">--Valige suurus--</option>
-                    <option value="s1">118/128</option>
-                    <option value="s2">130/140</option>
-                    <option value="s3">142/152</option>
-                    <option value="s4">152/164</option>
-                    <option value="s5">S</option>
-                    <option value="s6">M</option>
-                    <option value="s7">L</option>
-                    <option value="s8">XL</option>
+                    <option value="118/128">118/128</option>
+                    <option value="130/140">130/140</option>
+                    <option value="142/152">142/152</option>
+                    <option value="152/164">152/164</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
                 </select>
             </div>
             <div class="registration-form__field">

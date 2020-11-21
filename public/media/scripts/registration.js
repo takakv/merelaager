@@ -24,6 +24,8 @@ const fields = {
   noIds: document.getElementsByClassName("hasIdCode"),
   genderFields: document.getElementsByClassName("genderField"),
   birthdayFields: document.getElementsByClassName("birthdayField"),
+  shiftFields: document.getElementsByClassName("shiftField"),
+  shirtSizeFields: document.getElementsByClassName("shirtSizeField"),
   yearFields: document.getElementsByClassName("yearField"),
   cityFields: document.getElementsByClassName("cityField"),
   countyFields: document.getElementsByClassName("countyField"),

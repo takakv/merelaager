@@ -31,6 +31,14 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: 1,
       },
+      vahetus: {
+        type: DataTypes.ENUM("1v", "2v", "3v", "4v"),
+        allowNull: false,
+      },
+      ts_suurus: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       linn: {
         type: DataTypes.TEXT,
         allowNull: false,
