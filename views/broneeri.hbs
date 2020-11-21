@@ -3,8 +3,9 @@
         <form class="registration__form" action="/broneeri/lisa/" method="post">
             <label for="name">Laagrilapse nimi</label>
             <input type="text" name="name" id="name" required>
-            <label for="birthday">Isikukood</label>
-            <input type="text" name="idcode" id="idcode" required>
+            <label for="idcode">Isikukood</label>
+            <input type="text" name="idcode" id="idcode" required
+                   pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
             <label for="vahetus">Laagrivahetus</label>
             <select id="vahetus" required>
                 <option value="">--Valige vahetus--</option>
@@ -26,8 +27,15 @@
                 <option value="s8">XL</option>
             </select>
             <h3>Kontaktisik</h3>
-            <label for="guardian_name">Nimi</label><input type="text" name="guardian_name" id="guardian_name" required>
-            <button name="submit" value="submit">Submit</button>
+            <label for="guardian_name">Nimi</label>
+            <input type="text" name="guardian_name" id="guardian_name" required>
+            <label for="guardian_phone">Telefon</label>
+            <input type="tel" name="guardian_phone" id="guardian_phone" required>
+            <label for="guardian_email">Email</label>
+            <input type="email" name="guardian_email" id="guardian_email" required>
+            <label for="alt_phone">Varutelefon</label>
+            <input type="tel" name="alt_phone" id="alt_phone">
+            <button name="submit" value="submit">Registreeri</button>
         </form>
     </div>
 </section>

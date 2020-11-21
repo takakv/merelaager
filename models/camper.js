@@ -16,9 +16,10 @@ module.exports = (sequelize) => {
       },
       isikukood: {
         type: DataTypes.STRING,
+        defaultValue: "",
       },
       sugu: {
-        type: DataTypes.ENUM("T", "P"),
+        type: DataTypes.ENUM("Tüdruk", "Poiss"),
         allowNull: false,
       },
       synnipaev: {
@@ -29,6 +30,22 @@ module.exports = (sequelize) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      kontakt_nimi: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      kontakt_number: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      kontakt_email: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      varu_tel: {
+        type: DataTypes.TEXT,
+        defaultValue: "",
       },
     },
     {

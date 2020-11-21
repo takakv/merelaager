@@ -8,10 +8,10 @@ exports.create = (req, res) => {
   if (idcode) {
     switch (idcode.charAt(0)) {
       case "5":
-        gender = "P";
+        gender = "Poiss";
         break;
       case "6":
-        gender = "T";
+        gender = "Tüdruk";
         break;
     }
     const year = 2000 + parseInt(idcode.slice(1, 3));
@@ -26,6 +26,10 @@ exports.create = (req, res) => {
     sugu: gender,
     synnipaev: bday,
     vana_olija: !!req.body.isFamiliar,
+    kontakt_nimi: req.body.guardian_name,
+    kontakt_number: req.body.guardian_phone,
+    kontakt_email: req.body.guardian_email,
+    varu_tel: req.body.alt_phone,
   };
 
   Camper.create(camper)
