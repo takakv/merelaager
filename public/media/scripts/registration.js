@@ -39,11 +39,10 @@ addChild.onclick = () => {
 
 for (let i = 1; i < 4; ++i) requireUnit(fields, i, false);
 
-for (let i = 0; i < 4; ++i) {
+for (let i = 0; i < 4; ++i)
   fields.noIds[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
     require(fields.idCodeFields[i], !isRequired);
     require(fields.genderFields[i], isRequired);
     require(fields.birthdayFields[i], isRequired);
   });
-}
