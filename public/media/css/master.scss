@@ -784,3 +784,39 @@ main > section {
     }
   }
 }
+
+// Register
+.registration-form {
+  &__unit {
+    margin: 2em;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.1);
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__field {
+    input {
+      padding: 0.5rem;
+      border: 0;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid var(--primary);
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      background-color: rgba(var(--primary-rgb), 0.05);
+
+      &:invalid {
+        //border-bottom-color: var(--highlight);
+      }
+    }
+  }
+}

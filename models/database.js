@@ -7,18 +7,6 @@ const user = process.env.MYSQL_USER;
 const pass = process.env.MYSQL_PWD;
 const dbname = process.env.MYSQL_DB;
 
-// const dbCon = mysql.createConnection({
-//     host: process.env.MYSQL_HOST,
-//     user: process.env.MYSQL_USER,
-//     password: process.env.MYSQL_PWD,
-//     database: process.env.MYSQL_DB,
-// });
-//
-// dbCon.connect((err) => {
-//     if (err) throw err;
-//     console.log("Connected");
-// });
-
 const sequelize = new Sequelize(
   `mysql://${user}:${pass}@${host}:3306/${dbname}`
 );
