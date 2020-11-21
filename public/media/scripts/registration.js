@@ -18,12 +18,14 @@ hide(regUnits[childrenCounter], false);
 
 const addChild = document.getElementById("addChild");
 const childCountEl = document.getElementById("childCount");
+// These fields have their own checkbox logic.
+const noIds = document.getElementsByClassName("hasIdCode");
+const genderFields = document.getElementsByClassName("genderField");
+const birthdayFields = document.getElementsByClassName("birthdayField");
+// These fields have global required logic.
 const fields = {
   nameFields: document.getElementsByClassName("nameField"),
   idCodeFields: document.getElementsByClassName("idCodeField"),
-  noIds: document.getElementsByClassName("hasIdCode"),
-  genderFields: document.getElementsByClassName("genderField"),
-  birthdayFields: document.getElementsByClassName("birthdayField"),
   shiftFields: document.getElementsByClassName("shiftField"),
   shirtSizeFields: document.getElementsByClassName("shirtSizeField"),
   yearFields: document.getElementsByClassName("yearField"),
@@ -42,9 +44,9 @@ addChild.onclick = () => {
 for (let i = 1; i < 4; ++i) requireUnit(fields, i, false);
 
 for (let i = 0; i < 4; ++i)
-  fields.noIds[i].addEventListener("change", (event) => {
+  noIds[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
     require(fields.idCodeFields[i], !isRequired);
-    require(fields.genderFields[i], isRequired);
-    require(fields.birthdayFields[i], isRequired);
+    require(genderFields[i], isRequired);
+    require(birthdayFields[i], isRequired);
   });
