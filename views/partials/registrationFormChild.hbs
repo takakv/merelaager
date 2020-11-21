@@ -3,7 +3,7 @@
         <div class="registration-form__row has-after">
             <div class="registration-form__field">
                 <label for="name-{{this}}">Nimi</label>
-                <input type="text" name="name-{{this}}" id="name-{{this}}" required>
+                <input type="text" name="name-{{this}}" id="name-{{this}}" class="nameField" required>
             </div>
             <div class="registration-form__field">
                 <label for="idCode-{{this}}">Isikukood</label>
@@ -13,13 +13,13 @@
             <div class="registration-form__field is-hidden">
                 <p>Sugu:</p>
                 <label for="gender-m-{{this}}">Poiss</label>
-                <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M" class="genderRoot">
+                <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M" class="genderField">
                 <label for="gender-f-{{this}}">Tüdruk</label>
                 <input type="radio" name="gender-{{this}}" id="gender-f-{{this}}" value="F">
             </div>
             <div class="registration-form__field is-hidden">
                 <label for="bDay-{{this}}">Sünnipäev</label>
-                <input type="date" name="bDay-{{this}}" id="bDay-{{this}}" class="birthday">
+                <input type="date" name="bDay-{{this}}" id="bDay-{{this}}" class="birthdayField">
             </div>
         </div>
         <div class="registration-form__row registration-form__row--minor">
@@ -57,18 +57,18 @@
             <div class="registration-form__field">
                 <label for="yearsAtCamp-{{this}}">Aasta laagris</label>
                 <input type="number" name="yearsAtCamp-{{this}}" id="yearsAtCamp-{{this}}" min="1" max="12"
-                       placeholder="1-10" required>
+                       placeholder="1-10" class="yearField" required>
             </div>
         </div>
         <div class="registration-form__row">
             <div class="registration-form__field">
                 <p>Elukoht:</p>
                 <label for="city-{{this}}">Linn</label>
-                <input type="text" name="city-{{this}}" id="city-{{this}}" required>
+                <input type="text" name="city-{{this}}" id="city-{{this}}" class="cityField" required>
             </div>
             <div class="registration-form__field">
                 <label for="county-{{this}}">Maakond</label>
-                <input list="counties" id="county-{{this}}" name="county-{{this}}" required>
+                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField" required>
                 <datalist id="counties">
                     <option value="Harju"></option>
                     <option value="Tartu"></option>
@@ -89,7 +89,8 @@
             </div>
             <div class="registration-form__field">
                 <label for="country-{{this}}">Riik</label>
-                <input type="text" name="country-{{this}}" id="country-{{this}}" value="Eesti" required>
+                <input type="text" name="country-{{this}}" id="country-{{this}}" value="Eesti" class="countryField"
+                       required>
             </div>
         </div>
     </div>

@@ -8,6 +8,9 @@ const require = (element, isRequired) => {
   element.required = isRequired;
 };
 
+const requireUnit = (units, index, isRequired) =>
+  Object.values(units).forEach((unit) => (unit[index].required = isRequired));
+
 const regUnits = document.getElementsByClassName("registration-form__unit");
 
 let childrenCounter = 0;
@@ -15,23 +18,32 @@ hide(regUnits[childrenCounter], false);
 
 const addChild = document.getElementById("addChild");
 const childCountEl = document.getElementById("childCount");
+const fields = {
+  nameFields: document.getElementsByClassName("nameField"),
+  idCodeFields: document.getElementsByClassName("idCodeField"),
+  noIds: document.getElementsByClassName("hasIdCode"),
+  genderFields: document.getElementsByClassName("genderField"),
+  birthdayFields: document.getElementsByClassName("birthdayField"),
+  yearFields: document.getElementsByClassName("yearField"),
+  cityFields: document.getElementsByClassName("cityField"),
+  countyFields: document.getElementsByClassName("countyField"),
+  countryFields: document.getElementsByClassName("countryField"),
+};
 
 addChild.onclick = () => {
   hide(regUnits[++childrenCounter], false);
+  requireUnit(fields, childrenCounter, true);
   childCountEl.value = `${childrenCounter + 1}`;
   if (childrenCounter >= 3) hide(addChild.parentElement, true);
 };
 
-const idCodeFields = document.getElementsByClassName("idCodeField");
-const noIds = document.getElementsByClassName("hasIdCode");
-const genders = document.getElementsByClassName("genderRoot");
-const birthdays = document.getElementsByClassName("birthday");
+for (let i = 1; i < 4; ++i) requireUnit(fields, i, false);
 
 for (let i = 0; i < 4; ++i) {
-  noIds[i].addEventListener("change", (event) => {
+  fields.noIds[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
-    require(idCodeFields[i], !isRequired);
-    require(genders[i], isRequired);
-    require(birthdays[i], isRequired);
+    require(fields.idCodeFields[i], !isRequired);
+    require(fields.genderFields[i], isRequired);
+    require(fields.birthdayFields[i], isRequired);
   });
 }
