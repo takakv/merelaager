@@ -26,10 +26,23 @@ module.exports = (sequelize) => {
         type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      vana_olija: {
-        type: DataTypes.BOOLEAN,
+      aasta_laagris: {
+        type: DataTypes.TINYINT,
         allowNull: false,
-        defaultValue: false,
+        defaultValue: 1,
+      },
+      linn: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      maakond: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      riik: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        defaultValue: "Eesti",
       },
       kontakt_nimi: {
         type: DataTypes.TEXT,

@@ -796,15 +796,35 @@ main > section {
 
   &__row {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 1em;
+    margin-bottom: 1.5rem;
 
     &:last-child {
       margin-bottom: 0;
     }
+
+    &.has-after {
+      margin-bottom: 0.25rem;
+    }
+
+    &--minor {
+      font-size: 0.75rem;
+      justify-content: flex-end;
+    }
   }
 
   &__field {
+    display: flex;
+    align-items: center;
+    margin-right: 1em;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    p, label {
+      margin-right: 0.25em;
+    }
+
     input {
       padding: 0.5rem;
       border: 0;
@@ -817,6 +837,10 @@ main > section {
       &:invalid {
         //border-bottom-color: var(--highlight);
       }
+    }
+
+    &.is-hidden {
+      display: none;
     }
   }
 }
