@@ -69,4 +69,5 @@ app.use("/broneeri/", registerRouter);
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-const db = require("./database");
+const db = require("./models/database");
+db.sequelize.sync({ alter: true });

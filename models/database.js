@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -28,36 +28,9 @@ sequelize
   .then(() => console.log("Database connection successful."))
   .catch((err) => console.error("Database connection failed:", err));
 
-const Camper = sequelize.define("Camper", {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
-    nimi: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    isikukood: {
-        type: DataTypes.STRING,
-    },
-    sugu: {
-        type: DataTypes.ENUM("T", "P"),
-        allowNull: false
-    },
-    synnipaev: {
-        type: DataTypes.DATEONLY,
-        allowNull: false
-    },
-    vana_olija: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
-    }
-}, {
-    tableName: "Laagrilapsed"
-});
+const db = {};
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.campers = require("./camper")(sequelize);
 
-sequelize.sync();
-
-module.exports = sequelize;
+module.exports = db;
