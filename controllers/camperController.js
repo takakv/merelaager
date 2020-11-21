@@ -19,6 +19,15 @@ exports.create = (req, res) => {
     const month = parseInt(idCode.slice(3, 5)) - 1;
     const day = parseInt(idCode.slice(5, 7));
     birthday = new Date(year, month, day);
+  } else if (gender) {
+    switch (gender) {
+      case "M":
+        gender = "Poiss";
+        break;
+      case "F":
+        gender = "Tüdruk";
+        break;
+    }
   }
   const camper = {
     nimi: req.body["name-1"],
