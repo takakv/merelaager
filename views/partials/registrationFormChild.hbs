@@ -7,25 +7,26 @@
             </div>
             <div class="registration-form__field">
                 <label for="idCode-{{this}}">Isikukood</label>
-                <input type="text" name="idCode-{{this}}" id="idCode-{{this}}" required
+                <input type="text" name="idCode-{{this}}" id="idCode-{{this}}" class="idCodeField" required
                        pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
             </div>
             <div class="registration-form__field is-hidden">
                 <p>Sugu:</p>
                 <label for="gender-m-{{this}}">Poiss</label>
-                <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M">
+                <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M" class="genderRoot">
                 <label for="gender-f-{{this}}">Tüdruk</label>
                 <input type="radio" name="gender-{{this}}" id="gender-f-{{this}}" value="F">
             </div>
             <div class="registration-form__field is-hidden">
                 <label for="bDay-{{this}}">Sünnipäev</label>
-                <input type="date" name="bDay-{{this}}" id="bDay-{{this}}">
+                <input type="date" name="bDay-{{this}}" id="bDay-{{this}}" class="birthday">
             </div>
         </div>
         <div class="registration-form__row registration-form__row--minor">
             <div class="registration-form__field">
                 <label for="hasIdCode-{{this}}">Ei soovi registreerida isikukoodiga</label>
-                <input type="checkbox" name="hasIdCode-{{this}}" id="hasIdCode-{{this}}" value="false">
+                <input type="checkbox" name="hasIdCode-{{this}}" id="hasIdCode-{{this}}" class="hasIdCode"
+                       value="false">
             </div>
         </div>
         <div class="registration-form__row">
@@ -55,7 +56,8 @@
             </div>
             <div class="registration-form__field">
                 <label for="yearsAtCamp-{{this}}">Aasta laagris</label>
-                <input type="number" name="yearsAtCamp-{{this}}" id="yearsAtCamp-{{this}}" placeholder="1-10" required>
+                <input type="number" name="yearsAtCamp-{{this}}" id="yearsAtCamp-{{this}}" min="1" max="12"
+                       placeholder="1-10" required>
             </div>
         </div>
         <div class="registration-form__row">
@@ -84,6 +86,10 @@
                     <option value="Lääne"></option>
                     <option value="Hiiu"></option>
                 </datalist>
+            </div>
+            <div class="registration-form__field">
+                <label for="country-{{this}}">Riik</label>
+                <input type="text" name="country-{{this}}" id="country-{{this}}" value="Eesti" required>
             </div>
         </div>
     </div>
