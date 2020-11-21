@@ -18,6 +18,6 @@ const urlEncParser = bodyParser.urlencoded({ extended: false });
 
 const campers = require("../controllers/camperController");
 
-router.post("/lisa/", urlEncParser, campers.create);
+router.post("/register/", urlEncParser, campers.create);
 
 module.exports = router;
