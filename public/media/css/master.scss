@@ -796,6 +796,52 @@ main > section {
     &.is-hidden {
       display: none;
     }
+
+    #addChild {
+      display: inline-block;
+
+      .contents {
+        display: flex;
+        align-items: center;
+      }
+
+      .u-plus {
+        position: relative;
+        width: 30px;
+        height: 30px;
+        margin-left: 0.5em;
+        border-radius: 20px;
+        background-color: var(--primary);
+
+        &::before,
+        &::after {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 2px;
+          height: 18px;
+          content: "";
+          border-radius: 4px;
+          background-color: #fff;
+        }
+
+        &::before {
+          transform: translate(-50%, -50%);
+        }
+
+        &::after {
+          transform: translate(-50%, -50%) rotate(90deg);
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+
+        .u-plus {
+          background-color: var(--highlight);
+        }
+      }
+    }
   }
 
   &__row {

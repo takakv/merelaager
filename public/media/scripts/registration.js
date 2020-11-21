@@ -1,12 +1,14 @@
 const dontUseIdCode = document.getElementById("hasIdCode");
+const addChild = document.getElementById("addChild");
 
-const [
-  regUnit1,
-  regUnit2,
-  regUnit3,
-  regUnit4,
-] = document.getElementsByClassName("registration-form__unit");
-regUnit1.classList.remove("is-hidden");
+const regUnits = document.getElementsByClassName("registration-form__unit");
+let childrenCounter = 0;
+regUnits[childrenCounter].classList.remove("is-hidden");
+
+addChild.onclick = () => {
+  regUnits[++childrenCounter].classList.remove("is-hidden");
+  if (childrenCounter >= 3) addChild.parentElement.classList.add("is-hidden");
+};
 
 if (dontUseIdCode) {
   const idCodeField = document.getElementById("idcode");
