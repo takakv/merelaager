@@ -4,7 +4,7 @@ const Camper = db.campers;
 exports.create = (req, res) => {
   let idCode = req.body["idCode-1"];
   let gender = req.body["gender-1"];
-  let birthday;
+  let birthday = req.body["bDay-1"];
   if (idCode) {
     switch (idCode.charAt(0)) {
       case "5":
