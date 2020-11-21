@@ -792,6 +792,10 @@ main > section {
     padding: 2em;
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.1);
+
+    &.is-hidden {
+      display: none;
+    }
   }
 
   &__row {
@@ -821,7 +825,8 @@ main > section {
       margin-right: 0;
     }
 
-    p, label {
+    p,
+    label {
       margin-right: 0.25em;
     }
 

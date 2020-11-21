@@ -11,6 +11,7 @@ router.get("/", (req, res, next) => {
     title: meta.title,
     description: meta.description,
     body_class: "registration",
+    script_path: "/media/scripts/registration.js",
   });
 });
 

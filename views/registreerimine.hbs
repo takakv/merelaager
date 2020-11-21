@@ -3,96 +3,12 @@
         <h3 class="section-title">Registreerimine</h3>
         <form class="registration-form" action="/registreerimine/register/" method="post">
             <h4>Laagrilaps</h4>
+            {{>registrationFormChild}}
             <div class="registration-form__unit">
-                <div class="registration-form__row has-after">
-                    <div class="registration-form__field">
-                        <label for="name">Nimi</label>
-                        <input type="text" name="name" id="name" required>
-                    </div>
-                    <div class="registration-form__field">
-                        <label for="idcode">Isikukood</label>
-                        <input type="text" name="idcode" id="idcode" required
-                               pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
-                    </div>
-                    <div class="registration-form__field is-hidden">
-                        <p>Sugu:</p>
-                        <label for="gender-m">Poiss</label>
-                        <input type="radio" name="gender" id="gender-m" value="M">
-                        <label for="gender-f">Tüdruk</label>
-                        <input type="radio" name="gender" id="gender-f" value="F">
-                    </div>
-                    <div class="registration-form__field is-hidden">
-                        <label for="bday">Sünnipäev</label>
-                        <input type="date" name="bday" id="bday">
-                    </div>
+                <div id="addChild">
+                    <p>Lisa laps</p>
+                    <div class="u-plus">+</div>
                 </div>
-                <div class="registration-form__row registration-form__row--minor">
-                    <div class="registration-form__field">
-                        <label for="hasIdCode">Ei soovi registreerida isikukoodiga</label>
-                        <input type="checkbox" name="hasIdCode" id="hasIdCode" value="false">
-                    </div>
-                </div>
-                <div class="registration-form__row">
-                    <div class="registration-form__field">
-                        <label for="vahetus">Laagrivahetus</label>
-                        <select id="vahetus" required>
-                            <option value="">--Valige vahetus--</option>
-                            <option value="1v">I vahetus</option>
-                            <option value="2v">II vahetus</option>
-                            <option value="3v">III vahetus</option>
-                            <option value="4v">IV vahetus</option>
-                        </select>
-                    </div>
-                    <div class="registration-form__field">
-                        <label for="shirtsize">T-särgi suurus</label>
-                        <select id="shirtsize" required>
-                            <option value="">--Valige suurus--</option>
-                            <option value="s1">118/128</option>
-                            <option value="s2">130/140</option>
-                            <option value="s3">142/152</option>
-                            <option value="s4">152/164</option>
-                            <option value="s5">S</option>
-                            <option value="s6">M</option>
-                            <option value="s7">L</option>
-                            <option value="s8">XL</option>
-                        </select>
-                    </div>
-                    <div class="registration-form__field">
-                        <label for="yearsAtCamp">Mitmendat aastat laagris</label>
-                        <input type="number" name="yearsAtCamp" id="yearsAtCamp" required>
-                    </div>
-                </div>
-                <div class="registration-form__row">
-                    <div class="registration-form__field">
-                        <p>Elukoht:</p>
-                        <label for="city">Linn</label>
-                        <input type="text" name="city" id="city" required>
-                    </div>
-                    <div class="registration-form__field">
-                        <label for="county">Maakond</label>
-                        <input list="counties" id="county" name="county" required>
-                        <datalist id="counties">
-                            <option value="Harju"></option>
-                            <option value="Tartu"></option>
-                            <option value="Ida-Viru"></option>
-                            <option value="Pärnu"></option>
-                            <option value="Lääne-Viru"></option>
-                            <option value="Viljandi"></option>
-                            <option value="Rapla"></option>
-                            <option value="Võru"></option>
-                            <option value="Saare"></option>
-                            <option value="Jõgeva"></option>
-                            <option value="Järva"></option>
-                            <option value="Valga"></option>
-                            <option value="Põlva"></option>
-                            <option value="Lääne"></option>
-                            <option value="Hiiu"></option>
-                        </datalist>
-                    </div>
-                </div>
-            </div>
-            <div class="registration-form__unit">
-                <p>Lisa laps +</p>
             </div>
             <h4>Kontaktisik</h4>
             <div class="registration-form__unit">

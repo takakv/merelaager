@@ -1,0 +1,90 @@
+{{#times 4}}
+    <div class="registration-form__unit is-hidden">
+        <div class="registration-form__row has-after">
+            <div class="registration-form__field">
+                <label for="name-{{this}}">Nimi</label>
+                <input type="text" name="name-{{this}}" id="name-{{this}}" required>
+            </div>
+            <div class="registration-form__field">
+                <label for="idcode-{{this}}">Isikukood</label>
+                <input type="text" name="idcode-{{this}}" id="idcode-{{this}}" required
+                       pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
+            </div>
+            <div class="registration-form__field is-hidden">
+                <p>Sugu:</p>
+                <label for="gender-m-{{this}}">Poiss</label>
+                <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M">
+                <label for="gender-f-{{this}}">Tüdruk</label>
+                <input type="radio" name="gender-{{this}}" id="gender-f-{{this}}" value="F">
+            </div>
+            <div class="registration-form__field is-hidden">
+                <label for="bday-{{this}}">Sünnipäev</label>
+                <input type="date" name="bday-{{this}}" id="bday-{{this}}">
+            </div>
+        </div>
+        <div class="registration-form__row registration-form__row--minor">
+            <div class="registration-form__field">
+                <label for="hasIdCode-{{this}}">Ei soovi registreerida isikukoodiga</label>
+                <input type="checkbox" name="hasIdCode-{{this}}" id="hasIdCode-{{this}}" value="false">
+            </div>
+        </div>
+        <div class="registration-form__row">
+            <div class="registration-form__field">
+                <label for="vahetus-{{this}}">Laagrivahetus</label>
+                <select id="vahetus-{{this}}" required>
+                    <option value="">--Valige vahetus--</option>
+                    <option value="1v">I vahetus</option>
+                    <option value="2v">II vahetus</option>
+                    <option value="3v">III vahetus</option>
+                    <option value="4v">IV vahetus</option>
+                </select>
+            </div>
+            <div class="registration-form__field">
+                <label for="shirtsize-{{this}}">T-särgi suurus</label>
+                <select id="shirtsize-{{this}}" required>
+                    <option value="">--Valige suurus--</option>
+                    <option value="s1">118/128</option>
+                    <option value="s2">130/140</option>
+                    <option value="s3">142/152</option>
+                    <option value="s4">152/164</option>
+                    <option value="s5">S</option>
+                    <option value="s6">M</option>
+                    <option value="s7">L</option>
+                    <option value="s8">XL</option>
+                </select>
+            </div>
+            <div class="registration-form__field">
+                <label for="yearsAtCamp-{{this}}">Mitmendat aastat laagris</label>
+                <input type="number" name="yearsAtCamp-{{this}}" id="yearsAtCamp-{{this}}" required>
+            </div>
+        </div>
+        <div class="registration-form__row">
+            <div class="registration-form__field">
+                <p>Elukoht:</p>
+                <label for="city-{{this}}">Linn</label>
+                <input type="text" name="city-{{this}}" id="city-{{this}}" required>
+            </div>
+            <div class="registration-form__field">
+                <label for="county-{{this}}">Maakond</label>
+                <input list="counties" id="county-{{this}}" name="county-{{this}}" required>
+                <datalist id="counties">
+                    <option value="Harju"></option>
+                    <option value="Tartu"></option>
+                    <option value="Ida-Viru"></option>
+                    <option value="Pärnu"></option>
+                    <option value="Lääne-Viru"></option>
+                    <option value="Viljandi"></option>
+                    <option value="Rapla"></option>
+                    <option value="Võru"></option>
+                    <option value="Saare"></option>
+                    <option value="Jõgeva"></option>
+                    <option value="Järva"></option>
+                    <option value="Valga"></option>
+                    <option value="Põlva"></option>
+                    <option value="Lääne"></option>
+                    <option value="Hiiu"></option>
+                </datalist>
+            </div>
+        </div>
+    </div>
+{{/times}}
