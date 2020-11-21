@@ -1,14 +1,25 @@
+const hide = (element, isHidden) => {
+  if (isHidden) element.classList.add("is-hidden");
+  else element.classList.remove("is-hidden");
+};
+
+const require = (element, isRequired) => {
+  hide(element.parentElement, !isRequired);
+  element.required = isRequired;
+};
+
+const regUnits = document.getElementsByClassName("registration-form__unit");
+
+let childrenCounter = 0;
+hide(regUnits[childrenCounter], false);
+
 const addChild = document.getElementById("addChild");
 const childCountEl = document.getElementById("childCount");
 
-const regUnits = document.getElementsByClassName("registration-form__unit");
-let childrenCounter = 0;
-regUnits[childrenCounter].classList.remove("is-hidden");
-
 addChild.onclick = () => {
-  regUnits[++childrenCounter].classList.remove("is-hidden");
+  hide(regUnits[++childrenCounter], false);
   childCountEl.value = `${childrenCounter + 1}`;
-  if (childrenCounter >= 3) addChild.parentElement.classList.add("is-hidden");
+  if (childrenCounter >= 3) hide(addChild.parentElement, true);
 };
 
 const idCodeFields = document.getElementsByClassName("idCodeField");
@@ -24,13 +35,3 @@ for (let i = 0; i < 4; ++i) {
     require(birthdays[i], isRequired);
   });
 }
-
-const require = (element, isRequired) => {
-  if (isRequired) {
-    element.parentElement.classList.remove("is-hidden");
-    element.required = true;
-  } else {
-    element.parentElement.classList.add("is-hidden");
-    element.required = false;
-  }
-};
