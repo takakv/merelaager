@@ -7,10 +7,10 @@ let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 meta = meta.broneeri;
 
 router.get("/", (req, res, next) => {
-  res.render("broneeri", {
+  res.render("registreerimine", {
     title: meta.title,
     description: meta.description,
-    body_class: "broneeri",
+    body_class: "registration",
   });
 });
 
