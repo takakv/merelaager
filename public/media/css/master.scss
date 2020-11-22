@@ -794,8 +794,24 @@ main > section {
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.1);
 
+    &--mt0 {
+      margin-top: 0;
+    }
+
     &.is-hidden {
-      display: none;
+      overflow: hidden;
+      height: 0;
+      margin: 0;
+      padding: 0;
+      transform: translateY(0) !important;
+    }
+
+    &:nth-of-type(2),
+    &:nth-of-type(3),
+    &:nth-of-type(4) {
+      top: -25px;
+      transition: transform 0.2s ease-out;
+      transform: translateY(25px);
     }
 
     #addChild {

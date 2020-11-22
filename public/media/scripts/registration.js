@@ -45,17 +45,21 @@ addChild.onclick = () => {
 };
 
 for (let i = 0; i < 4; ++i) {
-  requireUnit(fields, i, false);
-  regClosers[i].onclick = () => {
-    hide(regUnits[i], true);
-    --childrenCounter;
-    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
-    if (childrenCounter < 3) hide(addChild.parentElement, false);
-  };
   noIds[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
     require(fields.idCodeFields[i], !isRequired);
     require(genderFields[i], isRequired);
     require(birthdayFields[i], isRequired);
   });
+}
+
+for (let i = 1; i < 4; ++i) {
+  requireUnit(fields, i, false);
+  regClosers[i].onclick = () => {
+    hide(regUnits[i], true);
+    requireUnit(fields, childrenCounter, false);
+    --childrenCounter;
+    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
+    if (childrenCounter < 3) hide(addChild.parentElement, false);
+  };
 }
