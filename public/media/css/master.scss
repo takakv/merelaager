@@ -210,6 +210,23 @@ a {
   }
 }
 
+// Components
+.c-btn {
+  font-size: 1rem;
+  padding: 1em 1.5em;
+  transition: all 0.2s ease-in-out;
+  color: inherit;
+  border: 2px solid var(--primary);
+  border-radius: 28px;
+  background-color: transparent;
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(var(--primary-rgb), 0.05);
+    box-shadow: 0 8px 15px rgba(var(--primary-rgb), 0.1);
+  }
+}
+
 // Primary navigation
 .header {
   padding-top: 30px;
@@ -827,8 +844,9 @@ main > section {
         width: 30px;
         height: 30px;
         margin-left: 0.5em;
+        border: 2px solid var(--primary);
         border-radius: 20px;
-        background-color: var(--primary);
+        background-color: inherit;
 
         &::before,
         &::after {
@@ -839,7 +857,7 @@ main > section {
           height: 18px;
           content: "";
           border-radius: 4px;
-          background-color: #fff;
+          background-color: var(--primary);
         }
 
         &::before {
@@ -855,7 +873,7 @@ main > section {
         cursor: pointer;
 
         .u-plus {
-          background-color: var(--highlight);
+          background-color: rgba(var(--primary-rgb), 0.1);
         }
       }
     }
@@ -867,12 +885,25 @@ main > section {
     right: 10px;
     width: 20px;
     height: 20px;
+    border: 2px solid var(--primary);
     border-radius: 20px;
-    background-color: var(--highlight);
+    background-color: inherit;
 
     &:hover {
       cursor: pointer;
-      border: 2px solid var(--primary);
+      background-color: rgba(var(--primary-rgb), 0.1);
+    }
+
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 2px;
+      content: "";
+      transform: translate(-50%, -50%);
+      border-radius: 4px;
+      background-color: var(--primary);
     }
 
     &.is-hidden {
