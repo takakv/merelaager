@@ -12,9 +12,11 @@ const requireUnit = (units, index, isRequired) =>
   Object.values(units).forEach((unit) => (unit[index].required = isRequired));
 
 const regUnits = document.getElementsByClassName("registration-form__unit");
+const regClosers = document.getElementsByClassName("registration-form__close");
 
 let childrenCounter = 0;
 hide(regUnits[childrenCounter], false);
+hide(regClosers[childrenCounter], true);
 
 const addChild = document.getElementById("addChild");
 const childCountEl = document.getElementById("childCount");
@@ -35,18 +37,25 @@ const fields = {
 };
 
 addChild.onclick = () => {
+  hide(regClosers[childrenCounter], true);
   hide(regUnits[++childrenCounter], false);
   requireUnit(fields, childrenCounter, true);
   childCountEl.value = `${childrenCounter + 1}`;
   if (childrenCounter >= 3) hide(addChild.parentElement, true);
 };
 
-for (let i = 1; i < 4; ++i) requireUnit(fields, i, false);
-
-for (let i = 0; i < 4; ++i)
+for (let i = 0; i < 4; ++i) {
+  requireUnit(fields, i, false);
+  regClosers[i].onclick = () => {
+    hide(regUnits[i], true);
+    --childrenCounter;
+    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
+    if (childrenCounter < 3) hide(addChild.parentElement, false);
+  };
   noIds[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
     require(fields.idCodeFields[i], !isRequired);
     require(genderFields[i], isRequired);
     require(birthdayFields[i], isRequired);
   });
+}

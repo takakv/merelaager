@@ -788,6 +788,7 @@ main > section {
 // Register
 .registration-form {
   &__unit {
+    position: relative;
     margin: 2em;
     padding: 2em;
     border-radius: 8px;
@@ -841,6 +842,25 @@ main > section {
           background-color: var(--highlight);
         }
       }
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    background-color: var(--highlight);
+
+    &:hover {
+      cursor: pointer;
+      border: 2px solid var(--primary);
+    }
+
+    &.is-hidden {
+      display: none;
     }
   }
 
