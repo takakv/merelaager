@@ -676,16 +676,12 @@ main > section {
 
 // Payment info
 .payment-info {
-  &__container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    margin: 2em 0 0;
-  }
-
   .info-block {
     margin-bottom: 2em;
-    text-align: center;
+
+    @media screen and (max-width: $tablet-break) {
+      text-align: center;
+    }
 
     &:not(:first-child),
     &:not(:last-child) {
@@ -697,7 +693,13 @@ main > section {
     }
 
     &__content {
+      display: flex;
+      justify-content: space-around;
       list-style: none;
+
+      @media screen and (max-width: $tablet-break) {
+        flex-direction: column;
+      }
     }
   }
 }
