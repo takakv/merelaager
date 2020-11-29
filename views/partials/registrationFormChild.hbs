@@ -56,18 +56,25 @@
                 </select>
             </div>
             <div class="registration-form__field">
-                <label for="yearsAtCamp-{{this}}">Mitmes aasta laagris</label>
-                <input type="number" name="yearsAtCamp-{{this}}" id="yearsAtCamp-{{this}}" min="1" max="12"
-                       placeholder="1-10" class="yearField" required>
+                <label for="newAtCamp-{{this}}">Esimest korda merelaagris?</label>
+                <input type="checkbox" name="newAtCamp-{{this}}" id="newAtCamp-{{this}}" class="newField" value="true">
             </div>
         </div>
+        <p>Elukoht:</p>
         <div class="registration-form__row">
             <div class="registration-form__field">
-                <p>Elukoht:</p>
+                <label for="road-{{this}}">Tänav</label>
+                <input type="text" name="road-{{this}}" id="road-{{this}}" class="roadField" required>
+            </div>
+            <div class="registration-form__field">
+                <label for="index-{{this}}">Sihtnumber</label>
+                <input type="text" name="index-{{this}}" id="index-{{this}}" class="indexField" required>
+            </div>
+            <div class="registration-form__field">
                 <label for="city-{{this}}">Linn</label>
                 <input type="text" name="city-{{this}}" id="city-{{this}}" class="cityField" required>
             </div>
-            <div class="registration-form__field">
+            <!--div class="registration-form__field">
                 <label for="county-{{this}}">Maakond</label>
                 <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField" required>
                 <datalist id="counties">
@@ -87,7 +94,7 @@
                     <option value="Lääne"></option>
                     <option value="Hiiu"></option>
                 </datalist>
-            </div>
+            </div-->
             <div class="registration-form__field">
                 <label for="country-{{this}}">Riik</label>
                 <input type="text" name="country-{{this}}" id="country-{{this}}" value="Eesti" class="countryField"

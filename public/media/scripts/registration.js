@@ -30,9 +30,9 @@ const fields = {
   idCodeFields: document.getElementsByClassName("idCodeField"),
   shiftFields: document.getElementsByClassName("shiftField"),
   shirtSizeFields: document.getElementsByClassName("shirtSizeField"),
-  yearFields: document.getElementsByClassName("yearField"),
+  roadFields: document.getElementsByClassName("roadField"),
   cityFields: document.getElementsByClassName("cityField"),
-  countyFields: document.getElementsByClassName("countyField"),
+  indexFields: document.getElementsByClassName("indexField"),
   countryFields: document.getElementsByClassName("countryField"),
 };
 

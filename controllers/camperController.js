@@ -6,6 +6,7 @@ exports.create = (req, res) => {
   let campers = [];
   for (let i = 1; i < childCount + 1; ++i) {
     const hasIdCode = req.body[`hasIdCode-${i}`] !== "false";
+    const isRookie = req.body[`newAtCAmp-${i}`] === "true";
     let idCode = req.body[`idCode-${i}`];
     let gender = req.body[`gender-${i}`];
     let birthday = req.body[`bDay-${i}`];
@@ -38,10 +39,12 @@ exports.create = (req, res) => {
       isikukood: idCode,
       sugu: gender,
       synnipaev: birthday,
-      aasta_laagris: req.body[`yearsAtCamp-${i}`],
+      vana_olija: !isRookie,
       vahetus: req.body[`vahetus-${i}`],
       ts_suurus: req.body[`shirtsize-${i}`],
+      tanav: req.body[`road-${i}`],
       linn: req.body[`city-${i}`],
+      indeks: req.body[`index-${i}`],
       maakond: req.body[`county-${i}`],
       riik: req.body[`country-${i}`],
       kontakt_nimi: req.body.guardian_name,

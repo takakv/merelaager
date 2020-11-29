@@ -26,10 +26,10 @@ module.exports = (sequelize) => {
         type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      aasta_laagris: {
-        type: DataTypes.TINYINT,
+      vana_olija: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 1,
+        defaultValue: true,
       },
       vahetus: {
         type: DataTypes.ENUM("1v", "2v", "3v", "4v"),
@@ -39,13 +39,21 @@ module.exports = (sequelize) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      tanav: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       linn: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      indeks: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
       maakond: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       riik: {
         type: DataTypes.TEXT,
