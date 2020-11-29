@@ -1,0 +1,112 @@
+{{#times 4}}
+    <div class="registration-form__unit is-hidden">
+        <div class="registration-form__close"></div>
+        <div class="registration-form__row has-after">
+            <div class="registration-form__field">
+                <label for="name-{{this}}">Nimi</label>
+                <input type="text" name="name-{{this}}" id="name-{{this}}" class="nameField" required>
+            </div>
+            <div class="registration-form__field">
+                <label for="idCode-{{this}}">Isikukood</label>
+                <input type="text" name="idCode-{{this}}" id="idCode-{{this}}" class="idCodeField" required
+                       pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
+            </div>
+            <div class="registration-form__field is-hidden">
+                <p>Sugu:</p>
+                <label for="gender-m-{{this}}">Poiss</label>
+                <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M" class="genderField">
+                <label for="gender-f-{{this}}">Tüdruk</label>
+                <input type="radio" name="gender-{{this}}" id="gender-f-{{this}}" value="F">
+            </div>
+            <div class="registration-form__field is-hidden">
+                <label for="bDay-{{this}}">Sünnipäev</label>
+                <input type="date" name="bDay-{{this}}" id="bDay-{{this}}" class="birthdayField">
+            </div>
+        </div>
+        <div class="registration-form__row registration-form__row--minor">
+            <div class="registration-form__field">
+                <label for="hasIdCode-{{this}}">Ei soovi registreerida isikukoodiga</label>
+                <input type="checkbox" name="hasIdCode-{{this}}" id="hasIdCode-{{this}}" class="hasIdCode"
+                       value="false">
+            </div>
+        </div>
+        <div class="registration-form__row has-after">
+            <div class="registration-form__field">
+                <label for="vahetus-{{this}}">Laagrivahetus</label>
+                <select id="vahetus-{{this}}" class="shiftField" name="vahetus-{{this}}" required>
+                    <option value="">--Valige vahetus--</option>
+                    <option value="1v">I vahetus</option>
+                    <option value="2v">II vahetus</option>
+                    <option value="3v">III vahetus</option>
+                    <option value="4v">IV vahetus</option>
+                </select>
+            </div>
+            <div class="registration-form__field">
+                <label for="shirtsize-{{this}}">T-särgi suurus</label>
+                <select id="shirtsize-{{this}}" class="shirtSizeField" name="shirtsize-{{this}}" required>
+                    <option value="">--Valige suurus--</option>
+                    <option value="118/128">118/128</option>
+                    <option value="130/140">130/140</option>
+                    <option value="142/152">142/152</option>
+                    <option value="152/164">152/164</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                </select>
+            </div>
+            <div class="registration-form__field">
+                <label for="newAtCamp-{{this}}">Esimest korda merelaagris?</label>
+                <input type="checkbox" name="newAtCamp-{{this}}" id="newAtCamp-{{this}}" class="newField" value="true">
+            </div>
+        </div>
+        <div class="registration-form__row registration-form__row--minor">
+            <div class="registration-form__field">
+                <label for="emsa-{{this}}">Laps registreerib läbi EMSA</label>
+                <input type="checkbox" name="emsa-{{this}}" id="emsa-{{this}}" class="isEmsa"
+                       value="true">
+            </div>
+        </div>
+        <p>Elukoht:</p>
+        <div class="registration-form__row">
+            <div class="registration-form__field">
+                <label for="road-{{this}}">Tänav</label>
+                <input type="text" name="road-{{this}}" id="road-{{this}}" class="roadField" required>
+            </div>
+            <div class="registration-form__field">
+                <label for="index-{{this}}">Sihtnumber</label>
+                <input type="text" name="index-{{this}}" id="index-{{this}}" class="indexField" required>
+            </div>
+            <div class="registration-form__field">
+                <label for="city-{{this}}">Linn</label>
+                <input type="text" name="city-{{this}}" id="city-{{this}}" class="cityField" required>
+            </div>
+            <!--div class="registration-form__field">
+                <label for="county-{{this}}">Maakond</label>
+                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField" required>
+                <datalist id="counties">
+                    <option value="Harju"></option>
+                    <option value="Tartu"></option>
+                    <option value="Ida-Viru"></option>
+                    <option value="Pärnu"></option>
+                    <option value="Lääne-Viru"></option>
+                    <option value="Viljandi"></option>
+                    <option value="Rapla"></option>
+                    <option value="Võru"></option>
+                    <option value="Saare"></option>
+                    <option value="Jõgeva"></option>
+                    <option value="Järva"></option>
+                    <option value="Valga"></option>
+                    <option value="Põlva"></option>
+                    <option value="Lääne"></option>
+                    <option value="Hiiu"></option>
+                </datalist>
+            </div-->
+            <div class="registration-form__field">
+                <label for="country-{{this}}">Riik</label>
+                <input type="text" name="country-{{this}}" id="country-{{this}}" value="Eesti" class="countryField"
+                       required>
+            </div>
+        </div>
+    </div>
+{{/times}}
