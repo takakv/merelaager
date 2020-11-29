@@ -60,6 +60,10 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: "Eesti",
       },
+      emsa: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
       kontakt_nimi: {
         type: DataTypes.TEXT,
         allowNull: false,

@@ -30,7 +30,7 @@
                        value="false">
             </div>
         </div>
-        <div class="registration-form__row">
+        <div class="registration-form__row has-after">
             <div class="registration-form__field">
                 <label for="vahetus-{{this}}">Laagrivahetus</label>
                 <select id="vahetus-{{this}}" class="shiftField" name="vahetus-{{this}}" required>
@@ -58,6 +58,13 @@
             <div class="registration-form__field">
                 <label for="newAtCamp-{{this}}">Esimest korda merelaagris?</label>
                 <input type="checkbox" name="newAtCamp-{{this}}" id="newAtCamp-{{this}}" class="newField" value="true">
+            </div>
+        </div>
+        <div class="registration-form__row registration-form__row--minor">
+            <div class="registration-form__field">
+                <label for="emsa-{{this}}">Laps registreerib läbi EMSA</label>
+                <input type="checkbox" name="emsa-{{this}}" id="emsa-{{this}}" class="isEmsa"
+                       value="true">
             </div>
         </div>
         <p>Elukoht:</p>

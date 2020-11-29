@@ -7,6 +7,7 @@ exports.create = (req, res) => {
   for (let i = 1; i < childCount + 1; ++i) {
     const hasIdCode = req.body[`hasIdCode-${i}`] !== "false";
     const isRookie = req.body[`newAtCAmp-${i}`] === "true";
+    const isEmsa = req.body[`emsa-${i}`] === "true";
     let idCode = req.body[`idCode-${i}`];
     let gender = req.body[`gender-${i}`];
     let birthday = req.body[`bDay-${i}`];
@@ -47,6 +48,7 @@ exports.create = (req, res) => {
       indeks: req.body[`index-${i}`],
       maakond: req.body[`county-${i}`],
       riik: req.body[`country-${i}`],
+      emsa: isEmsa,
       kontakt_nimi: req.body.guardian_name,
       kontakt_number: req.body.guardian_phone,
       kontakt_email: req.body.guardian_email,
