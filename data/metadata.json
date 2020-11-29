@@ -34,5 +34,9 @@
       "title": "Korduma kippuvad küsimused",
       "dscription": "Küsimused ja vastused."
     }
+  },
+  "broneeri": {
+    "title": "Laagrikoha broneerimine",
+    "description": ""
   }
 }
