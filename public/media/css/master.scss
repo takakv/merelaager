@@ -832,6 +832,10 @@ main > section {
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.1);
 
+    @media screen and (max-width: $tablet-break) {
+      margin: 0;
+    }
+
     &--mt0 {
       margin-top: 0;
     }
@@ -934,6 +938,7 @@ main > section {
 
   &__row {
     display: flex;
+    flex-wrap: wrap;
     margin-bottom: 1.5rem;
 
     &:last-child {
@@ -995,6 +1000,28 @@ main > section {
 
     &.is-hidden {
       display: none;
+    }
+
+    @media screen and (max-width: $tablet-break) {
+      align-items: flex-start;
+      flex-direction: column;
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 1rem;
+
+      input {
+        width: 100%;
+      }
+
+      input[type="checkbox"] {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    &--row {
+      align-items: center;
+      flex-direction: row;
     }
   }
 }
