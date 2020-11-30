@@ -81,6 +81,16 @@ app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");
 });
 
+app.use((req, res, next) => {
+  res.status(404).render("404", {
+    layout: "metadata",
+    title: "Kaardistamata asukoht",
+    description: "Asute tundmatutes vetes. See leht on kaardistamata...",
+    url_path: "404/",
+    body_class: "errorpage",
+  });
+});
+
 const port = process.env.PORT;
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

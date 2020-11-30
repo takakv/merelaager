@@ -227,7 +227,9 @@ a {
 .c-btn {
   font-size: 1rem;
   padding: 1em 1.5em;
-  transition: all 0.2s ease-in-out;
+  transition-timing-function: ease-in-out;
+  transition-duration: 0.2s;
+  transition-property: background-color, box-shadow;
   color: inherit;
   border: 2px solid var(--primary);
   border-radius: 28px;
@@ -237,6 +239,15 @@ a {
     cursor: pointer;
     background-color: rgba(var(--primary-rgb), 0.05);
     box-shadow: 0 8px 15px rgba(var(--primary-rgb), 0.1);
+  }
+
+  &--white {
+    border-color: #fff8;
+
+    &:hover {
+      background-color: #fff2;
+      box-shadow: none;
+    }
   }
 }
 
@@ -260,9 +271,57 @@ a {
   }
 }
 
+// 404
+.errorpage {
+  color: #fff;
+  background-color: #55629a;
+  background-image: url(../img/404_bg.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  main {
+    width: 100vw;
+    min-height: 100vh;
+  }
+
+  .site-error {
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    text-align: center;
+    @media screen and (max-width: $tablet-break) {
+      top: 25%;
+    }
+  }
+
+  h3 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    @media screen and (max-width: $tablet-break) {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    font-size: 2.5rem;
+    @media screen and (max-width: $tablet-break) {
+      font-size: 1.5rem;
+      margin-top: 0.75em;
+    }
+  }
+
+  a {
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 3em;
+  }
+}
+
 // Primary navigation
 .header {
-  padding-top: 30px;
+  padding-top: 1em;
+  padding-bottom: 1.5em;
 }
 
 .primary-nav {
@@ -352,7 +411,7 @@ a {
 
 // Landing
 main > section {
-  padding: 30px 0;
+  padding: 1em 0;
 }
 
 .landing {
