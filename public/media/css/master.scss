@@ -833,7 +833,7 @@ main > section {
     box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.1);
 
     @media screen and (max-width: $tablet-break) {
-      margin: 0;
+      margin: 0 0 2em;
     }
 
     &--mt0 {
