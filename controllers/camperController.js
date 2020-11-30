@@ -43,6 +43,7 @@ exports.create = (req, res) => {
       vana_olija: !isRookie,
       vahetus: req.body[`vahetus-${i}`],
       ts_suurus: req.body[`shirtsize-${i}`],
+      lisainfo: req.body[`addendum-${i}`],
       tanav: req.body[`road-${i}`],
       linn: req.body[`city-${i}`],
       indeks: req.body[`index-${i}`],

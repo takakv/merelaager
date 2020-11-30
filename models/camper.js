@@ -39,6 +39,9 @@ module.exports = (sequelize) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      lisainfo: {
+        type: DataTypes.TEXT,
+      },
       tanav: {
         type: DataTypes.TEXT,
         allowNull: false,

@@ -959,12 +959,19 @@ main > section {
       margin-right: 0;
     }
 
+    &--full {
+      align-items: flex-start;
+      flex-direction: column;
+      width: 100%;
+    }
+
     p,
     label {
       margin-right: 0.25em;
     }
 
-    input {
+    input,
+    textarea {
       padding: 0.5rem;
       border: 0;
       border-top: 3px solid transparent;
@@ -976,6 +983,14 @@ main > section {
       &:invalid {
         //border-bottom-color: var(--highlight);
       }
+    }
+
+    .full-width {
+      display: block;
+      min-width: 100%;
+      max-width: 100%;
+      min-height: 3rem;
+      max-height: 6rem;
     }
 
     &.is-hidden {
