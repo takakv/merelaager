@@ -13,7 +13,7 @@
 // Mixins and SCSS variables
 $phone-break: 500px;
 $tablet-break: 700px;
-$max-width: 1000px;
+$max-width: 1100px;
 $hero-height: 850px;
 
 // Resets and defaults
@@ -147,11 +147,10 @@ a {
 
 // Objects
 .o-container {
+  width: 90%;
+  min-width: 300px;
   max-width: $max-width;
   margin: auto;
-  @media screen and (max-width: $tablet-break) {
-    padding: 0 30px;
-  }
 }
 
 .o-grid {
