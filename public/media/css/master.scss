@@ -10,10 +10,13 @@
   --highlight-rgb: 215, 89, 30;
 }
 
+:root {
+  --page-max-width: 1100px;
+}
+
 // Mixins and SCSS variables
 $phone-break: 500px;
 $tablet-break: 700px;
-$max-width: 1100px;
 $hero-height: 850px;
 
 // Resets and defaults
@@ -149,7 +152,7 @@ a {
 .o-container {
   width: 90%;
   min-width: 300px;
-  max-width: $max-width;
+  max-width: var(--page-max-width);
   margin: auto;
 }
 
