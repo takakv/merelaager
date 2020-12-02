@@ -27,7 +27,7 @@ const calculatePrice = (children) => {
 
 const displayPrice = (data) => {
   const price = calculatePrice(data);
-  priceDisplay.innerText = price > 0 ? price : "0";
+  priceDisplay.innerText = price > 0 ? price : "---";
 };
 
 // --- Program
@@ -74,15 +74,6 @@ const requiredFields = [
 // Require fields of first card.
 requireUnit(requiredFields, 0, true);
 
-// Add fields.
-addChild.onclick = () => {
-  hide(regClosers[childrenCounter], true);
-  hide(regUnits[++childrenCounter], false);
-  requireUnit(requiredFields, childrenCounter, true);
-  childCountEl.value = `${childrenCounter + 1}`;
-  if (childrenCounter >= 3) hide(addChild.parentElement, true);
-};
-
 // Check for idCode field state.
 for (let i = 0; i < 4; ++i) {
   fields.useId[i].addEventListener("change", (event) => {
@@ -92,17 +83,6 @@ for (let i = 0; i < 4; ++i) {
       require(field[i], isRequired);
     });
   });
-}
-
-// Require fields for active form cards.
-for (let i = 1; i < 4; ++i) {
-  regClosers[i].onclick = () => {
-    hide(regUnits[i], true);
-    requireUnit(requiredFields, childrenCounter, false);
-    --childrenCounter;
-    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
-    if (childrenCounter < 3) hide(addChild.parentElement, false);
-  };
 }
 
 // Display EMSA notice to members.
@@ -127,9 +107,11 @@ emsaFields.forEach((field) => {
 });
 
 const priceDisplay = document.getElementById("payment-total");
+const preDisplay = document.getElementById("pre-total");
 
 const fullPrice = 290;
 const shortPrice = 200;
+let prePrice = 50;
 
 const shiftPrices = {
   "1v": shortPrice,
@@ -160,5 +142,39 @@ for (let i = 0; i < 4; ++i) {
   city.onblur = () => {
     childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
     displayPrice(childrenPrices);
+  };
+}
+
+// Add cards.
+addChild.onclick = () => {
+  // Price logic.
+  prePrice += 50;
+  preDisplay.innerText = prePrice;
+
+  // Display logic.
+  hide(regClosers[childrenCounter], true);
+  hide(regUnits[++childrenCounter], false);
+  if (childrenCounter >= 3) hide(addChild.parentElement, true);
+
+  // Requirement logic.
+  requireUnit(requiredFields, childrenCounter, true);
+  childCountEl.value = `${childrenCounter + 1}`;
+};
+
+// Remove cards.
+for (let i = 1; i < 4; ++i) {
+  regClosers[i].onclick = () => {
+    // Price logic.
+    prePrice -= 50;
+    preDisplay.innerText = prePrice;
+
+    // Requirement logic.
+    requireUnit(requiredFields, childrenCounter, false);
+
+    // Display logic.
+    hide(regUnits[i], true);
+    --childrenCounter;
+    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
+    if (childrenCounter < 3) hide(addChild.parentElement, false);
   };
 }
