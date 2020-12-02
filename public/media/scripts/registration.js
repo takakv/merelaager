@@ -1,3 +1,6 @@
+// --- Imports
+import { ChildPrice } from "./classes/ChildPrice.js";
+
 // --- Functions
 const hide = (element, isHidden) => {
   if (isHidden) element.classList.add("is-hidden");
@@ -11,6 +14,21 @@ const require = (element, isRequired) => {
 
 const requireUnit = (units, index, isRequired) =>
   units.forEach((unit) => (unit[index].required = isRequired));
+
+const calculatePrice = (children) => {
+  let price = 0;
+  children.forEach((child) => {
+    price += child.shiftPrice;
+    if (child.isFromTallinn) price -= 20;
+    else if (child.isOld) price -= 10;
+  });
+  return price;
+};
+
+const displayPrice = (data) => {
+  const price = calculatePrice(data);
+  priceDisplay.innerText = price > 0 ? price : "0";
+};
 
 // --- Program
 const regUnits = document.getElementsByClassName("registration-form__unit");
@@ -113,24 +131,12 @@ const priceDisplay = document.getElementById("payment-total");
 const fullPrice = 290;
 const shortPrice = 200;
 
-shiftPrices = {
+const shiftPrices = {
   "1v": shortPrice,
   "2v": fullPrice,
   "3v": fullPrice,
   "4v": fullPrice,
 };
-
-class ChildPrice {
-  shiftPrice;
-  isFromTallinn;
-  isOld;
-
-  constructor() {
-    this.shiftPrice = 0;
-    this.isFromTallinn = false;
-    this.isOld = false;
-  }
-}
 
 const childrenPrices = [
   new ChildPrice(),
@@ -139,36 +145,20 @@ const childrenPrices = [
   new ChildPrice(),
 ];
 
-
 for (let i = 0; i < 4; ++i) {
   const shift = fields.shift[i];
   const isNew = fields.isNew[i];
   const city = fields.city[i];
   shift.onchange = () => {
     childrenPrices[i].shiftPrice = shiftPrices[shift.value];
-    displayPrice();
+    displayPrice(childrenPrices);
   };
   isNew.onchange = () => {
     childrenPrices[i].isOld = !isNew.checked;
-    displayPrice();
+    displayPrice(childrenPrices);
   };
   city.onblur = () => {
     childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
-    displayPrice();
+    displayPrice(childrenPrices);
   };
 }
-
-const calculatePrice = () => {
-  let price = 0;
-  childrenPrices.forEach((child) => {
-    price += child.shiftPrice;
-    if (child.isFromTallinn) price -= 20;
-    else if (child.isOld) price -= 10;
-  });
-  return price;
-};
-
-const displayPrice = () => {
-  const price = calculatePrice();
-  priceDisplay.innerText = price > 0 ? price : "0";
-};
