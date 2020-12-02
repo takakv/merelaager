@@ -1,3 +1,4 @@
+// --- Functions
 const hide = (element, isHidden) => {
   if (isHidden) element.classList.add("is-hidden");
   else element.classList.remove("is-hidden");
@@ -9,8 +10,9 @@ const require = (element, isRequired) => {
 };
 
 const requireUnit = (units, index, isRequired) =>
-  Object.values(units).forEach((unit) => (unit[index].required = isRequired));
+  units.forEach((unit) => (unit[index].required = isRequired));
 
+// --- Program
 const regUnits = document.getElementsByClassName("registration-form__unit");
 const regClosers = document.getElementsByClassName("registration-form__close");
 
@@ -20,50 +22,71 @@ hide(regClosers[childrenCounter], true);
 
 const addChild = document.getElementById("addChild");
 const childCountEl = document.getElementById("childCount");
-// These fields have their own checkbox logic.
-const noIds = document.getElementsByClassName("hasIdCode");
-const genderFields = document.getElementsByClassName("genderField");
-const birthdayFields = document.getElementsByClassName("birthdayField");
-// These fields have global required logic.
+
 const fields = {
-  nameFields: document.getElementsByClassName("nameField"),
-  idCodeFields: document.getElementsByClassName("idCodeField"),
-  shiftFields: document.getElementsByClassName("shiftField"),
-  shirtSizeFields: document.getElementsByClassName("shirtSizeField"),
-  roadFields: document.getElementsByClassName("roadField"),
-  cityFields: document.getElementsByClassName("cityField"),
-  indexFields: document.getElementsByClassName("indexField"),
-  countryFields: document.getElementsByClassName("countryField"),
+  name: document.getElementsByClassName("nameField"),
+  idCode: document.getElementsByClassName("idCodeField"),
+  useId: document.getElementsByClassName("useIdCode"),
+  gender: document.getElementsByClassName("genderField"),
+  birthday: document.getElementsByClassName("birthdayField"),
+  shift: document.getElementsByClassName("shiftField"),
+  shirtSize: document.getElementsByClassName("shirtSizeField"),
+  road: document.getElementsByClassName("roadField"),
+  city: document.getElementsByClassName("cityField"),
+  index: document.getElementsByClassName("indexField"),
+  country: document.getElementsByClassName("countryField"),
 };
 
+// Fields whose requirement setting depends on variables.
+const statefulFields = [fields.gender, fields.birthday];
+
+// Fields to apply general required logic to.
+const requiredFields = [
+  fields.name,
+  fields.idCode,
+  fields.shift,
+  fields.shirtSize,
+  fields.road,
+  fields.city,
+  fields.index,
+  fields.country,
+];
+
+// Require fields of first card.
+requireUnit(requiredFields, 0, true);
+
+// Add fields.
 addChild.onclick = () => {
   hide(regClosers[childrenCounter], true);
   hide(regUnits[++childrenCounter], false);
-  requireUnit(fields, childrenCounter, true);
+  requireUnit(requiredFields, childrenCounter, true);
   childCountEl.value = `${childrenCounter + 1}`;
   if (childrenCounter >= 3) hide(addChild.parentElement, true);
 };
 
+// Check for idCode field state.
 for (let i = 0; i < 4; ++i) {
-  noIds[i].addEventListener("change", (event) => {
+  fields.useId[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
-    require(fields.idCodeFields[i], !isRequired);
-    require(genderFields[i], isRequired);
-    require(birthdayFields[i], isRequired);
+    require(fields.idCode[i], !isRequired);
+    statefulFields.forEach((field) => {
+      require(field[i], isRequired);
+    });
   });
 }
 
+// Require fields for active form cards.
 for (let i = 1; i < 4; ++i) {
-  requireUnit(fields, i, false);
   regClosers[i].onclick = () => {
     hide(regUnits[i], true);
-    requireUnit(fields, childrenCounter, false);
+    requireUnit(requiredFields, childrenCounter, false);
     --childrenCounter;
     if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
     if (childrenCounter < 3) hide(addChild.parentElement, false);
   };
 }
 
+// Display EMSA notice to members.
 const emsaNotice = document.getElementById("emsa-notice");
 const emsaFields = [...document.getElementsByClassName("isEmsa")];
 let checkedCount = 0;
