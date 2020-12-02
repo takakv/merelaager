@@ -31,6 +31,7 @@ const fields = {
   birthday: document.getElementsByClassName("birthdayField"),
   shift: document.getElementsByClassName("shiftField"),
   shirtSize: document.getElementsByClassName("shirtSizeField"),
+  isNew: document.getElementsByClassName("newField"),
   road: document.getElementsByClassName("roadField"),
   city: document.getElementsByClassName("cityField"),
   index: document.getElementsByClassName("indexField"),
@@ -106,3 +107,68 @@ emsaFields.forEach((field) => {
     }
   };
 });
+
+const priceDisplay = document.getElementById("payment-total");
+
+const fullPrice = 290;
+const shortPrice = 200;
+
+shiftPrices = {
+  "1v": shortPrice,
+  "2v": fullPrice,
+  "3v": fullPrice,
+  "4v": fullPrice,
+};
+
+class ChildPrice {
+  shiftPrice;
+  isFromTallinn;
+  isOld;
+
+  constructor() {
+    this.shiftPrice = 0;
+    this.isFromTallinn = false;
+    this.isOld = false;
+  }
+}
+
+const childrenPrices = [
+  new ChildPrice(),
+  new ChildPrice(),
+  new ChildPrice(),
+  new ChildPrice(),
+];
+
+
+for (let i = 0; i < 4; ++i) {
+  const shift = fields.shift[i];
+  const isNew = fields.isNew[i];
+  const city = fields.city[i];
+  shift.onchange = () => {
+    childrenPrices[i].shiftPrice = shiftPrices[shift.value];
+    displayPrice();
+  };
+  isNew.onchange = () => {
+    childrenPrices[i].isOld = !isNew.checked;
+    displayPrice();
+  };
+  city.onblur = () => {
+    childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
+    displayPrice();
+  };
+}
+
+const calculatePrice = () => {
+  let price = 0;
+  childrenPrices.forEach((child) => {
+    price += child.shiftPrice;
+    if (child.isFromTallinn) price -= 20;
+    else if (child.isOld) price -= 10;
+  });
+  return price;
+};
+
+const displayPrice = () => {
+  const price = calculatePrice();
+  priceDisplay.innerText = price > 0 ? price : "0";
+};
