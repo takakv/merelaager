@@ -17,6 +17,7 @@
 // Mixins and SCSS variables
 $phone-break: 500px;
 $tablet-break: 700px;
+$laptop-break: 900px;
 $hero-height: 850px;
 
 // Resets and defaults
@@ -310,6 +311,38 @@ a {
 
     &:nth-of-type(2n) {
       grid-column: 7 / span 4;
+    }
+  }
+}
+
+.c-shift-card {
+  grid-column: 1 / span 12;
+
+  @media screen and (min-width: 500px) {
+    grid-column: 2 / span 10;
+  }
+
+  &:nth-of-type(2n + 1) {
+    @media screen and (min-width: 800px) {
+      grid-column: 1 / span 6;
+    }
+    @media screen and (min-width: 900px) {
+      grid-column: 1 / span 5;
+    }
+    @media screen and (min-width: 1100px) {
+      grid-column: 2 / span 4;
+    }
+  }
+
+  &:nth-of-type(2n) {
+    @media screen and (min-width: 800px) {
+      grid-column: 7 / span 6;
+    }
+    @media screen and (min-width: 900px) {
+      grid-column: 8 / span 5;
+    }
+    @media screen and (min-width: 1100px) {
+      grid-column: 8 / span 4;
     }
   }
 }
@@ -722,15 +755,7 @@ main > section {
 }
 
 .dates .details {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
   margin-top: 3em;
-
-  &-card {
-    width: 350px;
-    margin-bottom: 2em;
-  }
 
   &-card__header {
     font-weight: 800;
