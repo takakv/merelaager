@@ -63,3 +63,23 @@ for (let i = 1; i < 4; ++i) {
     if (childrenCounter < 3) hide(addChild.parentElement, false);
   };
 }
+
+const emsaNotice = document.getElementById("emsa-notice");
+const emsaFields = [...document.getElementsByClassName("isEmsa")];
+let checkedCount = 0;
+emsaFields.forEach((field) => {
+  // Initialisation for cached reloads.
+  if (field.checked) {
+    ++checkedCount;
+    hide(emsaNotice, false);
+  }
+  field.onclick = () => {
+    if (field.checked) {
+      hide(emsaNotice, false);
+      ++checkedCount;
+    } else {
+      --checkedCount;
+      if (!checkedCount) hide(emsaNotice, true);
+    }
+  };
+});

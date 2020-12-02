@@ -148,6 +148,10 @@ a {
   }
 }
 
+.is-hidden {
+  display: none !important;
+}
+
 // Objects
 .o-container {
   width: 90%;
@@ -167,6 +171,7 @@ a {
 .u-banner {
   display: block;
   width: 100%;
+  margin: 1em 0;
   padding: 0.25em 1em;
   border-left: 0.25em solid #222;
   background-color: rgba(150, 150, 150, 0.1);
@@ -911,6 +916,7 @@ main > section {
     }
 
     &.is-hidden {
+      display: block !important;
       overflow: hidden;
       height: 0;
       margin: 0;
@@ -1000,10 +1006,6 @@ main > section {
       border-radius: 4px;
       background-color: var(--primary);
     }
-
-    &.is-hidden {
-      display: none;
-    }
   }
 
   &__row {
@@ -1066,10 +1068,6 @@ main > section {
       max-width: 100%;
       min-height: 3rem;
       max-height: 6rem;
-    }
-
-    &.is-hidden {
-      display: none;
     }
 
     @media screen and (max-width: $tablet-break) {
