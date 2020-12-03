@@ -39,6 +39,9 @@ module.exports = (sequelize) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      lisainfo: {
+        type: DataTypes.TEXT,
+      },
       tanav: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -53,7 +56,6 @@ module.exports = (sequelize) => {
       },
       maakond: {
         type: DataTypes.TEXT,
-        allowNull: true,
       },
       riik: {
         type: DataTypes.TEXT,
@@ -78,7 +80,6 @@ module.exports = (sequelize) => {
       },
       varu_tel: {
         type: DataTypes.TEXT,
-        defaultValue: "",
       },
     },
     {

@@ -6,10 +6,13 @@ const fs = require("fs");
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 meta = meta.broneeri;
 
+const url_prefix = "registreerimine/";
+
 router.get("/", (req, res, next) => {
   res.render("registreerimine", {
     title: meta.title,
     description: meta.description,
+    url_path: url_prefix,
     body_class: "registration",
     script_path: "/media/scripts/registration.js",
   });

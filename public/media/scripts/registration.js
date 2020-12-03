@@ -1,3 +1,7 @@
+// --- Imports
+import { ChildPrice } from "./classes/ChildPrice.js";
+
+// --- Functions
 const hide = (element, isHidden) => {
   if (isHidden) element.classList.add("is-hidden");
   else element.classList.remove("is-hidden");
@@ -9,8 +13,24 @@ const require = (element, isRequired) => {
 };
 
 const requireUnit = (units, index, isRequired) =>
-  Object.values(units).forEach((unit) => (unit[index].required = isRequired));
+  units.forEach((unit) => (unit[index].required = isRequired));
 
+const calculatePrice = (children) => {
+  let price = 0;
+  children.forEach((child) => {
+    price += child.shiftPrice;
+    if (child.isFromTallinn) price -= 20;
+    else if (child.isOld) price -= 10;
+  });
+  return price;
+};
+
+const displayPrice = (data) => {
+  const price = calculatePrice(data);
+  priceDisplay.innerText = price > 0 ? price : "---";
+};
+
+// --- Program
 const regUnits = document.getElementsByClassName("registration-form__unit");
 const regClosers = document.getElementsByClassName("registration-form__close");
 
@@ -20,44 +40,139 @@ hide(regClosers[childrenCounter], true);
 
 const addChild = document.getElementById("addChild");
 const childCountEl = document.getElementById("childCount");
-// These fields have their own checkbox logic.
-const noIds = document.getElementsByClassName("hasIdCode");
-const genderFields = document.getElementsByClassName("genderField");
-const birthdayFields = document.getElementsByClassName("birthdayField");
-// These fields have global required logic.
+
 const fields = {
-  nameFields: document.getElementsByClassName("nameField"),
-  idCodeFields: document.getElementsByClassName("idCodeField"),
-  shiftFields: document.getElementsByClassName("shiftField"),
-  shirtSizeFields: document.getElementsByClassName("shirtSizeField"),
-  roadFields: document.getElementsByClassName("roadField"),
-  cityFields: document.getElementsByClassName("cityField"),
-  indexFields: document.getElementsByClassName("indexField"),
-  countryFields: document.getElementsByClassName("countryField"),
+  name: document.getElementsByClassName("nameField"),
+  idCode: document.getElementsByClassName("idCodeField"),
+  useId: document.getElementsByClassName("useIdCode"),
+  gender: document.getElementsByClassName("genderField"),
+  birthday: document.getElementsByClassName("birthdayField"),
+  shift: document.getElementsByClassName("shiftField"),
+  shirtSize: document.getElementsByClassName("shirtSizeField"),
+  isNew: document.getElementsByClassName("newField"),
+  road: document.getElementsByClassName("roadField"),
+  city: document.getElementsByClassName("cityField"),
+  index: document.getElementsByClassName("indexField"),
+  country: document.getElementsByClassName("countryField"),
 };
 
-addChild.onclick = () => {
-  hide(regClosers[childrenCounter], true);
-  hide(regUnits[++childrenCounter], false);
-  requireUnit(fields, childrenCounter, true);
-  childCountEl.value = `${childrenCounter + 1}`;
-  if (childrenCounter >= 3) hide(addChild.parentElement, true);
-};
+// Fields whose requirement setting depends on variables.
+const statefulFields = [fields.gender, fields.birthday];
 
+// Fields to apply general required logic to.
+const requiredFields = [
+  fields.name,
+  fields.idCode,
+  fields.shift,
+  fields.shirtSize,
+  fields.road,
+  fields.city,
+  fields.index,
+  fields.country,
+];
+
+// Require fields of first card.
+requireUnit(requiredFields, 0, true);
+
+// Check for idCode field state.
 for (let i = 0; i < 4; ++i) {
-  noIds[i].addEventListener("change", (event) => {
+  fields.useId[i].addEventListener("change", (event) => {
     const isRequired = !!event.target.checked;
-    require(fields.idCodeFields[i], !isRequired);
-    require(genderFields[i], isRequired);
-    require(birthdayFields[i], isRequired);
+    require(fields.idCode[i], !isRequired);
+    statefulFields.forEach((field) => {
+      require(field[i], isRequired);
+    });
   });
 }
 
+// Display EMSA notice to members.
+const emsaNotice = document.getElementById("emsa-notice");
+const emsaFields = [...document.getElementsByClassName("isEmsa")];
+let checkedCount = 0;
+emsaFields.forEach((field) => {
+  // Initialisation for cached reloads.
+  if (field.checked) {
+    ++checkedCount;
+    hide(emsaNotice, false);
+  }
+  field.onclick = () => {
+    if (field.checked) {
+      hide(emsaNotice, false);
+      ++checkedCount;
+    } else {
+      --checkedCount;
+      if (!checkedCount) hide(emsaNotice, true);
+    }
+  };
+});
+
+const priceDisplay = document.getElementById("payment-total");
+const preDisplay = document.getElementById("pre-total");
+
+const fullPrice = 290;
+const shortPrice = 200;
+let prePrice = 50;
+
+const shiftPrices = {
+  "1v": shortPrice,
+  "2v": fullPrice,
+  "3v": fullPrice,
+  "4v": fullPrice,
+};
+
+const childrenPrices = [
+  new ChildPrice(),
+  new ChildPrice(),
+  new ChildPrice(),
+  new ChildPrice(),
+];
+
+for (let i = 0; i < 4; ++i) {
+  const shift = fields.shift[i];
+  const isNew = fields.isNew[i];
+  const city = fields.city[i];
+  shift.onchange = () => {
+    childrenPrices[i].shiftPrice = shiftPrices[shift.value];
+    displayPrice(childrenPrices);
+  };
+  isNew.onchange = () => {
+    childrenPrices[i].isOld = !isNew.checked;
+    displayPrice(childrenPrices);
+  };
+  city.onblur = () => {
+    childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
+    displayPrice(childrenPrices);
+  };
+}
+
+// Add cards.
+addChild.onclick = () => {
+  // Price logic.
+  prePrice += 50;
+  preDisplay.innerText = prePrice;
+
+  // Display logic.
+  hide(regClosers[childrenCounter], true);
+  hide(regUnits[++childrenCounter], false);
+  if (childrenCounter >= 3) hide(addChild.parentElement, true);
+
+  // Requirement logic.
+  requireUnit(requiredFields, childrenCounter, true);
+  childCountEl.value = `${childrenCounter + 1}`;
+};
+
+// Remove cards.
 for (let i = 1; i < 4; ++i) {
-  requireUnit(fields, i, false);
   regClosers[i].onclick = () => {
+    // Price logic.
+    prePrice -= 50;
+    preDisplay.innerText = prePrice;
+
+    // Requirement logic.
+    requireUnit(requiredFields, childrenCounter, false);
+
+    // Display logic.
     hide(regUnits[i], true);
-    requireUnit(fields, childrenCounter, false);
     --childrenCounter;
     if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
     if (childrenCounter < 3) hide(addChild.parentElement, false);

@@ -45,6 +45,7 @@ app.get("/meeskond/", (req, res, next) => {
   res.render("meeskond", {
     title: meta.meeskond.title,
     description: meta.meeskond.description,
+    url_path: "meeskond/",
     body_class: "meeskond",
   });
 });
@@ -53,6 +54,7 @@ app.get("/ajalugu/", (req, res, next) => {
   res.render("ajalugu", {
     title: meta.ajalugu.title,
     description: meta.ajalugu.description,
+    url_path: "ajalugu/",
     body_class: "ajalugu",
   });
 });
@@ -61,6 +63,7 @@ app.get("/pildid/", (req, res, next) => {
   res.render("pildid", {
     title: meta.pildid.title,
     description: meta.pildid.description,
+    url_path: "pildid/",
     body_class: "pildid",
   });
 });
@@ -76,6 +79,16 @@ app.use("/registreerimine/", registerRouter);
 
 app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");
+});
+
+app.use((req, res, next) => {
+  res.status(404).render("404", {
+    layout: "metadata",
+    title: "Kaardistamata asukoht",
+    description: "Asute tundmatutes vetes. See leht on kaardistamata...",
+    url_path: "404/",
+    body_class: "errorpage",
+  });
 });
 
 const port = process.env.PORT;

@@ -5,7 +5,7 @@ exports.create = (req, res) => {
   const childCount = parseInt(req.body["childCount"]);
   let campers = [];
   for (let i = 1; i < childCount + 1; ++i) {
-    const hasIdCode = req.body[`hasIdCode-${i}`] !== "false";
+    const hasIdCode = req.body[`useIdCode-${i}`] !== "false";
     const isRookie = req.body[`newAtCAmp-${i}`] === "true";
     const isEmsa = req.body[`emsa-${i}`] === "true";
     let idCode = req.body[`idCode-${i}`];
@@ -43,6 +43,7 @@ exports.create = (req, res) => {
       vana_olija: !isRookie,
       vahetus: req.body[`vahetus-${i}`],
       ts_suurus: req.body[`shirtsize-${i}`],
+      lisainfo: req.body[`addendum-${i}`],
       tanav: req.body[`road-${i}`],
       linn: req.body[`city-${i}`],
       indeks: req.body[`index-${i}`],

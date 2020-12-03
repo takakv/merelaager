@@ -1,13 +1,17 @@
-const newSiteNotice = document.getElementById("newsite-notice");
-const closeNewSiteNotice = document.getElementById("newsite-notice-x");
+const displayNewSiteNotice = true;
 
-const displayNewSiteNotice = localStorage.getItem("hasClosed");
+if (displayNewSiteNotice) {
+  const notice = document.getElementById("newsite-notice");
+  const closeNotice = document.getElementById("newsite-notice-x");
 
-if (!displayNewSiteNotice) {
-  newSiteNotice.classList.add("is-active");
+  const displayNotice = localStorage.getItem("hasClosed");
+
+  if (!displayNotice) {
+    notice.classList.add("is-active");
+  }
+
+  closeNotice.onclick = () => {
+    notice.classList.remove("is-active");
+    localStorage.setItem("hasClosed", "true");
+  };
 }
-
-closeNewSiteNotice.onclick = () => {
-  newSiteNotice.classList.remove("is-active");
-  localStorage.setItem("hasClosed", "true");
-};
