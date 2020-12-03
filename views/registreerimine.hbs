@@ -1,10 +1,22 @@
+<section class="">
+    <div class="o-container">
+        <h3 class="c-section-heading">Viited</h3>
+        <ul class="o-grid u-list-blank u-text-center">
+            <li class="c-link-card">
+                <a href="/info/vahetused/">Vahetused ja broneerimine</a>
+            </li>
+            <li class="c-link-card">
+                <a href="/info/maksmine/">Hinnad ja maksmine</a>
+            </li>
+        </ul>
+    </div>
+</section>
 <section class="registration">
     <div class="o-container">
-        <h3 class="section-title">Registreerimine</h3>
+        <h3 class="c-section-heading">Registreerimine</h3>
         <div class="u-banner u-banner--info">
-            <p>Me avame registreerimise 1. jaanuaril 2021 kell 12:00 ja sulgeme selle siis, kui kõik kohad (poiste ja
-                tüdrukute) on täis.
-                Me ei võta enam vastu registreerimistaotlusi e-posti teel.</p>
+            <p>Registreerimine algab 1. jaanuaril 2021 kell 12.00 ja lõpeb siis, kui kõik kohad on täis. E-posti teel me
+                enam registreerimistaotlusi vastu ei võta.</p>
         </div>
         <form class="registration-form" action="/registreerimine/register/" method="post">
             <h4>Laagrilaps</h4>
@@ -29,7 +41,7 @@
                         <input type="tel" name="guardian_phone" id="guardian_phone" required>
                     </div>
                     <div class="registration-form__field">
-                        <label for="guardian_email">Email</label>
+                        <label for="guardian_email">E-post</label>
                         <input type="email" name="guardian_email" id="guardian_email" required>
                     </div>
                 </div>
@@ -38,15 +50,20 @@
                         <label for="alt_phone">Varutelefon</label>
                         <input type="tel" name="alt_phone" id="alt_phone">
                     </div>
-                    <div class="registration-form__field">
+                    <div class="registration-form__field registration-form__field--row">
                         <label for="disclaimer">Nõustun laagri
                             <a href="/info/laagrist/#kodukord" class="t-visible">kodukorraga</a>.</label>
                         <input type="checkbox" id="disclaimer" required>
                     </div>
                 </div>
             </div>
+            <div id="emsa-notice" class="u-banner u-banner--info is-hidden">
+                <p>Palun andke ka EMSA-le teada, et registreerite lapse(d) merelaagrisse.</p>
+            </div>
             <input type="number" name="childCount" value="1" id="childCount" hidden readonly required>
-            <button name="submit" value="submit" class="c-btn">Registreeri</button>
+            <button name="submit" value="submit" class="c-btn">Registreerin</button>
+            <p class="u-inline-block">Broneerimistasu: <span id="pre-total">50</span> €
+                | Kogusumma: <span id="payment-total">---</span> €</p>
         </form>
     </div>
 </section>
