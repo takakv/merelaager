@@ -1,4 +1,4 @@
-const displayNewSiteNotice = false;
+const displayNewSiteNotice = true;
 
 if (displayNewSiteNotice) {
   const notice = document.getElementById("newsite-notice");
