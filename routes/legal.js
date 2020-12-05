@@ -25,4 +25,13 @@ router.get("/kasutajatingimused/", (req, res, next) => {
   });
 });
 
+router.get("/isikuandmed/", (req, res, next) => {
+  res.render("privacy", {
+    title: meta.vahetused.title,
+    description: meta.vahetused.description,
+    url_path: url_prefix + "isikuandmed/",
+    body_class: "",
+  });
+});
+
 module.exports = router;

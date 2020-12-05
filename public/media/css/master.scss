@@ -820,6 +820,7 @@ main > section {
   &__legal {
     font-size: 0.825rem;
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-around;
     margin-top: 2em;
   }
