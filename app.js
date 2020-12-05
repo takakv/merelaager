@@ -77,6 +77,9 @@ app.use("/kambuus/", adminRouter);
 const registerRouter = require("./routes/register");
 app.use("/registreerimine/", registerRouter);
 
+const legal = require("./routes/legal");
+app.use("/oiguslik/", legal);
+
 app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");
 });
