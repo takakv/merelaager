@@ -1130,3 +1130,21 @@ main > section {
     }
   }
 }
+
+// Legal
+
+.legal {
+  h4 {
+    font-size: 1.25rem;
+    margin-top: 2em;
+  }
+
+  p,
+  li {
+    margin-top: 0.825em;
+  }
+
+  li {
+    margin-left: 2em;
+  }
+}

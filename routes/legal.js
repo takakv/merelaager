@@ -8,7 +8,7 @@ meta = meta.info;
 const url_prefix = "oiguslik/";
 
 router.get("/", (req, res, next) => {
-  res.render("oiguslik", {
+  res.render("legal", {
     title: meta.title,
     description: meta.description,
     url_path: url_prefix,
@@ -21,7 +21,7 @@ router.get("/kasutajatingimused/", (req, res, next) => {
     title: meta.vahetused.title,
     description: meta.vahetused.description,
     url_path: url_prefix + "kasutajatingimused/",
-    body_class: "",
+    body_class: "legal",
   });
 });
 
@@ -30,7 +30,7 @@ router.get("/isikuandmed/", (req, res, next) => {
     title: meta.vahetused.title,
     description: meta.vahetused.description,
     url_path: url_prefix + "isikuandmed/",
-    body_class: "",
+    body_class: "legal",
   });
 });
 
