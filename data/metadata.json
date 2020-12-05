@@ -38,5 +38,9 @@
   "broneeri": {
     "title": "Laagrikoha broneerimine",
     "description": ""
+  },
+  "sitemap": {
+    "title": "Sisukaart",
+    "descriptiion": ""
   }
 }

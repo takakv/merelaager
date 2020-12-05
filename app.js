@@ -68,6 +68,14 @@ app.get("/pildid/", (req, res, next) => {
   });
 });
 
+app.get("/sisukaart/", (req, res) => {
+  res.render("sitemap", {
+    title: meta.sitemap.title,
+    description: meta.sitemap.description,
+    url_path: "sisukaart/",
+  });
+});
+
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
