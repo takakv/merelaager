@@ -814,7 +814,7 @@ main > section {
 
 // Footer
 .footer {
-  padding: 30px 0;
+  padding: 30px 0 0;
   color: #fff;
   background-color: var(--primary);
 
@@ -824,6 +824,12 @@ main > section {
     flex-flow: row wrap;
     justify-content: space-around;
     margin-top: 2em;
+    padding-bottom: 1em;
+
+    span,
+    a {
+      margin: 0 10px;
+    }
   }
 
   &__content {
