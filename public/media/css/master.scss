@@ -248,6 +248,38 @@ a {
   display: inline-block;
 }
 
+.u-no-list-style {
+  list-style: none;
+}
+
+.u-nested-increments {
+  position: relative;
+  counter-reset: section;
+
+  ol {
+    counter-reset: section;
+  }
+
+  li {
+    margin-left: 1em !important;
+  }
+
+  li::before {
+    font-size: 1.25rem;
+    font-weight: 800;
+    position: absolute;
+    left: -20px;
+    content: counters(section, ".") ".";
+    counter-increment: section;
+  }
+
+  li li::before {
+    font-size: 1rem;
+    font-weight: 400;
+    content: counters(section, ".") " ";
+  }
+}
+
 // Components
 .c-btn {
   font-size: 1rem;
