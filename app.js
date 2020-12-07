@@ -34,7 +34,7 @@ let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
 app.get("/sitemap.txt", (req, res) => {
   res.type("text/plain");
-  res.sendFile("/sitemap.src", {
+  res.sendFile("/sitemap.txt", {
     root: ".",
   });
 });
