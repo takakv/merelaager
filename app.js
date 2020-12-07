@@ -32,6 +32,13 @@ app.use(express.static("public")).use(slashes());
 
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
+app.get("/sitemap.txt", (req, res) => {
+  res.type("text/plain");
+  res.sendFile("/sitemap.src", {
+    root: ".",
+  });
+});
+
 app.get("/", (req, res, next) => {
   res.render("index", {
     layout: "landing",
