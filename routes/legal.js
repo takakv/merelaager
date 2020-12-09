@@ -34,4 +34,22 @@ router.get("/isikuandmed/", (req, res, next) => {
   });
 });
 
+router.get("/kupsised/", (req, res, next) => {
+  res.render("cookies", {
+    title: meta.vahetused.title,
+    description: meta.vahetused.description,
+    url_path: url_prefix + "kupsised/",
+    body_class: "legal",
+  });
+});
+
+router.get("/brand/", (req, res, next) => {
+  res.render("brand", {
+    title: meta.vahetused.title,
+    description: meta.vahetused.description,
+    url_path: url_prefix + "brand/",
+    body_class: "legal",
+  });
+});
+
 module.exports = router;
