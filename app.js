@@ -32,10 +32,17 @@ app.use(express.static("public")).use(slashes());
 
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.sendFile("/robots.txt", {
+    root: "./public/",
+  });
+});
+
 app.get("/sitemap.txt", (req, res) => {
   res.type("text/plain");
   res.sendFile("/sitemap.txt", {
-    root: ".",
+    root: "./public/",
   });
 });
 
