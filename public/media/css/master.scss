@@ -693,6 +693,10 @@ main > section {
         opacity: 0.8;
         filter: none;
       }
+
+      &--padded {
+        padding: 10px 0;
+      }
     }
   }
 }
