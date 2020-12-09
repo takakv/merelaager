@@ -1,5 +1,5 @@
 VEEBIMEESKOND
--------------------
+-------------
 
 Ahto Aaslav-Kaasik
 laagri omanik, broneerimissüsteemi idee autor
@@ -11,7 +11,7 @@ Sander "Sass" Siim
 Veebilehe disainer
 
 Taaniel "Taka" Kraavi
-Veebisaidi arendaja / veebiadmin
+Arendaja / veebiadmin
 
 VEEBILEHT
 ---------
