@@ -62,8 +62,8 @@
             </div>
         </div>
         <div class="registration-form__row registration-form__row--minor">
-            <div class="registration-form__field registration-form__field--row">
-                <label for="emsa-{{this}}">Laps registreerib läbi EMSA</label>
+            <div class="registration-form__field registration-form__field--row emsa-field">
+                <label for="emsa-{{this}}">EMSA laagritoetus</label>
                 <input type="checkbox" name="emsa-{{this}}" id="emsa-{{this}}" class="isEmsa"
                        value="true">
             </div>
@@ -84,7 +84,7 @@
             </div>
             <!--div class="registration-form__field">
                 <label for="county-{{this}}">Maakond</label>
-                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField" required>
+                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField">
                 <datalist id="counties">
                     <option value="Harju"></option>
                     <option value="Tartu"></option>

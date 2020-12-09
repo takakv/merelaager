@@ -1167,6 +1167,19 @@ main > section {
       align-items: center;
       flex-direction: row;
     }
+
+    &.emsa-field {
+
+      &::before {
+        display: none;
+        margin-right: 30px;
+        content: "Lapsevanem on Eesti Meremeeste Sõltumatu Ametiühingu liige ning laps saab EMSAlt suvelaagri toetust.";
+      }
+
+      &:hover::before {
+        display: inline-block;
+      }
+    }
   }
 }
 
