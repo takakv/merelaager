@@ -1,6 +1,3 @@
-// Fonts
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@400;600;800&display=swap");
-
 // Variables and colours
 :root {
   --primary: #23408e;
@@ -1169,7 +1166,6 @@ main > section {
     }
 
     &.emsa-field {
-
       &::before {
         display: none;
         margin-right: 30px;
