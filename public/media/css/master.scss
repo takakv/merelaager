@@ -549,10 +549,16 @@ main > section {
   height: $hero-height;
   text-align: center;
   color: #fff;
-  background-image: url(../img/homehero.webp);
+  background-image: url(../img/homehero@1k.webp);
   background-repeat: no-repeat;
   background-position: center 70%;
   background-size: cover;
+  @media screen and (min-width: 2560px) {
+    background-image: url(../img/homehero@2k.webp);
+  }
+  @media screen and (min-width: 3840px) {
+    background-image: url(../img/homehero@4k.webp);
+  }
 
   &__content {
     font-family: "Bebas Neue", Raleway, sans-serif;
