@@ -1,3 +1,39 @@
+// Fonts
+@font-face {
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Raleway"), url("../fonts/Raleway-Regular.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Raleway SemiBold"),
+    url("../fonts/Raleway-SemiBold.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Raleway";
+  font-style: normal;
+  font-weight: 800;
+  src: local("Raleway ExtraBold"),
+    url("../fonts/Raleway-ExtraBold.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bebas Neue";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Bebas Neue"),
+    url("../fonts/BebasNeue-Regular.woff2") format("woff2");
+  font-display: swap;
+}
+
 // Variables and colours
 :root {
   --primary: #23408e;
@@ -128,7 +164,7 @@ html {
 }
 
 body {
-  font-family: Raleway, sans-serif;
+  font-family: "Raleway", sans-serif;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -561,7 +597,7 @@ main > section {
   }
 
   &__content {
-    font-family: "Bebas Neue", Raleway, sans-serif;
+    font-family: "Bebas Neue", "Raleway", sans-serif;
     position: relative;
     z-index: 5;
     padding-top: 120px;
