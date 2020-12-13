@@ -8,39 +8,39 @@
     "description": "Mis koht see Noorte Mereklubi on? Mereleksikon ütleb: merendushuvilisi noori ühendav lasteklubi, asutatud 1972. a."
   },
   "meeskond": {
-    "title": "Meeskond",
+    "title": "Meeskond – merelaager",
     "description": "Merelaagri vahetuste juhatajad, tänu kellele on merelaager tegutsenud juba üle 20. aasta."
   },
   "pildid": {
-    "title": "Pildid",
+    "title": "Pildid – merelaager",
     "description": "Vanad ajad, head mälestused, rõõmsad lapsed."
   },
   "info": {
-    "title": "Info",
+    "title": "Info – merelaager",
     "description": "Erinevad ressursid nii laagrilisele kui ka lapsevanemale.",
     "vahetused": {
-      "title": "Laagrivahetuste ajad ja broneerimine",
+      "title": "Laagrivahetuste ajad ja broneerimine – merelaager",
       "description": "Vahetuste kuupäevad, juhatajate kontaktandmed ja info broneerimise kohta."
     },
     "laagrist": {
-      "title": "Elu laagris",
+      "title": "Elu laagris – merelaager",
       "dscription": "Info laagrielu kohta: päevakava, kodukord, asukoht jms."
     },
     "maksmine": {
-      "title": "Maksmine",
+      "title": "Maksmine – merelaager",
       "dscription": "Info laagrikoha eest tasumise kohta."
     },
     "kkk": {
-      "title": "Korduma kippuvad küsimused",
+      "title": "Korduma kippuvad küsimused – merelaager",
       "dscription": "Küsimused ja vastused."
     }
   },
   "broneeri": {
-    "title": "Laagrikoha broneerimine",
+    "title": "Laagrikoha broneerimine – merelaager",
     "description": ""
   },
   "sitemap": {
-    "title": "Sisukaart",
+    "title": "Sisukaart – merelaager",
     "descriptiion": ""
   }
 }
