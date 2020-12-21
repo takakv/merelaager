@@ -7,6 +7,7 @@
 *.afphoto
 
 # FullRes images
+*_og.jpg
 *_og.png
 *_og.svg
 

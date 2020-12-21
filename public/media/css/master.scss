@@ -1,6 +1,3 @@
-// Fonts
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@400;600;800&display=swap");
-
 // Variables and colours
 :root {
   --primary: #23408e;
@@ -136,6 +133,7 @@ body {
   font-weight: 400;
   line-height: 1.5;
   min-width: 300px;
+  quotes: "„" "”";
   color: var(--primary);
   background-color: var(--default-bg);
 }
@@ -245,6 +243,38 @@ a {
 
 .u-inline-block {
   display: inline-block;
+}
+
+.u-no-list-style {
+  list-style: none;
+}
+
+.u-nested-increments {
+  position: relative;
+  counter-reset: section;
+
+  ol {
+    counter-reset: section;
+  }
+
+  li {
+    margin-left: 1em !important;
+  }
+
+  li::before {
+    font-size: 1.25rem;
+    font-weight: 800;
+    position: absolute;
+    left: -20px;
+    content: counters(section, ".") ".";
+    counter-increment: section;
+  }
+
+  li li::before {
+    font-size: 1rem;
+    font-weight: 400;
+    content: counters(section, ".") " ";
+  }
 }
 
 // Components
@@ -519,10 +549,16 @@ main > section {
   height: $hero-height;
   text-align: center;
   color: #fff;
-  background-image: url(../img/homehero.jpg);
+  background-image: url(../img/homehero@1k.webp);
   background-repeat: no-repeat;
   background-position: center 70%;
   background-size: cover;
+  @media screen and (min-width: 2560px) {
+    background-image: url(../img/homehero@2k.webp);
+  }
+  @media screen and (min-width: 3840px) {
+    background-image: url(../img/homehero@4k.webp);
+  }
 
   &__content {
     font-family: "Bebas Neue", Raleway, sans-serif;
@@ -662,6 +698,10 @@ main > section {
       &--black {
         opacity: 0.8;
         filter: none;
+      }
+
+      &--padded {
+        padding: 10px 0;
       }
     }
   }
@@ -813,9 +853,23 @@ main > section {
 
 // Footer
 .footer {
-  padding: 30px 0;
+  padding: 30px 0 0;
   color: #fff;
   background-color: var(--primary);
+
+  &__legal {
+    font-size: 0.825rem;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    margin-top: 2em;
+    padding-bottom: 1em;
+
+    span,
+    a {
+      margin: 0 10px;
+    }
+  }
 
   &__content {
     display: flex;
@@ -1120,5 +1174,36 @@ main > section {
       align-items: center;
       flex-direction: row;
     }
+
+    &.emsa-field {
+      &::before {
+        display: none;
+        margin-right: 30px;
+        content: "Lapsevanem on Eesti Meremeeste Sõltumatu Ametiühingu liige ning laps saab EMSAlt suvelaagri toetust.";
+      }
+
+      &:hover::before {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+// Legal
+
+.legal main {
+  h4 {
+    font-size: 1.25rem;
+    margin-top: 2em;
+    letter-spacing: 1px;
+  }
+
+  p,
+  li {
+    margin-top: 0.825em;
+  }
+
+  li {
+    margin-left: 2em;
   }
 }

@@ -32,6 +32,20 @@ app.use(express.static("public")).use(slashes());
 
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.sendFile("/robots.txt", {
+    root: "./public/",
+  });
+});
+
+app.get("/sitemap.txt", (req, res) => {
+  res.type("text/plain");
+  res.sendFile("/sitemap.txt", {
+    root: "./public/",
+  });
+});
+
 app.get("/", (req, res, next) => {
   res.render("index", {
     layout: "landing",
@@ -68,6 +82,14 @@ app.get("/pildid/", (req, res, next) => {
   });
 });
 
+app.get("/sisukaart/", (req, res) => {
+  res.render("sitemap", {
+    title: meta.sitemap.title,
+    description: meta.sitemap.description,
+    url_path: "sisukaart/",
+  });
+});
+
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
@@ -76,6 +98,9 @@ app.use("/kambuus/", adminRouter);
 
 const registerRouter = require("./routes/register");
 app.use("/registreerimine/", registerRouter);
+
+const legal = require("./routes/legal");
+app.use("/oiguslik/", legal);
 
 app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");

@@ -1,0 +1,63 @@
+VEEBIMEESKOND
+-------------
+
+Ahto Aaslav-Kaasik
+laagri omanik, broneerimissüsteemi idee autor
+
+Katrin "Kati" Mellis
+veebisaidi teksti sisu autor
+
+Sander "Sass" Siim
+Veebilehe disainer
+
+Taaniel "Taka" Kraavi
+Arendaja / veebiadmin
+
+VEEBILEHT
+---------
+
+Keeled
+Eesti
+
+Doctype
+HTML5
+
+Lähtekood
+github.com/takakv/merelaager
+
+TEHNOLOOGIAD
+------------
+
+JS - Skriptikeel
+ecma-international.org
+
+Node.js - Käituskeskkond
+nodejs.org
+
+npm - Paketihaldur
+npmjs.com
+
+GitHub - Versioonihaldustarkvara
+github.com
+
+Sass - CSS-i preprotsessor
+sass-lang.com
+
+Handlebars - Koodivorm
+handlebarsjs.com
+
+Zone - Veebiserver
+zone.ee
+
+VAHENDID
+--------
+WebStorm/Visual Studio Code - Koodiredaktor
+jetbrains.com/webstorm
+code.visualstudio.com
+
+Adobe Illustrator/Affinity Designer - Vektorgraafika tarkvara
+adobe.com/products/illustrator
+affinity.serif.com/designer
+
+Affinity Photo - Pilditöötlustarkvara
+affinity.serif.com/photo
