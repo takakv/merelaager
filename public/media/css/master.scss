@@ -501,10 +501,14 @@ a {
     }
 
     h3 {
-      font-size: 3rem;
+      font-size: 2.125rem;
       line-height: 1.2;
-      margin-bottom: 0.5em;
+      margin-bottom: .5em;
       letter-spacing: 2px;
+
+      @media screen and (min-width: $tablet-break) {
+        font-size: 3rem;
+      }
     }
 
     p {
