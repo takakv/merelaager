@@ -460,7 +460,7 @@ a {
   align-items: center;
   justify-content: space-between;
   max-width: 1600px;
-  margin: 0 2em 6em;
+  margin: 0 10% 6em;
 
   &:last-of-type {
     margin-bottom: 0;
@@ -495,6 +495,10 @@ a {
   &--center &-body {
     width: 100%;
     text-align: center;
+  }
+
+  &--center &-media {
+    max-width: 100%;
   }
 }
 
@@ -700,11 +704,14 @@ main > section {
   position: absolute;
   z-index: 2;
   right: 0;
-  bottom: -80px;
+  bottom: 0;
   left: 0;
   width: 100%;
-  @media screen and (max-width: $tablet-break) {
+  @media screen and (min-width: $tablet-break) {
     bottom: -20px;
+  }
+  @media screen and (min-width: $laptop-break) {
+    bottom: -60px;
   }
 }
 
