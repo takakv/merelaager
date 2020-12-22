@@ -445,12 +445,38 @@ a {
     padding-left: 15px;
 
     &::before {
+      font-weight: 600;
       position: absolute;
-      display: inline-block;
       left: 0;
+      display: inline-block;
       content: "~";
       color: var(--highlight);
-      font-weight: 600;
+    }
+  }
+}
+
+.c-home-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1600px;
+  margin: 0 auto 6em;
+
+  &-media {
+    max-width: 60%;
+  }
+
+  &-body {
+    width: 30%;
+
+    h3 {
+      font-size: 3rem;
+      line-height: 1.2;
+      margin-bottom: 0.5em;
+    }
+
+    p {
+      font-size: 1.125rem;
     }
   }
 }
