@@ -244,6 +244,10 @@ a {
   z-index: 10;
 }
 
+.u-mt-1em {
+  margin-top: 1em;
+}
+
 .u-mb-15 {
   margin-bottom: 15px;
 }
@@ -458,12 +462,21 @@ a {
 .c-home-block {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   max-width: 1600px;
   margin: 0 10% 6em;
 
   &:last-of-type {
     margin-bottom: 0;
+  }
+
+  @media screen and (min-width: $tablet-break) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    &--inverted &-media {
+      order: 2;
+    }
   }
 
   @media screen and (min-width: 1700px) {
@@ -475,16 +488,23 @@ a {
   }
 
   &-media {
-    max-width: 60%;
+    @media screen and (min-width: $tablet-break) {
+      max-width: 60%;
+    }
   }
 
   &-body {
-    width: 30%;
+    width: 100%;
+
+    @media screen and (min-width: $tablet-break) {
+      width: 30%;
+    }
 
     h3 {
       font-size: 3rem;
       line-height: 1.2;
       margin-bottom: 0.5em;
+      letter-spacing: 2px;
     }
 
     p {
