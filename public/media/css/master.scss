@@ -460,7 +460,19 @@ a {
   align-items: center;
   justify-content: space-between;
   max-width: 1600px;
-  margin: 0 auto 6em;
+  margin: 0 2em 6em;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  @media screen and (min-width: 1700px) {
+    margin: 0 auto 6em;
+  }
+
+  &--center {
+    flex-direction: column;
+  }
 
   &-media {
     max-width: 60%;
@@ -478,6 +490,11 @@ a {
     p {
       font-size: 1.125rem;
     }
+  }
+
+  &--center &-body {
+    width: 100%;
+    text-align: center;
   }
 }
 
