@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const mailGun = require("nodemailer-mailgun-transport");
 const dotenv = require("dotenv");
 const db = require("../models/database");
 const Camper = db.campers;
@@ -69,28 +70,21 @@ exports.create = (req, res) => {
     .catch((error) => console.log(error));
 };
 
+const auth = {
+  auth: {
+    api_key: process.env.EMAIL_API,
+    domain: process.env.EMAIL_SERV,
+  },
+};
+
 const mailer = async () => {
-  console.log(process.env.EMAIL_PWD);
-  const transporter = nodemailer.createTransport({
-    host: "smtp.zone.eu",
-    port: 587,
-    secure: false,
-    tls: {
-      rejectUnauthorized: false,
-    },
-    requireTLS: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PWD,
-    },
-  });
+  const transporter = nodemailer.createTransport(mailGun(auth));
 
   const meta = {
     from: "bronn@merelaager.ee",
     to: "webmaster@merelaager.ee",
     subject: "Test",
     text: "Test",
-    html: "<b>Hi</b>",
   };
 
   await transporter.sendMail(meta, (error, info) => {
