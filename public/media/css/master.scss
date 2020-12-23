@@ -5,6 +5,7 @@
   --default-bg: #fff;
   --highlight: #d7591e;
   --highlight-rgb: 215, 89, 30;
+  --dimmed: #ededf0;
 }
 
 :root {
@@ -409,7 +410,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   padding: 2em;
-  border: 4px solid #ededf0;
+  border: 4px solid var(--dimmed);
   border-radius: 4px;
 
   &__header {
@@ -940,8 +941,7 @@ main > section {
     grid-template-rows: repeat(7, 1fr);
 
     .not {
-      opacity: 0.5;
-      color: var(--highlight);
+      color: rgba(100, 100, 100, 0.4);
     }
 
     .lite {
