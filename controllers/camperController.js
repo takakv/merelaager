@@ -1,5 +1,4 @@
-const nodemailer = require("nodemailer");
-const mailGun = require("nodemailer-mailgun-transport");
+const mailgun = require("mailgun-js");
 const dotenv = require("dotenv");
 const db = require("../models/database");
 const Camper = db.campers;
@@ -65,21 +64,13 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
-  mailer()
-    .then(() => console.log("Success"))
-    .catch((error) => console.log(error));
-};
 
-const auth = {
-  auth: {
+  const auth = {
     api_key: process.env.EMAIL_API,
     domain: process.env.EMAIL_SERV,
-  },
-};
+  };
 
-const mailer = async () => {
-  const transporter = nodemailer.createTransport(mailGun(auth));
-
+  const mg = mailgun(auth);
   const meta = {
     from: "bronn@merelaager.ee",
     to: "webmaster@merelaager.ee",
@@ -87,8 +78,8 @@ const mailer = async () => {
     text: "Test",
   };
 
-  await transporter.sendMail(meta, (error, info) => {
+  mg.messages().send(meta, (error, body) => {
     if (error) console.log(error);
-    else console.log(info);
+    else console.log(body);
   });
 };
