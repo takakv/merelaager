@@ -78,10 +78,14 @@ const mailer = async () => {
     },
   });
 
-  transporter.sendMail({
+  const info = await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: "webmaster@merelaager.ee",
     subject: "Test",
     text: "Test",
+    html: "<b>Hi</b>",
   });
+
+  console.log("Message sent: %s", info.messageId);
+  console.log("Preview URL is: %s", nodemailer.getTestMessageUrl(info));
 };
