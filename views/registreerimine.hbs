@@ -15,10 +15,11 @@
     <div class="o-container">
         <h3 class="c-section-heading">Registreerimine</h3>
         <div class="u-banner u-banner--info">
-            <p>Registreerimine algab 1. jaanuaril 2021 kell 12.00 ja lõpeb siis, kui kõik kohad on täis. E-posti teel me
+            <p>Registreerimine algab 1. jaanuaril 2021 kell 14.00 ja lõpeb siis, kui kõik kohad on täis. E-posti teel me
                 enam registreerimistaotlusi vastu ei võta.</p>
         </div>
         <form class="registration-form" action="/registreerimine/register/" method="post">
+            <b class="u-italic u-regular">Tärniga märgitud väljad on kohustuslikud.</b>
             <h4>Laagrilaps</h4>
             {{>registrationFormChild}}
             <div class="registration-form__unit registration-form__unit--mt0">
@@ -33,15 +34,15 @@
             <div class="registration-form__unit">
                 <div class="registration-form__row">
                     <div class="registration-form__field">
-                        <label for="guardian_name">Nimi</label>
+                        <label for="guardian_name" class="u-required">Nimi</label>
                         <input type="text" name="guardian_name" id="guardian_name" required>
                     </div>
                     <div class="registration-form__field">
-                        <label for="guardian_phone">Telefon</label>
+                        <label for="guardian_phone" class="u-required">Telefon</label>
                         <input type="tel" name="guardian_phone" id="guardian_phone" required>
                     </div>
                     <div class="registration-form__field">
-                        <label for="guardian_email">E-post</label>
+                        <label for="guardian_email" class="u-required">E-post</label>
                         <input type="email" name="guardian_email" id="guardian_email" required>
                     </div>
                 </div>
@@ -51,7 +52,7 @@
                         <input type="tel" name="alt_phone" id="alt_phone">
                     </div>
                     <div class="registration-form__field registration-form__field--row">
-                        <label for="disclaimer">Nõustun laagri
+                        <label for="disclaimer" class="u-required">Nõustun laagri
                             <a href="/info/laagrist/#kodukord" class="t-visible">kodukorraga</a>.</label>
                         <input type="checkbox" id="disclaimer" required>
                     </div>

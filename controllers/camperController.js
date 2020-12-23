@@ -46,8 +46,6 @@ exports.create = (req, res) => {
       lisainfo: req.body[`addendum-${i}`],
       tanav: req.body[`road-${i}`],
       linn: req.body[`city-${i}`],
-      indeks: req.body[`index-${i}`],
-      maakond: req.body[`county-${i}`],
       riik: req.body[`country-${i}`],
       emsa: isEmsa,
       kontakt_nimi: req.body.guardian_name,
