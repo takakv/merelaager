@@ -70,19 +70,18 @@ exports.create = (req, res) => {
 };
 
 const mailer = async () => {
-  console.log("Keko");
-  console.log(process.env.EMAIL_USER);
-  console.log(typeof process.env.EMAIL_USER);
+  console.log(process.env.EMAIL_PWD);
   const transporter = nodemailer.createTransport({
     host: "smtp.zone.eu",
     port: 587,
     secure: false,
-    auth: {
-      user: `${process.env.EMAIL_USER}`,
-      pass: `${process.env.EMAIL_PWD}`,
-    },
     tls: {
       rejectUnauthorized: false,
+    },
+    requireTLS: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PWD,
     },
   });
 
