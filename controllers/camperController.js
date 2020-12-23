@@ -75,14 +75,14 @@ const mailer = async () => {
     port: 587,
     secure: false,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PWD,
+      user: `${process.env.EMAIL_USER}`,
+      pass: `${process.env.EMAIL_PWD}`,
     },
   });
 
   await transporter.sendMail(
     {
-      from: process.env.EMAIL_USER,
+      from: "bronn@merelaager.ee",
       to: "webmaster@merelaager.ee",
       subject: "Test",
       text: "Test",
