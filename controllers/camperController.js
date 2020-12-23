@@ -1,4 +1,5 @@
-const mailgun = require("mailgun-js");
+const nodemailer = require("nodemailer");
+const mailGun = require("nodemailer-mailgun-transport");
 const dotenv = require("dotenv");
 const db = require("../models/database");
 const Camper = db.campers;
@@ -64,22 +65,44 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
+  mailer()
+    .then(() => console.log("Success"))
+    .catch((error) => console.log(error));
+};
 
-  const auth = {
-    apiKey: process.env.EMAIL_API,
-    domain: process.env.EMAIL_SERV,
-  };
+const auth = {
+  auth: {
+    api_key: "",
+    domain: "",
+  },
+};
 
-  const mg = mailgun(auth);
+const mailer = async () => {
+  console.log(process.env.EMAIL_PWD);
+  const transporter = nodemailer.createTransport({
+    host: process.env.ENAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,
+    // tls: {
+      // rejectUnauthorized: false,
+    // },
+    // requireTLS: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PWD,
+    },
+  });
+
   const meta = {
     from: "bronn@merelaager.ee",
     to: "webmaster@merelaager.ee",
     subject: "Test",
     text: "Test",
+    html: "<b>Hi</b>",
   };
 
-  mg.messages().send(meta, (error, body) => {
+  await transporter.sendMail(meta, (error, info) => {
     if (error) console.log(error);
-    else console.log(body);
+    else console.log(info);
   });
 };
