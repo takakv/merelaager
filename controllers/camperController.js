@@ -69,7 +69,7 @@ exports.create = (req, res) => {
 
 const mailer = async () => {
   const transporter = nodemailer.createTransport({
-    host: "",
+    host: "smtp.zone.eu",
     port: 587,
     secure: false,
     auth: {
