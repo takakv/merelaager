@@ -70,6 +70,7 @@ exports.create = (req, res) => {
 };
 
 const mailer = async () => {
+  console.log(typeof process.env.EMAIL_USER);
   const transporter = nodemailer.createTransport({
     host: "smtp.zone.eu",
     port: 587,
@@ -77,6 +78,9 @@ const mailer = async () => {
     auth: {
       user: `${process.env.EMAIL_USER}`,
       pass: `${process.env.EMAIL_PWD}`,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
@@ -89,7 +93,7 @@ const mailer = async () => {
   };
 
   await transporter.sendMail(meta, (error, info) => {
-    if (error) console.log("error sending mail: " + error);
+    if (error) console.log(error);
     else console.log(info);
   });
 };
