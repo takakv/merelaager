@@ -64,7 +64,9 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
-  mailer();
+  mailer()
+    .then(() => console.log("Success"))
+    .catch((error) => console.log(error));
 };
 
 const mailer = async () => {
