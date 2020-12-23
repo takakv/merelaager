@@ -80,17 +80,16 @@ const mailer = async () => {
     },
   });
 
-  await transporter.sendMail(
-    {
-      from: "bronn@merelaager.ee",
-      to: "webmaster@merelaager.ee",
-      subject: "Test",
-      text: "Test",
-      html: "<b>Hi</b>",
-    },
-    (error, info) => {
-      if (error) console.log(error);
-      else console.log(info);
-    }
-  );
+  const meta = {
+    from: "bronn@merelaager.ee",
+    to: "webmaster@merelaager.ee",
+    subject: "Test",
+    text: "Test",
+    html: "<b>Hi</b>",
+  };
+
+  await transporter.sendMail(meta, (error, info) => {
+    if (error) console.log("error sending mail: " + error);
+    else console.log(info);
+  });
 };
