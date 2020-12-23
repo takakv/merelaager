@@ -70,6 +70,8 @@ exports.create = (req, res) => {
 };
 
 const mailer = async () => {
+  console.log("Keko");
+  console.log(process.env.EMAIL_USER);
   console.log(typeof process.env.EMAIL_USER);
   const transporter = nodemailer.createTransport({
     host: "smtp.zone.eu",
