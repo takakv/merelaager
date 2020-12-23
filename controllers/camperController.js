@@ -1,5 +1,8 @@
+const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
 const db = require("../models/database");
 const Camper = db.campers;
+dotenv.config();
 
 exports.create = (req, res) => {
   const childCount = parseInt(req.body["childCount"]);
@@ -61,4 +64,24 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
+  mailer();
+};
+
+const mailer = async () => {
+  const transporter = nodemailer.createTransport({
+    host: "",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PWD,
+    },
+  });
+
+  transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: "webmaster@merelaager.ee",
+    subject: "Test",
+    text: "Test",
+  });
 };
