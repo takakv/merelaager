@@ -79,19 +79,20 @@ const auth = {
 
 const mailer = async () => {
   console.log(process.env.EMAIL_PWD);
-  const transporter = nodemailer.createTransport({
-    host: process.env.ENAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    // tls: {
-      // rejectUnauthorized: false,
-    // },
-    // requireTLS: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PWD,
-    },
-  });
+  // const transporter = nodemailer.createTransport({
+  //   host: process.env.ENAIL_HOST,
+  //   port: process.env.EMAIL_PORT,
+  //   secure: false,
+  //   // tls: {
+  //     // rejectUnauthorized: false,
+  //   // },
+  //   // requireTLS: true,
+  //   auth: {
+  //     user: process.env.EMAIL_USER,
+  //     pass: process.env.EMAIL_PWD,
+  //   },
+  // });
+  const transporter = nodemailer.createTransport(mailGun(auth));
 
   const meta = {
     from: "bronn@merelaager.ee",
