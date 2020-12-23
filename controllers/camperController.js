@@ -66,7 +66,7 @@ exports.create = (req, res) => {
     );
 
   const auth = {
-    api_key: process.env.EMAIL_API,
+    apiKey: process.env.EMAIL_API,
     domain: process.env.EMAIL_SERV,
   };
 
