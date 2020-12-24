@@ -7,10 +7,10 @@ const generateHTML = (staff) => {
   return (
     "<b>Täname, et valisite merelaagri!</b>" +
     `<p>Laagri ${staff.id}es osalemise võimalus on edukalt broneeritud.</p>` +
-    "<p>Palume kohe üle kanda ka koha broneeriise tasu (või kogu summa). " +
+    "<p>Palume kohe üle kanda ka koha broneerimise tasu (või kogu summa). " +
     "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>" +
     "<p>Kui makse pole kolme päeva jooksul meile laekunud, tõstame lapse reservnimekirja.</p>" +
-    `<p>${staff.name} - ${staff.email}.</p><br>` +
+    `<p>${staff.name} - ${staff.email}</p><br>` +
     "<small>Tegu on automaatvastusega, palume sellele meilile mitte vastata. " +
     "Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</small>"
   );
@@ -45,7 +45,7 @@ class MailService {
     return this._transporter.sendMail({
       to,
       from: {
-        name: "Broneerimine | Merelaager",
+        name: "Broneerimine - merelaager",
         address: "bronn@merelaager.ee",
       },
       subject: "Broneeringu kinnitus",
