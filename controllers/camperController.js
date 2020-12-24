@@ -1,11 +1,9 @@
-const nodemailer = require("nodemailer");
-const mailGun = require("nodemailer-mailgun-transport");
-const dotenv = require("dotenv");
+const MailService = require("./MailService");
 const db = require("../models/database");
-const Camper = db.campers;
-dotenv.config();
-
 const fs = require("fs");
+
+const mailService = new MailService();
+const Camper = db.campers;
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
 exports.create = (req, res) => {
@@ -68,35 +66,17 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
+
   mailer(req.body["vahetus-1"], req.body.guardian_email)
     .then(() => console.log("Success"))
     .catch((error) => console.log(error));
 };
 
-const auth = {
-  auth: {
-    api_key: process.env.EMAIL_API,
-    domain: process.env.EMAIL_SERV,
-  },
-  host: "api.eu.mailgun.net",
-};
-
 const mailer = async (shift, target) => {
-  const transporter = nodemailer.createTransport(mailGun(auth));
-
   const meta = {
-    from: {
-      name: "Broneerimine | Merelaager",
-      address: "bronn@merelaager.ee",
-    },
     to: target,
-    subject: "Ootame teid merelaagrisse!",
-    text: "Olete oodatud merelaagrisse.",
-    html: `<b>${shiftData[shift].name}</b>`,
+    shift: shiftData[shift].name,
   };
 
-  await transporter.sendMail(meta, (error, info) => {
-    if (error) console.log(error);
-    else console.log(info);
-  });
+  await mailService.sendMail(meta);
 };

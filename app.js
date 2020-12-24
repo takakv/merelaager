@@ -1,12 +1,9 @@
+require("dotenv").config();
+const fs = require("fs");
 const express = require("express");
+const exphbs = require("express-handlebars");
 const slashes = require("connect-slashes");
 const app = express();
-
-const dotenv = require("dotenv");
-dotenv.config();
-
-const exphbs = require("express-handlebars");
-const fs = require("fs");
 
 const hbs = exphbs.create({
   extname: "hbs",
