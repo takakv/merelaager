@@ -1,5 +1,8 @@
 const MailService = require("./MailService");
 const db = require("../models/database");
+const fs = require("fs");
+
+const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
 const mailService = new MailService();
 const Camper = db.campers;
@@ -9,7 +12,7 @@ exports.create = (req, res) => {
   let campers = [];
   for (let i = 1; i < childCount + 1; ++i) {
     const hasIdCode = req.body[`useIdCode-${i}`] !== "false";
-    const isRookie = req.body[`newAtCAmp-${i}`] === "true";
+    const isRookie = req.body[`newAtCamp-${i}`] === "true";
     const isEmsa = req.body[`emsa-${i}`] === "true";
     let idCode = req.body[`idCode-${i}`];
     let gender = req.body[`gender-${i}`];
@@ -65,10 +68,22 @@ exports.create = (req, res) => {
       })
     );
 
-  mailer(campers)
+  const price = calculatePrice(campers);
+
+  mailer(campers, price)
     .then(() => console.log("Success"))
     .catch((error) => console.log(error));
 };
 
-const mailer = async (campers) =>
-  await mailService.sendMail(campers);
+const mailer = async (campers, price) =>
+  await mailService.sendMail(campers, price);
+
+const calculatePrice = (campers) => {
+  let price = 0;
+  campers.forEach((camper) => {
+    price += shiftData[camper.vahetus].price;
+    if (camper.linn.toLowerCase() === "tallinn") price -= 20;
+    else if (camper.vana_olija) price -= 10;
+  });
+  return price;
+};
