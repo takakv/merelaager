@@ -102,7 +102,7 @@ const generatePDF = (campers, price) => {
   const oneSeventh = (doc.page.width - sideMargin * 2 - 10) / 7;
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
 
-  const writeStream =fs.createWriteStream(`./data/arved/arve_${name}.pdf`);
+  const writeStream = fs.createWriteStream(`./data/arved/arve_${name}.pdf`);
   doc.pipe(writeStream);
   // ML logo
   doc.image(
@@ -209,10 +209,10 @@ const generatePDF = (campers, price) => {
       else if (campers[i].vana_olija) ++counters.sv2.count;
       else ++counters.sv3.count;
     } else {
-      if (campers[i].linn.toLowerCase() === "tallinn")
-        if (campers[i].linn.toLowerCase() === "tallinn") ++counters.lv1.count;
-        else if (campers[i].vana_olija) ++counters.lv2.count;
-        else ++counters.lv3.count;
+      console.log(campers[i].vana_olija);
+      if (campers[i].linn.toLowerCase() === "tallinn") ++counters.lv1.count;
+      else if (campers[i].vana_olija) ++counters.lv2.count;
+      else ++counters.lv3.count;
     }
     ++counters.br.count;
   }
@@ -309,9 +309,9 @@ const generatePDF = (campers, price) => {
     );
   doc.save();
   writeStream.on("finish", () => {
-    mailer(campers, price,`arve_${name}.pdf`)
-        .then(() => console.log("Success"))
-        .catch((error) => console.log(error));
-  })
+    mailer(campers, price, `arve_${name}.pdf`)
+      .then(() => console.log("Success"))
+      .catch((error) => console.log(error));
+  });
   doc.end();
 };
