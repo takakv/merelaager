@@ -82,6 +82,7 @@ const auth = {
 };
 
 const mailer = async (shift) => {
+  console.log(shiftData[shift]);
   const transporter = nodemailer.createTransport(mailGun(auth));
 
   const meta = {
