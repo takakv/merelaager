@@ -71,15 +71,11 @@ exports.create = (req, res) => {
     );
 
   const price = calculatePrice(campers);
-
-  generatePDF(campers);
-  // mailer(campers, price)
-  //   .then(() => console.log("Success"))
-  //   .catch((error) => console.log(error));
+  generatePDF(campers, price);
 };
 
-const mailer = async (campers, price) =>
-  await mailService.sendMail(campers, price);
+const mailer = async (campers, price, pdfName) =>
+  await mailService.sendMail(campers, price, pdfName);
 
 const calculatePrice = (campers) => {
   let price = 0;
@@ -91,7 +87,7 @@ const calculatePrice = (campers) => {
   return price;
 };
 
-const generatePDF = (campers) => {
+const generatePDF = (campers, price) => {
   const name = campers[0].kontakt_nimi.replace(/ /g, "_").toLowerCase();
   const doc = new PDFDoc({
     size: "A4",
@@ -106,7 +102,8 @@ const generatePDF = (campers) => {
   const oneSeventh = (doc.page.width - sideMargin * 2 - 10) / 7;
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
 
-  doc.pipe(fs.createWriteStream(`./data/arved/arve_${name}.pdf`));
+  const writeStream =fs.createWriteStream(`./data/arved/arve_${name}.pdf`);
+  doc.pipe(writeStream);
   // ML logo
   doc.image(
     "./media/files/bluelogo.png",
@@ -310,5 +307,11 @@ const generatePDF = (campers) => {
         width: oneThird,
       }
     );
+  doc.save();
+  writeStream.on("finish", () => {
+    mailer(campers, price,`arve_${name}.pdf`)
+        .then(() => console.log("Success"))
+        .catch((error) => console.log(error));
+  })
   doc.end();
 };

@@ -56,15 +56,22 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendMail(campers, price) {
+  sendMail(campers, price, pdfName) {
     return this._transporter.sendMail({
-      to: campers[0].kontakt_email,
       from: {
         name: "Broneerimine - merelaager",
         address: "bronn@merelaager.ee",
       },
+      to: campers[0].kontakt_email,
       subject: "Broneeringu kinnitus",
       html: generateHTML(campers, price),
+      attachments: [
+        {
+          filename: "arve.pdf",
+          path: `./data/arved/${pdfName}`,
+          contentType: "application/pdf",
+        },
+      ],
     });
   }
 }
