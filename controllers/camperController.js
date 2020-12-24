@@ -150,7 +150,7 @@ const generatePDF = (campers, price) => {
   doc
     .fontSize(10)
     .text(
-      "Maksekorraldusel palume kindlasti märkida slegituseks arve numbri ja lapse nime ning vahetuse.",
+      "Maksekorraldusel palume kindlasti märkida selgituseks arve numbri ning lapse nime ja vahetuse.",
       sideMargin
     );
 
