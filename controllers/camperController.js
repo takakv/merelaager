@@ -220,8 +220,11 @@ const generatePDF = (campers) => {
     ++counters.br.count;
   }
 
+  let prePrice = 0;
+  const brPrice = counters.br.count * counters.br.price;
   for (let [key, value] of Object.entries(counters)) {
     if (value.count) {
+      prePrice += value.count * value.price;
       doc.text(value.txt, sideMargin);
       doc.moveUp();
       doc.text(`x${value.count}`, doc.page.width - sideMargin - 200);
@@ -230,13 +233,27 @@ const generatePDF = (campers) => {
       doc.moveDown();
     }
   }
+  doc.moveDown();
+  doc.fontSize(11);
+  doc.text("", sideMargin);
+  const preText = `Summa broneerimistasuta: ${prePrice} €`;
+  doc.text(preText, { align: "right" });
+  const brText = `Broneerimistasu: ${brPrice} €`;
+  doc.text(brText, { align: "right" });
+  const sumText = `Arve summa: ${prePrice + brPrice} €`;
+  doc.text(sumText, { align: "right" });
+
+  doc.text("", sideMargin);
+  doc.moveDown();
+  doc.fontSize(12).font("Helvetica-Bold");
+  doc.text(`Tasumisele kulub: ${prePrice + brPrice} €`, { align: "right" });
 
   // Footer
   doc
     .moveTo(sideMargin, doc.page.height - 140)
     .lineTo(doc.page.width - sideMargin, doc.page.height - 140)
     .stroke();
-  doc.fontSize(9);
+  doc.fontSize(9).font("Helvetica");
 
   const footerHeadingGap = 50;
   doc
