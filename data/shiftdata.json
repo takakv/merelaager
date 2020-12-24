@@ -1,18 +1,22 @@
 {
   "1v": {
     "name": "Kai Kukepuu",
-    "email": "kai@merelaager.ee"
+    "email": "kai@merelaager.ee",
+    "id": "1. vahetus"
   },
   "2v": {
     "name": "Ahto Aaslav-Kaasik",
-    "email": "ahto@merelaager.ee"
+    "email": "ahto@merelaager.ee",
+    "id": "2. vahetus"
   },
   "3v": {
     "name": "Katrin Mellis",
-    "email": "kati@merelaager.ee"
+    "email": "kati@merelaager.ee",
+    "id": "3. vahetus"
   },
   "4v": {
     "name": "Leho Rohtla",
-    "email": "leho@merelaager.ee"
+    "email": "leho@merelaager.ee",
+    "id": "4. vahetus"
   }
 }

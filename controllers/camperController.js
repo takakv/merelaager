@@ -75,8 +75,11 @@ exports.create = (req, res) => {
 const mailer = async (shift, target) => {
   const meta = {
     to: target,
-    shift: shiftData[shift].name,
+    staff: {
+      name: shiftData[shift].name,
+      email: shiftData[shift].email,
+      id: shiftData[shift].id,
+    },
   };
-
   await mailService.sendMail(meta);
 };
