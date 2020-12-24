@@ -68,7 +68,7 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
-  mailer(req.body["vahetus-1"])
+  mailer(req.body["vahetus-1"], req.body.guardian_email)
     .then(() => console.log("Success"))
     .catch((error) => console.log(error));
 };
@@ -81,8 +81,7 @@ const auth = {
   host: "api.eu.mailgun.net",
 };
 
-const mailer = async (shift) => {
-  console.log(shiftData[`${shift}`]);
+const mailer = async (shift, target) => {
   const transporter = nodemailer.createTransport(mailGun(auth));
 
   const meta = {
@@ -90,7 +89,7 @@ const mailer = async (shift) => {
       name: "Broneerimine | Merelaager",
       address: "bronn@merelaager.ee",
     },
-    to: "webmaster@merelaager.ee",
+    to: target,
     subject: "Ootame teid merelaagrisse!",
     text: "Olete oodatud merelaagrisse.",
     html: `<b>${shiftData[shift].name}</b>`,
