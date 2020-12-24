@@ -82,10 +82,13 @@ const mailer = async () => {
   const transporter = nodemailer.createTransport(mailGun(auth));
 
   const meta = {
-    from: { name: "Broneerimine", address: "bronn@merelaager.ee" },
+    from: {
+      name: "Broneerimine | Merelaager",
+      address: "bronn@merelaager.ee",
+    },
     to: "webmaster@merelaager.ee",
-    subject: "Merelaagrisse broneeritud!",
-    text: "Test",
+    subject: "Ootame teid merelaagrisse!",
+    text: "Olete oodatud merelaagrisse.",
     html: "<b>Hi</b>",
   };
 
