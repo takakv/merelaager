@@ -5,6 +5,11 @@ const db = require("../models/database");
 const Camper = db.campers;
 dotenv.config();
 
+const fs = require("fs");
+const shiftData = JSON.parse(
+  fs.readFileSync("../data/shiftdata.json", "utf-8")
+);
+
 exports.create = (req, res) => {
   const childCount = parseInt(req.body["childCount"]);
   let campers = [];
@@ -65,7 +70,7 @@ exports.create = (req, res) => {
         message: err.message || "Midagi läks nihu.",
       })
     );
-  mailer()
+  mailer(req.body["vahetus-1"])
     .then(() => console.log("Success"))
     .catch((error) => console.log(error));
 };
@@ -78,7 +83,7 @@ const auth = {
   host: "api.eu.mailgun.net",
 };
 
-const mailer = async () => {
+const mailer = async (shift) => {
   const transporter = nodemailer.createTransport(mailGun(auth));
 
   const meta = {
@@ -89,7 +94,7 @@ const mailer = async () => {
     to: "webmaster@merelaager.ee",
     subject: "Ootame teid merelaagrisse!",
     text: "Olete oodatud merelaagrisse.",
-    html: "<b>Hi</b>",
+    html: `<b>${shift.name}</b>`,
   };
 
   await transporter.sendMail(meta, (error, info) => {
