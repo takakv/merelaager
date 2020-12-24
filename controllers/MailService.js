@@ -1,34 +1,39 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
-// const hbs = require("nodemailer-express-handlebars");
 const mg = require("nodemailer-mailgun-transport");
+const fs = require("fs");
 
-const generateHTML = (staff) => {
-  return (
-    "<b>Täname, et valisite merelaagri!</b>" +
-    `<p>Laagri ${staff.id}es osalemise võimalus on edukalt broneeritud.</p>` +
+const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
+
+const generateHTML = (campers) => {
+  const shifts = [];
+  let response = "<b>Täname, et valisite merelaagri!</b>" + "<ul>";
+  for (let i = 0; i < campers.length; ++i) {
+    if (!shifts.includes(campers[i].vahetus)) shifts.push(campers[i].vahetus);
+    response += `<li>${campers[i].nimi} (${campers[i].vahetus})</li>`;
+  }
+  response += "</ul>";
+  response += "<p>on registreeritud.</p>";
+  response +=
     "<p>Palume kohe üle kanda ka koha broneerimise tasu (või kogu summa). " +
-    "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>" +
-    "<p>Kui makse pole kolme päeva jooksul meile laekunud, tõstame lapse reservnimekirja.</p>" +
-    `<p>${staff.name} - ${staff.email}</p><br>` +
+    "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>";
+  response +=
+    "<p>Kui makse pole kolme päeva jooksul meile laekunud, tõstame lapse reservnimekirja.</p>";
+  response += "<p>Parimate soovidega</p>";
+  response += "<p>";
+  for (let i = 0; i < shifts.length; ++i) {
+    response += `${shiftData[shifts[i]].name} (${shiftData[shifts[i]].email})`;
+    if (i + 1 !== shifts.length) response += ", ";
+  }
+  response += "</p>";
+  response +=
     "<small>Tegu on automaatvastusega, palume sellele meilile mitte vastata. " +
-    "Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</small>"
-  );
+    "Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</small>";
+  return response;
 };
 
 class MailService {
   constructor() {
-    const options = {
-      viewEngine: {
-        partialsDir: "email/partials",
-        layoutsDir: "email/layouts",
-        defaultLayout: "main",
-        extname: ".hbs",
-      },
-      extname: ".hbs",
-      viewPath: "email",
-    };
-
     const config = {
       auth: {
         api_key: process.env.EMAIL_API,
@@ -38,18 +43,17 @@ class MailService {
     };
 
     this._transporter = nodemailer.createTransport(mg(config));
-    // this._transporter.use("compile", hbs(options));
   }
 
-  sendMail({ to, staff }) {
+  sendMail(campers) {
     return this._transporter.sendMail({
-      to,
+      to: campers[0].kontakt_email,
       from: {
         name: "Broneerimine - merelaager",
         address: "bronn@merelaager.ee",
       },
       subject: "Broneeringu kinnitus",
-      html: generateHTML(staff),
+      html: generateHTML(campers),
     });
   }
 }

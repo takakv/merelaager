@@ -1,10 +1,8 @@
 const MailService = require("./MailService");
 const db = require("../models/database");
-const fs = require("fs");
 
 const mailService = new MailService();
 const Camper = db.campers;
-const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
 exports.create = (req, res) => {
   const childCount = parseInt(req.body["childCount"]);
@@ -67,19 +65,10 @@ exports.create = (req, res) => {
       })
     );
 
-  mailer(req.body["vahetus-1"], req.body.guardian_email)
+  mailer(campers)
     .then(() => console.log("Success"))
     .catch((error) => console.log(error));
 };
 
-const mailer = async (shift, target) => {
-  const meta = {
-    to: target,
-    staff: {
-      name: shiftData[shift].name,
-      email: shiftData[shift].email,
-      id: shiftData[shift].id,
-    },
-  };
-  await mailService.sendMail(meta);
-};
+const mailer = async (campers) =>
+  await mailService.sendMail(campers);
