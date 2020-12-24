@@ -6,9 +6,7 @@ const Camper = db.campers;
 dotenv.config();
 
 const fs = require("fs");
-const shiftData = JSON.parse(
-  fs.readFileSync("../data/shiftdata.json", "utf-8")
-);
+const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
 exports.create = (req, res) => {
   const childCount = parseInt(req.body["childCount"]);
@@ -94,7 +92,7 @@ const mailer = async (shift) => {
     to: "webmaster@merelaager.ee",
     subject: "Ootame teid merelaagrisse!",
     text: "Olete oodatud merelaagrisse.",
-    html: `<b>${shift.name}</b>`,
+    html: `<b>${shiftData[shift].name}</b>`,
   };
 
   await transporter.sendMail(meta, (error, info) => {
