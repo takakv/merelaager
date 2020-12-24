@@ -74,6 +74,7 @@ const auth = {
   auth: {
     api_key: process.env.EMAIL_API,
     domain: process.env.EMAIL_SERV,
+    host: "api.eu.mailgun.net",
   },
 };
 
