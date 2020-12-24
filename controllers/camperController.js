@@ -221,7 +221,7 @@ const generatePDF = (campers, price) => {
   const brPrice = counters.br.count * counters.br.price;
   for (let [key, value] of Object.entries(counters)) {
     if (value.count) {
-      prePrice += value.count * value.price;
+      if (key !== "br") prePrice += value.count * value.price;
       doc.text(value.txt, sideMargin);
       doc.moveUp();
       doc.text(`x${value.count}`, doc.page.width - sideMargin - 200);
