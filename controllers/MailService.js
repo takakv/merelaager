@@ -17,13 +17,13 @@ const generateHTML = (campers, price) => {
   response += "</ul>";
   response += "<p>on registreeritud.</p>";
   response +=
-    "<p>Palume kohe üle kanda ka koha broneerimise tasu (või kogu summa). " +
+    "<p>Palume üle kanda ka koha broneerimise tasu (või kogu summa). " +
     "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>";
   response += `<p>Tasuda: ${
     50 * campers.length
   } €. Kogusumma (k.a broneerimistasu): ${price} €.`;
   response +=
-    "<p>MTÜ Noorte mereklubi" +
+    "<p>MTÜ Noorte Mereklubi" +
     "<br>Konto: EE86220022101149300" +
     "<br>SWIFT kood/BIC:HABAEE2X" +
     "<br>SWEDBANK" +
