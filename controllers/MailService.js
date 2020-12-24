@@ -19,7 +19,9 @@ const generateHTML = (campers, price) => {
   response +=
     "<p>Palume kohe üle kanda ka koha broneerimise tasu (või kogu summa). " +
     "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>";
-  response += `<p>Tasuda: ${price} €.`;
+  response += `<p>Tasuda: ${
+    50 * campers.length
+  } €. Kogusumma (k.a broneerimistasu): ${price} €.`;
   response +=
     "<p>MTÜ Noorte mereklubi" +
     "<br>Konto: EE86220022101149300" +
