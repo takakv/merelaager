@@ -63,16 +63,17 @@ exports.create = (req, res) => {
       varu_tel: req.body.alt_phone,
     });
   }
-  Camper.bulkCreate(campers)
-    .then((data) => res.send(data))
-    .catch((err) =>
-      res.status(500).send({
-        message: err.message || "Midagi läks nihu.",
-      })
-    );
+  // Camper.bulkCreate(campers)
+  //   .then((data) => res.send(data))
+  //   .catch((err) =>
+  //     res.status(500).send({
+  //       message: err.message || "Midagi läks nihu.",
+  //     })
+  //   );
+  res.send("Proovite siin häkkida jah? Ei saa :)");
 
-  const price = calculatePrice(campers);
-  generatePDF(campers, price);
+  // const price = calculatePrice(campers);
+  // generatePDF(campers, price);
 };
 
 const mailer = async (campers, price, pdfName) =>
