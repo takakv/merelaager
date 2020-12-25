@@ -3,23 +3,23 @@
         <div class="registration-form__close"></div>
         <div class="registration-form__row has-after">
             <div class="registration-form__field">
-                <label for="name-{{this}}">Nimi</label>
+                <label for="name-{{this}}" class="u-required">Nimi</label>
                 <input type="text" name="name-{{this}}" id="name-{{this}}" class="nameField">
             </div>
             <div class="registration-form__field">
-                <label for="idCode-{{this}}">Isikukood</label>
+                <label for="idCode-{{this}}" class="u-required">Isikukood</label>
                 <input type="text" name="idCode-{{this}}" id="idCode-{{this}}" class="idCodeField"
                        pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
             </div>
             <div class="registration-form__field is-hidden">
-                <p>Sugu:</p>
+                <p class="u-required">Sugu:</p>
                 <label for="gender-m-{{this}}">Poiss</label>
                 <input type="radio" name="gender-{{this}}" id="gender-m-{{this}}" value="M" class="genderField">
                 <label for="gender-f-{{this}}">Tüdruk</label>
                 <input type="radio" name="gender-{{this}}" id="gender-f-{{this}}" value="F">
             </div>
             <div class="registration-form__field is-hidden">
-                <label for="bDay-{{this}}">Sünnipäev</label>
+                <label for="bDay-{{this}}" class="u-required">Sünnipäev</label>
                 <input type="date" name="bDay-{{this}}" id="bDay-{{this}}" class="birthdayField">
             </div>
         </div>
@@ -32,7 +32,7 @@
         </div>
         <div class="registration-form__row has-after">
             <div class="registration-form__field">
-                <label for="vahetus-{{this}}">Laagrivahetus</label>
+                <label for="vahetus-{{this}}" class="u-required">Laagrivahetus</label>
                 <select id="vahetus-{{this}}" class="shiftField" name="vahetus-{{this}}">
                     <option value="">--Valige vahetus--</option>
                     <option value="1v">I vahetus</option>
@@ -42,7 +42,7 @@
                 </select>
             </div>
             <div class="registration-form__field">
-                <label for="shirtsize-{{this}}">T-särgi suurus</label>
+                <label for="shirtsize-{{this}}" class="u-required">T-särgi suurus</label>
                 <select id="shirtsize-{{this}}" class="shirtSizeField" name="shirtsize-{{this}}">
                     <option value="">--Valige suurus--</option>
                     <option value="118/128">118/128</option>
@@ -71,48 +71,23 @@
         <p>Elukoht:</p>
         <div class="registration-form__row">
             <div class="registration-form__field">
-                <label for="road-{{this}}">Tänav</label>
+                <label for="road-{{this}}" class="u-required">Tänav</label>
                 <input type="text" name="road-{{this}}" id="road-{{this}}" class="roadField">
             </div>
             <div class="registration-form__field">
-                <label for="index-{{this}}">Sihtnumber</label>
-                <input type="text" name="index-{{this}}" id="index-{{this}}" class="indexField">
-            </div>
-            <div class="registration-form__field">
-                <label for="city-{{this}}">Linn</label>
+                <label for="city-{{this}}" class="u-required">Linn</label>
                 <input type="text" name="city-{{this}}" id="city-{{this}}" class="cityField">
             </div>
-            <!--div class="registration-form__field">
-                <label for="county-{{this}}">Maakond</label>
-                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField">
-                <datalist id="counties">
-                    <option value="Harju"></option>
-                    <option value="Tartu"></option>
-                    <option value="Ida-Viru"></option>
-                    <option value="Pärnu"></option>
-                    <option value="Lääne-Viru"></option>
-                    <option value="Viljandi"></option>
-                    <option value="Rapla"></option>
-                    <option value="Võru"></option>
-                    <option value="Saare"></option>
-                    <option value="Jõgeva"></option>
-                    <option value="Järva"></option>
-                    <option value="Valga"></option>
-                    <option value="Põlva"></option>
-                    <option value="Lääne"></option>
-                    <option value="Hiiu"></option>
-                </datalist>
-            </div-->
             <div class="registration-form__field">
-                <label for="country-{{this}}">Riik</label>
+                <label for="country-{{this}}" class="u-required">Riik</label>
                 <input type="text" name="country-{{this}}" id="country-{{this}}" value="Eesti" class="countryField">
             </div>
         </div>
         <div class="registration-form__row">
             <div class="registration-form__field registration-form__field--full">
-                <label for="addendum-{{this}}">Muu info (allergiad, erivajadused, jms):</label>
+                <label for="addendum-{{this}}">Muu info (allergiad, erivajadused jms):</label>
                 <textarea name="addendum-{{this}}" id="addendum-{{this}}" class="full-width"
-                          placeholder="Võib tühjaks jääda. (maksimum 255 tähemärki)" maxlength="255"></textarea>
+                          placeholder="Võib tühjaks jääda (maksimum 255 tähemärki)." maxlength="255"></textarea>
             </div>
         </div>
     </div>

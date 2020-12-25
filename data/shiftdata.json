@@ -1,0 +1,26 @@
+{
+  "1v": {
+    "name": "Kai Kukepuu",
+    "email": "kai@merelaager.ee",
+    "id": "1. vahetus",
+    "price": 200
+  },
+  "2v": {
+    "name": "Ahto Aaslav-Kaasik",
+    "email": "ahto@merelaager.ee",
+    "id": "2. vahetus",
+    "price": 290
+  },
+  "3v": {
+    "name": "Katrin Mellis",
+    "email": "kati@merelaager.ee",
+    "id": "3. vahetus",
+    "price": 290
+  },
+  "4v": {
+    "name": "Leho Rohtla",
+    "email": "leho@merelaager.ee",
+    "id": "4. vahetus",
+    "price": 290
+  }
+}

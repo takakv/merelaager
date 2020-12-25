@@ -52,7 +52,6 @@ const fields = {
   isNew: document.getElementsByClassName("newField"),
   road: document.getElementsByClassName("roadField"),
   city: document.getElementsByClassName("cityField"),
-  index: document.getElementsByClassName("indexField"),
   country: document.getElementsByClassName("countryField"),
 };
 
@@ -67,7 +66,6 @@ const requiredFields = [
   fields.shirtSize,
   fields.road,
   fields.city,
-  fields.index,
   fields.country,
 ];
 
