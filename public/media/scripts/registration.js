@@ -18,18 +18,20 @@ const require = (element, isRequired) => {
 const requireUnit = (units, index, isRequired) =>
   units.forEach((unit) => (unit[index].required = isRequired));
 
-const calculatePrice = (children) => {
+const calculatePrice = (children, count) => {
   let price = 0;
-  children.forEach((child) => {
+  for (let i = 0; i < count; ++i) {
+    const child = children[i];
     price += child.shiftPrice;
     if (child.isFromTallinn) price -= 20;
     else if (child.isOld) price -= 10;
-  });
+    console.log(child);
+  }
   return price;
 };
 
-const displayPrice = (data) => {
-  const price = calculatePrice(data);
+const displayPrice = (data, count) => {
+  const price = calculatePrice(data, count);
   priceDisplay.innerText = price > 0 ? price : "---";
 };
 
@@ -47,13 +49,6 @@ if (pageAccessedByReload) {
 
 const regUnits = document.getElementsByClassName("registration-form__unit");
 const regClosers = document.getElementsByClassName("registration-form__close");
-
-let childrenCounter = 0;
-hide(regUnits[childrenCounter], false);
-hide(regClosers[childrenCounter], true);
-
-const addChild = document.getElementById("addChild");
-const childCountEl = document.getElementById("childCount");
 
 const fields = {
   name: document.getElementsByClassName("nameField"),
@@ -83,9 +78,15 @@ const requiredFields = [
   fields.city,
   fields.country,
   fields.county,
-];
 
-// Require fields of first card.
+];
+const childCountEl = document.getElementById("childCount");
+const addChild = document.getElementById("addChild");
+
+let childCount = childCountEl.value;
+// Display first card
+hide(regUnits[0], false);
+hide(regClosers[0], true);
 requireUnit(requiredFields, 0, true);
 
 // Check for idCode field state.
@@ -141,38 +142,69 @@ const childrenPrices = [
   new ChildPrice(),
 ];
 
+window.onunload = () => {};
+
+for (let i = 0; i < 4; ++i) {
+  const shift = fields.shift[i];
+  const isNew = fields.isNew[i];
+  const city = fields.city[i];
+  childrenPrices[i].shiftPrice = shiftPrices[shift.value] ?? 0;
+  childrenPrices[i].isOld = !isNew.checked;
+  childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
+}
+// displayPrice(childrenPrices, childrenCounter + 1);
+
 for (let i = 0; i < 4; ++i) {
   const shift = fields.shift[i];
   const isNew = fields.isNew[i];
   const city = fields.city[i];
   shift.onchange = () => {
     childrenPrices[i].shiftPrice = shiftPrices[shift.value];
-    displayPrice(childrenPrices);
+    displayPrice(childrenPrices, childCount);
   };
   isNew.onchange = () => {
     childrenPrices[i].isOld = !isNew.checked;
-    displayPrice(childrenPrices);
+    displayPrice(childrenPrices, childCount);
   };
   city.onblur = () => {
     childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
-    displayPrice(childrenPrices);
+    displayPrice(childrenPrices, childCount);
   };
 }
 
 // Add cards.
-addChild.onclick = () => {
+const addCard = () => {
   // Price logic.
   prePrice += 50;
   preDisplay.innerText = prePrice;
 
   // Display logic.
-  hide(regClosers[childrenCounter], true);
-  hide(regUnits[++childrenCounter], false);
-  if (childrenCounter >= 3) hide(addChild.parentElement, true);
+  hide(regClosers[childCount - 1], true);
+  hide(regUnits[childCount], false);
+  if (childCount === 3) hide(addChild.parentElement, true);
 
   // Requirement logic.
-  requireUnit(requiredFields, childrenCounter, true);
-  childCountEl.value = `${childrenCounter + 1}`;
+  requireUnit(requiredFields, childCount, true);
+  childCountEl.value = `${++childCount}`;
+  // sessionStorage.setItem("childCount", childCount);
+};
+
+console.log(childCount);
+for (let i = 1; i < childCount; ++i) {
+  // Display logic.
+  hide(regClosers[i - 1], true);
+  hide(regUnits[i], false);
+  console.log(i);
+  if (i === 3) hide(addChild.parentElement, true);
+
+  // Requirement logic.
+  requireUnit(requiredFields, i, true);
+}
+console.log(childCount);
+console.log(childCountEl.value);
+
+addChild.onclick = () => {
+  addCard();
 };
 
 // Remove cards.
@@ -183,12 +215,12 @@ for (let i = 1; i < 4; ++i) {
     preDisplay.innerText = prePrice;
 
     // Requirement logic.
-    requireUnit(requiredFields, childrenCounter, false);
+    requireUnit(requiredFields, i, false);
 
     // Display logic.
     hide(regUnits[i], true);
-    --childrenCounter;
-    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
-    if (childrenCounter < 3) hide(addChild.parentElement, false);
+    if (i !== 1) hide(regClosers[i - 1], false);
+    if (childCount === 4) hide(addChild.parentElement, false);
+    childCountEl.value = `${--childCount}`;
   };
 }
