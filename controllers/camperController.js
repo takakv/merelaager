@@ -65,6 +65,7 @@ exports.create = async (req, res) => {
       riik: req.body[`country-${i}`],
       maakond: req.body[`county-${i}`],
       emsa: isEmsa,
+      arveNr: billNr,
       kontakt_nimi: req.body.guardian_name,
       kontakt_number: req.body.guardian_phone,
       kontakt_email: req.body.guardian_email,

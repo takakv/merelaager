@@ -63,6 +63,10 @@ module.exports = (sequelize) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      arveNr: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       kontakt_nimi: {
         type: DataTypes.TEXT,
         allowNull: false,
