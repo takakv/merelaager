@@ -78,7 +78,6 @@ const requiredFields = [
   fields.city,
   fields.country,
   fields.county,
-
 ];
 const childCountEl = document.getElementById("childCount");
 const addChild = document.getElementById("addChild");
@@ -123,61 +122,12 @@ emsaFields.forEach((field) => {
 
 const priceDisplay = document.getElementById("payment-total");
 const preDisplay = document.getElementById("pre-total");
-
-const fullPrice = 290;
-const shortPrice = 200;
-let prePrice = 50;
-
-const shiftPrices = {
-  "1v": shortPrice,
-  "2v": fullPrice,
-  "3v": fullPrice,
-  "4v": fullPrice,
-};
-
-const childrenPrices = [
-  new ChildPrice(),
-  new ChildPrice(),
-  new ChildPrice(),
-  new ChildPrice(),
-];
+preDisplay.innerText = `${childCount * 50}`;
 
 window.onunload = () => {};
 
-for (let i = 0; i < 4; ++i) {
-  const shift = fields.shift[i];
-  const isNew = fields.isNew[i];
-  const city = fields.city[i];
-  childrenPrices[i].shiftPrice = shiftPrices[shift.value] ?? 0;
-  childrenPrices[i].isOld = !isNew.checked;
-  childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
-}
-// displayPrice(childrenPrices, childrenCounter + 1);
-
-for (let i = 0; i < 4; ++i) {
-  const shift = fields.shift[i];
-  const isNew = fields.isNew[i];
-  const city = fields.city[i];
-  shift.onchange = () => {
-    childrenPrices[i].shiftPrice = shiftPrices[shift.value];
-    displayPrice(childrenPrices, childCount);
-  };
-  isNew.onchange = () => {
-    childrenPrices[i].isOld = !isNew.checked;
-    displayPrice(childrenPrices, childCount);
-  };
-  city.onblur = () => {
-    childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
-    displayPrice(childrenPrices, childCount);
-  };
-}
-
 // Add cards.
 const addCard = () => {
-  // Price logic.
-  prePrice += 50;
-  preDisplay.innerText = prePrice;
-
   // Display logic.
   hide(regClosers[childCount - 1], true);
   hide(regUnits[childCount], false);
@@ -187,9 +137,11 @@ const addCard = () => {
   requireUnit(requiredFields, childCount, true);
   childCountEl.value = `${++childCount}`;
   // sessionStorage.setItem("childCount", childCount);
+
+  // Price logic.
+  preDisplay.innerText = `${childCount * 50}`;
 };
 
-console.log(childCount);
 for (let i = 1; i < childCount; ++i) {
   // Display logic.
   hide(regClosers[i - 1], true);
@@ -200,8 +152,6 @@ for (let i = 1; i < childCount; ++i) {
   // Requirement logic.
   requireUnit(requiredFields, i, true);
 }
-console.log(childCount);
-console.log(childCountEl.value);
 
 addChild.onclick = () => {
   addCard();
@@ -210,10 +160,6 @@ addChild.onclick = () => {
 // Remove cards.
 for (let i = 1; i < 4; ++i) {
   regClosers[i].onclick = () => {
-    // Price logic.
-    prePrice -= 50;
-    preDisplay.innerText = prePrice;
-
     // Requirement logic.
     requireUnit(requiredFields, i, false);
 
@@ -222,5 +168,8 @@ for (let i = 1; i < 4; ++i) {
     if (i !== 1) hide(regClosers[i - 1], false);
     if (childCount === 4) hide(addChild.parentElement, false);
     childCountEl.value = `${--childCount}`;
+
+    // Price logic.
+    preDisplay.innerText = `${childCount * 50}`;
   };
 }
