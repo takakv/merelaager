@@ -1,5 +1,8 @@
 // --- Imports
 import { ChildPrice } from "./classes/ChildPrice.js";
+import { validators } from "./regValidation.js";
+
+validators();
 
 // --- Functions
 const hide = (element, isHidden) => {
