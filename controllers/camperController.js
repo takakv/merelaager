@@ -246,12 +246,30 @@ const generatePDF = (campers, price) => {
   doc.fontSize(12).font("Helvetica-Bold");
   doc.text(`Tasumisele kulub: ${prePrice + brPrice} €`, { align: "right" });
 
+  // Camper names
+  doc.moveDown(4).fontSize(11);
+  doc.text("Selgitus", sideMargin);
+  doc.moveDown();
+  doc.fontSize(10).font("Helvetica");
+  doc.text(`Arve 21001, `, { continued: true });
+  for (let i = 0; i < campers.length; ++i) {
+    doc.text(
+      `${campers[i].nimi} ${shiftData[campers[i].vahetus].id.slice(0, 4)}`,
+      {
+        continued: true,
+      }
+    );
+    if (campers[i] !== campers[campers.length - 1])
+      doc.text(", ", { continued: true });
+  }
+
   // Footer
   doc
     .moveTo(sideMargin, doc.page.height - 140)
     .lineTo(doc.page.width - sideMargin, doc.page.height - 140)
     .stroke();
   doc.fontSize(9).font("Helvetica");
+  doc.text("", sideMargin);
 
   const footerHeadingGap = 50;
   doc
