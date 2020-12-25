@@ -9,8 +9,6 @@ export const addChild = document.getElementById("addChild");
 export const emsaNotice = document.getElementById("emsa-notice");
 export const emsaFields = [...document.getElementsByClassName("isEmsa")];
 
-export const priceDisplay = document.getElementById("payment-total");
-
 export const fields = {
   name: document.getElementsByClassName("nameField"),
   idCode: document.getElementsByClassName("idCodeField"),
@@ -25,3 +23,6 @@ export const fields = {
   country: document.getElementsByClassName("countryField"),
   county: document.getElementsByClassName("countyField"),
 };
+
+export const priceDisplay = document.getElementById("payment-total");
+export const priceAffectingFields = [[...fields.shift], [...fields.isNew], [...fields.city]];

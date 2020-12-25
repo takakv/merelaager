@@ -1,8 +1,11 @@
 // --- Imports
-import { ChildPrice } from "./classes/ChildPrice.js";
-import { displayPrice } from "./registration/price.js";
+import { updatePrice } from "./registration/price.js";
 import { validators } from "./registration/validation.js";
-import { addChild, regClosers } from "./registration/htmlElements.js";
+import {
+  addChild,
+  regClosers,
+  priceAffectingFields,
+} from "./registration/htmlElements.js";
 import {
   addCard,
   displayFirstCard,
@@ -51,8 +54,18 @@ for (let i = 1; i < 4; ++i) {
     preDisplay.innerText = `${childCount * 50}`;
   };
 }
+
 for (let i = 1; i < childCount; ++i) {
   addCard(i);
 }
+
+updatePrice(childCount);
+priceAffectingFields.forEach((fields) => {
+  fields.forEach((field) => {
+    field.onchange = () => {
+      updatePrice(childCount);
+    };
+  });
+});
 
 window.onunload = () => {};
