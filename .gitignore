@@ -22,3 +22,4 @@ package-lock.json
 
 # Private files
 data/arved/*.pdf
+bills.sqlite

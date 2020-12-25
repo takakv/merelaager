@@ -118,3 +118,5 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const db = require("./models/database");
 db.sequelize.sync({ alter: true });
+
+require("./models/bills");

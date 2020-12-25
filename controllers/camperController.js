@@ -1,6 +1,7 @@
 const MailService = require("./MailService");
 const PDFDoc = require("pdfkit");
 const db = require("../models/database");
+const bills = require("../models/bills");
 const fs = require("fs");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
@@ -9,7 +10,14 @@ const mailService = new MailService();
 
 const Camper = db.campers;
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
+  // Gather bill data
+  const previousBill = await bills.findOne({
+    order: [["createdAt", "DESC"]],
+  });
+  const billNr = previousBill.billNr + 1;
+
+  // Gather children
   const childCount = parseInt(req.body["childCount"]);
   let campers = [];
   for (let i = 1; i < childCount + 1; ++i) {
@@ -64,6 +72,7 @@ exports.create = (req, res) => {
     });
   }
   if (process.env.NODE_ENV === "dev") {
+    bills.create();
     Camper.bulkCreate(campers)
       .then((data) => res.send(data))
       .catch((err) =>
@@ -72,7 +81,7 @@ exports.create = (req, res) => {
         })
       );
     const price = calculatePrice(campers);
-    generatePDF(campers, price);
+    generatePDF(campers, price, billNr);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
   }
@@ -91,7 +100,7 @@ const calculatePrice = (campers) => {
   return price;
 };
 
-const generatePDF = (campers, price) => {
+const generatePDF = (campers, price, billNr) => {
   const name = campers[0].kontakt_nimi.replace(/ /g, "_").toLowerCase();
   const doc = new PDFDoc({
     size: "A4",
@@ -126,7 +135,6 @@ const generatePDF = (campers, price) => {
   const billTop = contentTop + 80;
 
   doc.fontSize(11).font("Helvetica");
-  const billNr = "21001";
 
   const today = new Date();
   const due = new Date();
@@ -135,7 +143,7 @@ const generatePDF = (campers, price) => {
   const billDate = today.toLocaleDateString("et").replace(/\//g, ".");
   const billDue = due.toLocaleDateString("et").replace(/\//g, ".");
 
-  const billNrLength = doc.widthOfString(billNr);
+  const billNrLength = doc.widthOfString(`${billNr}`);
   const billDateLength = doc.widthOfString(billDate);
   const billDueLength = doc.widthOfString(billDue);
 
@@ -147,7 +155,11 @@ const generatePDF = (campers, price) => {
     .text("Maksetähtaeg:");
   doc
     .font("Helvetica-Bold")
-    .text(billNr, doc.page.width - billDataRightOffset - billNrLength, billTop)
+    .text(
+      `${billNr}`,
+      doc.page.width - billDataRightOffset - billNrLength,
+      billTop
+    )
     .font("Helvetica")
     .text(billDate, doc.page.width - billDataRightOffset - billDateLength)
     .text(billDue, doc.page.width - billDataRightOffset - billDueLength);
@@ -255,7 +267,7 @@ const generatePDF = (campers, price) => {
   doc.text("Selgitus", sideMargin);
   doc.moveDown();
   doc.fontSize(10).font("Helvetica");
-  doc.text(`Arve 21001, `, { continued: true });
+  doc.text(`Arve ${billNr}, `, { continued: true });
   for (let i = 0; i < campers.length; ++i) {
     doc.text(
       `${campers[i].nimi} ${shiftData[campers[i].vahetus].id.slice(0, 4)}`,
