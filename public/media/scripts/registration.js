@@ -34,6 +34,17 @@ const displayPrice = (data) => {
 };
 
 // --- Program
+const pageAccessedByReload =
+  (window.performance.navigation && window.performance.navigation.type === 1) ||
+  window.performance
+    .getEntriesByType("navigation")
+    .map((nav) => nav.type)
+    .includes("reload");
+
+if (pageAccessedByReload) {
+  document.getElementById("regform").reset();
+}
+
 const regUnits = document.getElementsByClassName("registration-form__unit");
 const regClosers = document.getElementsByClassName("registration-form__close");
 

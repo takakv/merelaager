@@ -96,6 +96,7 @@ const generatePDF = (campers, price) => {
       Title: "Arve",
       Author: "Laoküla merelaager",
     },
+    margin: 60,
   });
 
   const sideMargin = 60;
