@@ -5,6 +5,7 @@ import {
   addChild,
   regClosers,
   priceAffectingFields,
+  priceDisplay,
 } from "./registration/htmlElements.js";
 import {
   addCard,
@@ -44,6 +45,7 @@ addChild.onclick = () => {
   ++childCount;
   childCountEl.value = childCount;
   preDisplay.innerText = `${childCount * 50}`;
+  priceDisplay.innerText = `${parseInt(priceDisplay.innerText) + 50}`;
 };
 
 for (let i = 1; i < 4; ++i) {
@@ -52,6 +54,7 @@ for (let i = 1; i < 4; ++i) {
     childCountEl.value = childCount;
     removeCard(childCount);
     preDisplay.innerText = `${childCount * 50}`;
+    priceDisplay.innerText = `${parseInt(priceDisplay.innerText) - 50}`;
   };
 }
 
@@ -60,6 +63,10 @@ for (let i = 1; i < childCount; ++i) {
 }
 
 updatePrice(childCount);
+priceDisplay.innerText = `${
+  parseInt(priceDisplay.innerText) + childCount * 50
+}`;
+
 priceAffectingFields.forEach((fields) => {
   fields.forEach((field) => {
     field.onchange = () => {
