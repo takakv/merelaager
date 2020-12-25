@@ -26,3 +26,5 @@ export const fields = {
 
 export const priceDisplay = document.getElementById("payment-total");
 export const priceAffectingFields = [[...fields.shift], [...fields.isNew], [...fields.city]];
+
+export const submitButton = document.getElementById("submitBtn");

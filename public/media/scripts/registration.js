@@ -6,6 +6,7 @@ import {
   regClosers,
   priceAffectingFields,
   priceDisplay,
+  submitButton,
 } from "./registration/htmlElements.js";
 import {
   addCard,
@@ -74,5 +75,7 @@ priceAffectingFields.forEach((fields) => {
     };
   });
 });
+
+if (window.location.hostname !== "merelaager.ee") submitButton.disabled = false;
 
 window.onunload = () => {};
