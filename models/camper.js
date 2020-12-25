@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
@@ -84,7 +85,8 @@ module.exports = (sequelize) => {
       },
     },
     {
-      tableName: "Laagrilapsed",
+      tableName:
+        process.env.NODE_ENV === "prod" ? "Laagrilapsed" : "Testlapsed",
     }
   );
 };
