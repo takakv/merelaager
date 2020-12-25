@@ -50,6 +50,10 @@ module.exports = (sequelize) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      maakond: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       riik: {
         type: DataTypes.TEXT,
         allowNull: false,

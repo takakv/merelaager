@@ -56,6 +56,7 @@ const fields = {
   road: document.getElementsByClassName("roadField"),
   city: document.getElementsByClassName("cityField"),
   country: document.getElementsByClassName("countryField"),
+  county: document.getElementsByClassName("countyField"),
 };
 
 // Fields whose requirement setting depends on variables.
@@ -70,6 +71,7 @@ const requiredFields = [
   fields.road,
   fields.city,
   fields.country,
+  fields.county,
 ];
 
 // Require fields of first card.

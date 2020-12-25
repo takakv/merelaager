@@ -57,8 +57,7 @@
             </div>
             <div class="registration-form__field registration-form__field--row">
                 <label for="newAtCamp-{{this}}">Esimest korda merelaagris?</label>
-                <input type="checkbox" name="newAtCamp-{{this}}" id="newAtCamp-{{this}}" class="newField" value="true"
-                       checked>
+                <input type="checkbox" name="newAtCamp-{{this}}" id="newAtCamp-{{this}}" class="newField" value="true">
             </div>
         </div>
         <div class="registration-form__row registration-form__row--minor">
@@ -75,8 +74,31 @@
                 <input type="text" name="road-{{this}}" id="road-{{this}}" class="roadField">
             </div>
             <div class="registration-form__field">
-                <label for="city-{{this}}" class="u-required">Linn</label>
+                <label for="city-{{this}}" class="u-required">Linn / Küla / Vald</label>
                 <input type="text" name="city-{{this}}" id="city-{{this}}" class="cityField">
+            </div>
+        </div>
+        <div class="registration-form__row">
+            <div class="registration-form__field">
+                <label for="county-{{this}}" class="u-required">Maakond</label>
+                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField">
+                <datalist id="counties">
+                    <option value="Harju"></option>
+                    <option value="Tartu"></option>
+                    <option value="Ida-Viru"></option>
+                    <option value="Pärnu"></option>
+                    <option value="Lääne-Viru"></option>
+                    <option value="Viljandi"></option>
+                    <option value="Rapla"></option>
+                    <option value="Võru"></option>
+                    <option value="Saare"></option>
+                    <option value="Jõgeva"></option>
+                    <option value="Järva"></option>
+                    <option value="Valga"></option>
+                    <option value="Põlva"></option>
+                    <option value="Lääne"></option>
+                    <option value="Hiiu"></option>
+                </datalist>
             </div>
             <div class="registration-form__field">
                 <label for="country-{{this}}" class="u-required">Riik</label>
