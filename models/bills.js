@@ -26,8 +26,7 @@ const bills = sequelize.define(
 
 const setUp = async () => {
   await bills.sync({ force: true });
-  await bills.findOrCreate({ where: { billNr: 21001 } });
-  await bills.create();
+  await bills.findOrCreate({ where: { billNr: 21000 } });
 };
 
 setUp();
