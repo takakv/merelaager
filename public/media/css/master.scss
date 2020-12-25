@@ -335,6 +335,17 @@ a {
     box-shadow: 0 8px 15px rgba(var(--primary-rgb), 0.1);
   }
 
+  &:disabled {
+    color: gray;
+    border-color: gray;
+
+    &:hover {
+      cursor: not-allowed;
+      background-color: inherit;
+      box-shadow: none;
+    }
+  }
+
   &--white {
     border-color: #fff8;
 
