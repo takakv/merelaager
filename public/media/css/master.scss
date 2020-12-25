@@ -1261,7 +1261,7 @@ main > section {
   &__row {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 
     &:last-child {
       margin-bottom: 0;
@@ -1277,10 +1277,17 @@ main > section {
     }
   }
 
+  &__row.has-after &__field {
+    @media screen and (min-width: $laptop-break) {
+      margin-bottom: 0;
+    }
+  }
+
   &__field {
     display: flex;
     align-items: center;
     margin-right: 1em;
+    margin-bottom: 1em;
 
     &:last-child {
       margin-right: 0;
@@ -1307,8 +1314,10 @@ main > section {
       border-top-right-radius: 4px;
       background-color: rgba(var(--primary-rgb), 0.05);
 
-      &:invalid {
-        //border-bottom-color: var(--highlight);
+      &:-moz-ui-invalid {
+        border-bottom-color: var(--highlight);
+        outline: none;
+        box-shadow: none;
       }
     }
 
