@@ -1,12 +1,14 @@
-import { regClosers, regUnits, addChild, fields } from "./htmlElements.js";
+import {
+  regClosers,
+  regUnits,
+  addChild,
+  fields,
+  emsaFields,
+  emsaNotice,
+} from "./htmlElements.js";
+import { hide } from "../registration.js";
 
-// --- functions
-const hide = (element, isHidden) => {
-  if (isHidden) element.classList.add("is-hidden");
-  else element.classList.remove("is-hidden");
-};
-
-const require = (element, isRequired) => {
+const req = (element, isRequired) => {
   hide(element.parentElement, !isRequired);
   element.required = isRequired;
 };
@@ -46,7 +48,6 @@ export const addCard = (index) => {
 
 // Remove cards.
 export const removeCard = (index) => {
-  console.log(index);
   // Display logic.
   hide(regUnits[index], true);
   if (index !== 1) hide(regClosers[index - 1], false);
@@ -55,3 +56,36 @@ export const removeCard = (index) => {
   // Requirement logic.
   requireUnit(requiredFields, index, false);
 };
+
+// Fields whose requirement setting depends on variables.
+const statefulFields = [fields.gender, fields.birthday];
+
+// Check for idCode field state.
+for (let i = 0; i < 4; ++i) {
+  fields.useId[i].addEventListener("change", (event) => {
+    const isRequired = !!event.target.checked;
+    req(fields.idCode[i], !isRequired);
+    statefulFields.forEach((field) => {
+      req(field[i], isRequired);
+    });
+  });
+}
+
+// Display EMSA notice to members.
+let checkedCount = 0;
+emsaFields.forEach((field) => {
+  // Initialisation for cached reloads.
+  if (field.checked) {
+    ++checkedCount;
+    hide(emsaNotice, false);
+  }
+  field.onclick = () => {
+    if (field.checked) {
+      hide(emsaNotice, false);
+      ++checkedCount;
+    } else {
+      --checkedCount;
+      if (!checkedCount) hide(emsaNotice, true);
+    }
+  };
+});
