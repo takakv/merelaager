@@ -2,24 +2,28 @@
   "1v": {
     "name": "Kai Kukepuu",
     "email": "kai@merelaager.ee",
+    "phone": "503 9095",
     "id": "1. vahetus",
     "price": 200
   },
   "2v": {
     "name": "Ahto Aaslav-Kaasik",
     "email": "ahto@merelaager.ee",
+    "phone": "56286586",
     "id": "2. vahetus",
     "price": 290
   },
   "3v": {
     "name": "Katrin Mellis",
     "email": "kati@merelaager.ee",
+    "phone": "5662 8004",
     "id": "3. vahetus",
     "price": 290
   },
   "4v": {
     "name": "Leho Rohtla",
     "email": "leho@merelaager.ee",
+    "phone": "518 6648",
     "id": "4. vahetus",
     "price": 290
   }

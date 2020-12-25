@@ -33,7 +33,9 @@ const generateHTML = (campers, price) => {
   response += "<p>Parimate soovidega</p>";
   response += "<p>";
   for (let i = 0; i < shifts.length; ++i) {
-    response += `${shiftData[shifts[i]].name} (${shiftData[shifts[i]].email})`;
+    response += `${shiftData[shifts[i]].name} (${
+      shiftData[shifts[i]].email
+    }, tel. ${shiftData[shifts[i]].phone})`;
     if (i + 1 !== shifts.length) response += ", ";
   }
   response += "</p>";
