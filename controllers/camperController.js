@@ -1,3 +1,4 @@
+require("dotenv").config();
 const MailService = require("./MailService");
 const PDFDoc = require("pdfkit");
 const db = require("../models/database");
@@ -132,7 +133,7 @@ exports.create = async (req, res) => {
         }
       }
     }
-    axios.post("http://localhost:3000/registreerimine/events/", slotData);
+    axios.post(process.env.URL, slotData);
     try {
       const data = await Camper.bulkCreate(campers);
       if (regCampers) res.redirect("../edu/");
