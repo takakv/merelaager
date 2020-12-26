@@ -34,12 +34,12 @@ const slots = sequelize.define("slot", {
   boySlots: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 18,
+    defaultValue: 1,
   },
   girlSlots: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 18,
+    defaultValue: 1,
   },
 });
 
