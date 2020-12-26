@@ -133,8 +133,9 @@ exports.create = async (req, res) => {
     }
     try {
       const data = await Camper.bulkCreate(campers);
-      // res.redirect("../edu/");
-      res.send(data);
+      if (regCampers) res.redirect("../edu/");
+      else res.redirect("../reserv/");
+      // res.send(data);
     } catch (err) {
       await res
         .status(500)

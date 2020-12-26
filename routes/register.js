@@ -34,4 +34,14 @@ router.get("/edu/", (req, res) => {
   });
 });
 
+router.get("/reserv/", (req, res) => {
+  res.render("reserv", {
+    title: meta.title,
+    description: meta.description,
+    url_path: url_prefix,
+    layout: "metadata",
+    body_class: "success",
+  });
+});
+
 module.exports = router;
