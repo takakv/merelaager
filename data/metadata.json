@@ -35,6 +35,22 @@
       "dscription": "Küsimused ja vastused."
     }
   },
+  "legal": {
+    "title": "Õigusalane teave | Merelaager",
+    "description": "",
+    "tingimused": {
+      "title": "Veebilehe kasutajatingimused | Merelaager",
+      "description": ""
+    },
+    "isikuandmed": {
+      "title": "Isikuandmete töötlemine | Merelaager",
+      "description": ""
+    },
+    "cookies": {
+      "title": "Küpsiste kasutamine | Merelaager",
+      "description": ""
+    }
+  },
   "broneeri": {
     "title": "Laagrikoha broneerimine | Merelaager",
     "description": ""

@@ -1,7 +1,7 @@
 const MailService = require("./MailService");
 const PDFDoc = require("pdfkit");
 const db = require("../models/database");
-const bills = require("../models/bills");
+const { bills, slots } = require("../models/bills");
 const fs = require("fs");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
@@ -10,12 +10,38 @@ const mailService = new MailService();
 
 const Camper = db.campers;
 
+const slotData = {
+  1: {
+    boys: 20,
+    girls: 20,
+  },
+  2: {
+    boys: 20,
+    girls: 20,
+  },
+  3: {
+    boys: 20,
+    girls: 20,
+  },
+  4: {
+    boys: 20,
+    girls: 20,
+  },
+};
+
 exports.create = async (req, res) => {
   // Gather bill data
   const previousBill = await bills.findOne({
     order: [["createdAt", "DESC"]],
   });
   const billNr = previousBill.billNr + 1;
+
+  // Gather slot data
+  for (const [key, value] of Object.entries(slotData)) {
+    const slotCounts = await slots.findByPk(key);
+    value.boys = slotCounts.boySlots;
+    value.girls = slotCounts.girlSlots;
+  }
 
   // Gather children
   const childCount = parseInt(req.body["childCount"]);
@@ -74,9 +100,38 @@ exports.create = async (req, res) => {
   }
   if (process.env.NODE_ENV === "dev") {
     bills.create();
+    for (let i = 0; i < childCount; ++i) {
+      const shiftNr = parseInt(campers[i].vahetus[0]);
+      const gender = campers[i].sugu === "Poiss" ? "boys" : "girls";
+      const dbLoc = {
+        where: {
+          shift: shiftNr,
+        },
+      };
+      if (isFull(slotData[shiftNr], gender)) {
+        console.log("Too much");
+      } else {
+        if (gender === "boys") {
+          await slots.update(
+            {
+              boySlots: --slotData[shiftNr].boys,
+            },
+            dbLoc
+          );
+        } else {
+          await slots.update(
+            {
+              girlSlots: --slotData[shiftNr].girls,
+            },
+            dbLoc
+          );
+        }
+      }
+    }
     try {
-      await Camper.bulkCreate(campers);
-      res.redirect("../edu/");
+      const data = await Camper.bulkCreate(campers);
+      // res.redirect("../edu/");
+      res.send(data);
     } catch (err) {
       await res.status(500).send({
         message: err.message || "Midagi läks nihu.",
@@ -351,4 +406,8 @@ const generatePDF = (campers, price, billNr) => {
       .catch((error) => console.log(error));
   });
   doc.end();
+};
+
+const isFull = (slot, gender) => {
+  return slot[gender] - 1 < 0;
 };

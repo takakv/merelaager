@@ -3,7 +3,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "./data/bills.sqlite",
+  storage: "./data/campData.sqlite",
 });
 
 sequelize
@@ -24,11 +24,39 @@ const bills = sequelize.define(
   { tableName: "bills" }
 );
 
+const slots = sequelize.define("slot", {
+  shift: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false,
+  },
+  boySlots: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 18,
+  },
+  girlSlots: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 18,
+  },
+});
+
 const setUp = async () => {
   await bills.sync({ alter: true });
+  await slots.sync({ alter: true });
   await bills.findOrCreate({ where: { billNr: 21000 } });
+  for (let i = 0; i < 4; ++i) {
+    await slots.findOrCreate({
+      where: {
+        shift: i + 1,
+      },
+    });
+  }
 };
 
 setUp();
 
-module.exports = bills;
+exports.bills = bills;
+exports.slots = slots;
