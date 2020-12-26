@@ -59,6 +59,35 @@ const generateHTML = (campers, price, regCount) => {
   return response;
 };
 
+const generateFailureHTML = (campers) => {
+  const shifts = [];
+  for (let i = 0; i < campers.length; ++i) {
+    if (!shifts.includes(campers[i].vahetus)) shifts.push(campers[i].vahetus);
+  }
+  let response = "<b>Täname, et valisite merelaagri!</b>";
+  if (campers.length === 1)
+    response +=
+      "<p>Kahjuks on vahetuse kohad juba täis. Oleme lapse registreerinud reservnimekirja. " +
+      "Kui põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>";
+  else
+    response +=
+      "<p>Kahjuks on kõik soovitud kohad juba täis. Oleme registreerinud lapsed reservnimekirja. " +
+      "Kui põhinimekirjas mõni koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>";
+  response += "<p>Parimate soovidega</p>";
+  response += "<p>";
+  for (let i = 0; i < shifts.length; ++i) {
+    response += `${shiftData[shifts[i]].name} (${
+      shiftData[shifts[i]].email
+    }, tel. ${shiftData[shifts[i]].phone})`;
+    if (i + 1 !== shifts.length) response += ", ";
+  }
+  response += "</p>";
+  response +=
+    "<small>Tegu on automaatvastusega, palume sellele meilile mitte vastata. " +
+    "Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</small>";
+  return response;
+};
+
 class MailService {
   constructor() {
     const config = {
@@ -72,7 +101,7 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendMail(campers, price, pdfName, regCount) {
+  sendConfirmationMail(campers, price, pdfName, regCount) {
     return this._transporter.sendMail({
       from: {
         name: "Broneerimine - merelaager",
@@ -88,6 +117,18 @@ class MailService {
           contentType: "application/pdf",
         },
       ],
+    });
+  }
+
+  sendFailureMail(campers) {
+    return this._transporter.sendMail({
+      from: {
+        name: "Broneerimine - merelaager",
+        address: "bronn@merelaager.ee",
+      },
+      to: campers[0].kontakt_email,
+      subject: "Reservnimekirja kandmise teade",
+      html: generateFailureHTML(campers),
     });
   }
 }

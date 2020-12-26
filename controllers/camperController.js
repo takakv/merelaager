@@ -144,13 +144,15 @@ exports.create = async (req, res) => {
     }
     const price = calculatePrice(campers);
     if (regCampers) generatePDF(campers, price, billNr, regCampers);
+    else mailService.sendFailureMail(campers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
   }
 };
 
-const mailer = async (campers, price, pdfName, regCount) =>
-  await mailService.sendMail(campers, price, pdfName, regCount);
+const mailer = async (campers, price, pdfName, regCount) => {
+  await mailService.sendConfirmationMail(campers, price, pdfName, regCount);
+};
 
 const calculatePrice = (campers) => {
   let price = 0;
