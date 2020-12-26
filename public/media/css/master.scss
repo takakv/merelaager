@@ -604,6 +604,59 @@ a {
   }
 }
 
+.success {
+  color: #fff;
+  background-color: #55629a;
+  background-image: url(../img/404_bg.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  main {
+    width: 100vw;
+    min-height: 100vh;
+  }
+
+  .success-message {
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    text-align: center;
+    @media screen and (max-width: $tablet-break) {
+      top: 25%;
+    }
+  }
+
+  .disclaimer {
+    font-size: 0.825rem;
+    @media screen and (min-width: $tablet-break) {
+      font-size: 1rem;
+    }
+  }
+
+  h3 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    @media screen and (max-width: $tablet-break) {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    font-size: 2.5rem;
+    @media screen and (max-width: $tablet-break) {
+      font-size: 1.5rem;
+      margin-top: 0.75em;
+    }
+  }
+
+  a {
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 3em;
+  }
+}
+
 // Primary navigation
 .header {
   padding-top: 1em;

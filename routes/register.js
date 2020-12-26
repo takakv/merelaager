@@ -24,4 +24,14 @@ const campers = require("../controllers/camperController");
 
 router.post("/register/", urlEncParser, campers.create);
 
+router.get("/edu/", (req, res) => {
+  res.render("success", {
+    title: meta.title,
+    description: meta.description,
+    url_path: url_prefix,
+    layout: "metadata",
+    body_class: "success",
+  });
+});
+
 module.exports = router;

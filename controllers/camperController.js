@@ -74,15 +74,16 @@ exports.create = async (req, res) => {
   }
   if (process.env.NODE_ENV === "dev") {
     bills.create();
-    Camper.bulkCreate(campers)
-      .then((data) => res.send(data))
-      .catch((err) =>
-        res.status(500).send({
-          message: err.message || "Midagi läks nihu.",
-        })
-      );
+    try {
+      await Camper.bulkCreate(campers);
+      res.redirect("../edu/");
+    } catch (err) {
+      await res.status(500).send({
+        message: err.message || "Midagi läks nihu.",
+      });
+    }
     const price = calculatePrice(campers);
-    generatePDF(campers, price, billNr);
+    // generatePDF(campers, price, billNr);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
   }
