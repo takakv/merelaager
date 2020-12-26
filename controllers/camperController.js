@@ -83,7 +83,7 @@ exports.create = async (req, res) => {
       });
     }
     const price = calculatePrice(campers);
-    // generatePDF(campers, price, billNr);
+    generatePDF(campers, price, billNr);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
   }
