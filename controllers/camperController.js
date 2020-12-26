@@ -46,6 +46,8 @@ exports.create = async (req, res) => {
   // Gather children
   const childCount = parseInt(req.body["childCount"]);
   let campers = [];
+  let regCampers = 0;
+
   for (let i = 1; i < childCount + 1; ++i) {
     const hasIdCode = req.body[`useIdCode-${i}`] !== "false";
     const isRookie = req.body[`newAtCamp-${i}`] === "true";
@@ -98,6 +100,7 @@ exports.create = async (req, res) => {
       varu_tel: req.body.alt_phone,
     });
   }
+
   if (process.env.NODE_ENV === "dev") {
     bills.create();
     for (let i = 0; i < childCount; ++i) {
@@ -108,9 +111,8 @@ exports.create = async (req, res) => {
           shift: shiftNr,
         },
       };
-      if (isFull(slotData[shiftNr], gender)) {
-        res.send("Pole enam kohti :(");
-      } else {
+      if (!isFull(slotData[shiftNr], gender)) {
+        ++regCampers;
         campers[i].registreeritud = true;
         if (gender === "boys") {
           await slots.update(
@@ -134,23 +136,26 @@ exports.create = async (req, res) => {
       // res.redirect("../edu/");
       res.send(data);
     } catch (err) {
-      await res.status(500).send({
-        message: err.message || "Midagi läks nihu.",
-      });
+      await res
+        .status(500)
+        .send(
+          "Mingi väga, väga, väga suur jama juhtus. Palun võtke kohe meiega ühendust aadressil webmaster@merelaager.ee"
+        );
     }
     const price = calculatePrice(campers);
-    generatePDF(campers, price, billNr);
+    if (regCampers) generatePDF(campers, price, billNr, regCampers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
   }
 };
 
-const mailer = async (campers, price, pdfName) =>
-  await mailService.sendMail(campers, price, pdfName);
+const mailer = async (campers, price, pdfName, regCount) =>
+  await mailService.sendMail(campers, price, pdfName, regCount);
 
 const calculatePrice = (campers) => {
   let price = 0;
   campers.forEach((camper) => {
+    if (!camper.registreeritud) return;
     price += shiftData[camper.vahetus].price;
     if (camper.linn.toLowerCase() === "tallinn") price -= 20;
     else if (camper.vana_olija) price -= 10;
@@ -158,7 +163,7 @@ const calculatePrice = (campers) => {
   return price;
 };
 
-const generatePDF = (campers, price, billNr) => {
+const generatePDF = (campers, price, billNr, regCampers) => {
   const name = campers[0].kontakt_nimi.replace(/ /g, "_").toLowerCase();
   const doc = new PDFDoc({
     size: "A4",
@@ -279,6 +284,7 @@ const generatePDF = (campers, price, billNr) => {
     },
   };
   for (let i = 0; i < campers.length; ++i) {
+    if (!campers[i].registreeritud) continue;
     if (campers[i].vahetus === "1v") {
       if (campers[i].linn.toLowerCase() === "tallinn") ++counters.sv1.count;
       else if (campers[i].vana_olija) ++counters.sv2.count;
@@ -326,15 +332,17 @@ const generatePDF = (campers, price, billNr) => {
   doc.moveDown();
   doc.fontSize(10).font("Helvetica");
   doc.text(`Arve ${billNr}, `, { continued: true });
+  let processedCampers = 0;
   for (let i = 0; i < campers.length; ++i) {
+    if (!campers[i].registreeritud) continue;
+    ++processedCampers;
     doc.text(
       `${campers[i].nimi} ${shiftData[campers[i].vahetus].id.slice(0, 4)}`,
       {
         continued: true,
       }
     );
-    if (campers[i] !== campers[campers.length - 1])
-      doc.text(", ", { continued: true });
+    if (processedCampers !== regCampers) doc.text(", ", { continued: true });
   }
 
   // Footer
@@ -402,7 +410,7 @@ const generatePDF = (campers, price, billNr) => {
     );
   doc.save();
   writeStream.on("finish", () => {
-    mailer(campers, price, `arve_${name}.pdf`)
+    mailer(campers, price, `arve_${name}.pdf`, regCampers)
       .then(() => console.log("Success"))
       .catch((error) => console.log(error));
   });

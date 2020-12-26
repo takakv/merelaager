@@ -5,22 +5,36 @@ const fs = require("fs");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
-const generateHTML = (campers, price) => {
+const generateHTML = (campers, price, regCount) => {
   const shifts = [];
   let response = "<b>Täname, et valisite merelaagri!</b>" + "<ul>";
   for (let i = 0; i < campers.length; ++i) {
     if (!shifts.includes(campers[i].vahetus)) shifts.push(campers[i].vahetus);
+    if (!campers[i].registreeritud) continue;
     response += `<li>${campers[i].nimi} (${
       shiftData[campers[i].vahetus].id
     })</li>`;
   }
   response += "</ul>";
   response += "<p>on registreeritud.</p>";
+  if (regCount !== campers.length) {
+    response += "<ul>";
+    for (let i = 0; i < campers.length; ++i) {
+      if (campers[i].registreeritud) continue;
+      response += `<li>${campers[i].nimi} (${
+        shiftData[campers[i].vahetus].id
+      })</li>`;
+    }
+    response += "</ul>";
+    response +=
+      "<p>on lisatud reservnimekirja. Kui põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust. " +
+      "Palun võtke vahetuse juhatajaga ühendust, kui soovite registreerimise tühistada.</p>";
+  }
   response +=
     "<p>Palume üle kanda ka koha broneerimise tasu (või kogu summa). " +
     "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>";
   response += `<p>Tasuda: ${
-    50 * campers.length
+    50 * regCount
   } €. Kogusumma (k.a broneerimistasu): ${price} €.`;
   response +=
     "<p>MTÜ Noorte Mereklubi" +
@@ -58,7 +72,7 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendMail(campers, price, pdfName) {
+  sendMail(campers, price, pdfName, regCount) {
     return this._transporter.sendMail({
       from: {
         name: "Broneerimine - merelaager",
@@ -66,7 +80,7 @@ class MailService {
       },
       to: campers[0].kontakt_email,
       subject: "Broneeringu kinnitus",
-      html: generateHTML(campers, price),
+      html: generateHTML(campers, price, regCount),
       attachments: [
         {
           filename: "arve.pdf",
