@@ -423,9 +423,9 @@ const generatePDF = (campers, price, billNr, regCampers) => {
     );
   doc.save();
   writeStream.on("finish", () => {
-    // mailer(campers, price, `arve_${name}.pdf`, regCampers, billNr)
-    //   .then(() => console.log("Success"))
-    //   .catch((error) => console.log(error));
+    mailer(campers, price, `arve_${name}.pdf`, regCampers, billNr)
+      .then(() => console.log("Success"))
+      .catch((error) => console.log(error));
   });
   doc.end();
 };
