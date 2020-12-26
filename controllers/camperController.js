@@ -3,6 +3,7 @@ const PDFDoc = require("pdfkit");
 const db = require("../models/database");
 const { bills, slots } = require("../models/bills");
 const fs = require("fs");
+const axios = require("axios");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
@@ -131,6 +132,7 @@ exports.create = async (req, res) => {
         }
       }
     }
+    axios.post("http://localhost:3000/registreerimine/events/", slotData);
     try {
       const data = await Camper.bulkCreate(campers);
       if (regCampers) res.redirect("../edu/");

@@ -30,7 +30,6 @@ const calculatePrice = (count) => {
   getValues(count);
   let price = 0;
   childPrices.forEach((child) => {
-    console.log(child);
     if (child.shiftPrice) price += child.shiftPrice;
     else return;
     if (child.isFromTallinn) price -= 20;

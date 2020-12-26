@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
+const { slots } = require("../models/bills");
 
 const fs = require("fs");
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
@@ -42,6 +43,77 @@ router.get("/reserv/", (req, res) => {
     layout: "metadata",
     body_class: "success",
   });
+});
+
+let spots = {
+  1: {
+    boys: 20,
+    girls: 20,
+  },
+  2: {
+    boys: 20,
+    girls: 20,
+  },
+  3: {
+    boys: 20,
+    girls: 20,
+  },
+  4: {
+    boys: 20,
+    girls: 20,
+  },
+};
+
+// Gather slot data
+for (const [key, value] of Object.entries(spots)) {
+  slots.findByPk(key).then((count) => {
+    value.boys = count.boySlots;
+    value.girls = count.girlSlots;
+  });
+}
+
+let clients = [];
+
+const sendEventsToAll = () => {
+  clients.forEach((c) => c.res.write(`data: ${JSON.stringify(spots)}\n\n`));
+};
+
+router.post("/events/", [urlEncParser, bodyParser.json()], (req, res) => {
+  spots = req.body;
+  sendEventsToAll();
+  res.status(200).end();
+});
+
+router.get("/events/", async (req, res) => {
+  console.log("Got events");
+  // Headers
+  const headers = {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  };
+  res.writeHead(200, headers);
+
+  const clientId = Date.now();
+  const newClient = {
+    id: clientId,
+    res,
+  };
+  clients.push(newClient);
+
+  req.on("close", () => {
+    console.log(`${clientId} Connection closed`);
+    clients = clients.filter((c) => c.id !== clientId);
+  });
+
+  res.write("retry: 10000\n\n");
+  res.write(`data: ${JSON.stringify(spots)}\n\n`);
+  //
+  // while (true) {
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   ++spots;
+  //   res.write(`data: ${spots}\n\n`);
+  // }
 });
 
 module.exports = router;

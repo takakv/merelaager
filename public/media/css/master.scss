@@ -1451,3 +1451,23 @@ main > section {
     margin-left: 2em;
   }
 }
+
+.vahetused-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.vahetuste-kohad {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: 100%;
+  @media screen and(min-width: $tablet-break) {
+    width: 20%;
+  }
+
+  h4 {
+    width: 100%;
+  }
+}

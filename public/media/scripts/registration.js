@@ -78,4 +78,14 @@ priceAffectingFields.forEach((fields) => {
 
 if (window.location.hostname !== "merelaager.ee") submitButton.disabled = false;
 
+const source = new EventSource("/registreerimine/events/");
+const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
+source.onmessage = (event) => {
+  const parsedData = JSON.parse(event.data);
+  for (let i = 0; i < 4; ++i) {
+    shiftSpots[i].children[1].innerText = `Poisid: ${parsedData[i + 1].boys}`;
+    shiftSpots[i].children[2].innerText = `Tüdrukud: ${parsedData[i + 1].girls}`;
+  }
+};
+
 window.onunload = () => {};
