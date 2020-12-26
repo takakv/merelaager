@@ -151,8 +151,14 @@ exports.create = async (req, res) => {
   }
 };
 
-const mailer = async (campers, price, pdfName, regCount) => {
-  await mailService.sendConfirmationMail(campers, price, pdfName, regCount);
+const mailer = async (campers, price, pdfName, regCount, billNr) => {
+  await mailService.sendConfirmationMail(
+    campers,
+    price,
+    pdfName,
+    regCount,
+    billNr
+  );
 };
 
 const calculatePrice = (campers) => {
@@ -171,10 +177,15 @@ const generatePDF = (campers, price, billNr, regCampers) => {
   const doc = new PDFDoc({
     size: "A4",
     info: {
-      Title: "Arve",
+      Title: "Makseteatis",
       Author: "Laoküla merelaager",
     },
-    margin: 60,
+    margins: {
+      top: 60,
+      left: 60,
+      right: 60,
+      bottom: 40,
+    },
   });
 
   const sideMargin = 60;
@@ -196,11 +207,10 @@ const generatePDF = (campers, price, billNr, regCampers) => {
     .fontSize(22)
     .font("Helvetica-Bold")
     .text(campers[0].kontakt_nimi, sideMargin, contentTop);
+  doc.fontSize(11).font("Helvetica").text(campers[0].kontakt_email);
 
   // Bill details
   const billTop = contentTop + 80;
-
-  doc.fontSize(11).font("Helvetica");
 
   const today = new Date();
   const due = new Date();
@@ -213,11 +223,11 @@ const generatePDF = (campers, price, billNr, regCampers) => {
   const billDateLength = doc.widthOfString(billDate);
   const billDueLength = doc.widthOfString(billDue);
 
-  const billDataRightOffset = 370;
+  const billDataRightOffset = 330;
 
   doc
-    .text("Arve number:", sideMargin, billTop)
-    .text("Arve kuupäev:")
+    .text("Makseteatise number:", sideMargin, billTop)
+    .text("Makseteatise kuupäev:")
     .text("Maksetähtaeg:");
   doc
     .font("Helvetica-Bold")
@@ -233,7 +243,7 @@ const generatePDF = (campers, price, billNr, regCampers) => {
   doc
     .fontSize(10)
     .text(
-      "Maksekorraldusel palume kindlasti märkida selgituseks arve numbri ning lapse nime ja vahetuse.",
+      "Maksekorraldusel palume kindlasti märkida selgituseks makseteatise numbri ning lapse nime ja vahetuse.",
       sideMargin
     );
 
@@ -321,7 +331,7 @@ const generatePDF = (campers, price, billNr, regCampers) => {
   doc.text(preText, { align: "right" });
   const brText = `Broneerimistasu: ${brPrice} €`;
   doc.text(brText, { align: "right" });
-  const sumText = `Arve summa: ${prePrice + brPrice} €`;
+  const sumText = `Kogusumma: ${prePrice + brPrice} €`;
   doc.text(sumText, { align: "right" });
 
   doc.text("", sideMargin);
@@ -334,7 +344,7 @@ const generatePDF = (campers, price, billNr, regCampers) => {
   doc.text("Selgitus", sideMargin);
   doc.moveDown();
   doc.fontSize(10).font("Helvetica");
-  doc.text(`Arve ${billNr}, `, { continued: true });
+  doc.text(`Makseteatis ${billNr}, `, { continued: true });
   let processedCampers = 0;
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].registreeritud) continue;
@@ -350,8 +360,8 @@ const generatePDF = (campers, price, billNr, regCampers) => {
 
   // Footer
   doc
-    .moveTo(sideMargin, doc.page.height - 140)
-    .lineTo(doc.page.width - sideMargin, doc.page.height - 140)
+    .moveTo(sideMargin, doc.page.height - 110)
+    .lineTo(doc.page.width - sideMargin, doc.page.height - 110)
     .stroke();
   doc.fontSize(9).font("Helvetica");
   doc.text("", sideMargin);
@@ -361,7 +371,7 @@ const generatePDF = (campers, price, billNr, regCampers) => {
     .text(
       "Sõudebaasi tee 23, 13517 Tallinn",
       sideMargin,
-      doc.page.height - 100,
+      doc.page.height - 70,
       {
         width: oneThird,
       }
@@ -371,7 +381,7 @@ const generatePDF = (campers, price, billNr, regCampers) => {
     .text(
       "info@merelaager.ee",
       sideMargin + 5 + oneThird,
-      doc.page.height - 100,
+      doc.page.height - 70,
       {
         width: oneThird,
       }
@@ -381,7 +391,7 @@ const generatePDF = (campers, price, billNr, regCampers) => {
     .text(
       "Swedbank EE862200221011493003",
       sideMargin + 10 + 2 * oneThird,
-      doc.page.height - 100,
+      doc.page.height - 70,
       {
         align: "right",
         width: oneThird,
@@ -397,25 +407,25 @@ const generatePDF = (campers, price, billNr, regCampers) => {
   // Footer headings
   doc.font("Helvetica-Bold");
   doc
-    .text("MTÜ Noorte Mereklubi", sideMargin, doc.page.height - 120, {
+    .text("MTÜ Noorte Mereklubi", sideMargin, doc.page.height - 90, {
       width: oneThird,
     })
-    .text("Kontakt", sideMargin + 5 + oneThird, doc.page.height - 120, {
+    .text("Kontakt", sideMargin + 5 + oneThird, doc.page.height - 90, {
       width: oneThird * 2,
     })
     .text(
       "Arveldus",
       doc.page.width - sideMargin - bankLength,
-      doc.page.height - 120,
+      doc.page.height - 90,
       {
         width: oneThird,
       }
     );
   doc.save();
   writeStream.on("finish", () => {
-    mailer(campers, price, `arve_${name}.pdf`, regCampers)
-      .then(() => console.log("Success"))
-      .catch((error) => console.log(error));
+    // mailer(campers, price, `arve_${name}.pdf`, regCampers, billNr)
+    //   .then(() => console.log("Success"))
+    //   .catch((error) => console.log(error));
   });
   doc.end();
 };

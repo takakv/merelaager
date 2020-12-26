@@ -32,7 +32,7 @@ const generateHTML = (campers, price, regCount) => {
   }
   response +=
     "<p>Palume üle kanda ka koha broneerimise tasu (või kogu summa). " +
-    "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Arve leiate manusest.</p>";
+    "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Makseteatise leiate manusest.</p>";
   response += `<p>Tasuda: ${
     50 * regCount
   } €. Kogusumma (k.a broneerimistasu): ${price} €.`;
@@ -101,7 +101,7 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendConfirmationMail(campers, price, pdfName, regCount) {
+  sendConfirmationMail(campers, price, pdfName, regCount, billNr) {
     return this._transporter.sendMail({
       from: {
         name: "Broneerimine - merelaager",
@@ -112,7 +112,7 @@ class MailService {
       html: generateHTML(campers, price, regCount),
       attachments: [
         {
-          filename: "arve.pdf",
+          filename: `${billNr}.pdf`,
           path: `./data/arved/${pdfName}`,
           contentType: "application/pdf",
         },
