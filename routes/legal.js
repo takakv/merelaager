@@ -45,8 +45,8 @@ router.get("/kupsised/", (req, res, next) => {
 
 router.get("/brand/", (req, res, next) => {
   res.render("brand", {
-    title: meta.vahetused.title,
-    description: meta.vahetused.description,
+    title: meta.brand.title,
+    description: meta.brand.description,
     url_path: url_prefix + "brand/",
     body_class: "legal",
   });

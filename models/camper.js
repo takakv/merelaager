@@ -68,6 +68,11 @@ module.exports = (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      registreeritud: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
       kontakt_nimi: {
         type: DataTypes.TEXT,
         allowNull: false,

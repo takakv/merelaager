@@ -109,8 +109,9 @@ exports.create = async (req, res) => {
         },
       };
       if (isFull(slotData[shiftNr], gender)) {
-        console.log("Too much");
+        res.send("Pole enam kohti :(");
       } else {
+        campers[i].registreeritud = true;
         if (gender === "boys") {
           await slots.update(
             {
