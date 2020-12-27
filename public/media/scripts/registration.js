@@ -86,7 +86,7 @@ const unlocker = (moment) => {
 };
 
 if (window.location.hostname === "merelaager.ee") {
-  unlocker("27 Dec 2020 10:00:00 UTC");
+  unlocker("01 Jan 2021 14:00:00 UTC");
 } else {
   unlocker("27 Dec 2020 08:56:00 UTC");
 }
