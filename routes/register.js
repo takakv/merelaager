@@ -88,8 +88,6 @@ router.post(
   "/spotupdate/",
   [urlEncParser, bodyParser.json()],
   async (req, res) => {
-    if (req.body.update !== "plus" && req.body.update !== "minus")
-      res.status(200).end();
     const dbLoc = {
       where: {
         shift: 3,
@@ -103,7 +101,7 @@ router.post(
         },
         dbLoc
       );
-    else
+    else if (req.body.update === "plus")
       await slots.update(
         {
           boySlots: ++spots[3].boys,
@@ -111,6 +109,27 @@ router.post(
         },
         dbLoc
       );
+    else if (req.body.update === "girlUp") {
+      spots[3].boys = spots[3].boys - 4;
+      spots[3].girls = spots[3].girls + 4;
+      await slots.update(
+        {
+          boySlots: spots[3].boys,
+          girlSlots: spots[3].girls,
+        },
+        dbLoc
+      );
+    } else if (req.body.update === "boyUp") {
+      spots[3].boys = spots[3].boys + 4;
+      spots[3].girls = spots[3].girls - 4;
+      await slots.update(
+        {
+          boySlots: spots[3].boys,
+          girlSlots: spots[3].girls,
+        },
+        dbLoc
+      );
+    }
     sendEventsToAll();
     res.status(200).end();
   }
