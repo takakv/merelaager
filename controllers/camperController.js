@@ -134,19 +134,21 @@ exports.create = async (req, res) => {
       }
     }
     axios.post(process.env.URL, slotData);
+    const price = calculatePrice(campers);
     try {
       const data = await Camper.bulkCreate(campers);
+      mailService.sendCampMasterEmail(campers, price, billNr, regCampers);
       if (regCampers) res.redirect("../edu/");
       else res.redirect("../reserv/");
       // res.send(data);
     } catch (err) {
+      console.log(err);
       await res
         .status(500)
         .send(
           "Mingi väga, väga, väga suur jama juhtus. Palun võtke kohe meiega ühendust aadressil webmaster@merelaager.ee"
         );
     }
-    const price = calculatePrice(campers);
     if (regCampers) generatePDF(campers, price, billNr, regCampers);
     else mailService.sendFailureMail(campers);
   } else {

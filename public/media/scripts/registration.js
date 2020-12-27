@@ -79,9 +79,7 @@ priceAffectingFields.forEach((fields) => {
 const unlocker = (moment) => {
   const unlockDate = new Date(Date.parse(moment)).getTime();
   const now = new Date().getTime();
-  console.log(now);
   const eta = unlockDate - now;
-  console.log(eta);
   setTimeout(() => {
     submitButton.disabled = false;
   }, eta);

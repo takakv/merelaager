@@ -88,6 +88,56 @@ const generateFailureHTML = (campers) => {
   return response;
 };
 
+const generateInfoHTML = (campers, price, billNr, regCount) => {
+  let response = "<ul>";
+  for (let i = 0; i < campers.length; ++i) {
+    if (!campers[i].registreeritud) continue;
+    response += `<li>${campers[i].nimi} (${
+      shiftData[campers[i].vahetus].id
+    }), `;
+    response += `sugu: ${campers[i].sugu}, `;
+    response += `sünnipäev: ${
+      campers[i].synnipaev.toISOString().split("T")[0]
+    }, `;
+    response += `t-särgi suurus: ${campers[i].ts_suurus}, `;
+    response += `uus: ${campers[i].vana_olija ? "ei" : "jah"}, `;
+    response += `EMSA toetus: ${campers[i].emsa ? "jah" : "ei"}, `;
+    response += `aadress: ${campers[i].tanav}, ${campers[i].linn}, ${campers[i].maakond}, ${campers[i].riik}, `;
+    response += `muu info: ${campers[i].lisainfo}`;
+    response += "</li>";
+  }
+  response += "</ul>";
+  response += "<p>on registreeritud.</p>";
+  if (regCount !== campers.length) {
+    response += "<ul>";
+    for (let i = 0; i < campers.length; ++i) {
+      if (campers[i].registreeritud) continue;
+      response += `<li>${campers[i].nimi} (${
+        shiftData[campers[i].vahetus].id
+      }), `;
+      response += `sugu: ${campers[i].sugu}, `;
+      response += `sünnipäev: ${
+        campers[i].synnipaev.toISOString().split("T")[0]
+      }, `;
+      response += `t-särgi suurus: ${campers[i].ts_suurus}, `;
+      response += `uus: ${campers[i].vana_olija ? "ei" : "jah"}, `;
+      response += `EMSA toetus: ${campers[i].emsa ? "jah" : "ei"}, `;
+      response += `aadress: ${campers[i].tanav}, ${campers[i].linn}, ${campers[i].maakond}, ${campers[i].riik}, `;
+      response += `muu info: ${campers[i].lisainfo}`;
+      response += "</li>";
+    }
+    response += "</ul>";
+    response += "<p>on lisatud reservnimekirja.</p>";
+  }
+  response += "<p>Kontaktandmed:</p>";
+  response += "<p>";
+  response +=
+    `${campers[0].kontakt_nimi}, ${campers[0].kontakt_email}, tel: ${campers[0].kontakt_number}` +
+    `${campers[0].varu_tel ? " (" + campers[0].varu_tel + "), " : ", "}` +
+    `Arve nr ${billNr}, hind: ${price}, bronnitasu: ${regCount * 50}.`;
+  return response;
+};
+
 class MailService {
   constructor() {
     const config = {
@@ -129,6 +179,18 @@ class MailService {
       to: campers[0].kontakt_email,
       subject: "Reservnimekirja kandmise teade",
       html: generateFailureHTML(campers),
+    });
+  }
+
+  sendCampMasterEmail(campers, price, billNr, regCount) {
+    return this._transporter.sendMail({
+      from: {
+        name: "Broneerimine - merelaager",
+        address: "bronn@merelaager.ee",
+      },
+      to: "kati@merelaager.ee",
+      subject: `Registreerimine - ${campers[0].kontakt_nimi}`,
+      html: generateInfoHTML(campers, price, billNr, regCount),
     });
   }
 }
