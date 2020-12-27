@@ -96,9 +96,7 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
       shiftData[campers[i].vahetus].id
     }), `;
     response += `sugu: ${campers[i].sugu}, `;
-    response += `sünnipäev: ${
-      campers[i].synnipaev.toISOString().split("T")[0]
-    }, `;
+    response += `sünnipäev: ${campers[i].synnipaev}, `;
     response += `t-särgi suurus: ${campers[i].ts_suurus}, `;
     response += `uus: ${campers[i].vana_olija ? "ei" : "jah"}, `;
     response += `EMSA toetus: ${campers[i].emsa ? "jah" : "ei"}, `;
@@ -116,9 +114,7 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
         shiftData[campers[i].vahetus].id
       }), `;
       response += `sugu: ${campers[i].sugu}, `;
-      response += `sünnipäev: ${
-        campers[i].synnipaev.toISOString().split("T")[0]
-      }, `;
+      response += `sünnipäev: ${campers[i].synnipaev}, `;
       response += `t-särgi suurus: ${campers[i].ts_suurus}, `;
       response += `uus: ${campers[i].vana_olija ? "ei" : "jah"}, `;
       response += `EMSA toetus: ${campers[i].emsa ? "jah" : "ei"}, `;
