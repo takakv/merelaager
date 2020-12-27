@@ -77,7 +77,9 @@ priceAffectingFields.forEach((fields) => {
 });
 
 // if (window.location.hostname !== "merelaager.ee") submitButton.disabled = false;
-const eta = new Date(2020, 11, 27, 7, 53).getTime() - Date.now();
+const now = new Date();
+const eta = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 30) - now;
+console.log(eta);
 setTimeout(() => {
   submitButton.disabled = false;
 }, eta);
