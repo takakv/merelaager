@@ -103,8 +103,7 @@ exports.create = async (req, res) => {
     });
   }
 
-  if (true) {
-    // if (process.env.NODE_ENV === "dev") {
+  if (process.env.unlock === "true") {
     bills.create();
     for (let i = 0; i < childCount; ++i) {
       const shiftNr = parseInt(campers[i].vahetus[0]);

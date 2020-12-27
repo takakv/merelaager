@@ -77,7 +77,7 @@ priceAffectingFields.forEach((fields) => {
 });
 
 // if (window.location.hostname !== "merelaager.ee") submitButton.disabled = false;
-const unlockDate = new Date(Date.parse("27 Dec 2020 08:47:00 UTC")).getTime();
+const unlockDate = new Date(Date.parse("27 Dec 2020 08:51:00 UTC")).getTime();
 const now = new Date().getTime();
 console.log(now);
 const eta = unlockDate - now;
