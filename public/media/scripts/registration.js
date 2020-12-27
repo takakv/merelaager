@@ -77,10 +77,10 @@ priceAffectingFields.forEach((fields) => {
 });
 
 // if (window.location.hostname !== "merelaager.ee") submitButton.disabled = false;
-const eta = new Date(2020, 11, 27, 7, 52).getTime() - Date.now();
+const eta = new Date(2020, 11, 27, 7, 53).getTime() - Date.now();
 setTimeout(() => {
   submitButton.disabled = false;
-});
+}, eta);
 
 const source = new EventSource("/registreerimine/events/");
 const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
