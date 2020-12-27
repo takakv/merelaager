@@ -76,12 +76,6 @@ priceAffectingFields.forEach((fields) => {
   });
 });
 
-if (window.location.hostname === "merelaager.ee") {
-  unlocker("27 Dec 2020 10:00:00 UTC");
-} else {
-  unlocker("27 Dec 2020 08:54:00 UTC");
-}
-
 const unlocker = (moment) => {
   const unlockDate = new Date(Date.parse(moment)).getTime();
   const now = new Date().getTime();
@@ -92,6 +86,12 @@ const unlocker = (moment) => {
     submitButton.disabled = false;
   }, eta);
 };
+
+if (window.location.hostname === "merelaager.ee") {
+  unlocker("27 Dec 2020 10:00:00 UTC");
+} else {
+  unlocker("27 Dec 2020 08:56:00 UTC");
+}
 
 const source = new EventSource("/registreerimine/events/");
 const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
