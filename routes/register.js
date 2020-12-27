@@ -84,6 +84,38 @@ router.post("/events/", [urlEncParser, bodyParser.json()], (req, res) => {
   res.status(200).end();
 });
 
+router.post(
+  "/spotupdate/",
+  [urlEncParser, bodyParser.json()],
+  async (req, res) => {
+    if (req.body.update !== "plus" && req.body.update !== "minus")
+      res.status(200).end();
+    const dbLoc = {
+      where: {
+        shift: 3,
+      },
+    };
+    if (req.body.update === "minus")
+      await slots.update(
+        {
+          boySlots: --spots[3].boys,
+          girlSlots: --spots[3].girls,
+        },
+        dbLoc
+      );
+    else
+      await slots.update(
+        {
+          boySlots: ++spots[3].boys,
+          girlSlots: ++spots[3].girls,
+        },
+        dbLoc
+      );
+    sendEventsToAll();
+    res.status(200).end();
+  }
+);
+
 router.get("/events/", async (req, res) => {
   console.log("Got events");
   // Headers
@@ -108,12 +140,6 @@ router.get("/events/", async (req, res) => {
 
   res.write("retry: 10000\n\n");
   res.write(`data: ${JSON.stringify(spots)}\n\n`);
-  //
-  // while (true) {
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  //   ++spots;
-  //   res.write(`data: ${spots}\n\n`);
-  // }
 });
 
 module.exports = router;
