@@ -26,11 +26,20 @@ router.get("/arvegeneraator/", (req, res, next) => {
 
 const bill = require("../controllers/billController");
 
-router.post("/arvegeneraator/generate/", [urlEncParser, bodyParser.json()], bill.create);
+router.post(
+  "/arvegeneraator/generate/",
+  [urlEncParser, bodyParser.json()],
+  bill.create
+);
+
 router.post(
   "/arvegeneraator/fetch/",
   [urlEncParser, bodyParser.json()],
   bill.fetch
 );
+
+const list = require("../controllers/listController");
+
+router.get("/nimekiri/", list.generate);
 
 module.exports = router;
