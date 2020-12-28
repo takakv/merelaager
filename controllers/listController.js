@@ -12,18 +12,25 @@ exports.generate = async (req, res) => {
   const childData = [];
   children.forEach((child) => {
     const data = {
-      "Nimi": child["nimi"],
-      "Sugu": child["sugu"],
-      "Sünnipäev": child["synnipaev"],
-      "Vana olija": child["vana_olija"] ? "jah" : "ei",
-      "Vahetus": child["vahetus"],
-      "Tsärgi suurus": child["ts_suurus"],
-      "Linn / vald / küla": child["linn"],
-      "Arve nr": child["arveNr"],
-      "Konktakt": `${child["kontakt_nimi"]}, ${child["kontakt_email"]}, ${child["kontakt_number"]}`,
-      "Registreeritud": child["registreeritud"] ? "jah" : "ei",
+      name: child["nimi"],
+      gender: child["sugu"],
+      bDay: child["synnipaev"],
+      isOld: child["vana_olija"] ? "jah" : "ei",
+      shift: child["vahetus"],
+      tShirtSize: child["ts_suurus"],
+      city: child["linn"],
+      billNr: child["arveNr"],
+      contact: `${child["kontakt_nimi"]}, ${child["kontakt_email"]}, ${child["kontakt_number"]}`,
+      registered: child["registreeritud"] ? "jah" : "ei",
     };
     childData.push(data);
   });
-  res.send(childData);
+  res.render("camperList", {
+    layout: "metadata",
+    title: "Nimekiri",
+    description: "Laagrisolijate nimekiri",
+    url_path: "nimekiri/",
+    body_class: "",
+      campers: childData
+  });
 };

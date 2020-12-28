@@ -1,0 +1,28 @@
+<table>
+    <tr>
+        <th>Nimi</th>
+        <th>Sugu</th>
+        <th>Vahetus</th>
+        <th>Vana olija?</th>
+        <th>Vahetus</th>
+        <th>Tsärgi suurus</th>
+        <th>Linn / küla / vald</th>
+        <th>Arve nr</th>
+        <th>Kontakt</th>
+        <th>Registreeritud?</th>
+    </tr>
+    {{#each campers}}
+        <tr>
+            <td>{{this.name}}</td>
+            <td>{{ this.gender }}</td>
+            <td>{{ this.bDay }}</td>
+            <td>{{ this.isOld }}</td>
+            <td>{{ this.shift }}</td>
+            <td>{{ this.tShirtSize }}</td>
+            <td>{{ this.city }}</td>
+            <td>{{ this.billNr }}</td>
+            <td>{{ this.contact }}</td>
+            <td>{{ this.registered }}</td>
+        </tr>
+    {{/each}}
+</table>
