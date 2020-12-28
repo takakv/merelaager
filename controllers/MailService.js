@@ -38,7 +38,7 @@ const generateHTML = (campers, price, regCount) => {
   } €. Kogusumma (k.a broneerimistasu): ${price} €.`;
   response +=
     "<p>MTÜ Noorte Mereklubi" +
-    "<br>Konto: EE86220022101149300" +
+    "<br>Konto: EE862200221011493003" +
     "<br>SWIFT kood/BIC:HABAEE2X" +
     "<br>SWEDBANK" +
     "<br><b>Kindlasti märkige selgitusse lapse nimi ja vahetus!</b></p>";
