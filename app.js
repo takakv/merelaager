@@ -99,6 +99,9 @@ app.use("/registreerimine/", registerRouter);
 const legal = require("./routes/legal");
 app.use("/oiguslik/", legal);
 
+const kambyys = require("./routes/kambyys");
+app.use("/kambyys/", kambyys);
+
 app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");
 });

@@ -66,7 +66,6 @@ module.exports = (sequelize) => {
       },
       arveNr: {
         type: DataTypes.INTEGER,
-        allowNull: false,
       },
       registreeritud: {
         type: DataTypes.BOOLEAN,
