@@ -15,16 +15,22 @@ router.get("/", (req, res, next) => {
 
 router.get("/arvegeneraator/", (req, res, next) => {
   res.render("bill_generator", {
-      layout: "metadata",
-      title: "Arvegeneraator",
-      description: "Genereerib arveid.",
-      url_path: url_prefix + "arvegeneraator/",
-      body_class: "",
-  })
+    layout: "metadata",
+    title: "Arvegeneraator",
+    description: "Genereerib arveid.",
+    url_path: url_prefix + "arvegeneraator/",
+    body_class: "",
+    script_path: "/media/scripts/billGen.js",
+  });
 });
 
 const bill = require("../controllers/billController");
 
-router.post("/arvegeneraator/generate/", urlEncParser, bill.create);
+router.post("/arvegeneraator/generate/", [urlEncParser, bodyParser.json()], bill.create);
+router.post(
+  "/arvegeneraator/fetch/",
+  [urlEncParser, bodyParser.json()],
+  bill.fetch
+);
 
 module.exports = router;

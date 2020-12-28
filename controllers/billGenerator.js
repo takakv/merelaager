@@ -20,6 +20,11 @@ const billMeta = {
 const sideMargin = 60;
 const contentTop = 60;
 
+exports.getName = (child) => {
+  const name = child.kontakt_nimi.replace(/ /g, "_").toLowerCase();
+  return `arve_${name}.pdf`;
+};
+
 exports.generatePDF = async (campers, billNr, regCampers) => {
   const name = campers[0].kontakt_nimi.replace(/ /g, "_").toLowerCase();
   let doc = new PDFDoc(billMeta);
