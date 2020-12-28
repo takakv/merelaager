@@ -40,6 +40,30 @@ router.post(
 
 const list = require("../controllers/listController");
 
-router.get("/nimekiri/", list.generate);
+router.get("/nimekiri/", (req, res) => {
+  res.render("camperListAuth", {
+    layout: "metadata",
+    title: "Nimekiri",
+    description: "Laagrisolijate nimekiri",
+    url_path: url_prefix + "nimekiri/",
+    body_class: "",
+  });
+});
+
+router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
+  const childData = await list.generate(req, res);
+  if (!childData) {
+    res.status(403).send("Vale salasõna");
+    return;
+  }
+  res.render("camperList", {
+    layout: "metadata",
+    title: "Nimekiri",
+    description: "Laagrisolijate nimekiri",
+    url_path: url_prefix + "nimekiri/",
+    body_class: "",
+    campers: childData,
+  });
+});
 
 module.exports = router;

@@ -1,8 +1,10 @@
+require("dotenv").config();
 const db = require("../models/database");
 
 const Camper = db.campers;
 
 exports.generate = async (req, res) => {
+  if (req.body["password"] !== process.env.LISTPASS) return false;
   const children = await Camper.findAll({
     where: {
       vahetus: "3v",
@@ -25,12 +27,5 @@ exports.generate = async (req, res) => {
     };
     childData.push(data);
   });
-  res.render("camperList", {
-    layout: "metadata",
-    title: "Nimekiri",
-    description: "Laagrisolijate nimekiri",
-    url_path: "nimekiri/",
-    body_class: "",
-      campers: childData
-  });
+  return childData;
 };
