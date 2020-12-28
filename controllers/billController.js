@@ -9,6 +9,10 @@ exports.create = async (req, res) => {
       kontakt_email: req.body["meil"],
     },
   });
+  if (!children.length) {
+    res.status(404).send("Pole sellist meiliaadressi.");
+    return;
+  }
   const campers = [];
   children.forEach((child) => {
     if (child["registreeritud"]) campers.push(child);
@@ -23,5 +27,5 @@ exports.create = async (req, res) => {
     res.sendFile(`${billName}`, {
       root: "./data/arved",
     });
-  } else res.status(404).send("Pole sellist meiliaadressi.");
+  } else res.status(404).send("Pole registreeritud lapsi.");
 };
