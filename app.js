@@ -61,12 +61,12 @@ app.get("/meeskond/", (req, res, next) => {
   });
 });
 
-app.get("/ajalugu/", (req, res, next) => {
-  res.render("ajalugu", {
-    title: meta.ajalugu.title,
-    description: meta.ajalugu.description,
-    url_path: "ajalugu/",
-    body_class: "ajalugu",
+app.get("/lastenurk/", (req, res, next) => {
+  res.render("lastenurk", {
+    title: meta.lastenurk.title,
+    description: meta.lastenurk.description,
+    url_path: "lastenurk/",
+    body_class: "lastenurk",
   });
 });
 
@@ -116,10 +116,18 @@ app.use((req, res, next) => {
   });
 });
 
-const port = process.env.PORT;
-app.listen(port, () => console.log(`Listening on port ${port}`));
-
 const db = require("./models/database");
-db.sequelize.sync({ alter: true });
+
+const runApp = async () => {
+  try {
+    await db.sequelize.sync({ alter: true });
+    const port = process.env.PORT;
+    app.listen(port, () => console.log(`Listening on port ${port}`));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+runApp().catch(console.error);
 
 require("./models/bills");

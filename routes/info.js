@@ -52,4 +52,13 @@ router.get("/kkk/", (req, res, next) => {
   });
 });
 
+router.get("/ajalugu/", (req, res, next) => {
+  res.render("ajalugu", {
+    title: meta.ajalugu.title,
+    description: meta.ajalugu.description,
+    url_path: url_prefix + "ajalugu/",
+    body_class: "ajalugu",
+  });
+});
+
 module.exports = router;

@@ -3,10 +3,6 @@
     "title": "Laoküla merelaager | Merekogemuse andmine noortele",
     "description": "Laoküla merelaager on suurepärane võimalus 8-16aastastel merehuvilistel veeta suvi looduskaunis kohas mere kaldal. Ka algajad võivad 12 päeva jooksul selgeks saada nii purjetamise, sõudmise kui ka muude meresõiduvahendite kasutamise algtõed."
   },
-  "ajalugu": {
-    "title": "Merelaagri aja lugu",
-    "description": "Mis koht see Noorte Mereklubi on? Mereleksikon ütleb: merendushuvilisi noori ühendav lasteklubi, asutatud 1972. a."
-  },
   "meeskond": {
     "title": "Meeskond | Merelaager",
     "description": "Merelaagri vahetuste juhatajad, tänu kellele on merelaager tegutsenud juba üle 20. aasta."
@@ -33,6 +29,10 @@
     "kkk": {
       "title": "Korduma kippuvad küsimused | Merelaager",
       "dscription": "Küsimused ja vastused."
+    },
+    "ajalugu": {
+      "title": "Merelaagri aja lugu",
+      "description": "Mis koht see Noorte Mereklubi on? Mereleksikon ütleb: merendushuvilisi noori ühendav lasteklubi, asutatud 1972. a."
     }
   },
   "legal": {
@@ -57,6 +57,10 @@
   },
   "broneeri": {
     "title": "Laagrikoha broneerimine | Merelaager",
+    "description": ""
+  },
+  "lastenurk": {
+    "title": "Lastenurk | Merelaager",
     "description": ""
   },
   "sitemap": {
