@@ -1477,7 +1477,10 @@ main > section {
 }
 
 .c-camper-table {
+  display: block;
+  overflow-x: auto;
   border-collapse: collapse;
+  white-space: nowrap;
 
   th,
   td {
