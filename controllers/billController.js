@@ -17,7 +17,7 @@ exports.create = async (req, res) => {
   }
   const campers = [];
   children.forEach((child) => {
-    if (child["registreeritud"]) campers.push(child);
+    if (child["isRegistered"]) campers.push(child);
   });
   const billNr = children[0].billNr;
   if (campers.length) {
