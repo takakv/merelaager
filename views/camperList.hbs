@@ -1,12 +1,14 @@
 <table class="c-camper-table">
     <tr>
         <th>Nimi</th>
+        <th>Isikukood</th>
         <th>Sugu</th>
         <th>Sünnipäev</th>
         <th>Vana olija?</th>
         <th>Vahetus</th>
         <th>Tsärgi suurus</th>
         <th>Linn / küla / vald</th>
+        <th>Maakond</th>
         <th>Arve nr</th>
         <th>Kontakt</th>
         <th>Registreeritud?</th>
@@ -14,12 +16,14 @@
     {{#each campers}}
         <tr>
             <td>{{this.name}}</td>
+            <td>{{ this.idCode }}</td>
             <td>{{ this.gender }}</td>
             <td>{{ this.bDay }}</td>
             <td>{{ this.isOld }}</td>
             <td>{{ this.shift }}</td>
             <td>{{ this.tShirtSize }}</td>
             <td>{{ this.city }}</td>
+            <td>{{ this.county }}</td>
             <td>{{ this.billNr }}</td>
             <td>{{ this.contact }}</td>
             <td>{{ this.registered }}</td>
