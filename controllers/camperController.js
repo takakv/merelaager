@@ -12,6 +12,18 @@ const mailService = new MailService();
 
 const Camper = db.campers;
 
+const unlockTime = new Date(Date.parse("30 Dec 2020 21:15:00"));
+const now = new Date().getTime();
+const eta = unlockTime - now;
+
+let unlocked = process.env.NODE_ENV === "dev";
+
+if (process.env.NODE_ENV === "prod") {
+  setTimeout(() => {
+    unlocked = true;
+  }, eta);
+}
+
 const slotData = {
   1: {
     reserve: 14,
@@ -130,7 +142,7 @@ exports.create = async (req, res) => {
     });
   }
 
-  if (process.env.UNLOCK === "true") {
+  if (unlocked) {
     for (let i = 0; i < childCount; ++i) {
       const shiftNr = parseInt(campers[i].shift[0]);
       const gender = campers[i].gender === "Poiss" ? "boys" : "girls";
