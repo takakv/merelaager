@@ -59,7 +59,7 @@ const updateDbSlotData = async () => {
       slotData[i].reserve -
       (await Camper.count({
         where: {
-          shift: `{i}v`,
+          shift: `${i}v`,
           gender: "Poiss",
           isRegistered: 1,
         },
@@ -69,13 +69,12 @@ const updateDbSlotData = async () => {
       slotData[i].reserve -
       (await Camper.count({
         where: {
-          shift: `{i}v`,
+          shift: `${i}v`,
           gender: "Tüdruk",
           isRegistered: 1,
         },
       }));
   }
-  console.log(slotData);
 };
 
 exports.create = async (req, res) => {
@@ -192,7 +191,7 @@ exports.create = async (req, res) => {
         billNr,
         regCampers
       );
-      mailer(campers, price, billName, regCampers, billNr);
+      // mailer(campers, price, billName, regCampers, billNr);
     } else mailService.sendFailureMail(campers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
