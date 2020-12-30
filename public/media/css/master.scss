@@ -802,8 +802,12 @@ main > section {
     }
 
     h2 {
-      font-size: 4.5rem;
+      font-size: 2rem;
       font-weight: 400;
+      padding: 20px;
+      @media screen and (min-width: $tablet-break) {
+        font-size: 4rem;
+      }
     }
   }
 }
