@@ -4,8 +4,15 @@ const data = {
 
 const switchStatus = (target) => {
   const status = target.innerText;
-  if (status === "Nop") target.innerText = "Ok";
-  else target.innerText = "Nop";
+  if (status === "Nop") {
+    target.innerText = "Ok";
+    target.classList.remove("nop");
+    target.classList.add("ok");
+  } else {
+    target.innerText = "Nop";
+    target.classList.remove("ok");
+    target.classList.add("nop");
+  }
 };
 
 document.addEventListener("click", (event) => {
