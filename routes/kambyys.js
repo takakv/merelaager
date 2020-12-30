@@ -50,19 +50,33 @@ router.get("/nimekiri/", (req, res) => {
   });
 });
 
+router.post(
+  "/nimekiri/update/",
+  [urlEncParser, bodyParser.json()],
+  async (req, res) => {
+    const status = await list.update(req, res);
+    if (!status) res.status(403).send();
+    res.status(200).end();
+  }
+);
+
 router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
   const childData = await list.generate(req, res);
   if (!childData) {
     res.status(403).send("Vale salasõna");
     return;
   }
+  const isBoss = req.body["password"] === process.env.BOSSPASS;
   res.render("camperList", {
     layout: "metadata",
     title: "Nimekiri",
     description: "Laagrisolijate nimekiri",
     url_path: url_prefix + "nimekiri/",
-    body_class: "",
+    body_class: "camper-list",
+    boss: isBoss,
     campers: childData,
+    script_path: "/media/scripts/camperList.js",
+    key: req.body["password"],
   });
 });
 

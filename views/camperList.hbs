@@ -1,3 +1,4 @@
+<div id="auth-key" class="is-hidden">{{ key }}</div>
 <table class="c-camper-table">
     <tr>
         <th>Nimi</th>
@@ -15,22 +16,50 @@
         <th>Bronnitasu</th>
         <th>Laagritasu</th>
     </tr>
-    {{#each campers}}
-        <tr>
-            <td>{{this.name}}</td>
-            <td style="font-family: monospace">{{ this.idCode }}</td>
-            <td>{{ this.gender }}</td>
-            <td style="font-family: monospace">{{ this.bDay }}</td>
-            <td>{{ this.isOld }}</td>
-            <td>{{ this.shift }}</td>
-            <td>{{ this.tShirtSize }}</td>
-            <td>{{ this.city }}</td>
-            <td>{{ this.county }}</td>
-            <td style="font-family: monospace">{{ this.billNr }}</td>
-            <td>{{ this.contact }}</td>
-            <td>{{ this.registered }}</td>
-            <td>{{ this.prePaid }}</td>
-            <td>{{ this.fullPaid }}</td>
-        </tr>
-    {{/each}}
+    {{#unless boss}}
+        {{#each campers}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+                <td>{{ this.gender }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.registered }}</td>
+                <td>{{ this.prePaid.name }}</td>
+                <td>{{ this.fullPaid.name }}</td>
+            </tr>
+        {{/each}}
+    {{/unless}}
+    {{#if boss}}
+        {{#each campers}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+                <td>{{ this.gender }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.registered }}</td>
+                <td>
+                    <button id="{{ this.id }}a"
+                            class="prePayment {{ this.prePaid.class }}">{{ this.prePaid.name }}</button>
+                </td>
+                <td>
+                    <button id="{{ this.id }}b"
+                            class="fullPayment {{ this.fullPaid.class }}">{{ this.fullPaid.name }}</button>
+                </td>
+            </tr>
+        {{/each}}
+    {{/if}}
 </table>
