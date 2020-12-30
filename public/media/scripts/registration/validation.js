@@ -68,14 +68,17 @@ export const validators = () => {
   nameFields.forEach((field) => {
     field.onblur = () => {
       setNameValidity(field);
+      if (needsChecking(field)) field.reportValidity();
     };
   });
   idCodeFields.forEach((field) => {
     field.onblur = () => {
       setIdValidity(field);
+      if (needsChecking(field)) field.reportValidity();
     };
   });
   parentNameField.onblur = () => {
     setNameValidity(parentNameField);
+    if (needsChecking(parentNameField)) parentNameField.reportValidity();
   };
 };
