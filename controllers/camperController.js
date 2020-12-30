@@ -35,7 +35,10 @@ const getBillNr = async () => {
   const previousBill = await Camper.findOne({
     order: [["billNr", "DESC"]],
   });
-  return previousBill.billNr + 1 ?? 1;
+  if (previousBill) {
+    return previousBill.billNr + 1;
+  }
+  return 1;
 };
 
 const updateDbSlotData = async () => {
