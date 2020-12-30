@@ -26,16 +26,20 @@ if (process.env.NODE_ENV === "prod") {
 
 const slotData = {
   1: {
-    reserve: 14,
+    resBoys: 15,
+    resGirls: 15,
   },
   2: {
-    reserve: 14,
+    resBoys: 13,
+    resGirls: 16,
   },
   3: {
-    reserve: 14,
+    resBoys: 14,
+    resGirls: 14,
   },
   4: {
-    reserve: 14,
+    resBoys: 16,
+    resGirls: 16,
   },
 };
 
@@ -60,7 +64,7 @@ const getBillNr = async () => {
 const updateDbSlotData = async () => {
   for (let i = 1; i <= 4; ++i) {
     slotData[i].boys =
-      slotData[i].reserve -
+      slotData[i].resBoys -
       (await Camper.count({
         where: {
           shift: `${i}v`,
@@ -70,7 +74,7 @@ const updateDbSlotData = async () => {
       }));
 
     slotData[i].girls =
-      slotData[i].reserve -
+      slotData[i].resGirls -
       (await Camper.count({
         where: {
           shift: `${i}v`,
