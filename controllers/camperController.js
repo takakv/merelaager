@@ -32,10 +32,11 @@ const slotData = {
 };
 
 const getBillNr = async () => {
-  const previousBill = await bills.findOne({
-    order: [["createdAt", "DESC"]],
+  const previousBill = await Camper.findOne({
+    order: [["arveNr", "DESC"]],
   });
-  return previousBill.billNr + 1;
+  console.log(previousBill);
+  return previousBill.arveNr + 1;
 };
 
 const updateDbSlotData = async () => {
@@ -100,7 +101,6 @@ exports.create = async (req, res) => {
       riik: req.body[`country-${i}`],
       maakond: req.body[`county-${i}`],
       emsa: isEmsa,
-      arveNr: billNr,
       kontakt_nimi: req.body.guardian_name,
       kontakt_number: req.body.guardian_phone,
       kontakt_email: req.body.guardian_email,
@@ -121,6 +121,7 @@ exports.create = async (req, res) => {
       if (!isFull(slotData[shiftNr], gender)) {
         ++regCampers;
         campers[i].registreeritud = true;
+        campers[i].arveNr = billNr;
         if (gender === "boys") {
           await slots.update(
             {
@@ -160,7 +161,7 @@ exports.create = async (req, res) => {
         billNr,
         regCampers
       );
-      mailer(campers, price, billName, regCampers, billNr);
+      // mailer(campers, price, billName, regCampers, billNr);
     } else mailService.sendFailureMail(campers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
