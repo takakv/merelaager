@@ -1497,11 +1497,19 @@ main > section {
 }
 
 .camper-list {
-  .ok {
+  button.ok {
     background-color: #ebf8e1;
   }
 
-  .nop {
+  td.ok {
+    color: #ebf8e1;
+  }
+
+  button.nop {
     background-color: #ffbdbd;
+  }
+
+  td.nop {
+    color: #ffbdbd;
   }
 }

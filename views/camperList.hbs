@@ -31,8 +31,8 @@
                 <td style="font-family: monospace">{{ this.billNr }}</td>
                 <td>{{ this.contact }}</td>
                 <td>{{ this.registered }}</td>
-                <td>{{ this.prePaid.name }}</td>
-                <td>{{ this.fullPaid.name }}</td>
+                <td class="{{ this.prePaid.class }}">{{ this.prePaid.name }}</td>
+                <td class="{{ this.fullPaid.class }}">{{ this.fullPaid.name }}</td>
             </tr>
         {{/each}}
     {{/unless}}
