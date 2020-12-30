@@ -1,7 +1,7 @@
 require("dotenv").config();
 const MailService = require("./MailService");
 const db = require("../models/database");
-const { bills, slots } = require("../models/bills");
+const { slots } = require("../models/bills");
 const fs = require("fs");
 const axios = require("axios");
 const billGenerator = require("./billGenerator");
@@ -15,23 +15,15 @@ const Camper = db.campers;
 const slotData = {
   1: {
     reserve: 14,
-    boys: 20,
-    girls: 20,
   },
   2: {
     reserve: 14,
-    boys: 20,
-    girls: 20,
   },
   3: {
     reserve: 14,
-    boys: 20,
-    girls: 20,
   },
   4: {
     reserve: 14,
-    boys: 20,
-    girls: 20,
   },
 };
 
@@ -139,7 +131,6 @@ exports.create = async (req, res) => {
   }
 
   if (process.env.UNLOCK === "true") {
-    bills.create();
     for (let i = 0; i < childCount; ++i) {
       const shiftNr = parseInt(campers[i].shift[0]);
       const gender = campers[i].gender === "Poiss" ? "boys" : "girls";
