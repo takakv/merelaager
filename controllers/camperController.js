@@ -182,7 +182,7 @@ exports.create = async (req, res) => {
         billNr,
         regCampers
       );
-      // mailer(campers, price, billName, regCampers, billNr);
+      mailer(campers, price, billName, regCampers, billNr);
     } else mailService.sendFailureMail(campers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
