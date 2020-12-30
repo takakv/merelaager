@@ -12,6 +12,8 @@
         <th>Arve nr</th>
         <th>Kontakt</th>
         <th>Registreeritud?</th>
+        <th>Bronnitasu</th>
+        <th>Laagritasu</th>
     </tr>
     {{#each campers}}
         <tr>
@@ -27,6 +29,8 @@
             <td style="font-family: monospace">{{ this.billNr }}</td>
             <td>{{ this.contact }}</td>
             <td>{{ this.registered }}</td>
+            <td>{{ this.prePaid }}</td>
+            <td>{{ this.fullPaid }}</td>
         </tr>
     {{/each}}
 </table>
