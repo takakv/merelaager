@@ -9,10 +9,10 @@ const generateHTML = (campers, price, regCount) => {
   const shifts = [];
   let response = "<b>Täname, et valisite merelaagri!</b>" + "<ul>";
   for (let i = 0; i < campers.length; ++i) {
-    if (!shifts.includes(campers[i].vahetus)) shifts.push(campers[i].vahetus);
-    if (!campers[i].registreeritud) continue;
-    response += `<li>${campers[i].nimi} (${
-      shiftData[campers[i].vahetus].id
+    if (!shifts.includes(campers[i].shift)) shifts.push(campers[i].shift);
+    if (!campers[i].isRegistered) continue;
+    response += `<li>${campers[i].name} (${
+      shiftData[campers[i].shift].id
     })</li>`;
   }
   response += "</ul>";
@@ -20,9 +20,9 @@ const generateHTML = (campers, price, regCount) => {
   if (regCount !== campers.length) {
     response += "<ul>";
     for (let i = 0; i < campers.length; ++i) {
-      if (campers[i].registreeritud) continue;
-      response += `<li>${campers[i].nimi} (${
-        shiftData[campers[i].vahetus].id
+      if (campers[i].shift) continue;
+      response += `<li>${campers[i].name} (${
+        shiftData[campers[i].shift].id
       })</li>`;
     }
     response += "</ul>";
@@ -48,7 +48,7 @@ const generateHTML = (campers, price, regCount) => {
   response += "<p>";
   for (let i = 0; i < shifts.length; ++i) {
     response += `${shiftData[shifts[i]].name} (${
-      shiftData[shifts[i]].email
+      shiftData[shifts[i]]["email"]
     }, tel. ${shiftData[shifts[i]].phone})`;
     if (i + 1 !== shifts.length) response += ", ";
   }
@@ -62,7 +62,7 @@ const generateHTML = (campers, price, regCount) => {
 const generateFailureHTML = (campers) => {
   const shifts = [];
   for (let i = 0; i < campers.length; ++i) {
-    if (!shifts.includes(campers[i].vahetus)) shifts.push(campers[i].vahetus);
+    if (!shifts.includes(campers[i].shift)) shifts.push(campers[i].shift);
   }
   let response = "<b>Täname, et valisite merelaagri!</b>";
   if (campers.length === 1)
@@ -77,7 +77,7 @@ const generateFailureHTML = (campers) => {
   response += "<p>";
   for (let i = 0; i < shifts.length; ++i) {
     response += `${shiftData[shifts[i]].name} (${
-      shiftData[shifts[i]].email
+      shiftData[shifts[i]]["email"]
     }, tel. ${shiftData[shifts[i]].phone})`;
     if (i + 1 !== shifts.length) response += ", ";
   }
@@ -91,17 +91,17 @@ const generateFailureHTML = (campers) => {
 const generateInfoHTML = (campers, price, billNr, regCount) => {
   let response = "<ul>";
   for (let i = 0; i < campers.length; ++i) {
-    if (!campers[i].registreeritud) continue;
-    response += `<li>${campers[i].nimi} (${
-      shiftData[campers[i].vahetus].id
+    if (!campers[i].isRegistered) continue;
+    response += `<li>${campers[i].name} (${
+      shiftData[campers[i].shift].id
     }), `;
-    response += `sugu: ${campers[i].sugu}, `;
-    response += `sünnipäev: ${campers[i].synnipaev}, `;
-    response += `t-särgi suurus: ${campers[i].ts_suurus}, `;
-    response += `uus: ${campers[i].vana_olija ? "ei" : "jah"}, `;
-    response += `EMSA toetus: ${campers[i].emsa ? "jah" : "ei"}, `;
-    response += `aadress: ${campers[i].tanav}, ${campers[i].linn}, ${campers[i].maakond}, ${campers[i].riik}, `;
-    response += `muu info: ${campers[i].lisainfo}`;
+    response += `sugu: ${campers[i].gender}, `;
+    response += `sünnipäev: ${campers[i].birthday}, `;
+    response += `t-särgi suurus: ${campers[i].tsSize}, `;
+    response += `uus: ${campers[i].isOld ? "ei" : "jah"}, `;
+    response += `EMSA toetus: ${campers[i].isEmsa ? "jah" : "ei"}, `;
+    response += `aadress: ${campers[i].road}, ${campers[i].city}, ${campers[i].county}, ${campers[i].country}, `;
+    response += `muu info: ${campers[i].addendum}`;
     response += "</li>";
   }
   response += "</ul>";
@@ -109,17 +109,17 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
   if (regCount !== campers.length) {
     response += "<ul>";
     for (let i = 0; i < campers.length; ++i) {
-      if (campers[i].registreeritud) continue;
-      response += `<li>${campers[i].nimi} (${
-        shiftData[campers[i].vahetus].id
+      if (campers[i].isRegistered) continue;
+      response += `<li>${campers[i].name} (${
+        shiftData[campers[i].shift].id
       }), `;
-      response += `sugu: ${campers[i].sugu}, `;
-      response += `sünnipäev: ${campers[i].synnipaev}, `;
-      response += `t-särgi suurus: ${campers[i].ts_suurus}, `;
-      response += `uus: ${campers[i].vana_olija ? "ei" : "jah"}, `;
-      response += `EMSA toetus: ${campers[i].emsa ? "jah" : "ei"}, `;
-      response += `aadress: ${campers[i].tanav}, ${campers[i].linn}, ${campers[i].maakond}, ${campers[i].riik}, `;
-      response += `muu info: ${campers[i].lisainfo}`;
+      response += `sugu: ${campers[i].gender}, `;
+      response += `sünnipäev: ${campers[i].birthday}, `;
+      response += `t-särgi suurus: ${campers[i].tsSize}, `;
+      response += `uus: ${campers[i].isOld ? "ei" : "jah"}, `;
+      response += `EMSA toetus: ${campers[i].isEmsa ? "jah" : "ei"}, `;
+      response += `aadress: ${campers[i].road}, ${campers[i].city}, ${campers[i].county}, ${campers[i].country}, `;
+      response += `muu info: ${campers[i].addendum}`;
       response += "</li>";
     }
     response += "</ul>";
@@ -128,8 +128,8 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
   response += "<p>Kontaktandmed:</p>";
   response += "<p>";
   response +=
-    `${campers[0].kontakt_nimi}, ${campers[0].kontakt_email}, tel: ${campers[0].kontakt_number}` +
-    `${campers[0].varu_tel ? " (" + campers[0].varu_tel + "), " : ", "}` +
+    `${campers[0].contactName}, ${campers[0].contactEmail}, tel: ${campers[0].contactNumber}` +
+    `${campers[0].backupTel ? " (" + campers[0].backupTel + "), " : ", "}` +
     `Arve nr ${billNr}, hind: ${price}, bronnitasu: ${regCount * 50}.`;
   return response;
 };
@@ -153,7 +153,7 @@ class MailService {
         name: "Broneerimine - merelaager",
         address: "bronn@merelaager.ee",
       },
-      to: campers[0].kontakt_email,
+      to: campers[0].contactEmail,
       subject: "Broneeringu kinnitus",
       html: generateHTML(campers, price, regCount),
       attachments: [
@@ -172,7 +172,7 @@ class MailService {
         name: "Broneerimine - merelaager",
         address: "bronn@merelaager.ee",
       },
-      to: campers[0].kontakt_email,
+      to: campers[0].contactEmail,
       subject: "Reservnimekirja kandmise teade",
       html: generateFailureHTML(campers),
     });
@@ -185,7 +185,7 @@ class MailService {
         address: "bronn@merelaager.ee",
       },
       to: "kati@merelaager.ee",
-      subject: `Registreerimine - ${campers[0].kontakt_nimi}`,
+      subject: `Registreerimine - ${campers[0].contactName}`,
       html: generateInfoHTML(campers, price, billNr, regCount),
     });
   }

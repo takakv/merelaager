@@ -8,7 +8,7 @@ const Camper = db.campers;
 exports.create = async (req, res) => {
   const children = await Camper.findAll({
     where: {
-      kontakt_email: req.body["meil"],
+      contactEmail: req.body["meil"],
     },
   });
   if (!children.length) {
@@ -19,7 +19,7 @@ exports.create = async (req, res) => {
   children.forEach((child) => {
     if (child["registreeritud"]) campers.push(child);
   });
-  const billNr = children[0].arveNr;
+  const billNr = children[0].billNr;
   if (campers.length) {
     const billName = await billGenerator.generatePDF(
       campers,
@@ -35,7 +35,7 @@ exports.create = async (req, res) => {
 exports.fetch = async (req, res) => {
   const child = await Camper.findOne({
     where: {
-      kontakt_email: req.body["meil"],
+      contactEmail: req.body["meil"],
     },
   });
   if (!child) {

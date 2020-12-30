@@ -21,12 +21,12 @@ const sideMargin = 60;
 const contentTop = 60;
 
 exports.getName = (child) => {
-  const name = child.kontakt_nimi.replace(/ /g, "_").toLowerCase();
+  const name = child.contactName.replace(/ /g, "_").toLowerCase();
   return `arve_${name}.pdf`;
 };
 
 exports.generatePDF = async (campers, billNr, regCampers) => {
-  const name = campers[0].kontakt_nimi.replace(/ /g, "_").toLowerCase();
+  const name = campers[0].contactName.replace(/ /g, "_").toLowerCase();
   let doc = new PDFDoc(billMeta);
 
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
@@ -46,8 +46,8 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc
     .fontSize(22)
     .font("Helvetica-Bold")
-    .text(campers[0].kontakt_nimi, sideMargin, contentTop);
-  doc.fontSize(11).font("Helvetica").text(campers[0].kontakt_email);
+    .text(campers[0].contactName, sideMargin, contentTop);
+  doc.fontSize(11).font("Helvetica").text(campers[0].contactEmail);
 
   // Bill details
   const billTop = contentTop + 80;
@@ -137,14 +137,14 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
     },
   };
   for (let i = 0; i < campers.length; ++i) {
-    if (!campers[i].registreeritud) continue;
-    if (campers[i].vahetus === "1v") {
-      if (campers[i].linn.toLowerCase() === "tallinn") ++counters.sv1.count;
-      else if (campers[i].vana_olija) ++counters.sv2.count;
+    if (!campers[i].isRegistered) continue;
+    if (campers[i].shift === "1v") {
+      if (campers[i].city.toLowerCase() === "tallinn") ++counters.sv1.count;
+      else if (campers[i].isOld) ++counters.sv2.count;
       else ++counters.sv3.count;
     } else {
-      if (campers[i].linn.toLowerCase() === "tallinn") ++counters.lv1.count;
-      else if (campers[i].vana_olija) ++counters.lv2.count;
+      if (campers[i].city.toLowerCase() === "tallinn") ++counters.lv1.count;
+      else if (campers[i].isOld) ++counters.lv2.count;
       else ++counters.lv3.count;
     }
     ++counters.br.count;
@@ -186,10 +186,10 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.text(`Makseteatis ${billNr}, `, { continued: true });
   let processedCampers = 0;
   for (let i = 0; i < campers.length; ++i) {
-    if (!campers[i].registreeritud) continue;
+    if (!campers[i].isRegistered) continue;
     ++processedCampers;
     doc.text(
-      `${campers[i].nimi} ${shiftData[campers[i].vahetus].id.slice(0, 4)}`,
+      `${campers[i].name} ${shiftData[campers[i].shift].id.slice(0, 4)}`,
       {
         continued: true,
       }

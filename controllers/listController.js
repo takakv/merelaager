@@ -9,23 +9,23 @@ exports.generate = async (req, res) => {
     // where: {
     //   vahetus: "3v",
     // },
-    order: [["arveNr", "ASC"]],
+    order: [["billNr", "ASC"]],
   });
   const childData = [];
   children.forEach((child) => {
     const data = {
-      name: child["nimi"],
-      gender: child["sugu"],
-      idCode: child["isikukood"],
-      bDay: child["synnipaev"],
-      isOld: child["vana_olija"] ? "jah" : "ei",
-      shift: child["vahetus"],
-      tShirtSize: child["ts_suurus"],
-      city: child["linn"],
-      county: child["maakond"],
-      billNr: child["arveNr"],
-      contact: `${child["kontakt_nimi"]}, ${child["kontakt_email"]}, ${child["kontakt_number"]}`,
-      registered: child["registreeritud"] ? "jah" : "ei",
+      name: child["name"],
+      gender: child["gender"],
+      idCode: child["idCode"],
+      bDay: child["birthday"],
+      isOld: child["isOld"] ? "jah" : "ei",
+      shift: child["shift"],
+      tShirtSize: child["tsSize"],
+      city: child["city"],
+      county: child["county"],
+      billNr: child["billNr"],
+      contact: `${child["contactName"]}, ${child["contactEmail"]}, ${child["contactNumber"]}`,
+      registered: child["isRegistered"] ? "jah" : "ei",
     };
     childData.push(data);
   });

@@ -35,8 +35,7 @@ const getBillNr = async () => {
   const previousBill = await Camper.findOne({
     order: [["arveNr", "DESC"]],
   });
-  console.log(previousBill);
-  return previousBill.arveNr + 1;
+  return previousBill.billNr + 1;
 };
 
 const updateDbSlotData = async () => {
@@ -88,31 +87,31 @@ exports.create = async (req, res) => {
       }
     }
     campers.push({
-      nimi: req.body[`name-${i}`],
-      isikukood: idCode,
-      sugu: gender,
-      synnipaev: birthday,
-      vana_olija: !isRookie,
-      vahetus: req.body[`vahetus-${i}`],
-      ts_suurus: req.body[`shirtsize-${i}`],
-      lisainfo: req.body[`addendum-${i}`],
-      tanav: req.body[`road-${i}`],
-      linn: req.body[`city-${i}`],
-      riik: req.body[`country-${i}`],
-      maakond: req.body[`county-${i}`],
-      emsa: isEmsa,
-      kontakt_nimi: req.body.guardian_name,
-      kontakt_number: req.body.guardian_phone,
-      kontakt_email: req.body.guardian_email,
-      varu_tel: req.body.alt_phone,
+      name: req.body[`name-${i}`],
+      idCode: idCode,
+      gender: gender,
+      birthday: birthday,
+      isOld: !isRookie,
+      shift: req.body[`vahetus-${i}`],
+      tsSize: req.body[`shirtsize-${i}`],
+      addendum: req.body[`addendum-${i}`],
+      road: req.body[`road-${i}`],
+      city: req.body[`city-${i}`],
+      country: req.body[`country-${i}`],
+      county: req.body[`county-${i}`],
+      isEmsa: isEmsa,
+      contactName: req.body.guardian_name,
+      contactNumber: req.body.guardian_phone,
+      contactEmail: req.body.guardian_email,
+      backupTel: req.body.alt_phone,
     });
   }
 
   if (process.env.UNLOCK === "true") {
     bills.create();
     for (let i = 0; i < childCount; ++i) {
-      const shiftNr = parseInt(campers[i].vahetus[0]);
-      const gender = campers[i].sugu === "Poiss" ? "boys" : "girls";
+      const shiftNr = parseInt(campers[i].shift[0]);
+      const gender = campers[i].gender === "Poiss" ? "boys" : "girls";
       const dbLoc = {
         where: {
           shift: shiftNr,
@@ -120,8 +119,8 @@ exports.create = async (req, res) => {
       };
       if (!isFull(slotData[shiftNr], gender)) {
         ++regCampers;
-        campers[i].registreeritud = true;
-        campers[i].arveNr = billNr;
+        campers[i].isRegistered = true;
+        campers[i].billNr = billNr;
         if (gender === "boys") {
           await slots.update(
             {
@@ -161,7 +160,7 @@ exports.create = async (req, res) => {
         billNr,
         regCampers
       );
-      // mailer(campers, price, billName, regCampers, billNr);
+      mailer(campers, price, billName, regCampers, billNr);
     } else mailService.sendFailureMail(campers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
@@ -175,10 +174,10 @@ const mailer = (campers, price, pdfName, regCount, billNr) => {
 const calculatePrice = (campers) => {
   let price = 0;
   campers.forEach((camper) => {
-    if (!camper.registreeritud) return;
-    price += shiftData[camper.vahetus].price;
-    if (camper.linn.toLowerCase() === "tallinn") price -= 20;
-    else if (camper.vana_olija) price -= 10;
+    if (!camper.isRegistered) return;
+    price += shiftData[camper.shift].price;
+    if (camper.city.toLowerCase() === "tallinn") price -= 20;
+    else if (camper.isOld) price -= 10;
   });
   return price;
 };
