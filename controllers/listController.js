@@ -1,20 +1,30 @@
 require("dotenv").config();
 const db = require("../models/database");
+const passwords = [
+  process.env.P1,
+  process.env.BOSSPASS,
+  process.env.P3,
+  process.env.P4,
+];
 
 const Camper = db.campers;
 
 exports.generate = async (req, res) => {
-  if (
-    req.body["password"] !== process.env.LISTPASS &&
-    req.body["password"] !== process.env.BOSSPASS
-  )
-    return false;
-  const children = await Camper.findAll({
-    // where: {
-    //   vahetus: "3v",
-    // },
-    order: [["billNr", "ASC"]],
-  });
+  if (!passwords.includes(req.body["password"])) return false;
+  const shift = `${passwords.indexOf(req.body["password"]) + 1}v`;
+  let children;
+  if (shift !== "2v")
+    children = await Camper.findAll({
+      where: {
+        shift: shift,
+      },
+      order: [["billNr", "ASC"]],
+    });
+  else {
+    children = await Camper.findAll({
+      order: [["billNr", "ASC"]],
+    });
+  }
   const childData = [];
   children.forEach((child) => {
     const data = {
