@@ -129,5 +129,7 @@ const runApp = async () => {
 };
 
 runApp().catch(console.error);
+const now = new Date();
+console.log(now.toLocaleTimeString());
 
 require("./models/bills");
