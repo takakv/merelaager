@@ -14,18 +14,22 @@ const Camper = db.campers;
 
 const slotData = {
   1: {
+    reserve: 14,
     boys: 20,
     girls: 20,
   },
   2: {
+    reserve: 14,
     boys: 20,
     girls: 20,
   },
   3: {
+    reserve: 14,
     boys: 20,
     girls: 20,
   },
   4: {
+    reserve: 14,
     boys: 20,
     girls: 20,
   },
@@ -41,12 +45,37 @@ const getBillNr = async () => {
   return 1;
 };
 
+// const updateDbSlotData = async () => {
+//   for (const [key, value] of Object.entries(slotData)) {
+//     const slotCounts = await slots.findByPk(key);
+//     value.boys = slotCounts.boySlots;
+//     value.girls = slotCounts.girlSlots;
+//   }
+// };
+
 const updateDbSlotData = async () => {
-  for (const [key, value] of Object.entries(slotData)) {
-    const slotCounts = await slots.findByPk(key);
-    value.boys = slotCounts.boySlots;
-    value.girls = slotCounts.girlSlots;
+  for (let i = 1; i <= 4; ++i) {
+    slotData[i].boys =
+      slotData[i].reserve -
+      (await Camper.count({
+        where: {
+          shift: `{i}v`,
+          gender: "Poiss",
+          isRegistered: 1,
+        },
+      }));
+
+    slotData[i].girls =
+      slotData[i].reserve -
+      (await Camper.count({
+        where: {
+          shift: `{i}v`,
+          gender: "Tüdruk",
+          isRegistered: 1,
+        },
+      }));
   }
+  console.log(slotData);
 };
 
 exports.create = async (req, res) => {
