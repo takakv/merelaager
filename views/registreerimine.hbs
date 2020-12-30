@@ -11,6 +11,33 @@
         </ul>
     </div>
 </section>
+<section class="">
+    <div class="o-container">
+        <h3 class="c-section-heading">Vabad kohad</h3>
+        <div class="vahetused-wrapper">
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">1. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+            </div>
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">2. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+            </div>
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">3. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+            </div>
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">4. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+            </div>
+        </div>
+    </div>
+</section>
 <section class="registration">
     <div class="o-container">
         <h3 class="c-section-heading">Registreerimine</h3>
@@ -18,7 +45,10 @@
             <p>Registreerimine algab 1. jaanuaril 2021 kell 14.00 ja lõpeb siis, kui kõik kohad on täis. E-posti teel me
                 enam registreerimistaotlusi vastu ei võta.</p>
         </div>
-        <form class="registration-form" action="/registreerimine/register/" method="post">
+        <div class="u-banner u-banner--info">
+            <p>Vabade kohtade puudumisel saate registreeruda reservnimekirja selle sama vormi abil.</p>
+        </div>
+        <form class="registration-form" action="/registreerimine/register/" method="post" id="regform">
             <b class="u-italic u-regular"><span class="u-required"></span> Tärniga märgitud väljad on kohustuslikud.</b>
             <h4>Laagrilaps</h4>
             {{>registrationFormChild}}
@@ -62,7 +92,7 @@
                 <p>Palun andke ka EMSA-le teada, et registreerite lapse(d) merelaagrisse.</p>
             </div>
             <input type="number" name="childCount" value="1" id="childCount" hidden readonly required>
-            <button name="submit" value="submit" class="c-btn">Registreerin</button>
+            <button name="submit" value="submit" class="c-btn" id="submitBtn" disabled>Registreerin</button>
             <p class="u-inline-block">Broneerimistasu: <span id="pre-total">50</span> €
                 | Kogusumma: <span id="payment-total">---</span> €</p>
         </form>

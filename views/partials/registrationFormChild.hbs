@@ -9,7 +9,7 @@
             <div class="registration-form__field">
                 <label for="idCode-{{this}}" class="u-required">Isikukood</label>
                 <input type="text" name="idCode-{{this}}" id="idCode-{{this}}" class="idCodeField"
-                       pattern="[5-6]{1}[00-20]{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{4}">
+                       pattern="[0-9]{11}">
             </div>
             <div class="registration-form__field is-hidden">
                 <p class="u-required">Sugu:</p>
@@ -25,7 +25,7 @@
         </div>
         <div class="registration-form__row registration-form__row--minor">
             <div class="registration-form__field registration-form__field--row">
-                <label for="useIdCode-{{this}}">Ei soovi registreerida isikukoodiga</label>
+                <label for="useIdCode-{{this}}">Pole Eesti isikukoodi</label>
                 <input type="checkbox" name="useIdCode-{{this}}" id="useIdCode-{{this}}" class="useIdCode"
                        value="false">
             </div>
@@ -75,8 +75,29 @@
                 <input type="text" name="road-{{this}}" id="road-{{this}}" class="roadField">
             </div>
             <div class="registration-form__field">
-                <label for="city-{{this}}" class="u-required">Linn</label>
+                <label for="city-{{this}}" class="u-required">Linn / Küla / Vald</label>
                 <input type="text" name="city-{{this}}" id="city-{{this}}" class="cityField">
+            </div>
+            <div class="registration-form__field">
+                <label for="county-{{this}}" class="u-required">Maakond</label>
+                <input list="counties" id="county-{{this}}" name="county-{{this}}" class="countyField">
+                <datalist id="counties">
+                    <option value="Harju"></option>
+                    <option value="Tartu"></option>
+                    <option value="Ida-Viru"></option>
+                    <option value="Pärnu"></option>
+                    <option value="Lääne-Viru"></option>
+                    <option value="Viljandi"></option>
+                    <option value="Rapla"></option>
+                    <option value="Võru"></option>
+                    <option value="Saare"></option>
+                    <option value="Jõgeva"></option>
+                    <option value="Järva"></option>
+                    <option value="Valga"></option>
+                    <option value="Põlva"></option>
+                    <option value="Lääne"></option>
+                    <option value="Hiiu"></option>
+                </datalist>
             </div>
             <div class="registration-form__field">
                 <label for="country-{{this}}" class="u-required">Riik</label>

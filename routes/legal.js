@@ -3,7 +3,7 @@ const router = express.Router();
 
 const fs = require("fs");
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
-meta = meta.info;
+meta = meta.legal;
 
 const url_prefix = "oiguslik/";
 
@@ -18,8 +18,8 @@ router.get("/", (req, res, next) => {
 
 router.get("/kasutajatingimused/", (req, res, next) => {
   res.render("tos", {
-    title: meta.vahetused.title,
-    description: meta.vahetused.description,
+    title: meta.tingimused.title,
+    description: meta.tingimused.description,
     url_path: url_prefix + "kasutajatingimused/",
     body_class: "legal",
   });
@@ -27,8 +27,8 @@ router.get("/kasutajatingimused/", (req, res, next) => {
 
 router.get("/isikuandmed/", (req, res, next) => {
   res.render("privacy", {
-    title: meta.vahetused.title,
-    description: meta.vahetused.description,
+    title: meta.isikuandmed.title,
+    description: meta.isikuandmed.description,
     url_path: url_prefix + "isikuandmed/",
     body_class: "legal",
   });
@@ -36,8 +36,8 @@ router.get("/isikuandmed/", (req, res, next) => {
 
 router.get("/kupsised/", (req, res, next) => {
   res.render("cookies", {
-    title: meta.vahetused.title,
-    description: meta.vahetused.description,
+    title: meta.cookies.title,
+    description: meta.cookies.description,
     url_path: url_prefix + "kupsised/",
     body_class: "legal",
   });
@@ -45,8 +45,8 @@ router.get("/kupsised/", (req, res, next) => {
 
 router.get("/brand/", (req, res, next) => {
   res.render("brand", {
-    title: meta.vahetused.title,
-    description: meta.vahetused.description,
+    title: meta.brand.title,
+    description: meta.brand.description,
     url_path: url_prefix + "brand/",
     body_class: "legal",
   });
