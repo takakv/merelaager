@@ -1520,3 +1520,14 @@ main > section {
     color: #e01e5a;
   }
 }
+
+.c-emergency {
+  color: white;
+  display: block;
+  position: fixed;
+  top: 50vh;
+  padding: 20px 0;
+  z-index: 20;
+  width: 100vw;
+  background-color: rgba(var(--primary-rgb), 0.9);
+}
