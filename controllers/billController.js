@@ -16,10 +16,15 @@ exports.create = async (req, res) => {
     return;
   }
   const campers = [];
+  let billNr;
   children.forEach((child) => {
+    if (!billNr && child["billNr"]) billNr = child["billNr"];
     if (child["isRegistered"]) campers.push(child);
   });
-  const billNr = children[0].billNr;
+  if (!billNr) {
+    res.status(404).send("Pole registreeritud lapsi.");
+    return;
+  }
   if (campers.length) {
     const billName = await billGenerator.generatePDF(
       campers,
