@@ -9,6 +9,7 @@
 <table class="c-camper-table">
     <tr>
         <th>Reg ID</th>
+        <th>Registreeritud?</th>
         <th>Nimi</th>
         <th>Isikukood</th>
         <th>Sugu</th>
@@ -20,7 +21,6 @@
         <th>Maakond</th>
         <th>Arve nr</th>
         <th>Kontakt</th>
-        <th>Registreeritud?</th>
         <th>Bronnitasu</th>
         <th>Laagritasu</th>
     </tr>
@@ -28,6 +28,7 @@
         {{#each campers}}
             <tr>
                 <td>{{ this.id }}</td>
+                <td>{{ this.registered }}</td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
@@ -39,7 +40,6 @@
                 <td>{{ this.county }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
                 <td>{{ this.contact }}</td>
-                <td>{{ this.registered }}</td>
                 <td class="{{ this.prePaid.class }}">{{ this.prePaid.name }}</td>
                 <td class="{{ this.fullPaid.class }}">{{ this.fullPaid.name }}</td>
             </tr>
@@ -49,6 +49,7 @@
         {{#each campers}}
             <tr>
                 <td>{{ this.id }}</td>
+                <td>{{ this.registered }}</td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
@@ -60,7 +61,6 @@
                 <td>{{ this.county }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
                 <td>{{ this.contact }}</td>
-                <td>{{ this.registered }}</td>
                 <td>
                     <button id="{{ this.id }}a"
                             class="prePayment {{ this.prePaid.class }}">{{ this.prePaid.name }}</button>
