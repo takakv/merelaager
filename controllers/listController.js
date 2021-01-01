@@ -25,7 +25,10 @@ exports.generate = async (req, res) => {
     });
   else {
     children = await Camper.findAll({
-      order: [["billNr", "ASC"]],
+      order: [
+        ["contactEmail", "ASC"],
+        ["shift", "ASC"],
+      ],
     });
   }
   const childData = [];
