@@ -18,7 +18,10 @@ exports.generate = async (req, res) => {
       where: {
         shift: shift,
       },
-      order: [["billNr", "ASC"]],
+      order: [
+        ["contactEmail", "ASC"],
+        ["shift", "ASC"],
+      ],
     });
   else {
     children = await Camper.findAll({
