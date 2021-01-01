@@ -19,15 +19,15 @@ exports.generate = async (req, res) => {
         shift: shift,
       },
       order: [
-        ["contactEmail", "ASC"],
         ["shift", "ASC"],
+        ["contactEmail", "ASC"],
       ],
     });
   else {
     children = await Camper.findAll({
       order: [
-        ["contactEmail", "ASC"],
         ["shift", "ASC"],
+        ["contactEmail", "ASC"],
       ],
     });
   }
