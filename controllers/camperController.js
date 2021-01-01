@@ -30,7 +30,7 @@ const slotData = {
     resGirls: 15,
   },
   2: {
-    resBoys: 13,
+    resBoys: 9,
     resGirls: 16,
   },
   3: {
