@@ -12,7 +12,7 @@ const mailService = new MailService();
 
 const Camper = db.campers;
 
-const unlockTime = new Date(Date.parse("01 Jan 2021 13:59:30 UTC"));
+const unlockTime = new Date(Date.parse("01 Jan 2021 11:59:30 UTC"));
 const now = new Date().getTime();
 const eta = unlockTime - now;
 
