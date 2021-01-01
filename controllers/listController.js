@@ -31,8 +31,18 @@ exports.generate = async (req, res) => {
       ],
     });
   }
-  const childData = [];
+  const returnData = {
+    childData: [],
+    girlCount: 0,
+    boyCount: 0,
+    totalCount: 0,
+  };
   children.forEach((child) => {
+    if (child["isRegistered"]) {
+      ++returnData.totalCount;
+      if (child["gender"] === "Poiss") ++returnData.boyCount;
+      else ++returnData.girlCount;
+    }
     const data = {
       id: child["id"],
       name: child["name"],
@@ -54,9 +64,9 @@ exports.generate = async (req, res) => {
         ? { name: "Ok", class: "ok" }
         : { name: "Nop", class: "nop" },
     };
-    childData.push(data);
+    returnData.childData.push(data);
   });
-  return childData;
+  return returnData;
 };
 
 exports.update = async (req, res) => {

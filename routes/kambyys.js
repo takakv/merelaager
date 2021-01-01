@@ -61,8 +61,8 @@ router.post(
 );
 
 router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
-  const childData = await list.generate(req, res);
-  if (!childData) {
+  const data = await list.generate(req, res);
+  if (!data) {
     res.status(403).send("Vale salasõna");
     return;
   }
@@ -74,9 +74,10 @@ router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
     url_path: url_prefix + "nimekiri/",
     body_class: "camper-list",
     boss: isBoss,
-    campers: childData,
+    campers: data.childData,
     script_path: "/media/scripts/camperList.js",
     key: req.body["password"],
+    data: data,
   });
 });
 
