@@ -20,14 +20,14 @@ exports.generate = async (req, res) => {
       },
       order: [
         ["shift", "ASC"],
-        ["contactEmail", "ASC"],
+        ["id", "ASC"],
       ],
     });
   else {
     children = await Camper.findAll({
       order: [
         ["shift", "ASC"],
-        ["contactEmail", "ASC"],
+        ["id", "ASC"],
       ],
     });
   }

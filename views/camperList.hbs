@@ -1,6 +1,7 @@
 <div id="auth-key" class="is-hidden">{{ key }}</div>
 <table class="c-camper-table">
     <tr>
+        <th>Reg ID</th>
         <th>Nimi</th>
         <th>Isikukood</th>
         <th>Sugu</th>
@@ -19,6 +20,7 @@
     {{#unless boss}}
         {{#each campers}}
             <tr>
+                <td>{{ this.id }}</td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
