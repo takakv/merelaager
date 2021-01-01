@@ -96,10 +96,11 @@ const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
 source.onmessage = (event) => {
   const parsedData = JSON.parse(event.data);
   for (let i = 0; i < 4; ++i) {
-    shiftSpots[i].children[1].innerText = `Poisid: ${parsedData[i + 1].boys}`;
-    shiftSpots[i].children[2].innerText = `Tüdrukud: ${
-      parsedData[i + 1].girls
-    }`;
+    const boysCount = parsedData[i + 1].boys > 0 ? parsedData[i + 1].boys : 0;
+    const girlsCount =
+      parsedData[i + 1].girls > 0 ? parsedData[i + 1].girls : 0;
+    shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
+    shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
   }
 };
 
