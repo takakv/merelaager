@@ -88,7 +88,7 @@ const unlocker = (moment) => {
 if (window.location.hostname === "merelaager.ee") {
   unlocker("01 Jan 2021 12:00:00 UTC");
 } else {
-  unlocker("01 Jan 2021 10:58:00 UTC");
+  unlocker("01 Jan 2021 11:04:00 UTC");
 }
 
 const source = new EventSource("/registreerimine/events/");
