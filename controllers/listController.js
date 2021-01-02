@@ -36,12 +36,17 @@ exports.generate = async (req, res) => {
     girlCount: 0,
     boyCount: 0,
     totalCount: 0,
+    extraBoys: 0,
+    extraGirls: 0,
   };
   children.forEach((child) => {
     if (child["isRegistered"]) {
       ++returnData.totalCount;
       if (child["gender"] === "Poiss") ++returnData.boyCount;
       else ++returnData.girlCount;
+    } else {
+      if (child["gender"] === "Poiss") ++returnData.extraBoys;
+      else ++returnData.extraGirls;
     }
     const data = {
       id: child["id"],
