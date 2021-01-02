@@ -53,14 +53,6 @@ const getBillNr = async () => {
   return 1;
 };
 
-// const updateDbSlotData = async () => {
-//   for (const [key, value] of Object.entries(slotData)) {
-//     const slotCounts = await slots.findByPk(key);
-//     value.boys = slotCounts.boySlots;
-//     value.girls = slotCounts.girlSlots;
-//   }
-// };
-
 const updateDbSlotData = async () => {
   for (let i = 1; i <= 4; ++i) {
     slotData[i].boys =
