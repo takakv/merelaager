@@ -1508,7 +1508,8 @@ main > section {
     background-color: #ebf8e1;
   }
 
-  td.ok {
+  td.ok,
+  td.jah {
     color: #2eb67d;
   }
 
@@ -1516,18 +1517,19 @@ main > section {
     background-color: #ffbdbd;
   }
 
-  td.nop {
+  td.nop,
+  td.ei {
     color: #e01e5a;
   }
 }
 
 .c-emergency {
-  color: white;
-  display: block;
   position: fixed;
-  top: 50vh;
-  padding: 20px 0;
   z-index: 20;
+  top: 50vh;
+  display: block;
   width: 100vw;
+  padding: 20px 0;
+  color: white;
   background-color: rgba(var(--primary-rgb), 0.9);
 }

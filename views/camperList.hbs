@@ -27,7 +27,7 @@
         {{#each campers}}
             <tr>
                 <td>{{ this.id }}</td>
-                <td>{{ this.registered }}</td>
+                <td class="{{ this.registered }}">{{ this.registered }}</td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
@@ -48,7 +48,7 @@
         {{#each campers}}
             <tr>
                 <td>{{ this.id }}</td>
-                <td>{{ this.registered }}</td>
+                <td class="{{ this.registered }}">{{ this.registered }}</td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
