@@ -50,7 +50,9 @@
         {{#each campers}}
             <tr>
                 <td>{{ this.id }}</td>
-                <td class="{{ this.registered }}">{{ this.registered }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg" class="{{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
