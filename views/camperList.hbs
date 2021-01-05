@@ -20,8 +20,8 @@
         <th>Maakond</th>
         <th>Arve nr</th>
         <th>Kontakt</th>
-        <th>Bronnitasu</th>
-        <th>Laagritasu</th>
+        <th>Makstud</th>
+        <th>Kogusumma</th>
     </tr>
     {{#unless boss}}
         {{#each campers}}
@@ -41,8 +41,8 @@
                 <td>{{ this.county }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
                 <td>{{ this.contact }}</td>
-                <td class="{{ this.prePaid.class }}">{{ this.prePaid.name }}</td>
-                <td class="{{ this.fullPaid.class }}">{{ this.fullPaid.name }}</td>
+                <td>{{ this.pricePaid }}</td>
+                <td>{{ this.priceToPay }}</td>
             </tr>
         {{/each}}
     {{/unless}}
@@ -65,13 +65,9 @@
                 <td style="font-family: monospace">{{ this.billNr }}</td>
                 <td>{{ this.contact }}</td>
                 <td>
-                    <button id="{{ this.id }}-pre"
-                            class="prePayment {{ this.prePaid.class }}">{{ this.prePaid.name }}</button>
+                    <input id="{{ this.id }}-paid" type="text" value="{{ this.pricePaid }}">
                 </td>
-                <td>
-                    <button id="{{ this.id }}-full"
-                            class="fullPayment {{ this.fullPaid.class }}">{{ this.fullPaid.name }}</button>
-                </td>
+                <td>{{ this.priceToPay }}</td>
             </tr>
         {{/each}}
     {{/if}}

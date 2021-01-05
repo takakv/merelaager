@@ -19,13 +19,12 @@ document.addEventListener("click", (event) => {
   if (event.target["classList"].contains("clicker")) {
     switchStatus(event.target);
     data.id = event.target.id;
-    console.log(data.id);
     fetch(`${window.location.href}update/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    }).catch((err) => console.log(err));
+    }).catch((err) => alert(err));
   }
 });

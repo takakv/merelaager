@@ -62,12 +62,8 @@ exports.generate = async (req, res) => {
       billNr: child["billNr"],
       contact: `${child["contactName"]}, ${child["contactEmail"]}, ${child["contactNumber"]}`,
       registered: child["isRegistered"] ? "jah" : "ei",
-      prePaid: child["prePaid"]
-        ? { name: "Ok", class: "ok" }
-        : { name: "Nop", class: "nop" },
-      fullPaid: child["fullPaid"]
-        ? { name: "Ok", class: "ok" }
-        : { name: "Nop", class: "nop" },
+      pricePaid: child["pricePaid"],
+      priceToPay: child["priceToPay"],
     };
     returnData.childData.push(data);
   });
