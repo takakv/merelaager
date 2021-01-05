@@ -1504,17 +1504,39 @@ main > section {
 }
 
 .camper-list {
-  button.ok {
-    background-color: #ebf8e1;
+  button {
+    width: 40px;
+    padding: 5px 0;
+    border: 1px solid;
+    border-radius: 4px;
+    background-color: transparent;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  button.jah {
+    color: #2eb67d;
+    border-color: #2eb67d;
+
+    &:hover {
+      background-color: #ebf8e1;
+    }
+  }
+
+  button.ei {
+    color: #e01e5a;
+    border-color: #e01e5a;
+
+    &:hover {
+      background-color: #ffbdbd;
+    }
   }
 
   td.ok,
   td.jah {
     color: #2eb67d;
-  }
-
-  button.nop {
-    background-color: #ffbdbd;
   }
 
   td.nop,

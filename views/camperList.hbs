@@ -27,7 +27,9 @@
         {{#each campers}}
             <tr>
                 <td>{{ this.id }}</td>
-                <td class="{{ this.registered }}">{{ this.registered }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg" class="{{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
                 <td>{{this.name}}</td>
                 <td style="font-family: monospace">{{ this.idCode }}</td>
                 <td>{{ this.gender }}</td>
@@ -61,11 +63,11 @@
                 <td style="font-family: monospace">{{ this.billNr }}</td>
                 <td>{{ this.contact }}</td>
                 <td>
-                    <button id="{{ this.id }}a"
+                    <button id="{{ this.id }}-pre"
                             class="prePayment {{ this.prePaid.class }}">{{ this.prePaid.name }}</button>
                 </td>
                 <td>
-                    <button id="{{ this.id }}b"
+                    <button id="{{ this.id }}-full"
                             class="fullPayment {{ this.fullPaid.class }}">{{ this.fullPaid.name }}</button>
                 </td>
             </tr>

@@ -75,32 +75,49 @@ exports.generate = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  if (req.body.key !== process.env.BOSSPASS) return false;
-  const id = parseInt(req.body.id[0]);
-  const action = req.body.id[1];
+  // if (req.body.key !== process.env.BOSSPASS) return false;
+  const str = req.body.id;
+  const breakpoint = str.indexOf("-");
+  const id = str.substring(0, breakpoint);
+  const action = str.substring(breakpoint + 1);
   const child = await Camper.findByPk(id);
-  if (action === "a") {
-    await Camper.update(
-      {
-        prePaid: !child.prePaid,
-      },
-      {
-        where: {
-          id: id,
+  switch (action) {
+    case "reg":
+      await Camper.update(
+        {
+          isRegistered: !child.isRegistered,
         },
-      }
-    );
-  } else {
-    await Camper.update(
-      {
-        fullPaid: !child.fullPaid,
-      },
-      {
-        where: {
-          id: id,
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
+    case "a":
+      await Camper.update(
+        {
+          prePaid: !child.prePaid,
         },
-      }
-    );
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
+    default:
+      await Camper.update(
+        {
+          fullPaid: !child.fullPaid,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
   }
   return true;
 };

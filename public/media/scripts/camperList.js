@@ -4,22 +4,19 @@ const data = {
 
 const switchStatus = (target) => {
   const status = target.innerText;
-  if (status === "Nop") {
-    target.innerText = "Ok";
-    target.classList.remove("nop");
-    target.classList.add("ok");
+  if (status === "ei") {
+    target.innerText = "jah";
+    target.classList.remove("ei");
+    target.classList.add("jah");
   } else {
-    target.innerText = "Nop";
-    target.classList.remove("ok");
-    target.classList.add("nop");
+    target.innerText = "ei";
+    target.classList.remove("jah");
+    target.classList.add("ei");
   }
 };
 
 document.addEventListener("click", (event) => {
-  if (
-    event.target["classList"].contains("prePayment") ||
-    event.target["classList"].contains("fullPayment")
-  ) {
+  if (event.target["classList"].contains("clicker")) {
     switchStatus(event.target);
     data.id = event.target.id;
     console.log(data.id);
