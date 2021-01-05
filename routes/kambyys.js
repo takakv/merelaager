@@ -60,6 +60,10 @@ router.post(
   }
 );
 
+const prices = require("../controllers/priceController");
+
+router.post("/nimekiri/priceupdate/", [urlEncParser, bodyParser.json()], prices.updateAll);
+
 router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
   const data = await list.generate(req, res);
   if (!data) {
