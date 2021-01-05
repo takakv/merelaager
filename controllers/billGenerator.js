@@ -139,11 +139,11 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
     if (campers[i].shift === "1v") {
-      if (campers[i].city.toLowerCase() === "tallinn") ++counters.sv1.count;
+      if (campers[i].city.toLowerCase().trim() === "tallinn") ++counters.sv1.count;
       else if (campers[i].isOld) ++counters.sv2.count;
       else ++counters.sv3.count;
     } else {
-      if (campers[i].city.toLowerCase() === "tallinn") ++counters.lv1.count;
+      if (campers[i].city.toLowerCase().trim() === "tallinn") ++counters.lv1.count;
       else if (campers[i].isOld) ++counters.lv2.count;
       else ++counters.lv3.count;
     }

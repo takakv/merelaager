@@ -206,7 +206,7 @@ const calculatePrice = (campers) => {
   campers.forEach((camper) => {
     if (!camper.isRegistered) return;
     price += shiftData[camper.shift].price;
-    if (camper.city.toLowerCase() === "tallinn") price -= 20;
+    if (camper.city.toLowerCase().trim() === "tallinn") price -= 20;
     else if (camper.isOld) price -= 10;
   });
   return price;

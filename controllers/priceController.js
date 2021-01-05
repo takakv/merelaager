@@ -27,7 +27,7 @@ exports.updateAll = async (req, res) => {
 
 const calculatePrice = (child) => {
   let price = shiftData[child.shift].price;
-  if (child.city.toLowerCase() === "tallinn") price -= 20;
+  if (child.city.toLowerCase().trim() === "tallinn") price -= 20;
   else if (child.isOld) price -= 10;
   return price;
 };
