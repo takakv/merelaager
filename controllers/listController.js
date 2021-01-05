@@ -71,7 +71,7 @@ exports.generate = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  // if (req.body.key !== process.env.BOSSPASS) return false;
+  if (!passwords.includes(req.body["key"])) return false;
   const str = req.body.id;
   const breakpoint = str.indexOf("-");
   const id = str.substring(0, breakpoint);
@@ -90,22 +90,10 @@ exports.update = async (req, res) => {
         }
       );
       break;
-    case "a":
+    case "paid":
       await Camper.update(
         {
-          prePaid: !child.prePaid,
-        },
-        {
-          where: {
-            id: id,
-          },
-        }
-      );
-      break;
-    default:
-      await Camper.update(
-        {
-          fullPaid: !child.fullPaid,
+          pricePaid: req.body.value,
         },
         {
           where: {

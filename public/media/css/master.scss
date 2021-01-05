@@ -1534,6 +1534,14 @@ main > section {
     }
   }
 
+  button.ok {
+    background-color: #ebf8e1;
+  }
+
+  button.nop {
+    background-color: #ffbdbd;
+  }
+
   td.ok,
   td.jah {
     color: #2eb67d;

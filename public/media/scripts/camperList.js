@@ -26,5 +26,35 @@ document.addEventListener("click", (event) => {
       },
       body: JSON.stringify(data),
     }).catch((err) => alert(err));
+  } else if (event.target["classList"].contains("updatePrice")) {
+    data.id = event.target["previousElementSibling"].id;
+    data.value = event.target["previousElementSibling"].value;
+    fetch(`${window.location.href}update/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          event.target["classList"].add("ok");
+          setTimeout(() => {
+            event.target["classList"].remove("ok");
+          }, 3000);
+        } else {
+          event.target["classList"].add("nop");
+          setTimeout(() => {
+            event.target["classList"].remove("nop");
+          }, 3000);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        event.target["classList"].add("nop");
+        setTimeout(() => {
+          event.target["classList"].remove("nop");
+        }, 3000);
+      });
   }
 });

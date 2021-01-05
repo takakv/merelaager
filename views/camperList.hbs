@@ -5,9 +5,6 @@
         <p><b>Ootel:</b> Poisse: {{ data.extraBoys }}, Tüdrukuid: {{ data.extraGirls }}</p>
     </div>
 {{/unless}}
-{{#if boss}}
-    <p>Hinna väljad ei uuenda andmebaasi veel.</p>
-{{/if}}
 <table class="c-camper-table">
     <tr>
         <th>Reg ID</th>
@@ -71,6 +68,7 @@
                 <td>{{ this.contact }}</td>
                 <td>
                     <input id="{{ this.id }}-paid" type="text" value="{{ this.pricePaid }}">
+                    <button class="updatePrice">uuenda</button>
                 </td>
                 <td>{{ this.priceToPay }}</td>
             </tr>
