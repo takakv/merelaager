@@ -10,10 +10,21 @@ const fetchPDF = (target) => {
     },
     body: JSON.stringify(data),
   })
-    .then((response) => response.blob())
-    .then((blob) => {
-      const data = window.URL.createObjectURL(blob);
-      window.location.assign(data);
+    .then(async (response) => ({
+      filename: "arve.pdf",
+      blob: await response.blob(),
+    }))
+    .then((obj) => {
+      // const data = window.URL.createObjectURL(blob);
+      // window.location.assign(data);
+      // window.open(data);
+      const newBlob = new Blob([obj.blob], { type: "application/pdf" });
+      const objUrl = window.URL.createObjectURL(newBlob);
+      // window.location.assign(objUrl);
+      const link = document.createElement("a");
+      link.href = objUrl;
+      link.download = obj.filename;
+      link.click();
     });
 };
 
