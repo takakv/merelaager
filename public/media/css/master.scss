@@ -1534,6 +1534,17 @@ main > section {
     }
   }
 
+  input {
+    width: 40px;
+  }
+
+  input.priceToPay {
+    border: transparent;
+    background: transparent;
+    border-bottom: 1px solid #55629a;
+    text-align: center;
+  }
+
   input.ok {
     background-color: #ebf8e1;
   }

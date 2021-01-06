@@ -29,9 +29,40 @@ document.addEventListener("click", (event) => {
   }
 });
 
-const fields = [...document.getElementsByClassName("price")];
+const paid = [...document.getElementsByClassName("price")];
+const toPay = [...document.getElementsByClassName("priceToPay")];
 
-fields.forEach((field) => {
+paid.forEach((field) => {
+  field.onblur = async () => {
+    data.id = field.id;
+    data.value = field.value;
+    try {
+      const response = await fetch(`${window.location.href}update/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.status === 200) {
+        field.classList.add("ok");
+        setTimeout(() => {
+          field.classList.remove("ok");
+        }, 3000);
+      } else {
+        field.classList.add("nop");
+        setTimeout(() => {
+          field.classList.remove("nop");
+        }, 3000);
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Midagi läks nihu. Palun anna Taanielile teada :)");
+    }
+  };
+});
+
+toPay.forEach((field) => {
   field.onblur = async () => {
     data.id = field.id;
     data.value = field.value;

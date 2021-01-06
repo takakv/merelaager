@@ -176,7 +176,7 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.text("", sideMargin);
   doc.moveDown();
   doc.fontSize(12).font("Helvetica-Bold");
-  doc.text(`Tasumisele kulub: ${prePrice + brPrice} €`, { align: "right" });
+  doc.text(`Tasumisele kuulub: ${prePrice + brPrice} €`, { align: "right" });
 
   // Camper names
   doc.moveDown(4).fontSize(11);

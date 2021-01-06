@@ -160,6 +160,18 @@ exports.update = async (req, res) => {
         }
       );
       break;
+    case "toPay":
+      await Camper.update(
+        {
+          priceToPay: req.body.value,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
     case "old":
       await Camper.update(
         {
@@ -171,6 +183,7 @@ exports.update = async (req, res) => {
           },
         }
       );
+      break;
   }
   return true;
 };
