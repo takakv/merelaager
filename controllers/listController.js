@@ -110,9 +110,9 @@ exports.generate = async (req, res) => {
         }
       } else {
         if (child["gender"] === "Poiss") {
-          returnData[child["shift"]].regBoys.push(data);
+          returnData[child["shift"]].resBoys.push(data);
         } else {
-          returnData[child["shift"]].regGirls.push(data);
+          returnData[child["shift"]].resGirls.push(data);
         }
       }
     }
