@@ -2,7 +2,7 @@
 {{#unless boss}}
     <div>
         <p><b>Kirjas:</b> Poisse: {{data.boyCount }}, Tüdrukuid: {{ data.girlCount }}, Kokku: {{data.totalCount }}</p>
-        <p><b>Ootel:</b> Poisse: {{ data.extraBoys }}, Tüdrukuid: {{ data.extraGirls }}</p>
+        <p><b>Ootel:</b> Poisse: {{ data.resBoys }}, Tüdrukuid: {{ data.resGirls }}</p>
     </div>
 {{/unless}}
 <table class="c-camper-table">
@@ -26,7 +26,7 @@
         <tr>
             <td>Poisid</td>
         </tr>
-        {{#each campers.regBoys}}
+        {{#each data.regBoys}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -50,7 +50,7 @@
         <tr>
             <td>Tüdrukud</td>
         </tr>
-        {{#each campers.regGirls}}
+        {{#each data.regGirls}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -72,9 +72,33 @@
             </tr>
         {{/each}}
         <tr>
-            <td>Reserv</td>
+            <td>Reserv poisid</td>
         </tr>
-        {{#each campers.reserve}}
+        {{#each data.resBoys}}
+            <tr>
+                <td>{{ this.id }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg"
+                            class="state {{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
+                <td>{{this.name}}</td>
+                <td>{{ this.pricePaid }}</td>
+                <td>{{ this.priceToPay }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+            </tr>
+        {{/each}}
+        <tr>
+            <td>Reserv tüdrukud</td>
+        </tr>
+        {{#each data.resGirls}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -100,7 +124,7 @@
         <tr>
             <td>Poisid</td>
         </tr>
-        {{#each campers.regBoys}}
+        {{#each data.regBoys}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -126,7 +150,7 @@
         <tr>
             <td>Tüdrukud</td>
         </tr>
-        {{#each campers.regGirls}}
+        {{#each data.regGirls}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -152,7 +176,7 @@
         <tr>
             <td>Reserv</td>
         </tr>
-        {{#each campers.reserve}}
+        {{#each data.reserve}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -175,6 +199,5 @@
                 <td style="font-family: monospace">{{ this.idCode }}</td>
             </tr>
         {{/each}}
-
     {{/if}}
 </table>

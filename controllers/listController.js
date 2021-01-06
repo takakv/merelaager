@@ -31,11 +31,12 @@ exports.generate = async (req, res) => {
       ],
     });
   }
+
   const returnData = {
     regBoys: [],
     regGirls: [],
-    reserve: [],
-    camperCount: 0,
+    resBoys: [],
+    resGirls: [],
   };
 
   children.forEach((child) => {
@@ -63,11 +64,19 @@ exports.generate = async (req, res) => {
         returnData.regGirls.push(data);
       }
     } else {
-      returnData.reserve.push(data);
+      if (child["gender"] === "Poiss") {
+        returnData.resBoys.push(data);
+      } else {
+        returnData.resGirls.push(data);
+      }
     }
   });
-  returnData.camperCount =
+  returnData.totalCount =
     returnData.regBoys.length + returnData.regGirls.length;
+  returnData.boyCount = returnData.regBoys.length;
+  returnData.girlCount = returnData.regGirls.length;
+  returnData.resGirls = returnData.resGirls.length;
+  returnData.resBoys = returnData.resBoys.length;
   return returnData;
 };
 
