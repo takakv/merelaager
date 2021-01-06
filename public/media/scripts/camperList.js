@@ -26,35 +26,37 @@ document.addEventListener("click", (event) => {
       },
       body: JSON.stringify(data),
     }).catch((err) => alert(err));
-  } else if (event.target["classList"].contains("updatePrice")) {
-    data.id = event.target["previousElementSibling"].id;
-    data.value = event.target["previousElementSibling"].value;
-    fetch(`${window.location.href}update/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          event.target["classList"].add("ok");
-          setTimeout(() => {
-            event.target["classList"].remove("ok");
-          }, 3000);
-        } else {
-          event.target["classList"].add("nop");
-          setTimeout(() => {
-            event.target["classList"].remove("nop");
-          }, 3000);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        event.target["classList"].add("nop");
-        setTimeout(() => {
-          event.target["classList"].remove("nop");
-        }, 3000);
-      });
   }
+});
+
+const fields = [...document.getElementsByClassName("price")];
+
+fields.forEach((field) => {
+  field.onblur = async () => {
+    data.id = field.id;
+    data.value = field.value;
+    try {
+      const response = await fetch(`${window.location.href}update/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.status === 200) {
+        field.classList.add("ok");
+        setTimeout(() => {
+          field.classList.remove("ok");
+        }, 3000);
+      } else {
+        field.classList.add("nop");
+        setTimeout(() => {
+          field.classList.remove("nop");
+        }, 3000);
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Midagi läks nihu. Palun anna Taanielile teada :)");
+    }
+  };
 });
