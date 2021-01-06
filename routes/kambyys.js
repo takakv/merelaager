@@ -71,6 +71,7 @@ router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
     return;
   }
   const isBoss = req.body["password"] === process.env.BOSSPASS;
+  console.log(data);
   res.render("camperList", {
     layout: "metadata",
     title: "Nimekiri",
