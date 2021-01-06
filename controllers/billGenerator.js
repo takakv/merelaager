@@ -178,10 +178,10 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.moveDown();
   doc.fontSize(11);
   doc.text("", sideMargin);
-  const preText = `Summa broneerimistasuta: ${prePrice} €`;
-  doc.text(preText, { align: "right" });
   const brText = `Broneerimistasu: ${brPrice} €`;
   doc.text(brText, { align: "right" });
+  const preText = `Laagritasu: ${prePrice} €`;
+  doc.text(preText, { align: "right" });
   const sumText = `Kogusumma: ${prePrice + brPrice} €`;
   doc.text(sumText, { align: "right" });
 
