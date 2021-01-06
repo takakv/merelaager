@@ -75,8 +75,8 @@ exports.generate = async (req, res) => {
     returnData.regBoys.length + returnData.regGirls.length;
   returnData.boyCount = returnData.regBoys.length;
   returnData.girlCount = returnData.regGirls.length;
-  returnData.resGirls = returnData.resGirls.length;
-  returnData.resBoys = returnData.resBoys.length;
+  returnData.resGirlsCount = returnData.resGirls.length;
+  returnData.resBoysCount = returnData.resBoys.length;
   return returnData;
 };
 
