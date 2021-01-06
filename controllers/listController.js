@@ -32,12 +32,42 @@ exports.generate = async (req, res) => {
     });
   }
 
-  const returnData = {
-    regBoys: [],
-    regGirls: [],
-    resBoys: [],
-    resGirls: [],
-  };
+  let returnData = {};
+  if (shift !== "2v") {
+    returnData = {
+      regBoys: [],
+      regGirls: [],
+      resBoys: [],
+      resGirls: [],
+    };
+  } else {
+    returnData = {
+      "1v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+      "2v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+      "3v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+      "4v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+    };
+  }
 
   children.forEach((child) => {
     const data = {
@@ -58,25 +88,43 @@ exports.generate = async (req, res) => {
       priceToPay: child["priceToPay"],
     };
     if (child["isRegistered"]) {
-      if (child["gender"] === "Poiss") {
-        returnData.regBoys.push(data);
+      if (shift !== "2v") {
+        if (child["gender"] === "Poiss") {
+          returnData.regBoys.push(data);
+        } else {
+          returnData.regGirls.push(data);
+        }
       } else {
-        returnData.regGirls.push(data);
+        if (child["gender"] === "Poiss") {
+          returnData[child["shift"]].regBoys.push(data);
+        } else {
+          returnData[child["shift"]].regGirls.push(data);
+        }
       }
     } else {
-      if (child["gender"] === "Poiss") {
-        returnData.resBoys.push(data);
+      if (shift !== "2v") {
+        if (child["gender"] === "Poiss") {
+          returnData.resBoys.push(data);
+        } else {
+          returnData.resGirls.push(data);
+        }
       } else {
-        returnData.resGirls.push(data);
+        if (child["gender"] === "Poiss") {
+          returnData[child["shift"]].regBoys.push(data);
+        } else {
+          returnData[child["shift"]].regGirls.push(data);
+        }
       }
     }
   });
-  returnData.totalCount =
-    returnData.regBoys.length + returnData.regGirls.length;
-  returnData.boyCount = returnData.regBoys.length;
-  returnData.girlCount = returnData.regGirls.length;
-  returnData.resGirlsCount = returnData.resGirls.length;
-  returnData.resBoysCount = returnData.resBoys.length;
+  if (shift !== "2v") {
+    returnData.totalCount =
+      returnData.regBoys.length + returnData.regGirls.length;
+    returnData.boyCount = returnData.regBoys.length;
+    returnData.girlCount = returnData.regGirls.length;
+    returnData.resGirlsCount = returnData.resGirls.length;
+    returnData.resBoysCount = returnData.resBoys.length;
+  }
   return returnData;
 };
 
