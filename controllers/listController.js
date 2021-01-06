@@ -160,6 +160,17 @@ exports.update = async (req, res) => {
         }
       );
       break;
+    case "old":
+      await Camper.update(
+        {
+          isOld: !child.isOld,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
   }
   return true;
 };
