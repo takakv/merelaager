@@ -31,7 +31,14 @@ exports.create = async (req, res) => {
     if (!billNr && child["billNr"]) billNr = child["billNr"];
     if (child["isRegistered"]) campers.push(child);
   });
-  if (!billNr) billNr = await getBillNr();
+  if (!billNr) {
+    billNr = await getBillNr();
+    await children.forEach((child) => {
+      child.update({
+        billNr: billNr,
+      });
+    });
+  }
   if (campers.length) {
     const billName = await billGenerator.generatePDF(
       campers,
