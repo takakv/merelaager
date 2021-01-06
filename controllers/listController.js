@@ -32,27 +32,18 @@ exports.generate = async (req, res) => {
     });
   }
   const returnData = {
-    childData: [],
-    girlCount: 0,
-    boyCount: 0,
-    totalCount: 0,
-    extraBoys: 0,
-    extraGirls: 0,
+    regBoys: [],
+    regGirls: [],
+    reserve: [],
+    camperCount: 0,
   };
+
   children.forEach((child) => {
-    if (child["isRegistered"]) {
-      ++returnData.totalCount;
-      if (child["gender"] === "Poiss") ++returnData.boyCount;
-      else ++returnData.girlCount;
-    } else {
-      if (child["gender"] === "Poiss") ++returnData.extraBoys;
-      else ++returnData.extraGirls;
-    }
     const data = {
       id: child["id"],
       name: child["name"],
-      gender: child["gender"],
       idCode: child["idCode"],
+      gender: child["gender"],
       bDay: child["birthday"],
       isOld: child["isOld"] ? "jah" : "ei",
       shift: child["shift"],
@@ -65,8 +56,18 @@ exports.generate = async (req, res) => {
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };
-    returnData.childData.push(data);
+    if (child["isRegistered"]) {
+      if (child["gender"] === "Poiss") {
+        returnData.regBoys.push(data);
+      } else {
+        returnData.regGirls.push(data);
+      }
+    } else {
+      returnData.reserve.push(data);
+    }
   });
+  returnData.camperCount =
+    returnData.regBoys.length + returnData.regGirls.length;
   return returnData;
 };
 

@@ -78,7 +78,7 @@ router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
     url_path: url_prefix + "nimekiri/",
     body_class: "camper-list",
     boss: isBoss,
-    campers: data.childData,
+    campers: data,
     script_path: "/media/scripts/camperList.js",
     key: req.body["password"],
     data: data,

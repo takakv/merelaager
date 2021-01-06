@@ -13,18 +13,20 @@
         <th>Makstud</th>
         <th>Kogusumma</th>
         <th>Kontakt</th>
-        <th>Vana olija?</th>
-        <th>Vahetus</th>
-        <th>Sugu</th>
+        <th>Vana?</th>
+        <th>V.</th>
         <th>Sünnipäev</th>
-        <th>Tsärgi suurus</th>
+        <th>Ts</th>
         <th>Linn / küla / vald</th>
         <th>Maakond</th>
         <th>Arve nr</th>
         <th>Isikukood</th>
     </tr>
     {{#unless boss}}
-        {{#each campers}}
+        <tr>
+            <td>Poisid</td>
+        </tr>
+        {{#each campers.regBoys}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -37,7 +39,54 @@
                 <td>{{ this.contact }}</td>
                 <td>{{ this.isOld }}</td>
                 <td>{{ this.shift }}</td>
-                <td>{{ this.gender }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+            </tr>
+        {{/each}}
+        <tr>
+            <td>Tüdrukud</td>
+        </tr>
+        {{#each campers.regGirls}}
+            <tr>
+                <td>{{ this.id }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg"
+                            class="state {{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
+                <td>{{this.name}}</td>
+                <td>{{ this.pricePaid }}</td>
+                <td>{{ this.priceToPay }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+            </tr>
+        {{/each}}
+        <tr>
+            <td>Reserv</td>
+        </tr>
+        {{#each campers.reserve}}
+            <tr>
+                <td>{{ this.id }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg"
+                            class="state {{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
+                <td>{{this.name}}</td>
+                <td>{{ this.pricePaid }}</td>
+                <td>{{ this.priceToPay }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
                 <td style="font-family: monospace">{{ this.bDay }}</td>
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.city }}</td>
@@ -48,7 +97,10 @@
         {{/each}}
     {{/unless}}
     {{#if boss}}
-        {{#each campers}}
+        <tr>
+            <td>Poisid</td>
+        </tr>
+        {{#each campers.regBoys}}
             <tr>
                 <td>{{ this.id }}</td>
                 <td>
@@ -63,7 +115,6 @@
                 <td>{{ this.contact }}</td>
                 <td>{{ this.isOld }}</td>
                 <td>{{ this.shift }}</td>
-                <td>{{ this.gender }}</td>
                 <td style="font-family: monospace">{{ this.bDay }}</td>
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.city }}</td>
@@ -72,5 +123,58 @@
                 <td style="font-family: monospace">{{ this.idCode }}</td>
             </tr>
         {{/each}}
+        <tr>
+            <td>Tüdrukud</td>
+        </tr>
+        {{#each campers.regGirls}}
+            <tr>
+                <td>{{ this.id }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg"
+                            class="state {{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
+                <td>{{this.name}}</td>
+                <td>
+                    <input id="{{ this.id }}-paid" class="price" type="text" value="{{ this.pricePaid }}">
+                </td>
+                <td>{{ this.priceToPay }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+            </tr>
+        {{/each}}
+        <tr>
+            <td>Reserv</td>
+        </tr>
+        {{#each campers.reserve}}
+            <tr>
+                <td>{{ this.id }}</td>
+                <td>
+                    <button id="{{ this.id }}-reg"
+                            class="state {{ this.registered }} clicker">{{ this.registered }}</button>
+                </td>
+                <td>{{this.name}}</td>
+                <td>
+                    <input id="{{ this.id }}-paid" class="price" type="text" value="{{ this.pricePaid }}">
+                </td>
+                <td>{{ this.priceToPay }}</td>
+                <td>{{ this.contact }}</td>
+                <td>{{ this.isOld }}</td>
+                <td>{{ this.shift }}</td>
+                <td style="font-family: monospace">{{ this.bDay }}</td>
+                <td>{{ this.tShirtSize }}</td>
+                <td>{{ this.city }}</td>
+                <td>{{ this.county }}</td>
+                <td style="font-family: monospace">{{ this.billNr }}</td>
+                <td style="font-family: monospace">{{ this.idCode }}</td>
+            </tr>
+        {{/each}}
+
     {{/if}}
 </table>
