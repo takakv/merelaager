@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
+const session = require("express-session");
 
 const fs = require("fs");
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
@@ -9,8 +10,31 @@ meta = meta.info;
 const url_prefix = "kambyys/";
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
+router.use(session({ secret: "Hushhush" }));
+
 router.get("/", (req, res, next) => {
-  res.send("Keelatud");
+  if (!req.session.loggedIn) {
+    res.render("login", {
+      layout: "cleanmeta",
+      title: "Kambüüs",
+      description: "",
+      url_path: url_prefix,
+      body_class: "",
+    });
+  } else {
+    res.render("adminpage", {
+      layout: "cleanmeta",
+      title: "Kambüüs",
+      description: "",
+      url_path: url_prefix,
+      body_class: "",
+    });
+  }
+});
+
+router.post("/login/", urlEncParser, (req, res) => {
+  if (req.body.password === process.env.BOSSPASS) req.session.loggedIn = true;
+  res.redirect("../");
 });
 
 router.get("/arvegeneraator/", (req, res, next) => {
@@ -62,7 +86,11 @@ router.post(
 
 const prices = require("../controllers/priceController");
 
-router.post("/nimekiri/priceupdate/", [urlEncParser, bodyParser.json()], prices.updateAll);
+router.post(
+  "/nimekiri/priceupdate/",
+  [urlEncParser, bodyParser.json()],
+  prices.updateAll
+);
 
 router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
   const data = await list.generate(req, res);
