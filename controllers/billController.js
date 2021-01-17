@@ -5,6 +5,16 @@ const fs = require("fs");
 
 const Camper = db.campers;
 
+const getBillNr = async () => {
+  const previousBill = await Camper.findOne({
+    order: [["billNr", "DESC"]],
+  });
+  if (previousBill) {
+    return previousBill.billNr + 1;
+  }
+  return 1;
+};
+
 exports.create = async (req, res) => {
   const children = await Camper.findAll({
     where: {
@@ -16,10 +26,19 @@ exports.create = async (req, res) => {
     return;
   }
   const campers = [];
+  let billNr;
   children.forEach((child) => {
+    if (!billNr && child["billNr"]) billNr = child["billNr"];
     if (child["isRegistered"]) campers.push(child);
   });
-  const billNr = children[0].billNr;
+  if (!billNr) {
+    billNr = await getBillNr();
+    await children.forEach((child) => {
+      child.update({
+        billNr: billNr,
+      });
+    });
+  }
   if (campers.length) {
     const billName = await billGenerator.generatePDF(
       campers,

@@ -87,13 +87,13 @@ module.exports = (sequelize) => {
       backupTel: {
         type: DataTypes.TEXT,
       },
-      prePaid: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      pricePaid: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
       },
-      fullPaid: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      priceToPay: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
       },
     },
     {

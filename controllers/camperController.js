@@ -12,18 +12,34 @@ const mailService = new MailService();
 
 const Camper = db.campers;
 
+const unlockTime = new Date(Date.parse("01 Jan 2021 11:59:30 UTC"));
+const now = new Date().getTime();
+const eta = unlockTime - now;
+
+let unlocked = process.env.NODE_ENV === "dev";
+
+if (process.env.NODE_ENV === "prod") {
+  setTimeout(() => {
+    unlocked = true;
+  }, eta);
+}
+
 const slotData = {
   1: {
-    reserve: 14,
+    resBoys: 15,
+    resGirls: 15,
   },
   2: {
-    reserve: 14,
+    resBoys: 9,
+    resGirls: 16,
   },
   3: {
-    reserve: 14,
+    resBoys: 14,
+    resGirls: 14,
   },
   4: {
-    reserve: 14,
+    resBoys: 16,
+    resGirls: 16,
   },
 };
 
@@ -37,18 +53,10 @@ const getBillNr = async () => {
   return 1;
 };
 
-// const updateDbSlotData = async () => {
-//   for (const [key, value] of Object.entries(slotData)) {
-//     const slotCounts = await slots.findByPk(key);
-//     value.boys = slotCounts.boySlots;
-//     value.girls = slotCounts.girlSlots;
-//   }
-// };
-
 const updateDbSlotData = async () => {
   for (let i = 1; i <= 4; ++i) {
     slotData[i].boys =
-      slotData[i].reserve -
+      slotData[i].resBoys -
       (await Camper.count({
         where: {
           shift: `${i}v`,
@@ -58,7 +66,7 @@ const updateDbSlotData = async () => {
       }));
 
     slotData[i].girls =
-      slotData[i].reserve -
+      slotData[i].resGirls -
       (await Camper.count({
         where: {
           shift: `${i}v`,
@@ -130,7 +138,7 @@ exports.create = async (req, res) => {
     });
   }
 
-  if (process.env.UNLOCK === "true") {
+  if (unlocked) {
     for (let i = 0; i < childCount; ++i) {
       const shiftNr = parseInt(campers[i].shift[0]);
       const gender = campers[i].gender === "Poiss" ? "boys" : "girls";
@@ -182,7 +190,7 @@ exports.create = async (req, res) => {
         billNr,
         regCampers
       );
-      // mailer(campers, price, billName, regCampers, billNr);
+      mailer(campers, price, billName, regCampers, billNr);
     } else mailService.sendFailureMail(campers);
   } else {
     res.send("Proovite siin häkkida jah? Ei saa :)");
@@ -198,7 +206,7 @@ const calculatePrice = (campers) => {
   campers.forEach((camper) => {
     if (!camper.isRegistered) return;
     price += shiftData[camper.shift].price;
-    if (camper.city.toLowerCase() === "tallinn") price -= 20;
+    if (camper.city.toLowerCase().trim() === "tallinn") price -= 20;
     else if (camper.isOld) price -= 10;
   });
   return price;

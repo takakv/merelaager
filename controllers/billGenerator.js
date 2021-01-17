@@ -15,7 +15,7 @@ const billMeta = {
     right: 60,
     bottom: 40,
   },
-}
+};
 
 const sideMargin = 60;
 const contentTop = 60;
@@ -49,6 +49,13 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
     .text(campers[0].contactName, sideMargin, contentTop);
   doc.fontSize(11).font("Helvetica").text(campers[0].contactEmail);
 
+  let firstShift = "4v";
+  campers.forEach((camper) => {
+    if (camper.isRegistered && camper.shift < firstShift)
+      firstShift = camper.shift;
+  });
+  const deadline = shiftData[firstShift]["deadline"];
+
   // Bill details
   const billTop = contentTop + 80;
 
@@ -62,13 +69,15 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   const billNrLength = doc.widthOfString(`${billNr}`);
   const billDateLength = doc.widthOfString(billDate);
   const billDueLength = doc.widthOfString(billDue);
+  const billFinalLength = doc.widthOfString(deadline);
 
-  const billDataRightOffset = 330;
+  const billDataRightOffset = 310;
 
   doc
     .text("Makseteatise number:", sideMargin, billTop)
     .text("Makseteatise kuupäev:")
-    .text("Maksetähtaeg:");
+    .text("Broneerimistasu maksetähtaeg:")
+    .text("Laagritasu maksetähtaeg:");
   doc
     .font("Helvetica-Bold")
     .text(
@@ -78,7 +87,8 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
     )
     .font("Helvetica")
     .text(billDate, doc.page.width - billDataRightOffset - billDateLength)
-    .text(billDue, doc.page.width - billDataRightOffset - billDueLength);
+    .text(billDue, doc.page.width - billDataRightOffset - billDueLength)
+    .text(deadline, doc.page.width - billDataRightOffset - billFinalLength);
   doc.moveDown();
   doc
     .fontSize(10)
@@ -139,11 +149,13 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
     if (campers[i].shift === "1v") {
-      if (campers[i].city.toLowerCase() === "tallinn") ++counters.sv1.count;
+      if (campers[i].city.toLowerCase().trim() === "tallinn")
+        ++counters.sv1.count;
       else if (campers[i].isOld) ++counters.sv2.count;
       else ++counters.sv3.count;
     } else {
-      if (campers[i].city.toLowerCase() === "tallinn") ++counters.lv1.count;
+      if (campers[i].city.toLowerCase().trim() === "tallinn")
+        ++counters.lv1.count;
       else if (campers[i].isOld) ++counters.lv2.count;
       else ++counters.lv3.count;
     }
@@ -166,17 +178,17 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.moveDown();
   doc.fontSize(11);
   doc.text("", sideMargin);
-  const preText = `Summa broneerimistasuta: ${prePrice} €`;
-  doc.text(preText, { align: "right" });
   const brText = `Broneerimistasu: ${brPrice} €`;
   doc.text(brText, { align: "right" });
+  const preText = `Laagritasu: ${prePrice} €`;
+  doc.text(preText, { align: "right" });
   const sumText = `Kogusumma: ${prePrice + brPrice} €`;
   doc.text(sumText, { align: "right" });
 
   doc.text("", sideMargin);
   doc.moveDown();
   doc.fontSize(12).font("Helvetica-Bold");
-  doc.text(`Tasumisele kulub: ${prePrice + brPrice} €`, { align: "right" });
+  doc.text(`Tasumisele kuulub: ${prePrice + brPrice} €`, { align: "right" });
 
   // Camper names
   doc.moveDown(4).fontSize(11);
@@ -209,64 +221,64 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
 
 const generateFooter = (doc, oneThird) => {
   doc
-      .moveTo(sideMargin, doc.page.height - 110)
-      .lineTo(doc.page.width - sideMargin, doc.page.height - 110)
-      .stroke();
+    .moveTo(sideMargin, doc.page.height - 110)
+    .lineTo(doc.page.width - sideMargin, doc.page.height - 110)
+    .stroke();
   doc.fontSize(9).font("Helvetica");
   doc.text("", sideMargin);
 
   doc
-      .text(
-          "Sõudebaasi tee 23, 13517 Tallinn",
-          sideMargin,
-          doc.page.height - 70,
-          {
-            width: oneThird,
-          }
-      )
-      .text("Reg nr. 80067875");
+    .text(
+      "Sõudebaasi tee 23, 13517 Tallinn",
+      sideMargin,
+      doc.page.height - 70,
+      {
+        width: oneThird,
+      }
+    )
+    .text("Reg nr. 80067875");
   doc
-      .text(
-          "info@merelaager.ee",
-          sideMargin + 5 + oneThird,
-          doc.page.height - 70,
-          {
-            width: oneThird,
-          }
-      )
-      .text("+372 5628 6586");
+    .text(
+      "info@merelaager.ee",
+      sideMargin + 5 + oneThird,
+      doc.page.height - 70,
+      {
+        width: oneThird,
+      }
+    )
+    .text("+372 5628 6586");
   doc
-      .text(
-          "Swedbank EE862200221011493003",
-          sideMargin + 10 + 2 * oneThird,
-          doc.page.height - 70,
-          {
-            align: "right",
-            width: oneThird,
-          }
-      )
-      .text("HABAEE2X", {
+    .text(
+      "Swedbank EE862200221011493003",
+      sideMargin + 10 + 2 * oneThird,
+      doc.page.height - 70,
+      {
         align: "right",
         width: oneThird,
-      });
+      }
+    )
+    .text("HABAEE2X", {
+      align: "right",
+      width: oneThird,
+    });
 
   const bankLength = doc.widthOfString("Swedbank EE862200221011493003");
   doc.font("Helvetica-Bold");
   doc
-      .text("MTÜ Noorte Mereklubi", sideMargin, doc.page.height - 90, {
+    .text("MTÜ Noorte Mereklubi", sideMargin, doc.page.height - 90, {
+      width: oneThird,
+    })
+    .text("Kontakt", sideMargin + 5 + oneThird, doc.page.height - 90, {
+      width: oneThird * 2,
+    })
+    .text(
+      "Arveldus",
+      doc.page.width - sideMargin - bankLength,
+      doc.page.height - 90,
+      {
         width: oneThird,
-      })
-      .text("Kontakt", sideMargin + 5 + oneThird, doc.page.height - 90, {
-        width: oneThird * 2,
-      })
-      .text(
-          "Arveldus",
-          doc.page.width - sideMargin - bankLength,
-          doc.page.height - 90,
-          {
-            width: oneThird,
-          }
-      );
+      }
+    );
 
   return doc;
-}
+};

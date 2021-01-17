@@ -1,22 +1,80 @@
 require("dotenv").config();
 const db = require("../models/database");
+const passwords = [
+  process.env.P1,
+  process.env.BOSSPASS,
+  process.env.P3,
+  process.env.P4,
+];
 
 const Camper = db.campers;
 
 exports.generate = async (req, res) => {
-  if (req.body["password"] !== process.env.LISTPASS) return false;
-  const children = await Camper.findAll({
-    // where: {
-    //   vahetus: "3v",
-    // },
-    order: [["billNr", "ASC"]],
-  });
-  const childData = [];
+  if (!passwords.includes(req.body["password"])) return false;
+  const shift = `${passwords.indexOf(req.body["password"]) + 1}v`;
+  let children;
+  if (shift !== "2v")
+    children = await Camper.findAll({
+      where: {
+        shift: shift,
+      },
+      order: [
+        ["shift", "ASC"],
+        ["id", "ASC"],
+      ],
+    });
+  else {
+    children = await Camper.findAll({
+      order: [
+        ["shift", "ASC"],
+        ["id", "ASC"],
+      ],
+    });
+  }
+
+  let returnData = {};
+  if (shift !== "2v") {
+    returnData = {
+      regBoys: [],
+      regGirls: [],
+      resBoys: [],
+      resGirls: [],
+    };
+  } else {
+    returnData = {
+      "1v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+      "2v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+      "3v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+      "4v": {
+        regBoys: [],
+        regGirls: [],
+        resBoys: [],
+        resGirls: [],
+      },
+    };
+  }
+
   children.forEach((child) => {
     const data = {
+      id: child["id"],
       name: child["name"],
-      gender: child["gender"],
       idCode: child["idCode"],
+      gender: child["gender"],
       bDay: child["birthday"],
       isOld: child["isOld"] ? "jah" : "ei",
       shift: child["shift"],
@@ -26,10 +84,106 @@ exports.generate = async (req, res) => {
       billNr: child["billNr"],
       contact: `${child["contactName"]}, ${child["contactEmail"]}, ${child["contactNumber"]}`,
       registered: child["isRegistered"] ? "jah" : "ei",
-      prePaid: child["prePaid"] ? "Ok" : "-",
-      fullPaid: child["fullPaid"] ? "Ok" : "-",
+      pricePaid: child["pricePaid"],
+      priceToPay: child["priceToPay"],
     };
-    childData.push(data);
+    if (child["isRegistered"]) {
+      if (shift !== "2v") {
+        if (child["gender"] === "Poiss") {
+          returnData.regBoys.push(data);
+        } else {
+          returnData.regGirls.push(data);
+        }
+      } else {
+        if (child["gender"] === "Poiss") {
+          returnData[child["shift"]].regBoys.push(data);
+        } else {
+          returnData[child["shift"]].regGirls.push(data);
+        }
+      }
+    } else {
+      if (shift !== "2v") {
+        if (child["gender"] === "Poiss") {
+          returnData.resBoys.push(data);
+        } else {
+          returnData.resGirls.push(data);
+        }
+      } else {
+        if (child["gender"] === "Poiss") {
+          returnData[child["shift"]].resBoys.push(data);
+        } else {
+          returnData[child["shift"]].resGirls.push(data);
+        }
+      }
+    }
   });
-  return childData;
+  if (shift !== "2v") {
+    returnData.totalCount =
+      returnData.regBoys.length + returnData.regGirls.length;
+    returnData.boyCount = returnData.regBoys.length;
+    returnData.girlCount = returnData.regGirls.length;
+    returnData.resGirlsCount = returnData.resGirls.length;
+    returnData.resBoysCount = returnData.resBoys.length;
+  }
+  return returnData;
+};
+
+exports.update = async (req, res) => {
+  if (!passwords.includes(req.body["key"])) return false;
+  const str = req.body.id;
+  const breakpoint = str.indexOf("-");
+  const id = str.substring(0, breakpoint);
+  const action = str.substring(breakpoint + 1);
+  const child = await Camper.findByPk(id);
+  switch (action) {
+    case "reg":
+      await Camper.update(
+        {
+          isRegistered: !child.isRegistered,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
+    case "paid":
+      await Camper.update(
+        {
+          pricePaid: req.body.value,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
+    case "toPay":
+      await Camper.update(
+        {
+          priceToPay: req.body.value,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
+    case "old":
+      await Camper.update(
+        {
+          isOld: !child.isOld,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      break;
+  }
+  return true;
 };
