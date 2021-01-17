@@ -23,7 +23,7 @@ router.get("/", (req, res, next) => {
     });
   } else {
     res.render("adminpage", {
-      layout: "cleanmeta",
+      layout: "admin",
       title: "Kambüüs",
       description: "",
       url_path: url_prefix,

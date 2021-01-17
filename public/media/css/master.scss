@@ -1539,10 +1539,10 @@ main > section {
   }
 
   input.priceToPay {
-    border: transparent;
-    background: transparent;
-    border-bottom: 1px solid #55629a;
     text-align: center;
+    border: transparent;
+    border-bottom: 1px solid #55629a;
+    background: transparent;
   }
 
   input.ok {
@@ -1579,7 +1579,18 @@ main > section {
 .c-login-wrapper {
   width: 500px;
   margin: 20% auto auto;
+  padding: 2em;
   border: 4px solid var(--dimmed);
   border-radius: 4px;
-  padding: 2em;
+}
+
+.admin-page {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: [sidebar] 220px [main] auto [end];
+}
+
+.c-sidebar {
+  background-color: #f2f2f2;
+  grid-column: sidebar / main;
 }
