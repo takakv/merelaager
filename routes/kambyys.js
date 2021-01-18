@@ -15,10 +15,10 @@ const sessionSettings = {
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
-  // cookie: {
-  //   sameSite: true,
+  cookie: {
+    sameSite: true,
   //   secure: process.env.NODE_ENV === "prod",
-  // },
+  },
 };
 
 const db = require("../models/database");
