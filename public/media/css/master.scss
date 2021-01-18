@@ -94,7 +94,8 @@ h2 {
   line-height: 1.1;
 }
 
-h3 {
+h3,
+.h3 {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 4px;
@@ -1587,10 +1588,41 @@ main > section {
 .admin-page {
   display: grid;
   min-height: 100vh;
-  grid-template-columns: [sidebar] 220px [main] auto [end];
+  grid-template-columns: 220px 40px min-content 1fr min-content;
+  grid-template-rows: 32px 42px 1fr;
+  grid-template-areas: "side-nav s1 blank blank blank" "side-nav s2 title placeholder profile" "side-nav s3 content content content";
+
+  &__title {
+    display: flex;
+    align-items: flex-end;
+    grid-area: title;
+
+    span {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  .c-content {
+    overflow-x: auto;
+    grid-area: content;
+  }
 }
 
 .c-sidebar {
+  position: relative;
+  display: block;
   background-color: #f2f2f2;
-  grid-column: sidebar / main;
+  grid-area: side-nav;
+
+  &-title {
+    font-size: 1.5rem;
+    display: block;
+    padding: 30px 30px 50px;
+  }
+}
+
+.c-admin-nav {
+  width: 100%;
+  padding: 30px;
 }

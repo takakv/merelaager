@@ -20,5 +20,6 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.campers = require("./camper")(sequelize);
+db.users = require("./user")(sequelize);
 
 module.exports = db;
