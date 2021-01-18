@@ -17,7 +17,7 @@ const sessionSettings = {
   saveUninitialized: false,
   cookie: {
     sameSite: true,
-  //   secure: process.env.NODE_ENV === "prod",
+    //   secure: process.env.NODE_ENV === "prod",
   },
 };
 
@@ -38,7 +38,7 @@ passport.use(
       passwordField: "password",
     },
     (username, password, done) => {
-      Users.findByPk(username)
+      Users.findByPk(username.toLowerCase())
         .then((user) => {
           if (!user || !bcrypt.compareSync(password, user.password)) {
             return done(null, false);
@@ -101,7 +101,7 @@ router.post("/login/", passport.authenticate("local"), (req, res) => {
 
 const user = require("../controllers/userController");
 
-router.post("/register/", user.create);
+// router.post("/register/", user.create);
 
 router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
   res.render("bill_generator", {
