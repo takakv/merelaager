@@ -1613,8 +1613,20 @@ main > section {
     }
   }
 
+  &__user {
+    display: flex;
+    align-items: flex-end;
+    padding-right: 40px;
+    grid-area: profile;
+
+    span {
+      font-size: 1.25rem;
+    }
+  }
+
   .c-content {
     overflow: auto;
+    margin-top: 24px;
     grid-area: content;
   }
 }

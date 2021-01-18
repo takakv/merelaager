@@ -53,6 +53,7 @@ passport.use(
 passport.serializeUser((user, done) => {
   const data = {
     username: user.username,
+    name: user.name,
     shift: user.shifts,
     role: user.role,
   };
@@ -92,6 +93,7 @@ router.get("/", (req, res, next) => {
       url_path: url_prefix,
       body_class: "",
       pTitle: "Ahoi",
+      usrName: req.user.name,
     });
   }
 });
@@ -113,6 +115,7 @@ router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
     body_class: "",
     script_path: "/media/scripts/billGen.js",
     pTitle: "Arve",
+    usrName: req.user.name,
   });
 });
 
@@ -146,6 +149,7 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
     script_path: "/media/scripts/camperList.js",
     data: data,
     pTitle: "Nimekiri",
+    usrName: req.user.name,
   });
 });
 
