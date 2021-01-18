@@ -12,7 +12,52 @@ const urlEncParser = bodyParser.urlencoded({ extended: false });
 
 router.use(session({ secret: "Hushhush" }));
 
+const db = require("../models/database");
+
+const Users = db.users;
+
+// Passport.js
+
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "username",
+      passwordField: "password",
+    },
+    (username, password, done) => {
+      Users.findByPk(username)
+        .then((user) => {
+          if (!user || !user.password !== password) {
+            return done(null, false);
+          }
+          return done(null, user);
+        })
+        .catch(done);
+    }
+  )
+);
+
+router.use(passport.initialize());
+router.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  Users.findByPk(id).then((user) => done(null, user));
+});
+
+const loggedIn = (req, res, next) => {
+  if (req.session.loggedIn) next();
+  else res.redirect("../");
+};
+
 router.get("/", (req, res, next) => {
+  console.log("Here again!");
   if (!req.session.loggedIn) {
     res.render("login", {
       layout: "cleanmeta",
@@ -37,9 +82,14 @@ router.post("/login/", urlEncParser, (req, res) => {
   res.redirect("../");
 });
 
-router.get("/arvegeneraator/", (req, res, next) => {
+// router.post(
+//   "/login/",
+//   passport.authenticate("local", { successRedirect: "/", failureRedirect: "" })
+// );
+
+router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
   res.render("bill_generator", {
-    layout: "metadata",
+    layout: "admin",
     title: "Arvegeneraator",
     description: "Genereerib arveid.",
     url_path: url_prefix + "arvegeneraator/",
@@ -64,16 +114,6 @@ router.post(
 
 const list = require("../controllers/listController");
 
-router.get("/nimekiri/", (req, res) => {
-  res.render("camperListAuth", {
-    layout: "metadata",
-    title: "Nimekiri",
-    description: "Laagrisolijate nimekiri",
-    url_path: url_prefix + "nimekiri/",
-    body_class: "",
-  });
-});
-
 router.post(
   "/nimekiri/update/",
   [urlEncParser, bodyParser.json()],
@@ -92,22 +132,16 @@ router.post(
   prices.updateAll
 );
 
-router.post(/nimekiri/, [urlEncParser, bodyParser.json()], async (req, res) => {
+router.get(/nimekiri/, loggedIn, async (req, res) => {
   const data = await list.generate(req, res);
-  if (!data) {
-    res.status(403).send("Vale salasõna");
-    return;
-  }
-  const isBoss = req.body["password"] === process.env.BOSSPASS;
   res.render("camperList", {
-    layout: "metadata",
+    layout: "admin",
     title: "Nimekiri",
     description: "Laagrisolijate nimekiri",
     url_path: url_prefix + "nimekiri/",
-    body_class: "camper-list",
-    boss: isBoss,
+    body_class: " " + "camper-list",
+    boss: true,
     script_path: "/media/scripts/camperList.js",
-    key: req.body["password"],
     data: data,
   });
 });
