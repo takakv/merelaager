@@ -5,7 +5,8 @@ const Camper = db.campers;
 
 exports.generate = async (req, res) => {
   // const shift = `${passwords.indexOf(req.body["password"]) + 1}v`;
-  const shift = "2v";
+  const shift = `${req.user.shift}v`;
+  console.log(shift);
   let children;
   if (shift !== "2v")
     children = await Camper.findAll({

@@ -29,6 +29,7 @@ const Users = db.users;
 
 const passport = require("passport");
 const Strategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
 
 passport.use(
   new Strategy(
@@ -39,7 +40,7 @@ passport.use(
     (username, password, done) => {
       Users.findByPk(username)
         .then((user) => {
-          if (!user || user.password !== password) {
+          if (!user || !bcrypt.compareSync(password, user.password)) {
             return done(null, false);
           }
           return done(null, user);
@@ -50,11 +51,16 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user.username);
+  const data = {
+    username: user.username,
+    shift: user.shifts,
+    role: user.role,
+  };
+  done(null, data);
 });
 
-passport.deserializeUser((username, done) => {
-  done(null, username);
+passport.deserializeUser((user, done) => {
+  done(null, user);
   //Users.findByPk(id).then((user) => done(null, user).catch(done));
 });
 
@@ -134,7 +140,7 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
     description: "Laagrisolijate nimekiri",
     url_path: url_prefix + "nimekiri/",
     body_class: " " + "camper-list",
-    boss: true,
+    boss: req.user.role === "boss",
     script_path: "/media/scripts/camperList.js",
     data: data,
   });

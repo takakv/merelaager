@@ -1,5 +1,6 @@
 require("dotenv").config();
 const db = require("../models/database");
+const bcrypt = require("bcrypt");
 
 const Users = db.users;
 
@@ -9,10 +10,12 @@ const userExists = async (username) => {
 };
 
 const createUser = async (username, password) => {
+  const salt = bcrypt.genSaltSync(parseInt(process.env.SALTR));
+  const hash = bcrypt.hashSync(password, salt);
   try {
     await Users.create({
       username: username,
-      password: password,
+      password: hash,
     });
     return true;
   } catch {
