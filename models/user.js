@@ -12,14 +12,12 @@ module.exports = (sequelize) => {
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
       role: {
         type: DataTypes.ENUM("boss", "master", "op", "camper"),
       },
       shifts: {
         type: DataTypes.INTEGER,
-        allowNull: false,
       },
       password: {
         type: DataTypes.STRING,

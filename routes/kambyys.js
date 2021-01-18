@@ -9,19 +9,17 @@ let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 meta = meta.info;
 
 const url_prefix = "kambyys/";
-const urlEncParser = bodyParser.urlencoded({ extended: false });
+// const urlEncParser = bodyParser.urlencoded({ extended: false });
 
-router.use(
-  session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: true,
-      secure: process.env.NODE_ENV === "prod",
-    },
-  })
-);
+const sessionSettings = {
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    sameSite: true,
+    secure: process.env.NODE_ENV === "prod",
+  },
+};
 
 const db = require("../models/database");
 
@@ -30,10 +28,10 @@ const Users = db.users;
 // Passport.js
 
 const passport = require("passport");
-const LocalStrategy = require("passport-local");
+const Strategy = require("passport-local").Strategy;
 
 passport.use(
-  new LocalStrategy(
+  new Strategy(
     {
       usernameField: "username",
       passwordField: "password",
@@ -41,7 +39,7 @@ passport.use(
     (username, password, done) => {
       Users.findByPk(username)
         .then((user) => {
-          if (!user || !user.password !== password) {
+          if (!user || user.password !== password) {
             return done(null, false);
           }
           return done(null, user);
@@ -51,25 +49,28 @@ passport.use(
   )
 );
 
+passport.serializeUser((user, done) => {
+  done(null, user.username);
+});
+
+passport.deserializeUser((username, done) => {
+  done(null, username);
+  //Users.findByPk(id).then((user) => done(null, user).catch(done));
+});
+
+router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
+router.use(session(sessionSettings));
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  Users.findByPk(id).then((user) => done(null, user));
-});
-
 const loggedIn = (req, res, next) => {
-  if (req.session.loggedIn) next();
-  else res.redirect("../");
+  if (req.user) next();
+  else res.redirect("/kambyys/");
 };
 
 router.get("/", (req, res, next) => {
-  console.log("Here again!");
-  if (!req.session.loggedIn) {
+  if (!req.user) {
     res.render("login", {
       layout: "cleanmeta",
       title: "Kambüüs",
@@ -88,15 +89,13 @@ router.get("/", (req, res, next) => {
   }
 });
 
-router.post("/login/", urlEncParser, (req, res) => {
-  if (req.body.password === process.env.BOSSPASS) req.session.loggedIn = true;
+router.post("/login/", passport.authenticate("local"), (req, res) => {
   res.redirect("../");
 });
 
-// router.post(
-//   "/login/",
-//   passport.authenticate("local", { successRedirect: "/", failureRedirect: "" })
-// );
+const user = require("../controllers/userController");
+
+router.post("/register/", user.create);
 
 router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
   res.render("bill_generator", {
@@ -111,37 +110,21 @@ router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
 
 const bill = require("../controllers/billController");
 
-router.post(
-  "/arvegeneraator/generate/",
-  [urlEncParser, bodyParser.json()],
-  bill.create
-);
+router.post("/arvegeneraator/generate/", bill.create);
 
-router.post(
-  "/arvegeneraator/fetch/",
-  [urlEncParser, bodyParser.json()],
-  bill.fetch
-);
+router.post("/arvegeneraator/fetch/", bill.fetch);
 
 const list = require("../controllers/listController");
 
-router.post(
-  "/nimekiri/update/",
-  [urlEncParser, bodyParser.json()],
-  async (req, res) => {
-    const status = await list.update(req, res);
-    if (!status) res.status(403).send();
-    res.status(200).end();
-  }
-);
+router.post("/nimekiri/update/", async (req, res) => {
+  const status = await list.update(req, res);
+  if (!status) res.status(403).send();
+  res.status(200).end();
+});
 
 const prices = require("../controllers/priceController");
 
-router.post(
-  "/nimekiri/priceupdate/",
-  [urlEncParser, bodyParser.json()],
-  prices.updateAll
-);
+router.post("/nimekiri/priceupdate/", prices.updateAll);
 
 router.get(/nimekiri/, loggedIn, async (req, res) => {
   const data = await list.generate(req, res);
