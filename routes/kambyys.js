@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
@@ -10,7 +11,17 @@ meta = meta.info;
 const url_prefix = "kambyys/";
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
-router.use(session({ secret: "Hushhush" }));
+router.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: true,
+      secure: process.env.NODE_ENV === "prod",
+    },
+  })
+);
 
 const db = require("../models/database");
 
