@@ -6,6 +6,7 @@
     </div>
 {{/unless}}
 <table class="c-camper-table">
+    <thead>
     <tr>
         <th>Reg ID</th>
         <th>Reg?</th>
@@ -22,9 +23,10 @@
         <th>Arve nr</th>
         <th>Isikukood</th>
     </tr>
+    </thead>
     {{#unless boss}}
         <tr>
-            <td>Poisid</td>
+            <td colspan="14">Poisid</td>
         </tr>
         {{#each data.regBoys}}
             <tr>
@@ -51,7 +53,7 @@
             </tr>
         {{/each}}
         <tr>
-            <td>Tüdrukud</td>
+            <td colspan="14">Tüdrukud</td>
         </tr>
         {{#each data.regGirls}}
             <tr>
@@ -78,7 +80,7 @@
             </tr>
         {{/each}}
         <tr>
-            <td>Reserv poisid</td>
+            <td colspan="14">Reserv poisid</td>
         </tr>
         {{#each data.resBoys}}
             <tr>
@@ -105,7 +107,7 @@
             </tr>
         {{/each}}
         <tr>
-            <td>Reserv tüdrukud</td>
+            <td colspan="14">Reserv tüdrukud</td>
         </tr>
         {{#each data.resGirls}}
             <tr>
@@ -135,7 +137,7 @@
     {{#if boss}}
         {{#each data}}
             <tr>
-                <td>{{@key}} - Poisid</td>
+                <td colspan="14">{{@key}} - Poisid</td>
             </tr>
             {{#each this.regBoys}}
                 <tr>
@@ -166,7 +168,7 @@
                 </tr>
             {{/each}}
             <tr>
-                <td>{{@key}} - Tüdrukud</td>
+                <td colspan="14">{{@key}} - Tüdrukud</td>
             </tr>
             {{#each this.regGirls}}
                 <tr>
@@ -197,7 +199,7 @@
                 </tr>
             {{/each}}
             <tr>
-                <td>{{@key}} - Reserv poisid</td>
+                <td colspan="14">{{@key}} - Reserv poisid</td>
             </tr>
             {{#each this.resBoys}}
                 <tr>
@@ -228,7 +230,7 @@
                 </tr>
             {{/each}}
             <tr>
-                <td>{{@key}} - Reserv tüdrukud</td>
+                <td colspan="14">{{@key}} - Reserv tüdrukud</td>
             </tr>
             {{#each this.resGirls}}
                 <tr>
