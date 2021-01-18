@@ -91,6 +91,7 @@ router.get("/", (req, res, next) => {
       description: "",
       url_path: url_prefix,
       body_class: "",
+      pTitle: "Ahoi",
     });
   }
 });
@@ -111,26 +112,27 @@ router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
     url_path: url_prefix + "arvegeneraator/",
     body_class: "",
     script_path: "/media/scripts/billGen.js",
+    pTitle: "Arve",
   });
 });
 
 const bill = require("../controllers/billController");
 
-router.post("/arvegeneraator/generate/", bill.create);
+router.post("/arvegeneraator/generate/", loggedIn, bill.create);
 
-router.post("/arvegeneraator/fetch/", bill.fetch);
+router.post("/arvegeneraator/fetch/", loggedIn, bill.fetch);
 
 const list = require("../controllers/listController");
 
-router.post("/nimekiri/update/", async (req, res) => {
+router.post("/nimekiri/update/", loggedIn, async (req, res) => {
   const status = await list.update(req, res);
   if (!status) res.status(403).send();
   res.status(200).end();
 });
 
-const prices = require("../controllers/priceController");
+// const prices = require("../controllers/priceController");
 
-router.post("/nimekiri/priceupdate/", prices.updateAll);
+// router.post("/nimekiri/priceupdate/", prices.updateAll);
 
 router.get(/nimekiri/, loggedIn, async (req, res) => {
   const data = await list.generate(req, res);
@@ -143,6 +145,7 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
     boss: req.user.role === "boss",
     script_path: "/media/scripts/camperList.js",
     data: data,
+    pTitle: "Nimekiri",
   });
 });
 

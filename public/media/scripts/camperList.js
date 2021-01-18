@@ -1,6 +1,4 @@
-const data = {
-  key: document.getElementById("auth-key").innerText,
-};
+const data = {};
 
 const switchStatus = (target) => {
   const status = target.innerText;

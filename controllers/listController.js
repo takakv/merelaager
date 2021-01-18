@@ -4,9 +4,7 @@ const db = require("../models/database");
 const Camper = db.campers;
 
 exports.generate = async (req, res) => {
-  // const shift = `${passwords.indexOf(req.body["password"]) + 1}v`;
   const shift = `${req.user.shift}v`;
-  console.log(shift);
   let children;
   if (shift !== "2v")
     children = await Camper.findAll({
@@ -124,7 +122,6 @@ exports.generate = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  if (!passwords.includes(req.body["key"])) return false;
   const str = req.body.id;
   const breakpoint = str.indexOf("-");
   const id = str.substring(0, breakpoint);
