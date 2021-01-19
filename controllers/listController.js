@@ -74,6 +74,7 @@ exports.generate = async (req, res) => {
       billNr: child["billNr"],
       contact: `${child["contactName"]}, ${child["contactEmail"]}, ${child["contactNumber"]}`,
       registered: child["isRegistered"] ? "jah" : "ei",
+      tln: child["city"].toLowerCase().trim() === "tallinn" ? "jah" : "ei",
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };

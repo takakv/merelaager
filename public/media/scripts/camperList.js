@@ -95,10 +95,14 @@ const v2Table = document.getElementById("2v-table");
 const v3Table = document.getElementById("3v-table");
 const v4Table = document.getElementById("4v-table");
 
+const shiftTables = [v1Table, v2Table, v3Table, v4Table];
+
 const v1Head = document.getElementById("1v-head");
 const v2Head = document.getElementById("2v-head");
 const v3Head = document.getElementById("3v-head");
 const v4Head = document.getElementById("4v-head");
+
+const shiftHeads = [v1Head, v2Head, v3Head, v4Head];
 
 const v1Switch = document.getElementById("1v-switch");
 const v2Switch = document.getElementById("2v-switch");
@@ -110,57 +114,19 @@ const hide = (element, isHidden) => {
   else element.classList.remove("is-hidden");
 };
 
+const toggleShift = (shift) => {
+  for (let i = 0; i < 4; ++i) {
+    hide(shiftTables[i], true);
+    hide(shiftHeads[i], true);
+  }
+  hide(shiftTables[shift - 1], false);
+  hide(shiftHeads[shift - 1], false);
+};
+
 if (v1Table) {
-  hide(v2Table, true);
-  hide(v3Table, true);
-  hide(v4Table, true);
-  hide(v2Head, true);
-  hide(v3Head, true);
-  hide(v4Head, true);
-}
-
-if (v1Switch) {
-  v1Switch.onclick = () => {
-    hide(v1Table, false);
-    hide(v2Table, true);
-    hide(v3Table, true);
-    hide(v4Table, true);
-    hide(v1Head, false);
-    hide(v2Head, true);
-    hide(v3Head, true);
-    hide(v4Head, true);
-  };
-
-  v2Switch.onclick = () => {
-    hide(v1Table, true);
-    hide(v2Table, false);
-    hide(v3Table, true);
-    hide(v4Table, true);
-    hide(v1Head, true);
-    hide(v2Head, false);
-    hide(v3Head, true);
-    hide(v4Head, true);
-  };
-
-  v3Switch.onclick = () => {
-    hide(v1Table, true);
-    hide(v2Table, true);
-    hide(v3Table, false);
-    hide(v4Table, true);
-    hide(v1Head, true);
-    hide(v2Head, true);
-    hide(v3Head, false);
-    hide(v4Head, true);
-  };
-
-  v4Switch.onclick = () => {
-    hide(v1Table, true);
-    hide(v2Table, true);
-    hide(v3Table, true);
-    hide(v4Table, false);
-    hide(v1Head, true);
-    hide(v2Head, true);
-    hide(v3Head, true);
-    hide(v4Head, false);
-  };
+  toggleShift(1);
+  v1Switch.onclick = () => toggleShift(1);
+  v2Switch.onclick = () => toggleShift(2);
+  v3Switch.onclick = () => toggleShift(3);
+  v4Switch.onclick = () => toggleShift(4);
 }
