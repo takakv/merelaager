@@ -1,8 +1,14 @@
-<div id="auth-key" class="is-hidden">{{ key }}</div>
 {{#unless boss}}
-    <div>
-        <p><b>Kirjas:</b> Poisse: {{data.boyCount }}, Tüdrukuid: {{ data.girlCount }}, Kokku: {{data.totalCount }}</p>
-        <p><b>Ootel:</b> Poisse: {{ data.resBoysCount }}, Tüdrukuid: {{ data.resGirlsCount }}</p>
+    <div class="c-cl-head">
+        <div class="c-cl-head__group c-cl-head__group--main">
+            <div class="c-cl-count"><span class="head">poisid:</span> {{ data.regBoyCount }}</div>
+            <div class="c-cl-count"><span class="head">tüdrukud:</span> {{ data.regGirlCount }}</div>
+            <div class="c-cl-count"><span class="head">kokku:</span> {{ data.totalCount }}</div>
+        </div>
+        <div class="c-cl-head__group">
+            <div class="c-cl-count"><span class="head">res. poisid:</span> {{ data.resBoyCount }}</div>
+            <div class="c-cl-count"><span class="head">res. tüdrukud:</span> {{ data.resGirlCount }}</div>
+        </div>
     </div>
 {{/unless}}
 <table class="c-camper-table">

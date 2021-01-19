@@ -145,7 +145,7 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
     description: "Laagrisolijate nimekiri",
     url_path: url_prefix + "nimekiri/",
     body_class: " " + "camper-list",
-    boss: req.user.role === "boss",
+    boss: false, //req.user.role === "boss",
     script_path: "/media/scripts/camperList.js",
     data: data,
     pTitle: "Nimekiri",

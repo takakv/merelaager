@@ -1,32 +1,29 @@
 require("dotenv").config();
 const db = require("../models/database");
 
-const Camper = db.campers;
+const Campers = db.campers;
 
 exports.generate = async (req, res) => {
   const shift = `${req.user.shift}v`;
+  const isBoss = false; //req.user.role === "boss";
+
   let children;
-  if (shift !== "2v")
-    children = await Camper.findAll({
+  if (!isBoss) {
+    children = await Campers.findAll({
       where: {
         shift: shift,
       },
-      order: [
-        ["shift", "ASC"],
-        ["id", "ASC"],
-      ],
+      order: [["id", "ASC"]],
     });
-  else {
-    children = await Camper.findAll({
-      order: [
-        ["shift", "ASC"],
-        ["id", "ASC"],
-      ],
+  } else {
+    children = await Campers.findAll({
+      order: [["id", "ASC"]],
     });
   }
 
   let returnData = {};
-  if (shift !== "2v") {
+
+  if (!isBoss) {
     returnData = {
       regBoys: [],
       regGirls: [],
@@ -35,25 +32,25 @@ exports.generate = async (req, res) => {
     };
   } else {
     returnData = {
-      "1v": {
+      1: {
         regBoys: [],
         regGirls: [],
         resBoys: [],
         resGirls: [],
       },
-      "2v": {
+      2: {
         regBoys: [],
         regGirls: [],
         resBoys: [],
         resGirls: [],
       },
-      "3v": {
+      3: {
         regBoys: [],
         regGirls: [],
         resBoys: [],
         resGirls: [],
       },
-      "4v": {
+      4: {
         regBoys: [],
         regGirls: [],
         resBoys: [],
@@ -80,45 +77,50 @@ exports.generate = async (req, res) => {
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };
-    if (child["isRegistered"]) {
-      if (shift !== "2v") {
-        if (child["gender"] === "Poiss") {
-          returnData.regBoys.push(data);
-        } else {
-          returnData.regGirls.push(data);
-        }
-      } else {
-        if (child["gender"] === "Poiss") {
-          returnData[child["shift"]].regBoys.push(data);
-        } else {
-          returnData[child["shift"]].regGirls.push(data);
-        }
-      }
+
+    if (!isBoss) {
+      setChild(data, returnData);
     } else {
-      if (shift !== "2v") {
-        if (child["gender"] === "Poiss") {
-          returnData.resBoys.push(data);
-        } else {
-          returnData.resGirls.push(data);
-        }
-      } else {
-        if (child["gender"] === "Poiss") {
-          returnData[child["shift"]].resBoys.push(data);
-        } else {
-          returnData[child["shift"]].resGirls.push(data);
-        }
+      switch (child["shift"]) {
+        case "1v":
+          setChild(data, returnData[1]);
+          break;
+        case "2v":
+          setChild(data, returnData[2]);
+          break;
+        case "3v":
+          setChild(data, returnData[3]);
+          break;
+        case "4v":
+          setChild(data, returnData[4]);
+          break;
       }
     }
   });
-  if (shift !== "2v") {
-    returnData.totalCount =
-      returnData.regBoys.length + returnData.regGirls.length;
-    returnData.boyCount = returnData.regBoys.length;
-    returnData.girlCount = returnData.regGirls.length;
-    returnData.resGirlsCount = returnData.resGirls.length;
-    returnData.resBoysCount = returnData.resBoys.length;
-  }
+
+  if (!isBoss) returnData = setCounts(returnData);
+  else for (let i = 1; i <= 4; ++i) returnData[i] = setCounts(returnData[i]);
+
   return returnData;
+};
+
+const setCounts = (target) => {
+  target.regBoyCount = target.regBoys.length;
+  target.regGirlCount = target.regGirls.length;
+  target.resBoyCount = target.resBoys.length;
+  target.resGirlCount = target.resGirls.length;
+  target.totalCount = target.regBoyCount + target.regGirlCount;
+  return target;
+};
+
+const setChild = (data, target) => {
+  if (data.registered === "jah") {
+    if (data.gender === "Poiss") target.regBoys.push(data);
+    else target.regGirls.push(data);
+  } else {
+    if (data.gender === "Poiss") target.resBoys.push(data);
+    else target.resGirls.push(data);
+  }
 };
 
 exports.update = async (req, res) => {
@@ -126,10 +128,10 @@ exports.update = async (req, res) => {
   const breakpoint = str.indexOf("-");
   const id = str.substring(0, breakpoint);
   const action = str.substring(breakpoint + 1);
-  const child = await Camper.findByPk(id);
+  const child = await Campers.findByPk(id);
   switch (action) {
     case "reg":
-      await Camper.update(
+      await Campers.update(
         {
           isRegistered: !child.isRegistered,
         },
@@ -141,7 +143,7 @@ exports.update = async (req, res) => {
       );
       break;
     case "paid":
-      await Camper.update(
+      await Campers.update(
         {
           pricePaid: req.body.value,
         },
@@ -153,7 +155,7 @@ exports.update = async (req, res) => {
       );
       break;
     case "toPay":
-      await Camper.update(
+      await Campers.update(
         {
           priceToPay: req.body.value,
         },
@@ -165,7 +167,7 @@ exports.update = async (req, res) => {
       );
       break;
     case "old":
-      await Camper.update(
+      await Campers.update(
         {
           isOld: !child.isOld,
         },
