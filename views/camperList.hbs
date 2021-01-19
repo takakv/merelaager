@@ -1,3 +1,22 @@
+{{#if boss}}
+    <button id="1v-switch">1v</button>
+    <button id="2v-switch">2v</button>
+    <button id="3v-switch">3v</button>
+    <button id="4v-switch">4v</button>
+    {{#each data}}
+        <div id="{{@key}}v-head" class="c-cl-head">
+            <div class="c-cl-head__group c-cl-head__group--main">
+                <div class="c-cl-count"><span class="head">poisid:</span> {{ this.regBoyCount }}</div>
+                <div class="c-cl-count"><span class="head">tüdrukud:</span> {{ this.regGirlCount }}</div>
+                <div class="c-cl-count"><span class="head">kokku:</span> {{ this.totalCount }}</div>
+            </div>
+            <div class="c-cl-head__group">
+                <div class="c-cl-count"><span class="head">res. poisid:</span> {{ this.resBoyCount }}</div>
+                <div class="c-cl-count"><span class="head">res. tüdrukud:</span> {{ this.resGirlCount }}</div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
 {{#unless boss}}
     <div class="c-cl-head">
         <div class="c-cl-head__group c-cl-head__group--main">
@@ -142,8 +161,9 @@
     {{/unless}}
     {{#if boss}}
         {{#each data}}
+            <tbody id="{{@key}}v-table">
             <tr>
-                <td colspan="14">{{@key}} - Poisid</td>
+                <td colspan="14">Poisid</td>
             </tr>
             {{#each this.regBoys}}
                 <tr>
@@ -174,7 +194,7 @@
                 </tr>
             {{/each}}
             <tr>
-                <td colspan="14">{{@key}} - Tüdrukud</td>
+                <td colspan="14">Tüdrukud</td>
             </tr>
             {{#each this.regGirls}}
                 <tr>
@@ -205,7 +225,7 @@
                 </tr>
             {{/each}}
             <tr>
-                <td colspan="14">{{@key}} - Reserv poisid</td>
+                <td colspan="14">Reserv poisid</td>
             </tr>
             {{#each this.resBoys}}
                 <tr>
@@ -236,7 +256,7 @@
                 </tr>
             {{/each}}
             <tr>
-                <td colspan="14">{{@key}} - Reserv tüdrukud</td>
+                <td colspan="14">Reserv tüdrukud</td>
             </tr>
             {{#each this.resGirls}}
                 <tr>
@@ -266,6 +286,7 @@
                     <td style="font-family: monospace">{{ this.idCode }}</td>
                 </tr>
             {{/each}}
+            </tbody>
         {{/each}}
     {{/if}}
 </table>

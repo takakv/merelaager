@@ -5,7 +5,7 @@ const Campers = db.campers;
 
 exports.generate = async (req, res) => {
   const shift = `${req.user.shift}v`;
-  const isBoss = false; //req.user.role === "boss";
+  const isBoss = req.user.role === "boss";
 
   let children;
   if (!isBoss) {
