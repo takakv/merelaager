@@ -45,7 +45,9 @@
         <th>Ts</th>
         <th>Tln?</th>
         <th>Arve nr</th>
-        <th>Isikukood</th>
+        {{#if boss}}
+            <th>Isikukood</th>
+        {{/if}}
     </tr>
     </thead>
     {{#unless boss}}
@@ -72,7 +74,6 @@
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
-                <td style="font-family: monospace">{{ this.idCode }}</td>
             </tr>
         {{/each}}
         <tr>
@@ -98,7 +99,6 @@
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
-                <td style="font-family: monospace">{{ this.idCode }}</td>
             </tr>
         {{/each}}
         <tr>
@@ -124,7 +124,6 @@
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
-                <td style="font-family: monospace">{{ this.idCode }}</td>
             </tr>
         {{/each}}
         <tr>
@@ -150,7 +149,6 @@
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
                 <td style="font-family: monospace">{{ this.billNr }}</td>
-                <td style="font-family: monospace">{{ this.idCode }}</td>
             </tr>
         {{/each}}
     {{/unless}}
