@@ -155,9 +155,10 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
 
 const shiftData = require("../controllers/shiftController");
 
-router.get("/telgid/", async (req, res) => {
+router.get("/telgid/", loggedIn, async (req, res) => {
   const data = await shiftData.getTents(req, res);
-  console.log(data);
+  const noTent = data.noTent;
+  delete data.noTent;
   res.render("camperTents", {
     layout: "admin",
     title: "Telgid",
@@ -165,7 +166,8 @@ router.get("/telgid/", async (req, res) => {
     url_path: url_prefix + "telgid/",
     body_class: " " + "camper-tents",
     script_path: "/media/scripts/camperTents.js",
-    data: data,
+    noTent: noTent,
+    tentData: data,
     pTitle: "Telgid",
     usrName: req["user"].name,
   });
@@ -173,7 +175,7 @@ router.get("/telgid/", async (req, res) => {
 
 // router.post("/add/all/", shiftData.addAll);
 // router.post("/add/camper/", shiftData.addCamper);
-router.post("/update/note/", loggedIn, shiftData.updateNote);
-router.post("/update/tent/", loggedIn, shiftData.updateTent);
+router.post("/telgid/update/note/", loggedIn, shiftData.updateNote);
+router.post("/telgid/update/tent/", loggedIn, shiftData.updateTent);
 
 module.exports = router;

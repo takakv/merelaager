@@ -1510,8 +1510,8 @@ main > section {
 
   thead {
     position: sticky;
-    top: 0;
     z-index: 5;
+    top: 0;
 
     tr {
       border-bottom: 1px solid var(--primary);
@@ -1688,4 +1688,28 @@ main > section {
 .c-admin-nav {
   width: 100%;
   padding: 30px;
+}
+
+.c-tent {
+  width: 200px;
+  margin-right: 40px;
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #e6e8eb;
+  border-radius: 4px;
+  text-align: center;
+
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e6e8eb;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 2rem;
+  }
 }
