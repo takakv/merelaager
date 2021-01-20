@@ -88,7 +88,7 @@ router.get("/", (req, res, next) => {
   } else {
     res.render("adminpage", {
       layout: "admin",
-      title: "Kambüüs",
+      title: "Avaleht",
       description: "",
       url_path: url_prefix,
       body_class: "",

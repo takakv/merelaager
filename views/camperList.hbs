@@ -40,7 +40,6 @@
         <th>Kogusumma</th>
         <th>Kontakt</th>
         <th>Vana?</th>
-        <th>V.</th>
         <th>Sünnipäev</th>
         <th>Ts</th>
         <th>Tln?</th>
@@ -64,12 +63,15 @@
                 <td>{{this.name}}</td>
                 <td>{{ this.pricePaid }}</td>
                 <td>{{ this.priceToPay }}</td>
-                <td>{{ this.contact }}</td>
+                <td id="{{this.id}}-contact" class="c-camper-contact">
+                    <a href="mailto:{{this.contactEmail}}"
+                       class="c-camper-contact__name">{{ this.contactName }}</a>
+                    <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                </td>
                 <td>
                     <button id="{{ this.id }}-old"
                             class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                 </td>
-                <td>{{ this.shift }}</td>
                 <td style="font-family: monospace">{{ this.bDay }}</td>
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
@@ -89,12 +91,15 @@
                 <td>{{this.name}}</td>
                 <td>{{ this.pricePaid }}</td>
                 <td>{{ this.priceToPay }}</td>
-                <td>{{ this.contact }}</td>
+                <td id="{{this.id}}-contact" class="c-camper-contact">
+                    <a href="mailto:{{this.contactEmail}}"
+                       class="c-camper-contact__name">{{ this.contactName }}</a>
+                    <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                </td>
                 <td>
                     <button id="{{ this.id }}-old"
                             class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                 </td>
-                <td>{{ this.shift }}</td>
                 <td style="font-family: monospace">{{ this.bDay }}</td>
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
@@ -114,12 +119,15 @@
                 <td>{{this.name}}</td>
                 <td>{{ this.pricePaid }}</td>
                 <td>{{ this.priceToPay }}</td>
-                <td>{{ this.contact }}</td>
+                <td id="{{this.id}}-contact" class="c-camper-contact">
+                    <a href="mailto:{{this.contactEmail}}"
+                       class="c-camper-contact__name">{{ this.contactName }}</a>
+                    <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                </td>
                 <td>
                     <button id="{{ this.id }}-old"
                             class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                 </td>
-                <td>{{ this.shift }}</td>
                 <td style="font-family: monospace">{{ this.bDay }}</td>
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
@@ -139,12 +147,15 @@
                 <td>{{this.name}}</td>
                 <td>{{ this.pricePaid }}</td>
                 <td>{{ this.priceToPay }}</td>
-                <td>{{ this.contact }}</td>
+                <td id="{{this.id}}-contact" class="c-camper-contact">
+                    <a href="mailto:{{this.contactEmail}}"
+                       class="c-camper-contact__name">{{ this.contactName }}</a>
+                    <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                </td>
                 <td>
                     <button id="{{ this.id }}-old"
                             class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                 </td>
-                <td>{{ this.shift }}</td>
                 <td style="font-family: monospace">{{ this.bDay }}</td>
                 <td>{{ this.tShirtSize }}</td>
                 <td>{{ this.tln }}</td>
@@ -172,12 +183,15 @@
                     <td>
                         <input id="{{ this.id }}-toPay" class="priceToPay" type="text" value="{{ this.priceToPay }}">
                     </td>
-                    <td>{{ this.contact }}</td>
+                    <td id="{{this.id}}-contact" class="c-camper-contact">
+                        <a href="mailto:{{this.contactEmail}}"
+                           class="c-camper-contact__name">{{ this.contactName }}</a>
+                        <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                    </td>
                     <td>
                         <button id="{{ this.id }}-old"
                                 class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                     </td>
-                    <td>{{ this.shift }}</td>
                     <td style="font-family: monospace">{{ this.bDay }}</td>
                     <td>{{ this.tShirtSize }}</td>
                     <td>{{ this.tln }}</td>
@@ -202,12 +216,15 @@
                     <td>
                         <input id="{{ this.id }}-toPay" class="priceToPay" type="text" value="{{ this.priceToPay }}">
                     </td>
-                    <td>{{ this.contact }}</td>
+                    <td id="{{this.id}}-contact" class="c-camper-contact">
+                        <a href="mailto:{{this.contactEmail}}"
+                           class="c-camper-contact__name">{{ this.contactName }}</a>
+                        <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                    </td>
                     <td>
                         <button id="{{ this.id }}-old"
                                 class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                     </td>
-                    <td>{{ this.shift }}</td>
                     <td style="font-family: monospace">{{ this.bDay }}</td>
                     <td>{{ this.tShirtSize }}</td>
                     <td>{{ this.tln }}</td>
@@ -232,12 +249,15 @@
                     <td>
                         <input id="{{ this.id }}-toPay" class="priceToPay" type="text" value="{{ this.priceToPay }}">
                     </td>
-                    <td>{{ this.contact }}</td>
+                    <td id="{{this.id}}-contact" class="c-camper-contact">
+                        <a href="mailto:{{this.contactEmail}}"
+                           class="c-camper-contact__name">{{ this.contactName }}</a>
+                        <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                    </td>
                     <td>
                         <button id="{{ this.id }}-old"
                                 class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                     </td>
-                    <td>{{ this.shift }}</td>
                     <td style="font-family: monospace">{{ this.bDay }}</td>
                     <td>{{ this.tShirtSize }}</td>
                     <td>{{ this.tln }}</td>
@@ -262,12 +282,15 @@
                     <td>
                         <input id="{{ this.id }}-toPay" class="priceToPay" type="text" value="{{ this.priceToPay }}">
                     </td>
-                    <td>{{ this.contact }}</td>
+                    <td id="{{this.id}}-contact" class="c-camper-contact">
+                        <a href="mailto:{{this.contactEmail}}"
+                           class="c-camper-contact__name">{{ this.contactName }}</a>
+                        <span class="c-camper-contact__phone">{{this.contactNr}}</span>
+                    </td>
                     <td>
                         <button id="{{ this.id }}-old"
                                 class="state {{ this.isOld }} clicker">{{ this.isOld }}</button>
                     </td>
-                    <td>{{ this.shift }}</td>
                     <td style="font-family: monospace">{{ this.bDay }}</td>
                     <td>{{ this.tShirtSize }}</td>
                     <td>{{ this.tln }}</td>

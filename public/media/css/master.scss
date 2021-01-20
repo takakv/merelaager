@@ -1534,6 +1534,26 @@ main > section {
   }
 }
 
+.c-camper-contact {
+  position: relative;
+
+  &__phone {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    display: none;
+    padding: 2px 4px;
+    transform: translateX(-50%);
+    border: 1px solid #e6e8eb;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+
+  &__name:hover ~ &__phone {
+    display: block;
+  }
+}
+
 .camper-list {
   button.state {
     width: 40px;
