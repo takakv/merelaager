@@ -23,7 +23,12 @@
             <p class="c-tent-header">{{@key}}</p>
             <ul>
                 {{#each this}}
-                    <li class="u-list-blank">{{this.name}}</li>
+                    <li id="{{this.id}}-rm" class="u-list-blank c-tent-child">
+                        <span>{{this.name}}</span>
+                        <div class="c-tent-child__rm">
+                            <div></div>
+                        </div>
+                    </li>
                 {{/each}}
             </ul>
         </div>

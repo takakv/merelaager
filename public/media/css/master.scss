@@ -1697,7 +1697,6 @@ main > section {
   padding: 20px;
   border: 1px solid #e6e8eb;
   border-radius: 4px;
-  text-align: center;
 
   &__container {
     display: flex;
@@ -1705,11 +1704,42 @@ main > section {
   }
 
   &-header {
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e6e8eb;
-    margin-bottom: 10px;
-    text-align: center;
-    font-weight: 600;
     font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e6e8eb;
+  }
+
+  &-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__rm {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #e6e8eb;
+      border-radius: 10px;
+
+      div {
+        width: 70%;
+        height: 1px;
+        background-color: #e6e8eb;
+      }
+
+      &:hover {
+        cursor: pointer;
+        border-color: var(--primary);
+
+        div {
+          background-color: var(--primary);
+        }
+      }
+    }
   }
 }
