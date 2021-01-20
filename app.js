@@ -90,9 +90,6 @@ app.get("/sisukaart/", (req, res) => {
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
-const adminRouter = require("./routes/admin");
-app.use("/kambuus/", adminRouter);
-
 const registerRouter = require("./routes/register");
 app.use("/registreerimine/", registerRouter);
 

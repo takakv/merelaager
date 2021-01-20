@@ -26,7 +26,7 @@ module.exports = (sequelize) => {
       },
     },
     {
-      tableName: process.env.NODE_ENV === "prod" ? "V-lapsed" : "T-V-lapsed",
+      tableName: process.env.NODE_ENV === "prod" ? "V_lapsed" : "T_V_lapsed",
     }
   );
 };

@@ -1,6 +1,7 @@
 const db = require("../models/database");
 
 const Campers = db.shiftCampers;
+const RawCampers = db.campers;
 
 const exists = async (id) => {
   const camper = await Campers.findByPk(id);
@@ -9,12 +10,19 @@ const exists = async (id) => {
 
 const addCamper = async (shift, name) => {
   try {
-    await Campers.create({
-      shift: shift,
-      name: name,
+    await Campers.findOrCreate({
+      where: {
+        shift: shift,
+        name: name,
+      },
+      defaults: {
+        shift: shift,
+        name: name,
+      },
     });
     return true;
-  } catch {
+  } catch (err) {
+    console.log(err);
     return false;
   }
 };
@@ -33,7 +41,8 @@ const editNotes = async (id, note) => {
       }
     );
     return true;
-  } catch {
+  } catch (err) {
+    console.log(err);
     return false;
   }
 };
@@ -52,12 +61,24 @@ const editTent = async (id, tent) => {
       }
     );
     return true;
-  } catch {
+  } catch (err) {
+    console.log(err);
     return false;
   }
 };
 
-exports.add = async (req, res) => {
+exports.addAll = async (req, res) => {
+  const campers = await RawCampers.findAll({
+    where: {
+      isRegistered: 1,
+    },
+  });
+
+  campers.forEach((camper) => addCamper(camper["shift"], camper["name"]));
+  res.status(200).end();
+};
+
+exports.addCamper = async (req, res) => {
   if (await addCamper(req.body.shift, req.body.name)) res.status(201).end();
   else res.status(400).end();
 };

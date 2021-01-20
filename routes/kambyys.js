@@ -153,4 +153,11 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
   });
 });
 
+const shiftData = require("../controllers/shiftController");
+
+router.post("/add/all/", shiftData.addAll);
+router.post("/add/camper/", shiftData.addCamper);
+router.post("/update/note/", shiftData.updateNote);
+router.post("/update/tent/", shiftData.updateTent);
+
 module.exports = router;
