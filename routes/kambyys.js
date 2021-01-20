@@ -149,11 +149,27 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
     script_path: "/media/scripts/camperList.js",
     data: data,
     pTitle: "Nimekiri",
-    usrName: req.user.name,
+    usrName: req["user"].name,
   });
 });
 
 const shiftData = require("../controllers/shiftController");
+
+router.get("/telgid/", async (req, res) => {
+  const data = await shiftData.getTents(req, res);
+  console.log(data);
+  res.render("camperTents", {
+    layout: "admin",
+    title: "Telgid",
+    description: "",
+    url_path: url_prefix + "telgid/",
+    body_class: " " + "camper-tents",
+    script_path: "/media/scripts/camperTents.js",
+    data: data,
+    pTitle: "Telgid",
+    usrName: req["user"].name,
+  });
+});
 
 // router.post("/add/all/", shiftData.addAll);
 // router.post("/add/camper/", shiftData.addCamper);

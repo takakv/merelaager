@@ -92,3 +92,29 @@ exports.updateTent = async (req, res) => {
   if (await editTent(req.body.id, req.body.tent)) res.status(201).end();
   else res.status(400).end();
 };
+
+exports.getTents = async (req) => {
+  const shift = `${req.user.shift}v`;
+
+  const campers = await Campers.findAll({
+    where: {
+      shift: shift,
+    },
+  });
+
+  let returnData = { noTent: [] };
+
+  // There are 10 tents.
+  for (let i = 1; i <= 10; ++i) returnData[i] = [];
+
+  campers.forEach((camper) => {
+    if (camper["tent"])
+      returnData[camper["tent"]].push({
+        name: camper["name"],
+        id: camper["id"],
+      });
+    else returnData.noTent.push({ name: camper["name"], id: camper["id"] });
+  });
+
+  return returnData;
+};
