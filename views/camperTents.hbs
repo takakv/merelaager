@@ -1,22 +1,24 @@
-{{#each noTent}}
-    <div id="{{this.id}}">
-        <p>{{this.name}}</p>
-        <label for="tentOptions-{{@key}}">Telk</label>
-        <select name="tent" id="tentOptions-{{@key}}">
-            <option value="" style="color: gray">number</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-        </select>
-    </div>
-{{/each}}
+<div class="c-tentless__container">
+    {{#each noTent}}
+        <div id="{{this.id}}" class="c-tentless">
+            <p>{{this.name}}</p>
+            <label for="tentOptions-{{@key}}">Telk</label>
+            <select name="tent" id="tentOptions-{{@key}}">
+                <option value="0" style="color: gray">number</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+    {{/each}}
+</div>
 <div class="c-tent__container">
     {{#each tentData}}
         <div class="c-tent">
