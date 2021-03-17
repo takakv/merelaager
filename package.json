@@ -34,13 +34,22 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pdfkit": "^0.11.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
     "sequelize": "^6.3.5",
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.2",
+    "babel-preset-react": "^6.24.1",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "prettier": "^2.1.2"
+    "html-webpack-plugin": "^5.3.1",
+    "prettier": "^2.1.2",
+    "webpack": "^5.26.3",
+    "webpack-dev-server": "^3.11.2"
   }
 }

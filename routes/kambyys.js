@@ -173,6 +173,18 @@ router.get("/telgid/", loggedIn, async (req, res) => {
   });
 });
 
+router.get("/lapsed/", loggedIn, async (req, res) => {
+  res.render("camperInfo", {
+    layout: "admin",
+    title: "Lapsed",
+    description: "",
+    url_path: url_prefix + "lapsed/",
+    body_class: " " + "",
+    pTitle: "Lapsed",
+    usrName: req["user"].name,
+  });
+});
+
 // router.post("/add/all/", shiftData.addAll);
 // router.post("/add/camper/", shiftData.addCamper);
 router.post("/telgid/update/note/", loggedIn, shiftData.updateNote);
