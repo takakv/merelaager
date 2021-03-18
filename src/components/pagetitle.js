@@ -4,7 +4,6 @@ export default class Pagetile extends React.Component {
             <div className="admin-page__title">
                 <span>{this.props.title}</span>
             </div>
-
         )
     }
 }

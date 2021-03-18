@@ -155,6 +155,11 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
 
 const shiftData = require("../controllers/shiftController");
 
+router.get("/api/tents/", loggedIn, async (req, res) => {
+  const data = await shiftData.getTents(req, res);
+  res.json(data);
+})
+
 router.get("/telgid/", loggedIn, async (req, res) => {
   const data = await shiftData.getTents(req, res);
   const noTent = data.noTent;

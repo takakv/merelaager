@@ -4,7 +4,6 @@ export default class Userbox extends React.Component {
             <div className="admin-page__user">
                 <span>{this.props.name}</span>
             </div>
-
         )
     }
 }

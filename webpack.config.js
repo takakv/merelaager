@@ -3,8 +3,14 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/
+                test: /\.js$/,
+                include: __dirname + "/src",
+                loader: "babel-loader"
             }
         ]
+    },
+    output: {
+        filename: "admin.js",
+        path: __dirname + "/public/media/scripts"
     }
 };
