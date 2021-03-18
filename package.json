@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
-    "start:dev": "webpack serve",
+    "build": "webpack",
+    "serve": "webpack serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -49,6 +50,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "html-webpack-plugin": "^5.3.1",
     "prettier": "^2.1.2",
+    "react-hot-loader": "^4.13.0",
     "webpack": "^5.26.3",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"

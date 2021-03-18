@@ -1,4 +1,6 @@
-export default class Pagetile extends React.Component {
+import React, { Component } from "react";
+
+export default class Pagetile extends Component {
     render() {
         return(
             <div className="admin-page__title">

@@ -1,4 +1,6 @@
-export default class Userbox extends React.Component {
+import React, { Component } from "react";
+
+export default class Userbox extends Component {
     render() {
         return(
             <div className="admin-page__user">

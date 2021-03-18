@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
@@ -86,16 +87,28 @@ router.get("/", (req, res, next) => {
       body_class: "",
     });
   } else {
-    res.render("adminpage", {
-      layout: "admin",
-      title: "Avaleht",
-      description: "",
-      url_path: url_prefix,
-      body_class: "",
-      pTitle: "Ahoi",
-      usrName: req.user.name,
-    });
+    res.sendFile("index.html", { root: path.resolve(__dirname, "../public") });
+    // res.render("adminpage", {
+    //   layout: "admin",
+    //   title: "Avaleht",
+    //   description: "",
+    //   url_path: url_prefix,
+    //   body_class: "",
+    //   pTitle: "Ahoi",
+    //   usrName: req.user.name,
+    // });
   }
+});
+
+// Static files
+router.get("/bundle.js", (req, res) => {
+  res.sendFile("bundle.js", { root: path.resolve(__dirname, "../public") });
+});
+
+router.get("/media/css/master.min.css", (req, res) => {
+  res.sendFile("media/css/master.min.css", {
+    root: path.resolve(__dirname, "../public"),
+  });
 });
 
 router.post("/login/", passport.authenticate("local"), (req, res) => {
@@ -158,7 +171,7 @@ const shiftData = require("../controllers/shiftController");
 router.get("/api/tents/", loggedIn, async (req, res) => {
   const data = await shiftData.getTents(req, res);
   res.json(data);
-})
+});
 
 router.get("/telgid/", loggedIn, async (req, res) => {
   const data = await shiftData.getTents(req, res);
