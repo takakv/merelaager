@@ -111,6 +111,12 @@ router.get("/media/css/master.min.css", (req, res) => {
   });
 });
 
+router.get("/camperTents.js", (req, res) => {
+  res.sendFile("media/scripts/camperTents.js", {
+    root: path.resolve(__dirname, "../public"),
+  });
+});
+
 router.post("/login/", passport.authenticate("local"), (req, res) => {
   res.redirect("../");
 });
@@ -173,24 +179,6 @@ router.get("/api/tents/", loggedIn, async (req, res) => {
   res.json(data);
 });
 
-router.get("/telgid/", loggedIn, async (req, res) => {
-  const data = await shiftData.getTents(req, res);
-  const noTent = data.noTent;
-  delete data.noTent;
-  res.render("camperTents", {
-    layout: "admin",
-    title: "Telgid",
-    description: "",
-    url_path: url_prefix + "telgid/",
-    body_class: " " + "camper-tents",
-    script_path: "/media/scripts/camperTents.js",
-    noTent: noTent,
-    tentData: data,
-    pTitle: "Telgid",
-    usrName: req["user"].name,
-  });
-});
-
 router.get("/lapsed/", loggedIn, async (req, res) => {
   res.render("camperInfo", {
     layout: "admin",
@@ -206,6 +194,6 @@ router.get("/lapsed/", loggedIn, async (req, res) => {
 // router.post("/add/all/", shiftData.addAll);
 // router.post("/add/camper/", shiftData.addCamper);
 router.post("/telgid/update/note/", loggedIn, shiftData.updateNote);
-router.post("/telgid/update/tent/", loggedIn, shiftData.updateTent);
+router.post("/update/tent/", loggedIn, shiftData.updateTent);
 
 module.exports = router;
