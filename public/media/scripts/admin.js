@@ -9,7 +9,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 import Sidebar from "./components/sidebar.js";
 import Userbox from "./components/userbox.js";
 import Pagetile from "./components/pagetitle.js";
-import Tents from "./components/tents.js";
+// import Tents from "./components/tents.js";
 
 console.log(window.location.href + "api/tents/");
 
@@ -31,11 +31,7 @@ var Home = function (_React$Component) {
         React.createElement(Sidebar, null),
         React.createElement(Pagetile, { title: "Ahoi" }),
         React.createElement(Userbox, { name: "Taaniel" }),
-        React.createElement(
-          "main",
-          { role: "main", className: "c-content" },
-          React.createElement(Tents, null)
-        )
+        React.createElement("main", { role: "main", className: "c-content" })
       );
     }
   }]);

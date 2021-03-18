@@ -1,7 +1,10 @@
+import React from "react";
+import ReactDOM from "react-dom";
+
 import Sidebar from "./components/sidebar.js";
 import Userbox from "./components/userbox.js";
 import Pagetile from "./components/pagetitle.js";
-import Tents from "./components/tents.js";
+// import Tents from "./components/tents.js";
 
 console.log(`${window.location.href}api/tents/`);
 
@@ -13,7 +16,7 @@ class Home extends React.Component {
         <Pagetile title="Ahoi"></Pagetile>
         <Userbox name="Taaniel"></Userbox>
         <main role="main" className="c-content">
-            <Tents></Tents>
+            {/*<Tents></Tents>*/}
         </main>
       </div>
     );

@@ -1,16 +1,24 @@
+const path = require("path");
+const HTMLWebpackPlugin = require("html-webpack-plugin");
+
 module.exports = {
-    entry: __dirname + "/src/admin.js",
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                include: __dirname + "/src",
-                loader: "babel-loader"
-            }
-        ]
-    },
-    output: {
-        filename: "admin.js",
-        path: __dirname + "/public/media/scripts"
-    }
+  entry: "./src/admin.js",
+  output: {
+    path: path.resolve(__dirname, "/public/media/scripts"),
+    filename: "admin.js",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        include: /public/,
+        loader: "babel-loader",
+      },
+    ],
+  },
+  plugins: [
+    new HTMLWebpackPlugin({
+      template: "./src/admin.html",
+    }),
+  ],
 };

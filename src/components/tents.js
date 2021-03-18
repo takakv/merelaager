@@ -1,3 +1,76 @@
+export default class Tents extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isFetching: false,
+      tents: [],
+    };
+  }
+  async componentDidMount() {
+    try {
+      this.setState({ ...this.state, isFetching: true });
+      const response = await fetch(`${window.location.href}api/tents/`);
+      const json = await response.json();
+      this.setState({ tents: json, isFetching: false });
+    } catch (e) {
+      console.log(e);
+      this.setState({ ...this.state, isFetching: false });
+    }
+  }
+  render() {
+    return (
+      <div className="c-sidebar">
+        <a href="/kambyys/" className="c-sidebar-title">
+          Kambüüs
+        </a>
+        <nav className="c-admin-nav">
+          <ul className="u-list-blank">
+            <li>
+              <a href="/kambyys/nimekiri/">Nimekiri</a>
+            </li>
+            <li>
+              <a href="/kambyys/arvegeneraator/">Arvegeneraator</a>
+            </li>
+            <li>
+              <a href="/kambyys/telgid/">Telgid</a>
+            </li>
+            <li>
+              <a href="/kambyys/lapsed/">Lapsed</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    );
+  }
+}
+// export default class Tents extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       isFetching: false,
+//       tents: [],
+//     };
+//   }
+//
+//   async getTentsInfo() {
+//     try {
+//       this.setState({ ...this.state, isFetching: true });
+//       const response = await fetch(`${window.location.href}api/tents/`);
+//       const json = await response.json();
+//       this.setState({ tents: json, isFetching: false });
+//     } catch (e) {
+//       console.log(e);
+//       this.setState({ ...this.state, isFetching: false });
+//     }
+//   }
+//
+//   render() {
+//     if (this.state.isFetching) {
+//       return <p>Fetching...</p>
+//     }
+//     return <div>Kek</div>;
+//   }
+// }
 // let tentInfo;
 
 // const populateTentless = () => {};
@@ -33,10 +106,10 @@
 //     };
 // }
 
-const getTentInfo = () =>
-  fetch(`${window.location.href}api/tents/`).then((response) =>
-    response.json()
-  );
+// const getTentInfo = () =>
+//   fetch(`${window.location.href}api/tents/`).then((response) =>
+//     response.json()
+//   );
 
 // const Tenters = () => {
 //     const tenters = suspend(getTentInfo());
@@ -57,29 +130,3 @@ const getTentInfo = () =>
 //     );
 //   }
 // }
-
-export default class Tents extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isFetching: false,
-      tents: [],
-    };
-  }
-
-  async getTentsInfo() {
-    try {
-      this.setState({ ...this.state, isFetching: true });
-      const response = await fetch(`${window.location.href}api/tents/`);
-      const json = await response.json();
-      this.setState({ tents: json, isFetching: false });
-    } catch (e) {
-      console.log(e);
-      this.setState({ ...this.state, isFetching: false });
-    }
-  }
-
-  render() {
-    return <div>Kek</div>;
-  }
-}
