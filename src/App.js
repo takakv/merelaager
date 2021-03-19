@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar";
 import PageTitle from "./components/PageTitle";
 import Userbox from "./components/userbox";
 import RegList from "./components/RegList/RegList";
+import BillGen from "./components/BillGen";
 import tents from "./components/tents";
 
 const populateTents = (tentsList) => {
@@ -81,6 +82,9 @@ export default function App() {
         <Switch>
           <Route path="/kambyys/nimekiri/">
             <RegList />
+          </Route>
+          <Route path="/kambyys/arvegeneraator/">
+            <BillGen />
           </Route>
           <Route path="/kambyys/telgid/">
             <Suspense fallback={<p>Laen...</p>}>

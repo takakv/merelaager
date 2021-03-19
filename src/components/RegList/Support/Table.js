@@ -88,7 +88,7 @@ class TableSection extends Component {
           <td colSpan="14">{this.props.title}</td>
         </tr>
         {this.props.sectionData.map((kid) => (
-          <tr>
+          <tr key={kid.id}>
             <td>{kid.id}</td>
             <td>
               <button
@@ -159,6 +159,7 @@ export class Table extends Component {
           <TableSection
             title={section[0]}
             sectionData={this.props.shiftData[section[1]]}
+            key={section[1]}
           />
         ))}
       </table>

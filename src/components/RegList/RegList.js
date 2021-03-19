@@ -32,7 +32,9 @@ class Display extends Component {
     return (
       <div className="camper-list">
         {[1, 2, 3, 4].map((shift) => (
-          <button onClick={this.handleShiftChange}>{shift}</button>
+          <button onClick={this.handleShiftChange} key={shift.toString()}>
+            {shift}
+          </button>
         ))}
         {listHead}
         {table}

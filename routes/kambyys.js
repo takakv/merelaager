@@ -110,19 +110,6 @@ const user = require("../controllers/userController");
 
 // router.post("/register/", user.create);
 
-router.get("/arvegeneraator/", loggedIn, (req, res, next) => {
-  res.render("bill_generator", {
-    layout: "admin",
-    title: "Arvegeneraator",
-    description: "Genereerib arveid.",
-    url_path: url_prefix + "arvegeneraator/",
-    body_class: "",
-    script_path: "/media/scripts/billGen.js",
-    pTitle: "Arve",
-    usrName: req.user.name,
-  });
-});
-
 const bill = require("../controllers/billController");
 
 router.post("/arvegeneraator/generate/", loggedIn, bill.create);
@@ -168,7 +155,7 @@ router.get("/lapsed/", loggedIn, async (req, res) => {
 // router.post("/add/all/", shiftData.addAll);
 // router.post("/add/camper/", shiftData.addCamper);
 router.post("/telgid/update/note/", loggedIn, shiftData.updateNote);
-router.post("/update/tent/", loggedIn, shiftData.updateTent);
+router.post("/telgid/update/tent/", loggedIn, shiftData.updateTent);
 
 module.exports = router;
 
