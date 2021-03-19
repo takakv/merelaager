@@ -6,65 +6,8 @@ import Sidebar from "./components/Sidebar";
 import PageTitle from "./components/PageTitle";
 import Userbox from "./components/userbox";
 import RegList from "./components/RegList/RegList";
+import TentsList from "./components/TentList/TentList";
 import BillGen from "./components/BillGen";
-import tents from "./components/tents";
-
-const populateTents = (tentsList) => {
-  const haveTents = [];
-  for (let i = 1; i <= 10; ++i) {
-    haveTents.push(tentsList[i]);
-  }
-  return haveTents;
-};
-
-const TentsList = () => {
-  const tentsList = tents();
-  // The API response does not group tents into an array.
-  const haveTents = populateTents(tentsList);
-  // Populate the options dropdown for campers with a tent.
-  const options = [];
-  for (let i = 1; i <= 10; ++i) {
-    options.push(i);
-  }
-  return (
-    <div>
-      <div className="c-tentless__container">
-        {tentsList.noTent.map((camper, index) => (
-          <div id={camper.id} className="c-tentless">
-            <p>{camper.name}</p>
-            <label htmlFor={`tentOptions-${index}`}>Telk</label>
-            <select name="tent" id={`tentOptions-${index}`}>
-              <option value="0">number</option>
-              {options.map((nr) => (
-                <option value={nr}>{nr}</option>
-              ))}
-            </select>
-          </div>
-        ))}
-      </div>
-      <div className="c-tent__container">
-        {haveTents.map((tents, index) => (
-          <div className="c-tent">
-            <p className="c-tent-header">{++index}</p>
-            <ul>
-              {tents.map((camper) => (
-                <li
-                  id={`${camper.id}-rm`}
-                  className="u-list-blank c-tent-child"
-                >
-                  <span>{camper.name}</span>
-                  <div className="c-tent-child__rm">
-                    <div></div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export default function App() {
   const [token, setToken] = useState();
@@ -87,9 +30,7 @@ export default function App() {
             <BillGen />
           </Route>
           <Route path="/kambyys/telgid/">
-            <Suspense fallback={<p>Laen...</p>}>
-              <TentsList />
-            </Suspense>
+            <TentsList />
           </Route>
         </Switch>
       </main>

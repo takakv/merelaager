@@ -3,6 +3,12 @@ import campers from "./fetchCampers";
 import { ListHead } from "./Support/List";
 import { Table } from "./Support/Table";
 
+class ShiftButton extends Component {
+  render() {
+    return <button onClick={this.props.action}>{this.props.shiftNr}v</button>;
+  }
+}
+
 class Display extends Component {
   constructor(props) {
     super(props);
@@ -32,9 +38,11 @@ class Display extends Component {
     return (
       <div className="camper-list">
         {[1, 2, 3, 4].map((shift) => (
-          <button onClick={this.handleShiftChange} key={shift.toString()}>
-            {shift}
-          </button>
+          <ShiftButton
+            action={this.handleShiftChange}
+            key={shift.toString()}
+            shiftNr={shift}
+          />
         ))}
         {listHead}
         {table}
