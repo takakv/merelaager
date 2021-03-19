@@ -37,7 +37,9 @@ class TableSection extends Component {
               <button
                 id={`${kid.id}-reg`}
                 className={`state ${kid.registered} clicker`}
-              />
+              >
+                {kid.registered}
+              </button>
             </td>
             <td>{kid.name}</td>
             <td>
@@ -90,7 +92,7 @@ class TableSection extends Component {
 export class Table extends Component {
   render() {
     return (
-      <table id={this.props.tableId} className="c-camper-table">
+      <table className="c-camper-table">
         <TableHeader />
         {this.props.listSections.map((section) => (
           <TableSection
