@@ -1,6 +1,39 @@
 import React, { Component, Suspense } from "react";
 import campers from "./fetchCampers";
 
+class ListHead extends Component {
+  render() {
+    return (
+      <div id={this.props.id} className="c-cl-head">
+        <div className="c-cl-head__group c-cl-head__group-main">
+          <div className="c-cl-count">
+            <span className="head">poisid: </span>
+            {this.props.shiftData.regBoyCount}
+          </div>
+          <div className="c-cl-count">
+            <span className="head">tüdrukud: </span>
+            {this.props.shiftData.regGirlCount}
+          </div>
+          <div className="c-cl-count">
+            <span className="head">kokku: </span>
+            {this.props.shiftData.totalCount}
+          </div>
+        </div>
+        <div className="c-cl-head__group">
+          <div className="c-cl-count">
+            <span className="head">res. poisid: </span>
+            {this.props.shiftData.resBoyCount}
+          </div>
+          <div className="c-cl-count">
+            <span className="head">res. tüdrukud: </span>
+            {this.props.shiftData.resGirlCount}
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
 const Display = () => {
   const shiftDataList = Object.entries(campers());
   const listSections = [
@@ -16,32 +49,7 @@ const Display = () => {
         <button id={`${shift}-switch`}>{shift}</button>
       ))}
       {shiftDataList.map((shift) => (
-        <div id={`${shift[0]}v-head`} className="c-cl-head">
-          <div className="c-cl-head__group c-cl-head__group-main">
-            <div className="c-cl-count">
-              <span className="head">poisid: </span>
-              {shift[1].regBoyCount}
-            </div>
-            <div className="c-cl-count">
-              <span className="head">tüdrukud: </span>
-              {shift[1].regGirlCount}
-            </div>
-            <div className="c-cl-count">
-              <span className="head">kokku: </span>
-              {shift[1].totalCount}
-            </div>
-          </div>
-          <div className="c-cl-head__group">
-            <div className="c-cl-count">
-              <span className="head">res. poisid: </span>
-              {shift[1].resBoyCount}
-            </div>
-            <div className="c-cl-count">
-              <span className="head">res. tüdrukud: </span>
-              {shift[1].resGirlCount}
-            </div>
-          </div>
-        </div>
+        <ListHead id={`${shift[0]}v-head`} shiftData={shift[1]} />
       ))}
       {shiftDataList.map((shift, index) => (
         <table id={`${++index}v-table`} className="c-camper-table">
@@ -81,7 +89,7 @@ const Display = () => {
                       id={`${kid.id}-paid`}
                       className="price"
                       type="text"
-                      value={kid.pricePaid}
+                      defaultValue={kid.pricePaid}
                     />
                   </td>
                   <td>
@@ -89,7 +97,7 @@ const Display = () => {
                       id={`${kid.id}-toPay`}
                       className="priceToPay"
                       type="text"
-                      value={kid.priceToPay}
+                      defaultValue={kid.priceToPay}
                     />
                   </td>
                   <td id={`${kid.id}-contact`} className="c-camper-contact">

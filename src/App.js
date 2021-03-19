@@ -1,9 +1,9 @@
 import React, { Suspense, useState } from "react";
-import { Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 
 import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
-import Pagetile from "./components/pagetitle";
+import PageTitle from "./components/PageTitle";
 import Userbox from "./components/userbox";
 import RegList from "./components/RegList/RegList";
 import tents from "./components/tents";
@@ -75,17 +75,19 @@ export default function App() {
   return (
     <div className="admin-page">
       <Sidebar />
-      <Pagetile />
+      <PageTitle title="Ahoi" />
       <Userbox />
       <main role="main" className="c-content">
-        <Route path="/nimekiri/">
-          <RegList />
-        </Route>
-        <Route path="/telgid/">
-          <Suspense fallback={<p>Laen...</p>}>
-            <TentsList />
-          </Suspense>
-        </Route>
+        <Switch>
+          <Route path="/kambyys/nimekiri/">
+            <RegList />
+          </Route>
+          <Route path="/kambyys/telgid/">
+            <Suspense fallback={<p>Laen...</p>}>
+              <TentsList />
+            </Suspense>
+          </Route>
+        </Switch>
       </main>
     </div>
   );

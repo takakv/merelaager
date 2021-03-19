@@ -88,15 +88,6 @@ router.get("/", (req, res, next) => {
     });
   } else {
     res.sendFile("index.html", { root: path.resolve(__dirname, "../public") });
-    // res.render("adminpage", {
-    //   layout: "admin",
-    //   title: "Avaleht",
-    //   description: "",
-    //   url_path: url_prefix,
-    //   body_class: "",
-    //   pTitle: "Ahoi",
-    //   usrName: req.user.name,
-    // });
   }
 });
 
@@ -162,22 +153,6 @@ router.post("/nimekiri/update/", loggedIn, async (req, res) => {
 
 // router.post("/nimekiri/priceupdate/", prices.updateAll);
 
-router.get(/nimekiri/, loggedIn, async (req, res) => {
-  const data = await list.generate(req, res);
-  res.render("camperList", {
-    layout: "admin",
-    title: "Nimekiri",
-    description: "Laagrisolijate nimekiri",
-    url_path: url_prefix + "nimekiri/",
-    body_class: " " + "camper-list",
-    boss: req.user.role === "boss",
-    script_path: "/media/scripts/camperList.js",
-    data: data,
-    pTitle: "Nimekiri",
-    usrName: req["user"].name,
-  });
-});
-
 const shiftData = require("../controllers/shiftController");
 
 router.get("/api/reglist/", loggedIn, async (req, res) => {
@@ -208,3 +183,7 @@ router.post("/telgid/update/note/", loggedIn, shiftData.updateNote);
 router.post("/update/tent/", loggedIn, shiftData.updateTent);
 
 module.exports = router;
+
+router.get("/*", loggedIn, (req, res) => {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
