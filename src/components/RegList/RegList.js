@@ -13,16 +13,20 @@ class Display extends Component {
     this.setState({ shift: parseInt(e.target.innerHTML) });
   };
 
+  componentWillUnmount() {
+    this.shiftDataList = null;
+  }
+
   render() {
     const shift = this.state.shift;
-    const shiftDataList = Object.entries(campers());
+    this.shiftDataList = Object.entries(campers());
     const listSections = [
       ["Poisid", "regBoys"],
       ["Tüdrukud", "regGirls"],
       ["Reserv poisid", "resBoys"],
       ["Reserv tüdrukud", "resGirls"],
     ];
-    let shiftData = shiftDataList[shift - 1][1];
+    let shiftData = this.shiftDataList[shift - 1][1];
     let listHead = <ListHead shiftData={shiftData} />;
     let table = <Table listSections={listSections} shiftData={shiftData} />;
     return (

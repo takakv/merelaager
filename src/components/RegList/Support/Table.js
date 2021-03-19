@@ -1,5 +1,18 @@
 import React, { Component } from "react";
 
+const switchStatus = (target) => {
+  const status = target.innerText;
+  if (status === "ei") {
+    target.innerText = "jah";
+    target.classList.remove("ei");
+    target.classList.add("jah");
+  } else {
+    target.innerText = "ei";
+    target.classList.remove("jah");
+    target.classList.add("ei");
+  }
+};
+
 class TableHeader extends Component {
   render() {
     return (
@@ -24,6 +37,50 @@ class TableHeader extends Component {
 }
 
 class TableSection extends Component {
+  updateStatus = (e) => {
+    const data = {
+      id: e.target.id,
+    };
+    switchStatus(e.target);
+    fetch(`${window.location.href}update/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).catch((err) => alert(err));
+  };
+
+  updatePrices = async (e) => {
+    const data = {
+      id: e.target.id,
+      value: e.target.value,
+    };
+    try {
+      const response = await fetch(`${window.location.href}update/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.status === 200) {
+        e.target.classList.add("ok");
+        setTimeout(() => {
+          e.target.classList.remove("ok");
+        }, 3000);
+      } else {
+        e.target.classList.add("nop");
+        setTimeout(() => {
+          e.target.classList.remove("nop");
+        }, 3000);
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Midagi läks nihu. Palun anna Taanielile teada :)");
+    }
+  };
+
   render() {
     return (
       <tbody>
@@ -36,7 +93,8 @@ class TableSection extends Component {
             <td>
               <button
                 id={`${kid.id}-reg`}
-                className={`state ${kid.registered} clicker`}
+                className={`state ${kid.registered}`}
+                onClick={this.updateStatus}
               >
                 {kid.registered}
               </button>
@@ -48,6 +106,7 @@ class TableSection extends Component {
                 className="price"
                 type="text"
                 defaultValue={kid.pricePaid}
+                onBlur={this.updatePrices}
               />
             </td>
             <td>
@@ -56,6 +115,7 @@ class TableSection extends Component {
                 className="priceToPay"
                 type="text"
                 defaultValue={kid.priceToPay}
+                onBlur={this.updatePrices}
               />
             </td>
             <td id={`${kid.id}-contact`} className="c-camper-contact">
@@ -72,7 +132,8 @@ class TableSection extends Component {
             <td>
               <button
                 id={`${kid.id}-old`}
-                className={`state ${kid.isOld} clicker`}
+                className={`state ${kid.isOld}`}
+                onClick={this.updateStatus}
               >
                 {kid.isOld}
               </button>
