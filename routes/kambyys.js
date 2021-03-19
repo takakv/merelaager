@@ -117,6 +117,12 @@ router.get("/camperTents.js", (req, res) => {
   });
 });
 
+router.get("/camperList.js", (req, res) => {
+  res.sendFile("media/scripts/camperList.js", {
+    root: path.resolve(__dirname, "../public"),
+  });
+});
+
 router.post("/login/", passport.authenticate("local"), (req, res) => {
   res.redirect("../");
 });
@@ -173,6 +179,11 @@ router.get(/nimekiri/, loggedIn, async (req, res) => {
 });
 
 const shiftData = require("../controllers/shiftController");
+
+router.get("/api/reglist/", loggedIn, async (req, res) => {
+  const data = await list.generate(req, res);
+  res.json(data);
+});
 
 router.get("/api/tents/", loggedIn, async (req, res) => {
   const data = await shiftData.getTents(req, res);
