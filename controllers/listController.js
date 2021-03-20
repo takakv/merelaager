@@ -2,10 +2,20 @@ require("dotenv").config();
 const db = require("../models/database");
 
 const Campers = db.campers;
+const shifts = [1, 2, 3, 4];
+const numberOfShifts = 4;
 
-exports.generate = async (req, res) => {
-  const shift = `${req.user.shift}v`;
-  const isBoss = req.user.role === "boss";
+exports.fetch = async (req, res) => {
+  /*if (
+                            !req.body.hasOwnProperty("shift") ||
+                            !shifts.includes(parseInt(req.body.shift))
+                          ) {
+                            res.status(400).end();
+                            return null;
+                          }
+                          const shift = `${req.body.shift}v`;
+                           */
+  const isBoss = true; //req.user.role === "boss";
 
   let children;
   if (!isBoss) {
@@ -31,32 +41,14 @@ exports.generate = async (req, res) => {
       resGirls: [],
     };
   } else {
-    returnData = {
-      1: {
+    for (let i = 1; i <= numberOfShifts; ++i) {
+      returnData[i] = {
         regBoys: [],
         regGirls: [],
         resBoys: [],
         resGirls: [],
-      },
-      2: {
-        regBoys: [],
-        regGirls: [],
-        resBoys: [],
-        resGirls: [],
-      },
-      3: {
-        regBoys: [],
-        regGirls: [],
-        resBoys: [],
-        resGirls: [],
-      },
-      4: {
-        regBoys: [],
-        regGirls: [],
-        resBoys: [],
-        resGirls: [],
-      },
-    };
+      };
+    }
   }
 
   children.forEach((child) => {
@@ -127,13 +119,16 @@ const setChild = (data, target) => {
 };
 
 exports.update = async (req, res) => {
-  const str = req.body.id;
-  const breakpoint = str.indexOf("-");
-  const id = str.substring(0, breakpoint);
-  const action = str.substring(breakpoint + 1);
+  const id = req.params.userId;
+  const action = req.params.field;
   const child = await Campers.findByPk(id);
+  if (!child) {
+    res.sendStatus(404);
+    return null;
+  }
   switch (action) {
-    case "reg":
+    // Toggle the camper registration status.
+    case "registration":
       await Campers.update(
         {
           isRegistered: !child.isRegistered,
@@ -145,7 +140,8 @@ exports.update = async (req, res) => {
         }
       );
       break;
-    case "paid":
+    // Update the amount that has been paid for the camper.
+    case "total-paid":
       await Campers.update(
         {
           pricePaid: req.body.value,
@@ -157,7 +153,8 @@ exports.update = async (req, res) => {
         }
       );
       break;
-    case "toPay":
+    // Update the total amount due fo the camper.
+    case "total-due":
       await Campers.update(
         {
           priceToPay: req.body.value,
@@ -169,7 +166,8 @@ exports.update = async (req, res) => {
         }
       );
       break;
-    case "old":
+    // Toggle whether or not the camper has been to the camp before.
+    case "regular":
       await Campers.update(
         {
           isOld: !child.isOld,
@@ -181,6 +179,9 @@ exports.update = async (req, res) => {
         }
       );
       break;
+    default:
+      res.sendStatus(404);
+      return null;
   }
   return true;
 };

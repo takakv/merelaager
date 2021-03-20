@@ -20,14 +20,15 @@
   },
   "homepage": "https://github.com/takakv/merelaager#readme",
   "dependencies": {
-    "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "connect-slashes": "^1.4.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
     "express-session": "^1.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mailgun-js": "^0.22.0",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.4.17",
@@ -36,25 +37,13 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pdfkit": "^0.11.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
     "sequelize": "^6.3.5",
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.10",
-    "@babel/plugin-proposal-class-properties": "^7.13.0",
-    "@babel/preset-react": "^7.12.13",
-    "babel-loader": "^8.2.2",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "html-webpack-plugin": "^5.3.1",
-    "prettier": "^2.1.2",
-    "react-hot-loader": "^4.13.0",
-    "webpack": "^5.26.3",
-    "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.2"
+    "prettier": "^2.1.2"
   }
 }
