@@ -7,14 +7,14 @@ const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
   /*if (
-                            !req.body.hasOwnProperty("shift") ||
-                            !shifts.includes(parseInt(req.body.shift))
-                          ) {
-                            res.status(400).end();
-                            return null;
-                          }
-                          const shift = `${req.body.shift}v`;
-                           */
+                                      !req.body.hasOwnProperty("shift") ||
+                                      !shifts.includes(parseInt(req.body.shift))
+                                    ) {
+                                      res.status(400).end();
+                                      return null;
+                                    }
+                                    const shift = `${req.body.shift}v`;
+                                     */
   const isBoss = true; //req.user.role === "boss";
 
   let children;
@@ -119,13 +119,31 @@ const setChild = (data, target) => {
 };
 
 exports.update = async (req, res) => {
+  // Entry ID and field to update.
+  if (!req.params.userId || !req.params.field) {
+    res.sendStatus(400);
+    return null;
+  }
   const id = req.params.userId;
   const action = req.params.field;
+
+  // Entry value, if needed.
+  if (
+    (action === "total-paid" || action === "total-due") &&
+    !req.params.value
+  ) {
+    res.sendStatus(400);
+    return null;
+  }
+  const value = req.params.value;
+
+  // Fetch user.
   const child = await Campers.findByPk(id);
   if (!child) {
     res.sendStatus(404);
     return null;
   }
+
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
@@ -144,7 +162,7 @@ exports.update = async (req, res) => {
     case "total-paid":
       await Campers.update(
         {
-          pricePaid: req.body.value,
+          pricePaid: value,
         },
         {
           where: {
@@ -157,7 +175,7 @@ exports.update = async (req, res) => {
     case "total-due":
       await Campers.update(
         {
-          priceToPay: req.body.value,
+          priceToPay: value,
         },
         {
           where: {
@@ -180,7 +198,7 @@ exports.update = async (req, res) => {
       );
       break;
     default:
-      res.sendStatus(404);
+      res.sendStatus(400);
       return null;
   }
   return true;

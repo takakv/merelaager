@@ -40,15 +40,34 @@ router.post("/login/", async (req, res) => {
 router.use(jwt.verifyAccessToken);
 
 const registrationList = require("../controllers/listController");
+const bill = require("../controllers/billController");
 
 router.get("/reglist/fetch/", async (req, res) => {
   const data = await registrationList.fetch(req, res);
   if (data) res.json(data);
 });
 
-router.post("/reglist/update/:userId/:field/", async (req, res) => {
+router.post("/reglist/update/:userId/:field/:value/", async (req, res) => {
   const status = await registrationList.update(req, res);
   if (status) res.sendStatus(200);
+});
+
+router.post("/bills/:action/:email", async (req, res) => {
+  if (!req.params["action"] || !req.params["email"]) {
+    res.sendStatus(400);
+    return;
+  }
+  switch (req.params["action"]) {
+    case "fetch":
+      await bill.fetch(req, res);
+      break;
+    case "create":
+      await bill.create(req, res);
+      break;
+    default:
+      res.sendStatus(404);
+      break;
+  }
 });
 
 module.exports = router;
