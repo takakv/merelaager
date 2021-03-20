@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const router = express.Router();
 
+const JWT = require("jsonwebtoken");
 const jwt = require("./Support Files/jwt");
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -23,10 +24,13 @@ router.post("/login/", async (req, res) => {
   if (user) {
     const accessToken = jwt.generateAccessToken({
       username: req.body.username,
+      role: user.role,
     });
     const refreshToken = jwt.generateRefreshToken({
       username: req.body.username,
+      role: user.role,
     });
+    refreshTokens.push(refreshToken);
     res.json({
       accessToken,
       refreshToken,
@@ -35,6 +39,29 @@ router.post("/login/", async (req, res) => {
   } else {
     res.status(403).send("Incorrect username or password");
   }
+});
+
+router.post("/token/", (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  if (!refreshTokens.includes(token)) {
+    return res.sendStatus(403);
+  }
+
+  JWT.verify(token, jwt.refreshTokenSecret, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    const accessToken = jwt.generateAccessToken({
+      username: user.username,
+      role: user.role,
+    });
+    res.json({ accessToken });
+  });
 });
 
 router.use(jwt.verifyAccessToken);
