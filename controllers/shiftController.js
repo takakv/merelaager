@@ -93,6 +93,9 @@ exports.updateTent = async (req, res) => {
   else res.status(400).end();
 };
 
+// Fetch information about tent rosters.
+// Return tent rosters mapped by tent keys and an array of kids without tents.
+// Tent rosters are arrays of kids. All kids have a name and an id.
 exports.getTents = async (shiftNr) => {
   if (shiftNr < 1 || shiftNr > 10) return null;
 
