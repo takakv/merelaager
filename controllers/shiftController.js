@@ -93,27 +93,22 @@ exports.updateTent = async (req, res) => {
   else res.status(400).end();
 };
 
-exports.getTents = async (req) => {
-  const shift = `${req.user.shift}v`;
+exports.getTents = async (shiftNr) => {
+  if (shiftNr < 1 || shiftNr > 10) return null;
 
-  const campers = await Campers.findAll({
-    where: {
-      shift: shift,
-    },
-  });
+  const shift = `${shiftNr}v`;
+  const campers = await Campers.findAll({ where: { shift } });
 
-  let returnData = { noTent: [] };
-
-  // There are 10 tents.
-  for (let i = 1; i <= 10; ++i) returnData[i] = [];
+  let returnData = { tentList: {}, noTentList: [] };
+  for (let i = 1; i <= 10; ++i) returnData.tentList[i] = [];
 
   campers.forEach((camper) => {
     if (camper["tent"])
-      returnData[camper["tent"]].push({
+      returnData.tentList[camper["tent"]].push({
         name: camper["name"],
         id: camper["id"],
       });
-    else returnData.noTent.push({ name: camper["name"], id: camper["id"] });
+    else returnData.noTentList.push({ name: camper["name"], id: camper["id"] });
   });
 
   return returnData;

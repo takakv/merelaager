@@ -68,6 +68,7 @@ router.use(jwt.verifyAccessToken);
 
 const registrationList = require("../controllers/listController");
 const bill = require("../controllers/billController");
+const shiftData = require("../controllers/shiftController");
 
 router.get("/reglist/fetch/", async (req, res) => {
   const data = await registrationList.fetch(req, res);
@@ -81,8 +82,7 @@ router.post("/reglist/update/:userId/:field/:value/", async (req, res) => {
 
 router.post("/bills/:action/:email", async (req, res) => {
   if (!req.params["action"] || !req.params["email"]) {
-    res.sendStatus(400);
-    return;
+    return res.sendStatus(400);
   }
   switch (req.params["action"]) {
     case "fetch":
@@ -92,9 +92,23 @@ router.post("/bills/:action/:email", async (req, res) => {
       await bill.create(req, res);
       break;
     default:
-      res.sendStatus(404);
-      break;
+      return res.sendStatus(404);
   }
+});
+
+router.get("/tents/fetch/:shiftNr/", async (req, res) => {
+  if (!req.params["shiftNr"]) return res.sendStatus(400);
+  const shiftNr = parseInt(req.params["shiftNr"]);
+  const data = await shiftData.getTents(shiftNr);
+  if (data) return res.json(data);
+  return res.sendStatus(404);
+});
+
+router.post("/tents/update/:childId/:field/", async (req, res) => {
+  if (!req.params["shiftNr"] || !req.params["field"]) {
+    return res.sendStatus(400);
+  }
+  await shiftData.updateTent(req, res);
 });
 
 module.exports = router;
