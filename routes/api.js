@@ -75,7 +75,7 @@ router.get("/reglist/fetch/", async (req, res) => {
   if (data) res.json(data);
 });
 
-router.post("/reglist/update/:userId/:field/:value/", async (req, res) => {
+router.post("/reglist/update/:userId/:field/:value?/", async (req, res) => {
   const status = await registrationList.update(req, res);
   if (status) res.sendStatus(200);
 });

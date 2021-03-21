@@ -7,14 +7,14 @@ const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
   /*if (
-                                      !req.body.hasOwnProperty("shift") ||
-                                      !shifts.includes(parseInt(req.body.shift))
-                                    ) {
-                                      res.status(400).end();
-                                      return null;
-                                    }
-                                    const shift = `${req.body.shift}v`;
-                                     */
+                                                  !req.body.hasOwnProperty("shift") ||
+                                                  !shifts.includes(parseInt(req.body.shift))
+                                                ) {
+                                                  res.status(400).end();
+                                                  return null;
+                                                }
+                                                const shift = `${req.body.shift}v`;
+                                                 */
   const isBoss = true; //req.user.role === "boss";
 
   let children;
@@ -136,7 +136,6 @@ exports.update = async (req, res) => {
     return null;
   }
   const value = req.params.value;
-
   // Fetch user.
   const child = await Campers.findByPk(id);
   if (!child) {
@@ -152,9 +151,7 @@ exports.update = async (req, res) => {
           isRegistered: !child.isRegistered,
         },
         {
-          where: {
-            id: id,
-          },
+          where: { id },
         }
       );
       break;
@@ -165,9 +162,7 @@ exports.update = async (req, res) => {
           pricePaid: value,
         },
         {
-          where: {
-            id: id,
-          },
+          where: { id },
         }
       );
       break;
@@ -178,9 +173,7 @@ exports.update = async (req, res) => {
           priceToPay: value,
         },
         {
-          where: {
-            id: id,
-          },
+          where: { id },
         }
       );
       break;
@@ -191,9 +184,7 @@ exports.update = async (req, res) => {
           isOld: !child.isOld,
         },
         {
-          where: {
-            id: id,
-          },
+          where: { id },
         }
       );
       break;
