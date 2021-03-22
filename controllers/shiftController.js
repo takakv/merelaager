@@ -69,6 +69,8 @@ exports.addAll = async (req, res) => {
   res.status(200).end();
 };
 
+// === Internal API for the router. ===
+
 exports.addCamper = async (req, res) => {
   if (await addCamper(req.body.shift, req.body.name)) res.status(201).end();
   else res.status(400).end();
