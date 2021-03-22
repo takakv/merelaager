@@ -4,11 +4,10 @@ const router = express.Router();
 
 const JWT = require("jsonwebtoken");
 const jwt = require("./Support Files/jwt");
+const userAuth = require("./Support Files/userAuth");
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
-
-const refreshTokens = [];
 
 router.post("/login/", async (req, res) => {
   if (
@@ -19,41 +18,21 @@ router.post("/login/", async (req, res) => {
     return;
   }
   const { username, password } = req.body;
-  const user = await jwt.fetchUser(username, password);
 
-  if (user) {
-    const accessToken = jwt.generateAccessToken({
-      username: req.body.username,
-      role: user.role,
-    });
-    const refreshToken = jwt.generateRefreshToken({
-      username: req.body.username,
-      role: user.role,
-    });
-    refreshTokens.push(refreshToken);
-    res.json({
-      accessToken,
-      refreshToken,
-      user: { name: user.name, role: user.role },
-    });
-  } else {
-    res.status(403).send("Incorrect username or password");
-  }
+  const credentials = await userAuth.authenticateUser(username, password);
+  if (!credentials) res.status(403).send("Incorrect credentials.");
+  res.json(credentials);
 });
 
-router.post("/token/", (req, res) => {
+router.post("/token/", async (req, res) => {
   const { token } = req.body;
 
-  if (!token) {
-    return res.sendStatus(401);
-  }
-
-  if (!refreshTokens.includes(token)) {
-    return res.sendStatus(403);
-  }
+  if (!token) return res.sendStatus(401);
+  if (!(await userAuth.matchToken(token))) return res.sendStatus(403);
 
   JWT.verify(token, jwt.refreshTokenSecret, (err, user) => {
     if (err) {
+      console.warn("A STORED TOKEN DOES NOT APPEAR TO BE VALID!");
       return res.sendStatus(403);
     }
     const accessToken = jwt.generateAccessToken({

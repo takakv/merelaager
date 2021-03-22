@@ -23,6 +23,9 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      refreshToken: {
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: process.env.NODE_ENV === "prod" ? "Kasutajad" : "Testijad",
