@@ -75,10 +75,7 @@ class NoTentCamper extends Component {
 
   render() {
     // Populate the options dropdown for campers with a tent.
-    const options = [];
-    for (let i = 1; i <= 10; ++i) {
-      options.push(i);
-    }
+    const options = Array.from({ length: N }, (_, i) => i + 1);
     return (
       <div id={this.props.camper.id} className="c-tentless">
         <p>{this.props.camper.name}</p>

@@ -3,8 +3,8 @@ const db = require("../models/database");
 const Campers = db.shiftCampers;
 const RawCampers = db.campers;
 
-const exists = async (id) => {
-  const camper = await Campers.findByPk(id);
+const exists = async (camperId) => {
+  const camper = await Campers.findByPk(camperId.toString());
   return !!camper;
 };
 
@@ -47,24 +47,15 @@ const editNotes = async (id, note) => {
   }
 };
 
-const editTent = async (id, tent) => {
-  if (!(await exists(id))) return false;
+const editTent = async (tent, camperId) => {
+  if (!(await exists(camperId))) return false;
   try {
-    await Campers.update(
-      {
-        tent: tent,
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
-    return true;
+    await Campers.update({ tent }, { where: { id: camperId } });
   } catch (err) {
     console.log(err);
     return false;
   }
+  return true;
 };
 
 exports.addAll = async (req, res) => {
@@ -88,9 +79,8 @@ exports.updateNote = async (req, res) => {
   else res.status(400).end();
 };
 
-exports.updateTent = async (req, res) => {
-  if (await editTent(req.body.id, req.body.tent)) res.status(201).end();
-  else res.status(400).end();
+exports.updateTent = async (tentNr, childId) => {
+  return !!(await editTent(tentNr, childId));
 };
 
 // Fetch information about tent rosters.

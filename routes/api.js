@@ -101,14 +101,18 @@ router.get("/tents/fetch/:shiftNr/", async (req, res) => {
   const shiftNr = parseInt(req.params["shiftNr"]);
   const data = await shiftData.getTents(shiftNr);
   if (data) return res.json(data);
-  return res.sendStatus(404);
+  res.sendStatus(404);
 });
 
-router.post("/tents/update/:childId/:field/", async (req, res) => {
-  if (!req.params["shiftNr"] || !req.params["field"]) {
+router.post("/tents/update/:childId/:tentId/", async (req, res) => {
+  if (!req.params["childId"] || !req.params["tentId"])
     return res.sendStatus(400);
-  }
-  await shiftData.updateTent(req, res);
+  const [childId, tentNr] = [
+    parseInt(req.params["childId"]),
+    parseInt(req.params["tentId"]),
+  ];
+  if (await shiftData.updateTent(tentNr, childId)) return res.sendStatus(200);
+  res.sendStatus(404);
 });
 
 module.exports = router;
