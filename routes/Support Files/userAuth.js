@@ -19,7 +19,7 @@ const authenticateUser = async (username, password) => {
   return {
     accessToken,
     refreshToken,
-    user: { name: user.name, role: user.role },
+    user: { name: user.name, role: user.role, shift: user.shift },
   };
 };
 
@@ -31,6 +31,7 @@ const secureFetchUser = async (username, password) => {
   return {
     name: user.name,
     role: user.role,
+    shift: user.shifts,
   };
 };
 

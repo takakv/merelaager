@@ -92,19 +92,19 @@ exports.getTents = async (shiftNr) => {
   if (shiftNr < 1 || shiftNr > 10) return null;
 
   const shift = `${shiftNr}v`;
-  const campers = await Campers.findAll({ where: { shift } });
+  return await Campers.findAll({where: {shift}});
 
-  let returnData = { tentList: {}, noTentList: [] };
-  for (let i = 1; i <= 10; ++i) returnData.tentList[i] = [];
-
-  campers.forEach((camper) => {
-    if (camper["tent"])
-      returnData.tentList[camper["tent"]].push({
-        name: camper["name"],
-        id: camper["id"],
-      });
-    else returnData.noTentList.push({ name: camper["name"], id: camper["id"] });
-  });
-
-  return returnData;
+  // let returnData = { tentList: {}, noTentList: [] };
+  // for (let i = 1; i <= 10; ++i) returnData.tentList[i] = [];
+  //
+  // campers.forEach((camper) => {
+  //   if (camper["tent"])
+  //     returnData.tentList[camper["tent"]].push({
+  //       name: camper["name"],
+  //       id: camper["id"],
+  //     });
+  //   else returnData.noTentList.push({ name: camper["name"], id: camper["id"] });
+  // });
+  //
+  // return returnData;
 };
