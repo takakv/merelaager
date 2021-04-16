@@ -21,11 +21,14 @@ exports.fetch = async () => {
     "2v": {},
     "3v": {},
     "4v": {},
+    total: {},
   };
 
   children.forEach((child) => {
     shirtBlocks[child.shift][child.tsSize] =
       (shirtBlocks[child.shift][child.tsSize] ?? 0) + 1;
+    shirtBlocks.total[child.tsSize] =
+      (shirtBlocks.total[child.tsSize] ?? 0) + 1;
   });
 
   return shirtBlocks;
