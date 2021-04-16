@@ -94,4 +94,12 @@ router.post("/tents/update/:childId/:tentId/", async (req, res) => {
   res.sendStatus(404);
 });
 
+const shirtsData = require("../controllers/shirtController");
+
+router.get("/shirts/fetch/", async (req, res) => {
+  const data = await shirtsData.fetch();
+  if (data) res.json(data);
+  else res.sendStatus(500);
+});
+
 module.exports = router;
