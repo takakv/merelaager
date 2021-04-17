@@ -13,14 +13,13 @@ router.post("/login/", async (req, res) => {
   if (
     typeof req.body.username === "undefined" ||
     typeof req.body.password === "undefined"
-  ) {
-    res.sendStatus(401);
-    return;
-  }
+  )
+    return res.sendStatus(401);
+
   const { username, password } = req.body;
 
   const credentials = await userAuth.authenticateUser(username, password);
-  if (!credentials) res.status(403).send("Incorrect credentials.");
+  if (!credentials) return res.status(403).send("Incorrect credentials.");
   res.json(credentials);
 });
 
@@ -43,11 +42,26 @@ router.post("/token/", async (req, res) => {
   });
 });
 
-router.use(jwt.verifyAccessToken);
-
 const registrationList = require("../controllers/listController");
 const bill = require("../controllers/billController");
 const shiftData = require("../controllers/shiftController");
+const shirtsData = require("../controllers/shirtController");
+
+// FORCED DB UPDATES.
+router.post("/ucl/", async (req, res) => {
+  if (!("token" in req.body)) return res.sendStatus(401);
+  if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
+  try {
+    await shiftData.forceUpdate();
+    res.sendStatus(200);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
+// INTERNAL DATA.
+router.use(jwt.verifyAccessToken);
 
 router.get("/reglist/fetch/", async (req, res) => {
   try {
@@ -103,8 +117,6 @@ router.post("/tents/update/:childId/:tentId/", async (req, res) => {
   if (await shiftData.updateTent(tentNr, childId)) return res.sendStatus(200);
   res.sendStatus(404);
 });
-
-const shirtsData = require("../controllers/shirtController");
 
 router.get("/shirts/fetch/", async (req, res) => {
   const data = await shirtsData.fetch();

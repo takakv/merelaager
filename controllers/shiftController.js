@@ -92,7 +92,7 @@ exports.getTents = async (shiftNr) => {
   if (shiftNr < 1 || shiftNr > 10) return null;
 
   const shift = `${shiftNr}v`;
-  return await Campers.findAll({where: {shift}});
+  return await Campers.findAll({ where: { shift } });
 
   // let returnData = { tentList: {}, noTentList: [] };
   // for (let i = 1; i <= 10; ++i) returnData.tentList[i] = [];
@@ -107,4 +107,31 @@ exports.getTents = async (shiftNr) => {
   // });
   //
   // return returnData;
+};
+
+// This should only be run when the sync between tables is broken,
+// as it is a heavy and slow function.
+exports.forceUpdate = async () => {
+  const rawCampers = await RawCampers.findAll({
+    where: { isRegistered: true },
+  });
+  // Add all missing campers.
+  rawCampers.forEach((camper) => {
+    Campers.findOrCreate({
+      where: { id: camper.id },
+      defaults: {
+        id: camper.id,
+        shift: camper.shift,
+        name: camper.name,
+      },
+    });
+  });
+  // Remove all excess campers.
+  const campers = await Campers.findAll();
+  campers.forEach((camper) => {
+    Campers.findByPk(camper.id).then((camper) => {
+      if (!camper) return;
+      if (!camper.isRegistered) Campers.destroy({ where: { id: camper.id } });
+    });
+  });
 };
