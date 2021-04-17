@@ -50,13 +50,23 @@ const bill = require("../controllers/billController");
 const shiftData = require("../controllers/shiftController");
 
 router.get("/reglist/fetch/", async (req, res) => {
-  const data = await registrationList.fetch(req, res);
-  if (data) res.json(data);
+  try {
+    const data = await registrationList.fetch(req, res);
+    if (data) res.json(data);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
 });
 
 router.post("/reglist/update/:userId/:field/:value?/", async (req, res) => {
-  const status = await registrationList.update(req, res);
-  if (status) res.sendStatus(200);
+  try {
+    const status = await registrationList.update(req, res);
+    if (status) res.sendStatus(200);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
 });
 
 router.post("/bills/:action/:email", async (req, res) => {
