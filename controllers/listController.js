@@ -33,22 +33,15 @@ exports.fetch = async (req, res) => {
 
   let returnData = {};
 
-  if (!isBoss) {
-    returnData = {
-      regBoys: [],
-      regGirls: [],
-      resBoys: [],
-      resGirls: [],
+  for (let i = 1; i <= numberOfShifts; ++i) {
+    returnData[i] = {
+      campers: {},
+      regBoyCount: 0,
+      regGirlCount: 0,
+      resBoyCount: 0,
+      resGirlCount: 0,
+      totalRegCount: 0,
     };
-  } else {
-    for (let i = 1; i <= numberOfShifts; ++i) {
-      returnData[i] = {
-        regBoys: [],
-        regGirls: [],
-        resBoys: [],
-        resGirls: [],
-      };
-    }
   }
 
   children.forEach((child) => {
@@ -58,63 +51,49 @@ exports.fetch = async (req, res) => {
       idCode: child["idCode"],
       gender: child["gender"],
       bDay: child["birthday"],
-      isOld: child["isOld"] ? "jah" : "ei",
+      isOld: child["isOld"],
       shift: child["shift"],
       tShirtSize: child["tsSize"],
-      city: child["city"],
-      county: child["county"],
+      // city: child["city"],
+      // county: child["county"],
       billNr: child["billNr"],
       contactName: child["contactName"].trim(),
       contactEmail: child["contactEmail"],
       contactNr: child["contactNumber"],
-      registered: child["isRegistered"] ? "jah" : "ei",
-      tln: child["city"].toLowerCase().trim() === "tallinn" ? "jah" : "ei",
+      registered: child["isRegistered"],
+      tln: child["city"].toLowerCase().trim() === "tallinn",
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };
 
-    if (!isBoss) {
-      setChild(data, returnData);
-    } else {
-      switch (child["shift"]) {
-        case "1v":
-          setChild(data, returnData[1]);
-          break;
-        case "2v":
-          setChild(data, returnData[2]);
-          break;
-        case "3v":
-          setChild(data, returnData[3]);
-          break;
-        case "4v":
-          setChild(data, returnData[4]);
-          break;
-      }
+    switch (child["shift"]) {
+      case "1v":
+        pushData(data, returnData[1]);
+        break;
+      case "2v":
+        pushData(data, returnData[2]);
+        break;
+      case "3v":
+        pushData(data, returnData[3]);
+        break;
+      case "4v":
+        pushData(data, returnData[4]);
+        break;
     }
   });
-
-  if (!isBoss) returnData = setCounts(returnData);
-  else for (let i = 1; i <= 4; ++i) returnData[i] = setCounts(returnData[i]);
 
   return returnData;
 };
 
-const setCounts = (target) => {
-  target.regBoyCount = target.regBoys.length;
-  target.regGirlCount = target.regGirls.length;
-  target.resBoyCount = target.resBoys.length;
-  target.resGirlCount = target.resGirls.length;
-  target.totalCount = target.regBoyCount + target.regGirlCount;
-  return target;
-};
-
-const setChild = (data, target) => {
-  if (data.registered === "jah") {
-    if (data.gender === "Poiss") target.regBoys.push(data);
-    else target.regGirls.push(data);
+const pushData = (camper, target) => {
+  target.campers[camper.id] = camper;
+  if (camper.registered) {
+    if (camper.gender === "Poiss") target.regBoyCount++;
+    else target.regGirlCount++;
+    target.totalRegCount++;
   } else {
-    if (data.gender === "Poiss") target.resBoys.push(data);
-    else target.resGirls.push(data);
+    if (camper.gender === "Poiss") target.resBoyCount++;
+    target.resGirlCount++;
   }
 };
 
