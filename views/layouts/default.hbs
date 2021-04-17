@@ -13,18 +13,25 @@
     <meta property="og:image" content="https://merelaager.ee/media/img/merelaager_banner.jpg">
     <meta property="og:title" content="{{title}}">
     <meta property="og:description" content="{{description}}">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@merelaager">
     <!-- Browser -->
     <link href="https://merelaager.ee/media/img/favicons/favicon-196x196.png" rel="icon" sizes="196x196"
           type="image/png"/>
     <link href="https://merelaager.ee/{{url_path}}" rel="canonical"/>
     <!-- Stylesheets -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@400;600;800&display=swap"
+          rel="stylesheet">
     <link href="/media/css/master.min.css" rel="stylesheet" type="text/css"/>
+    <!-- Humans -->
+    <link rel="author" href="/humans.txt"/>
     <!-- Script -->
     <script async defer src="/media/scripts/root.js" type="text/javascript"></script>
     <script async defer src="{{script_path}}" type="module"></script>
 </head>
 <body class="{{body_class}}">
-{{>newsite}}
 {{>header}}
 <main role="main">
     {{{body}}}

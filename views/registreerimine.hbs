@@ -11,14 +11,57 @@
         </ul>
     </div>
 </section>
+<section class="">
+    <div class="o-container">
+        <h3 class="c-section-heading">Vabad kohad</h3>
+        <div class="vahetused-wrapper">
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">1. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+                <div class="vahetused-info u-text-center">
+                    <p><a href="mailto:kai@merelaager.ee">kai@merelaager.ee</a></p>
+                    <p>+372 503 9095</p>
+                </div>
+            </div>
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">2. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+                <div class="vahetused-info u-text-center">
+                    <p><a href="mailto:ahto@merelaager.ee">ahto@merelaager.ee</a></p>
+                    <p>+372 5628 6586</p>
+                </div>
+            </div>
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">3. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+                <div class="vahetused-info u-text-center">
+                    <p><a href="mailto:kati@merelaager.ee">kati@merelaager.ee</a></p>
+                    <p>+372 5662 8044</p>
+                </div>
+            </div>
+            <div class="vahetuste-kohad">
+                <h4 class="u-text-center">4. vahetus</h4>
+                <p>Poisid:</p>
+                <p>Tüdrukud:</p>
+                <div class="vahetused-info u-text-center">
+                    <p><a href="mailto:leho@merelaager.ee">leho@merelaager.ee</a></p>
+                    <p>+372 518 6648</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <section class="registration">
     <div class="o-container">
         <h3 class="c-section-heading">Registreerimine</h3>
         <div class="u-banner u-banner--info">
-            <p>Registreerimine algab 1. jaanuaril 2021 kell 12.00 ja lõpeb siis, kui kõik kohad on täis. E-posti teel me
-                enam registreerimistaotlusi vastu ei võta.</p>
+            <p>Vabade kohtade puudumisel saate registreeruda reservnimekirja selle sama vormi abil.</p>
         </div>
-        <form class="registration-form" action="/registreerimine/register/" method="post">
+        <form class="registration-form" action="/registreerimine/register/" method="post" id="regform">
+            <b class="u-italic u-regular"><span class="u-required"></span> Tärniga märgitud väljad on kohustuslikud.</b>
             <h4>Laagrilaps</h4>
             {{>registrationFormChild}}
             <div class="registration-form__unit registration-form__unit--mt0">
@@ -33,15 +76,15 @@
             <div class="registration-form__unit">
                 <div class="registration-form__row">
                     <div class="registration-form__field">
-                        <label for="guardian_name">Nimi</label>
+                        <label for="guardian_name" class="u-required">Nimi</label>
                         <input type="text" name="guardian_name" id="guardian_name" required>
                     </div>
                     <div class="registration-form__field">
-                        <label for="guardian_phone">Telefon</label>
+                        <label for="guardian_phone" class="u-required">Telefon</label>
                         <input type="tel" name="guardian_phone" id="guardian_phone" required>
                     </div>
                     <div class="registration-form__field">
-                        <label for="guardian_email">E-post</label>
+                        <label for="guardian_email" class="u-required">E-post</label>
                         <input type="email" name="guardian_email" id="guardian_email" required>
                     </div>
                 </div>
@@ -51,7 +94,7 @@
                         <input type="tel" name="alt_phone" id="alt_phone">
                     </div>
                     <div class="registration-form__field registration-form__field--row">
-                        <label for="disclaimer">Nõustun laagri
+                        <label for="disclaimer" class="u-required">Nõustun laagri
                             <a href="/info/laagrist/#kodukord" class="t-visible">kodukorraga</a>.</label>
                         <input type="checkbox" id="disclaimer" required>
                     </div>
@@ -61,7 +104,7 @@
                 <p>Palun andke ka EMSA-le teada, et registreerite lapse(d) merelaagrisse.</p>
             </div>
             <input type="number" name="childCount" value="1" id="childCount" hidden readonly required>
-            <button name="submit" value="submit" class="c-btn">Registreerin</button>
+            <button name="submit" value="submit" class="c-btn" id="submitBtn" disabled>Registreerin</button>
             <p class="u-inline-block">Broneerimistasu: <span id="pre-total">50</span> €
                 | Kogusumma: <span id="payment-total">---</span> €</p>
         </form>

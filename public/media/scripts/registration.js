@@ -1,180 +1,107 @@
 // --- Imports
-import { ChildPrice } from "./classes/ChildPrice.js";
+import { updatePrice } from "./registration/price.js";
+import { validators } from "./registration/validation.js";
+import {
+  addChild,
+  regClosers,
+  priceAffectingFields,
+  priceDisplay,
+  submitButton,
+} from "./registration/htmlElements.js";
+import {
+  addCard,
+  displayFirstCard,
+  removeCard,
+} from "./registration/cardLogic.js";
 
 // --- Functions
-const hide = (element, isHidden) => {
+export const hide = (element, isHidden) => {
   if (isHidden) element.classList.add("is-hidden");
   else element.classList.remove("is-hidden");
 };
 
-const require = (element, isRequired) => {
-  hide(element.parentElement, !isRequired);
-  element.required = isRequired;
-};
-
-const requireUnit = (units, index, isRequired) =>
-  units.forEach((unit) => (unit[index].required = isRequired));
-
-const calculatePrice = (children) => {
-  let price = 0;
-  children.forEach((child) => {
-    price += child.shiftPrice;
-    if (child.isFromTallinn) price -= 20;
-    else if (child.isOld) price -= 10;
-  });
-  return price;
-};
-
-const displayPrice = (data) => {
-  const price = calculatePrice(data);
-  priceDisplay.innerText = price > 0 ? price : "---";
-};
-
 // --- Program
-const regUnits = document.getElementsByClassName("registration-form__unit");
-const regClosers = document.getElementsByClassName("registration-form__close");
+const pageAccessedByReload =
+  (window.performance.navigation && window.performance.navigation.type === 1) ||
+  window.performance
+    .getEntriesByType("navigation")
+    .map((nav) => nav.type)
+    .includes("reload");
 
-let childrenCounter = 0;
-hide(regUnits[childrenCounter], false);
-hide(regClosers[childrenCounter], true);
+if (pageAccessedByReload) {
+  document.getElementById("regform").reset();
+}
 
-const addChild = document.getElementById("addChild");
+displayFirstCard();
+validators();
+
 const childCountEl = document.getElementById("childCount");
+let childCount = childCountEl.value;
 
-const fields = {
-  name: document.getElementsByClassName("nameField"),
-  idCode: document.getElementsByClassName("idCodeField"),
-  useId: document.getElementsByClassName("useIdCode"),
-  gender: document.getElementsByClassName("genderField"),
-  birthday: document.getElementsByClassName("birthdayField"),
-  shift: document.getElementsByClassName("shiftField"),
-  shirtSize: document.getElementsByClassName("shirtSizeField"),
-  isNew: document.getElementsByClassName("newField"),
-  road: document.getElementsByClassName("roadField"),
-  city: document.getElementsByClassName("cityField"),
-  index: document.getElementsByClassName("indexField"),
-  country: document.getElementsByClassName("countryField"),
-};
-
-// Fields whose requirement setting depends on variables.
-const statefulFields = [fields.gender, fields.birthday];
-
-// Fields to apply general required logic to.
-const requiredFields = [
-  fields.name,
-  fields.idCode,
-  fields.shift,
-  fields.shirtSize,
-  fields.road,
-  fields.city,
-  fields.index,
-  fields.country,
-];
-
-// Require fields of first card.
-requireUnit(requiredFields, 0, true);
-
-// Check for idCode field state.
-for (let i = 0; i < 4; ++i) {
-  fields.useId[i].addEventListener("change", (event) => {
-    const isRequired = !!event.target.checked;
-    require(fields.idCode[i], !isRequired);
-    statefulFields.forEach((field) => {
-      require(field[i], isRequired);
-    });
-  });
-}
-
-// Display EMSA notice to members.
-const emsaNotice = document.getElementById("emsa-notice");
-const emsaFields = [...document.getElementsByClassName("isEmsa")];
-let checkedCount = 0;
-emsaFields.forEach((field) => {
-  // Initialisation for cached reloads.
-  if (field.checked) {
-    ++checkedCount;
-    hide(emsaNotice, false);
-  }
-  field.onclick = () => {
-    if (field.checked) {
-      hide(emsaNotice, false);
-      ++checkedCount;
-    } else {
-      --checkedCount;
-      if (!checkedCount) hide(emsaNotice, true);
-    }
-  };
-});
-
-const priceDisplay = document.getElementById("payment-total");
 const preDisplay = document.getElementById("pre-total");
+preDisplay.innerText = `${childCount * 50}`;
 
-const fullPrice = 290;
-const shortPrice = 200;
-let prePrice = 50;
-
-const shiftPrices = {
-  "1v": shortPrice,
-  "2v": fullPrice,
-  "3v": fullPrice,
-  "4v": fullPrice,
-};
-
-const childrenPrices = [
-  new ChildPrice(),
-  new ChildPrice(),
-  new ChildPrice(),
-  new ChildPrice(),
-];
-
-for (let i = 0; i < 4; ++i) {
-  const shift = fields.shift[i];
-  const isNew = fields.isNew[i];
-  const city = fields.city[i];
-  shift.onchange = () => {
-    childrenPrices[i].shiftPrice = shiftPrices[shift.value];
-    displayPrice(childrenPrices);
-  };
-  isNew.onchange = () => {
-    childrenPrices[i].isOld = !isNew.checked;
-    displayPrice(childrenPrices);
-  };
-  city.onblur = () => {
-    childrenPrices[i].isFromTallinn = city.value.toLowerCase() === "tallinn";
-    displayPrice(childrenPrices);
-  };
-}
-
-// Add cards.
 addChild.onclick = () => {
-  // Price logic.
-  prePrice += 50;
-  preDisplay.innerText = prePrice;
-
-  // Display logic.
-  hide(regClosers[childrenCounter], true);
-  hide(regUnits[++childrenCounter], false);
-  if (childrenCounter >= 3) hide(addChild.parentElement, true);
-
-  // Requirement logic.
-  requireUnit(requiredFields, childrenCounter, true);
-  childCountEl.value = `${childrenCounter + 1}`;
+  addCard(childCount);
+  ++childCount;
+  childCountEl.value = childCount;
+  preDisplay.innerText = `${childCount * 50}`;
+  priceDisplay.innerText = `${parseInt(priceDisplay.innerText) + 50}`;
 };
 
-// Remove cards.
 for (let i = 1; i < 4; ++i) {
   regClosers[i].onclick = () => {
-    // Price logic.
-    prePrice -= 50;
-    preDisplay.innerText = prePrice;
-
-    // Requirement logic.
-    requireUnit(requiredFields, childrenCounter, false);
-
-    // Display logic.
-    hide(regUnits[i], true);
-    --childrenCounter;
-    if (childrenCounter !== 0) hide(regClosers[childrenCounter], false);
-    if (childrenCounter < 3) hide(addChild.parentElement, false);
+    --childCount;
+    childCountEl.value = childCount;
+    removeCard(childCount);
+    preDisplay.innerText = `${childCount * 50}`;
+    priceDisplay.innerText = `${parseInt(priceDisplay.innerText) - 50}`;
   };
 }
+
+for (let i = 1; i < childCount; ++i) {
+  addCard(i);
+}
+
+updatePrice(childCount);
+priceDisplay.innerText = `${
+  parseInt(priceDisplay.innerText) + childCount * 50
+}`;
+
+priceAffectingFields.forEach((fields) => {
+  fields.forEach((field) => {
+    field.onchange = () => {
+      updatePrice(childCount);
+    };
+  });
+});
+
+const unlocker = (moment) => {
+  const unlockDate = new Date(Date.parse(moment)).getTime();
+  const now = new Date().getTime();
+  const eta = unlockDate - now;
+  setTimeout(() => {
+    submitButton.disabled = false;
+  }, eta);
+};
+
+if (window.location.hostname === "merelaager.ee") {
+  unlocker("01 Jan 2021 12:00:00 UTC");
+} else {
+  unlocker("01 Jan 2021 11:04:00 UTC");
+}
+
+const source = new EventSource("/registreerimine/events/");
+const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
+source.onmessage = (event) => {
+  const parsedData = JSON.parse(event.data);
+  for (let i = 0; i < 4; ++i) {
+    const boysCount = parsedData[i + 1].boys > 0 ? parsedData[i + 1].boys : 0;
+    const girlsCount =
+      parsedData[i + 1].girls > 0 ? parsedData[i + 1].girls : 0;
+    shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
+    shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
+  }
+};
+
+window.onunload = () => {};

@@ -1,0 +1,34 @@
+{
+  "1v": {
+    "name": "Kai Kukepuu",
+    "email": "kai@merelaager.ee",
+    "phone": "503 9095",
+    "id": "1. vahetus",
+    "price": 200,
+    "deadline": "24.5.2021"
+  },
+  "2v": {
+    "name": "Ahto Aaslav-Kaasik",
+    "email": "ahto@merelaager.ee",
+    "phone": "56286586",
+    "id": "2. vahetus",
+    "price": 290,
+    "deadline": "11.6.2021"
+  },
+  "3v": {
+    "name": "Katrin Mellis",
+    "email": "kati@merelaager.ee",
+    "phone": "5662 8004",
+    "id": "3. vahetus",
+    "price": 290,
+    "deadline": "18.6.2021"
+  },
+  "4v": {
+    "name": "Leho Rohtla",
+    "email": "leho@merelaager.ee",
+    "phone": "518 6648",
+    "id": "4. vahetus",
+    "price": 290,
+    "deadline": "1.7.2021"
+  }
+}

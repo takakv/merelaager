@@ -1,12 +1,15 @@
+require("dotenv").config();
+const fs = require("fs");
 const express = require("express");
+const exphbs = require("express-handlebars");
 const slashes = require("connect-slashes");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 const app = express();
 
-const dotenv = require("dotenv");
-dotenv.config();
-
-const exphbs = require("express-handlebars");
-const fs = require("fs");
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const hbs = exphbs.create({
   extname: "hbs",
@@ -32,6 +35,20 @@ app.use(express.static("public")).use(slashes());
 
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.sendFile("/robots.txt", {
+    root: "./public/",
+  });
+});
+
+app.get("/sitemap.txt", (req, res) => {
+  res.type("text/plain");
+  res.sendFile("/sitemap.txt", {
+    root: "./public/",
+  });
+});
+
 app.get("/", (req, res, next) => {
   res.render("index", {
     layout: "landing",
@@ -50,12 +67,12 @@ app.get("/meeskond/", (req, res, next) => {
   });
 });
 
-app.get("/ajalugu/", (req, res, next) => {
-  res.render("ajalugu", {
-    title: meta.ajalugu.title,
-    description: meta.ajalugu.description,
-    url_path: "ajalugu/",
-    body_class: "ajalugu",
+app.get("/lastenurk/", (req, res, next) => {
+  res.render("lastenurk", {
+    title: meta.lastenurk.title,
+    description: meta.lastenurk.description,
+    url_path: "lastenurk/",
+    body_class: "lastenurk",
   });
 });
 
@@ -68,14 +85,28 @@ app.get("/pildid/", (req, res, next) => {
   });
 });
 
+app.get("/sisukaart/", (req, res) => {
+  res.render("sitemap", {
+    title: meta.sitemap.title,
+    description: meta.sitemap.description,
+    url_path: "sisukaart/",
+  });
+});
+
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
-const adminRouter = require("./routes/admin");
-app.use("/kambuus/", adminRouter);
-
 const registerRouter = require("./routes/register");
 app.use("/registreerimine/", registerRouter);
+
+const legal = require("./routes/legal");
+app.use("/oiguslik/", legal);
+
+const adminpanel = require("./routes/adminpanel");
+app.use("/kambyys/", adminpanel);
+
+const api = require("./routes/api");
+app.use("/api/", api);
 
 app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");
@@ -91,8 +122,18 @@ app.use((req, res, next) => {
   });
 });
 
-const port = process.env.PORT;
-app.listen(port, () => console.log(`Listening on port ${port}`));
-
 const db = require("./models/database");
-db.sequelize.sync({ alter: true });
+
+const runApp = async () => {
+  try {
+    await db.sequelize.sync({ alter: true });
+    const port = process.env.PORT;
+    app.listen(port, () => console.log(`Listening on port ${port}`));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+runApp().catch(console.error);
+
+require("./models/bills");

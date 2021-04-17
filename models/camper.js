@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
@@ -10,80 +11,94 @@ module.exports = (sequelize) => {
         allowNull: false,
         primaryKey: true,
       },
-      nimi: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      isikukood: {
+      idCode: {
         type: DataTypes.STRING,
         defaultValue: "",
       },
-      sugu: {
+      gender: {
         type: DataTypes.ENUM("Tüdruk", "Poiss"),
         allowNull: false,
       },
-      synnipaev: {
+      birthday: {
         type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      vana_olija: {
+      isOld: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
       },
-      vahetus: {
+      shift: {
         type: DataTypes.ENUM("1v", "2v", "3v", "4v"),
         allowNull: false,
       },
-      ts_suurus: {
+      tsSize: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      lisainfo: {
+      addendum: {
         type: DataTypes.TEXT,
       },
-      tanav: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      linn: {
+      road: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      indeks: {
+      city: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      maakond: {
+      county: {
         type: DataTypes.TEXT,
+        allowNull: false,
       },
-      riik: {
+      country: {
         type: DataTypes.TEXT,
         allowNull: false,
         defaultValue: "Eesti",
       },
-      emsa: {
+      isEmsa: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      kontakt_nimi: {
+      billNr: {
+        type: DataTypes.INTEGER,
+      },
+      isRegistered: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      contactName: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      kontakt_number: {
+      contactNumber: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      kontakt_email: {
+      contactEmail: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      varu_tel: {
+      backupTel: {
         type: DataTypes.TEXT,
+      },
+      pricePaid: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      priceToPay: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
       },
     },
     {
-      tableName: "Laagrilapsed",
+      tableName:
+        process.env.NODE_ENV === "prod" ? "Laagrilapsed" : "Testlapsed",
     }
   );
 };
