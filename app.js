@@ -102,8 +102,8 @@ app.use("/registreerimine/", registerRouter);
 const legal = require("./routes/legal");
 app.use("/oiguslik/", legal);
 
-const kambyys = require("./routes/kambyys");
-app.use("/kambyys/", kambyys);
+const adminpanel = require("./routes/adminpanel");
+app.use("/kambyys/", adminpanel);
 
 const api = require("./routes/api");
 app.use("/api/", api);
