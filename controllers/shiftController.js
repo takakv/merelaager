@@ -129,7 +129,7 @@ exports.forceUpdate = async () => {
   // Remove all excess campers.
   const campers = await Campers.findAll();
   campers.forEach((camper) => {
-    Campers.findByPk(camper.id).then((camper) => {
+    RawCampers.findByPk(camper.id).then((camper) => {
       if (!camper) return;
       if (!camper.isRegistered) Campers.destroy({ where: { id: camper.id } });
     });
