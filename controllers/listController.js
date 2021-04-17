@@ -2,6 +2,7 @@ require("dotenv").config();
 const db = require("../models/database");
 
 const Campers = db.campers;
+const Shift = db.shiftCampers;
 const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
@@ -101,6 +102,8 @@ exports.update = async (req, res) => {
         { isRegistered: !child.isRegistered },
         { where: { id } }
       );
+      if (child.isRegistered) await Shift.destroy({ where: { id } });
+      else await Shift.create({ id, shift: child.shift, name: child.name });
       break;
     // Update the amount that has been paid for the camper.
     case "total-paid":
