@@ -5,6 +5,22 @@ const fs = require("fs");
 
 const Camper = db.campers;
 
+const bulkQueryByEmail = (contactEmail) => {
+  return Camper.findAll({
+    where: {
+      contactEmail,
+    },
+  });
+};
+
+const queryByEmail = (contactEmail) => {
+  return Camper.findOne({
+    where: {
+      contactEmail,
+    },
+  });
+};
+
 const getBillNr = async () => {
   const previousBill = await Camper.findOne({
     order: [["billNr", "DESC"]],
@@ -16,11 +32,8 @@ const getBillNr = async () => {
 };
 
 exports.create = async (req, res) => {
-  const children = await Camper.findAll({
-    where: {
-      contactEmail: req.body["meil"],
-    },
-  });
+  const children = await bulkQueryByEmail(req.params["email"]);
+
   if (!children.length) {
     res.status(404).send("Pole sellist meiliaadressi.");
     return;
@@ -52,20 +65,19 @@ exports.create = async (req, res) => {
 };
 
 exports.fetch = async (req, res) => {
-  const child = await Camper.findOne({
-    where: {
-      contactEmail: req.body["meil"],
-    },
-  });
+  const child = await queryByEmail(req.params["email"]);
+
   if (!child) {
-    res.status(404).send("Pole sellist meiliaadressi.");
+    res.status(404).send("Pole sellist meiliaadressi");
     return;
   }
+
   const billName = billGenerator.getName(child);
   const loc = `${path.join(__dirname, "../")}data/arved/${billName}`;
+
   fs.access(loc, fs.F_OK, (err) => {
     if (err) {
-      res.status(404).send("Pole olemasolevat arvet.");
+      res.status(404).send("Puudub olemasolev arve");
     } else {
       res.sendFile(`${billName}`, {
         root: "./data/arved",

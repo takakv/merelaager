@@ -94,7 +94,8 @@ h2 {
   line-height: 1.1;
 }
 
-h3 {
+h3,
+.h3 {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 4px;
@@ -144,6 +145,10 @@ body {
   quotes: "„" "”";
   color: var(--primary);
   background-color: var(--default-bg);
+}
+
+body.admin {
+  font-family: "Space Grotesk", sans-serif;
 }
 
 a {
@@ -1480,11 +1485,43 @@ main > section {
   margin-top: 1rem;
 }
 
+.c-cl-head {
+  display: flex;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e6e8eb;
+
+  &__group {
+    display: flex;
+
+    &--main {
+      margin-right: 15px;
+      border-right: 1px solid #e6e8eb;
+    }
+  }
+}
+
+.c-cl-count {
+  margin-right: 15px;
+}
+
 .c-camper-table {
   display: block;
   overflow-x: auto;
+  height: 100%;
   border-collapse: collapse;
   white-space: nowrap;
+
+  thead {
+    position: sticky;
+    z-index: 5;
+    top: 0;
+
+    tr {
+      border-bottom: 1px solid var(--primary);
+      background-color: #fff !important;
+    }
+  }
 
   th,
   td {
@@ -1493,13 +1530,31 @@ main > section {
 
   th {
     text-align: left;
-    border-bottom: 2px solid var(--primary);
   }
 
   tr {
     &:nth-of-type(2n + 1) {
       background-color: var(--dimmed);
     }
+  }
+}
+
+.c-camper-contact {
+  position: relative;
+
+  &__phone {
+    position: absolute;
+    top: -15px;
+    left: 16px;
+    display: none;
+    padding: 2px 4px;
+    border: 1px solid #e6e8eb;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+
+  &__name:hover ~ &__phone {
+    display: block;
   }
 }
 
@@ -1586,11 +1641,125 @@ main > section {
 
 .admin-page {
   display: grid;
-  min-height: 100vh;
-  grid-template-columns: [sidebar] 220px [main] auto [end];
+  max-width: 100vw;
+  height: 100%;
+  grid-template-columns: 220px 40px min-content 1fr min-content;
+  grid-template-rows: 32px 42px 1fr;
+  grid-template-areas: "side-nav s1 blank blank blank" "side-nav s2 title placeholder profile" "side-nav s3 content content content";
+
+  &__title {
+    display: flex;
+    align-items: flex-end;
+    grid-area: title;
+
+    span {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: flex-end;
+    padding-right: 40px;
+    grid-area: profile;
+
+    span {
+      font-size: 1.25rem;
+    }
+  }
+
+  .c-content {
+    overflow: auto;
+    margin-top: 24px;
+    grid-area: content;
+  }
 }
 
 .c-sidebar {
+  position: relative;
+  display: block;
   background-color: #f2f2f2;
-  grid-column: sidebar / main;
+  grid-area: side-nav;
+
+  &-title {
+    font-size: 1.5rem;
+    display: block;
+    padding: 30px 30px 50px;
+  }
+}
+
+.c-admin-nav {
+  width: 100%;
+  padding: 30px;
+}
+
+.c-tent {
+  width: 200px;
+  margin-right: 40px;
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #e6e8eb;
+  border-radius: 4px;
+
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &-header {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e6e8eb;
+  }
+
+  &-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &__rm {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #e6e8eb;
+      border-radius: 10px;
+
+      div {
+        width: 70%;
+        height: 1px;
+        background-color: #e6e8eb;
+      }
+
+      &:hover {
+        cursor: pointer;
+        border-color: var(--primary);
+
+        div {
+          background-color: var(--primary);
+        }
+      }
+    }
+  }
+}
+
+.c-tentless {
+  margin-right: 40px;
+  margin-bottom: 20px;
+
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
 }

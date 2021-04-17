@@ -63,8 +63,15 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   const due = new Date();
   due.setDate(today.getDate() + 4);
 
-  const billDate = today.toLocaleDateString("et").replace(/\//g, ".");
-  const billDue = due.toLocaleDateString("et").replace(/\//g, ".");
+  // const billDate = today.toLocaleDateString("en-GB").replace(/\//g, ".");
+  // const billDue = due.toLocaleDateString("en-GB").replace(/\//g, ".");
+
+  const billDate = `${today.getDate()}.${
+    today.getMonth() + 1
+  }.${today.getFullYear()}`;
+  const billDue = `${due.getDate()}.${
+    due.getMonth() + 1
+  }.${today.getFullYear()}`;
 
   const billNrLength = doc.widthOfString(`${billNr}`);
   const billDateLength = doc.widthOfString(billDate);
