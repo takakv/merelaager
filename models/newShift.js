@@ -13,6 +13,14 @@ module.exports = (sequelize) =>
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      childId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "childlist",
+          key: "id",
+        },
+      },
       tentNr: {
         type: DataTypes.INTEGER,
       },
