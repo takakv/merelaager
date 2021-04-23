@@ -49,10 +49,10 @@ const editNotes = async (id, note) => {
   }
 };
 
-const editTent = async (tentNr, childId) => {
+const editTent = async (tentNr, childId, shiftNr) => {
   if (!(await exists(childId))) return false;
   try {
-    await ShiftData.update({ tentNr }, { where: { childId } });
+    await ShiftData.update({ tentNr }, { where: { childId, shiftNr } });
     return true;
   } catch (e) {
     console.log(e);
@@ -81,8 +81,8 @@ exports.updateNote = async (req, res) => {
   else res.status(400).end();
 };
 
-exports.updateTent = async (tentNr, childId) => {
-  return await editTent(tentNr, childId);
+exports.updateTent = async (tentNr, childId, shiftNr) => {
+  return await editTent(tentNr, childId, shiftNr);
 };
 
 // Fetch information about tent rosters.
@@ -107,8 +107,12 @@ exports.getTents = async (shiftNr) => {
   for (let i = 0; i < 10; ++i) resObj.tents[i] = [];
 
   children.forEach((child) => {
-    const tentNr = child.shift_data.tentNr;
-    if (tentNr) resObj.tents[i - 1].push({ id: child.id, name: child.name });
+    const shiftChild = child.shift_data.find(
+      (child) => child.shiftNr === shiftNr
+    );
+    const tentNr = shiftChild.tentNr;
+    if (tentNr)
+      resObj.tents[tentNr - 1].push({ id: child.id, name: child.name });
     else resObj.tentless.push({ id: child.id, name: child.name });
   });
 
