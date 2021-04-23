@@ -22,5 +22,6 @@ db.sequelize = sequelize;
 db.campers = require("./camper")(sequelize);
 db.users = require("./user")(sequelize);
 db.shiftCampers = require("./shift")(sequelize);
+db.children = require("./child")(sequelize);
 
 module.exports = db;
