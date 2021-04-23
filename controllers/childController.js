@@ -11,11 +11,15 @@ exports.forceUpdate = async () => {
 
   // Add all missing campers.
   regCampers.forEach((camper) => {
+    // Using a name stamp allows to match the camper even in case of capitalisation
+    // differences without having to do ugly Sequelize hacks to match case independent strings.
+    const nameStamp = camper.name.toLowerCase().replace(/\s/g, "");
     Children.findOrCreate({
-      where: { name: camper.name },
+      where: { nameStamp: nameStamp },
       defaults: {
         name: camper.name,
         gender: camper.gender === "Tüdruk" ? "F" : "M",
+        nameStamp: nameStamp,
       },
     });
   });

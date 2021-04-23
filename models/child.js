@@ -21,6 +21,10 @@ module.exports = (sequelize) =>
       notes: {
         type: DataTypes.TEXT,
       },
+      // Lowercase name with no spaces
+      nameStamp: {
+        type: DataTypes.STRING,
+      },
     },
     { tableName: "childlist" }
   );
