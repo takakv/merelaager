@@ -123,6 +123,7 @@ exports.forceUpdate = async () => {
         id: camper.id,
         shift: camper.shift,
         name: camper.name,
+        parentNotes: camper.addendum,
       },
     });
   });

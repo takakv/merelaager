@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 
-// Table Name is used to create foreign key link in newShift
+// Table Name is used to create foreign key link in newShift.
 module.exports = (sequelize) =>
   sequelize.define(
     "child",
@@ -18,6 +18,11 @@ module.exports = (sequelize) =>
         allowNull: false,
       },
       notes: {
+        type: DataTypes.TEXT,
+      },
+      // This field must be cleared after every summer
+      // for data privacy reasons.
+      parentNotes: {
         type: DataTypes.TEXT,
       },
     },
