@@ -24,7 +24,7 @@ exports.forceUpdate = async () => {
 
   // Update the shifts list.
   campers.forEach((camper) => {
-    ShiftData.Create({
+    ShiftData.create({
       childId: camper.childId,
       shiftNr: camper.shiftNr,
     });
