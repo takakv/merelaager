@@ -49,19 +49,6 @@ const shirtsData = require("../controllers/shirtController");
 const childData = require("../controllers/childController");
 const newShiftData = require("../controllers/newShiftController");
 
-// FORCED DB UPDATES.
-router.post("/ucl/", async (req, res) => {
-  if (!("token" in req.body)) return res.sendStatus(401);
-  if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
-  try {
-    await shiftData.forceUpdate();
-    res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
 router.post("/children/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
@@ -133,15 +120,16 @@ router.get("/tents/fetch/:shiftNr/", async (req, res) => {
   res.sendStatus(404);
 });
 
-router.post("/tents/update/:childId/:tentId/", async (req, res) => {
-  if (!req.params["childId"] || !req.params["tentId"])
+router.post("/tents/update/:childId/:tentNr/", async (req, res) => {
+  if (!req.params["childId"] || !req.params["tentNr"])
     return res.sendStatus(400);
-  const [childId, tentNr] = [
-    parseInt(req.params["childId"]),
-    parseInt(req.params["tentId"]),
-  ];
+
+  // Use null not 0 in case of no tent.
+  const tentNr = parseInt(req.params.tentNr) || null;
+  const { childId } = req.params;
+
   if (await shiftData.updateTent(tentNr, childId)) return res.sendStatus(200);
-  res.sendStatus(404);
+  return res.sendStatus(404);
 });
 
 router.get("/shirts/fetch/", async (req, res) => {

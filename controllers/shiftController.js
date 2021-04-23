@@ -2,9 +2,11 @@ const db = require("../models/database");
 
 const Campers = db.shiftCampers;
 const RawCampers = db.campers;
+const ShiftData = db.shiftData;
+const Children = db.children;
 
 const exists = async (camperId) => {
-  const camper = await Campers.findByPk(camperId.toString());
+  const camper = await Children.findByPk(camperId);
   return !!camper;
 };
 
@@ -47,22 +49,20 @@ const editNotes = async (id, note) => {
   }
 };
 
-const editTent = async (tent, camperId) => {
-  if (!(await exists(camperId))) return false;
+const editTent = async (tentNr, childId) => {
+  if (!(await exists(childId))) return false;
   try {
-    await Campers.update({ tent }, { where: { id: camperId } });
-  } catch (err) {
-    console.log(err);
+    await ShiftData.update({ tentNr }, { where: { childId } });
+    return true;
+  } catch (e) {
+    console.log(e);
     return false;
   }
-  return true;
 };
 
 exports.addAll = async (req, res) => {
   const campers = await RawCampers.findAll({
-    where: {
-      isRegistered: 1,
-    },
+    where: { isRegistered: true },
   });
 
   campers.forEach((camper) => addCamper(camper["shift"], camper["name"]));
@@ -82,56 +82,35 @@ exports.updateNote = async (req, res) => {
 };
 
 exports.updateTent = async (tentNr, childId) => {
-  return !!(await editTent(tentNr, childId));
+  return await editTent(tentNr, childId);
 };
 
 // Fetch information about tent rosters.
-// Return tent rosters mapped by tent keys and an array of kids without tents.
+// Return an array of tent rosters and an array of kids without tents.
 // Tent rosters are arrays of kids. All kids have a name and an id.
 exports.getTents = async (shiftNr) => {
   if (shiftNr < 1 || shiftNr > 10) return null;
 
-  const shift = `${shiftNr}v`;
-  return await Campers.findAll({ where: { shift } });
+  let children;
 
-  // let returnData = { tentList: {}, noTentList: [] };
-  // for (let i = 1; i <= 10; ++i) returnData.tentList[i] = [];
-  //
-  // campers.forEach((camper) => {
-  //   if (camper["tent"])
-  //     returnData.tentList[camper["tent"]].push({
-  //       name: camper["name"],
-  //       id: camper["id"],
-  //     });
-  //   else returnData.noTentList.push({ name: camper["name"], id: camper["id"] });
-  // });
-  //
-  // return returnData;
-};
+  try {
+    children = await Children.findAll({
+      include: [{ model: ShiftData, where: { shiftNr } }],
+    });
+    if (!children) return null;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 
-// This should only be run when the sync between tables is broken,
-// as it is a heavy and slow function.
-exports.forceUpdate = async () => {
-  const rawCampers = await RawCampers.findAll({
-    where: { isRegistered: true },
+  const resObj = { tents: [], tentless: [] };
+  for (let i = 0; i < 10; ++i) resObj.tents[i] = [];
+
+  children.forEach((child) => {
+    const tentNr = child.shift_data.tentNr;
+    if (tentNr) resObj.tents[i - 1].push({ id: child.id, name: child.name });
+    else resObj.tentless.push({ id: child.id, name: child.name });
   });
-  // Add all missing campers.
-  rawCampers.forEach((camper) => {
-    Campers.findOrCreate({
-      where: { id: camper.id },
-      defaults: {
-        id: camper.id,
-        shift: camper.shift,
-        name: camper.name,
-      },
-    });
-  });
-  // Remove all excess campers.
-  const campers = await Campers.findAll();
-  campers.forEach((camper) => {
-    RawCampers.findByPk(camper.id).then((camper) => {
-      if (!camper) return;
-      if (!camper.isRegistered) Campers.destroy({ where: { id: camper.id } });
-    });
-  });
+
+  return resObj;
 };
