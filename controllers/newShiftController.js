@@ -18,6 +18,7 @@ exports.forceUpdate = async () => {
         ShiftData.create({
           childId: child.id,
           shiftNr: parseInt(camper.shift[0]),
+          parentNotes: camper.addendum,
         });
       })
       .catch(console.error);

@@ -24,6 +24,9 @@ module.exports = (sequelize) =>
       tentNr: {
         type: DataTypes.INTEGER,
       },
+      parentNotes: {
+        type: DataTypes.TEXT,
+      },
     },
     { tableName: "shift_data" }
   );

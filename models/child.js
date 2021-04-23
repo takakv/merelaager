@@ -20,11 +20,6 @@ module.exports = (sequelize) =>
       notes: {
         type: DataTypes.TEXT,
       },
-      // This field must be cleared after every summer
-      // for data privacy reasons.
-      parentNotes: {
-        type: DataTypes.TEXT,
-      },
     },
     { tableName: "childlist" }
   );
