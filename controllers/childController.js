@@ -15,11 +15,11 @@ exports.forceUpdate = async () => {
     // differences without having to do ugly Sequelize hacks to match case independent strings.
     const nameStamp = camper.name.toLowerCase().replace(/\s/g, "");
     Children.findOrCreate({
-      where: { nameStamp: nameStamp },
+      where: { id: nameStamp },
       defaults: {
         name: camper.name,
         gender: camper.gender === "Tüdruk" ? "F" : "M",
-        nameStamp: nameStamp,
+        id: nameStamp,
       },
     });
   });

@@ -13,7 +13,7 @@ exports.forceUpdate = async () => {
   // Associate all registered campers with shifts.
   await regCampers.forEach((camper) => {
     const nameStamp = camper.name.toLowerCase().replace(/\s/g, "");
-    Children.findOne({ where: { nameStamp } })
+    Children.findByPk(nameStamp)
       .then((child) => {
         ShiftData.create({
           childId: child.id,

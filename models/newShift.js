@@ -14,7 +14,7 @@ module.exports = (sequelize) =>
         allowNull: false,
       },
       childId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
           model: "childlist",
