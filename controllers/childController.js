@@ -20,6 +20,7 @@ exports.forceUpdate = async () => {
         name: camper.name,
         gender: camper.gender === "Tüdruk" ? "F" : "M",
         id: nameStamp,
+        parentNotes: camper.addendum,
       },
     });
   });
