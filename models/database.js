@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+const {Sequelize} = require("sequelize");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -23,5 +23,11 @@ db.campers = require("./camper")(sequelize);
 db.users = require("./user")(sequelize);
 db.shiftCampers = require("./shift")(sequelize);
 db.children = require("./child")(sequelize);
+db.shiftData = require("./newShift")(sequelize);
+
+const Child = db.children;
+const ShiftData = db.shiftData;
+
+Child.hasMany(ShiftData);
 
 module.exports = db;
