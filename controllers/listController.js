@@ -74,7 +74,7 @@ const pushData = (camper, target) => {
     target.totalRegCount++;
   } else {
     if (camper.gender === "Poiss") target.resBoyCount++;
-    target.resGirlCount++;
+    else target.resGirlCount++;
   }
 };
 
