@@ -49,7 +49,7 @@ exports.getInfo = async (shiftNr) => {
 
   entries.forEach((entry) => {
     resObj[entry.child.id] = {
-      ref: entry.child.id,
+      key: entry.child.id,
       name: entry.child.name,
       gender: entry.child.gender,
       notes: entry.child.notes,
