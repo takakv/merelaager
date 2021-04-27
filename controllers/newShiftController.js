@@ -31,3 +31,32 @@ exports.forceUpdate = async () => {
       .catch(console.error);
   });
 };
+
+exports.getInfo = async (shiftNr) => {
+  let entries;
+  try {
+    entries = await ShiftData.findAll({
+      where: { shiftNr },
+      include: Children,
+    });
+    if (!entries) return null;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+
+  const resObj = {};
+
+  entries.forEach((entry) => {
+    resObj[entry.child.id] = {
+      ref: entry.child.id,
+      name: entry.child.name,
+      gender: entry.child.gender,
+      notes: entry.child.notes,
+      parentNotes: entry.parentNotes,
+      tentNr: entry.tentNr,
+    };
+  });
+
+  return resObj;
+};

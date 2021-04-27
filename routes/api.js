@@ -140,4 +140,13 @@ router.get("/shirts/fetch/", async (req, res) => {
   else res.sendStatus(500);
 });
 
+router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
+  const shiftNr = parseInt(req.params.shiftNr);
+  if (Number.isNaN(shiftNr)) return res.sendStatus(400);
+
+  const data = await newShiftData.getInfo(shiftNr);
+  if (data) res.json(data);
+  else res.sendStatus(500);
+});
+
 module.exports = router;

@@ -25,9 +25,7 @@ db.shiftCampers = require("./shift")(sequelize);
 db.children = require("./child")(sequelize);
 db.shiftData = require("./newShift")(sequelize);
 
-const Child = db.children;
-const ShiftData = db.shiftData;
-
-Child.hasMany(ShiftData);
+db.children.hasMany(db.shiftData);
+db.shiftData.belongsTo(db.children);
 
 module.exports = db;
