@@ -15,10 +15,17 @@ exports.forceUpdate = async () => {
     const nameStamp = camper.name.toLowerCase().replace(/\s/g, "");
     Children.findByPk(nameStamp)
       .then((child) => {
-        ShiftData.create({
-          childId: child.id,
-          shiftNr: parseInt(camper.shift[0]),
-          parentNotes: camper.addendum,
+        const shiftNr = parseInt(camper.shift[0]);
+        ShiftData.findOrCreate({
+          where: {
+            childId: child.id,
+            shiftNr,
+          },
+          defaults: {
+            childId: child.id,
+            shiftNr,
+            parentNotes: camper.addendum,
+          },
         });
       })
       .catch(console.error);
