@@ -37,6 +37,7 @@ exports.getInfo = async (shiftNr) => {
   try {
     entries = await ShiftData.findAll({
       where: { shiftNr },
+      order: [["childId", "ASC"]],
       include: Children,
     });
     if (!entries) return null;
