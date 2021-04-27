@@ -2,7 +2,6 @@ require("dotenv").config();
 const db = require("../models/database");
 
 const Campers = db.campers;
-const Shift = db.shiftCampers;
 const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
@@ -78,6 +77,9 @@ const pushData = (camper, target) => {
   }
 };
 
+const Children = db.children;
+const ShiftData = db.shiftData;
+
 exports.update = async (req, res) => {
   // Entry ID and field to update.
   if (!req.params.userId || !req.params.field)
@@ -92,18 +94,17 @@ exports.update = async (req, res) => {
 
   const value = req.params.value;
 
-  const child = await Campers.findByPk(id);
-  if (!child) return res.sendStatus(404) && null;
+  const camper = await Campers.findByPk(id);
+  if (!camper) return res.sendStatus(404) && null;
 
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
       await Campers.update(
-        { isRegistered: !child.isRegistered },
+        { isRegistered: !camper.isRegistered },
         { where: { id } }
       );
-      if (child.isRegistered) await Shift.destroy({ where: { id } });
-      else await Shift.create({ id, shift: child.shift, name: child.name });
+      await updateCamperAndShiftData(camper);
       break;
     // Update the amount that has been paid for the camper.
     case "total-paid":
@@ -115,11 +116,42 @@ exports.update = async (req, res) => {
       break;
     // Toggle whether or not the camper has been to the camp before.
     case "regular":
-      await Campers.update({ isOld: !child.isOld }, { where: { id } });
+      await Campers.update({ isOld: !camper.isOld }, { where: { id } });
       break;
     default:
       res.sendStatus(400);
       return null;
   }
   return true;
+};
+
+const updateCamperAndShiftData = async (camper) => {
+  const nameStamp = getNameStamp(camper.name);
+  const gender = camper.gender === "Tüdruk" ? "F" : "M";
+  const shiftNr = parseInt(camper.shift[0]);
+  const child = await Children.findByPk(nameStamp);
+
+  // Create and entry for the child if it doesn't exist.
+  if (!camper.isRegistered) {
+    if (child) {
+      await Children.findOrCreate({
+        where: { id: nameStamp },
+        defaults: {
+          id: nameStamp,
+          name: camper.name,
+          gender,
+        },
+      });
+    }
+
+    await ShiftData.create({
+      childId: nameStamp,
+      shiftNr,
+      parentNotes: camper.addendum,
+    });
+  } else await ShiftData.destroy({ where: { childId: nameStamp, shiftNr } });
+};
+
+const getNameStamp = (name) => {
+  return name.toLowerCase().replace(/\s/g, "");
 };
