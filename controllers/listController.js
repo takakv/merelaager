@@ -104,7 +104,7 @@ exports.update = async (req, res) => {
         { isRegistered: !camper.isRegistered },
         { where: { id } }
       );
-      await updateCamperAndShiftData(camper);
+      //await updateCamperAndShiftData(camper);
       break;
     // Update the amount that has been paid for the camper.
     case "total-paid":
