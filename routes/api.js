@@ -96,6 +96,16 @@ router.post("/reglist/update/:userId/:field/:value?/", async (req, res) => {
   }
 });
 
+router.post("/reglist/remove/:userId/", async(req, res) => {
+  try {
+    const status = await registrationList.remove(req, res);
+    if (status) res.sendStatus(200);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 router.post("/bills/:action/:email", async (req, res) => {
   if (!req.params["action"] || !req.params["email"]) {
     return res.sendStatus(400);

@@ -125,6 +125,23 @@ exports.update = async (req, res) => {
   return true;
 };
 
+exports.remove = async (req, res) => {
+  // Entry ID check.
+  if (!req.params.userId) return res.sendStatus(400) && null;
+
+  const id = req.params.userId;
+  const camper = await Campers.findByPk(id);
+  if (!camper) return res.sendStatus(404) && null;
+
+  await Campers.destroy({
+    where: {
+      id,
+    },
+  });
+
+  return true;
+};
+
 const updateCamperAndShiftData = async (camper) => {
   const nameStamp = getNameStamp(camper.name);
   const gender = camper.gender === "Tüdruk" ? "F" : "M";
