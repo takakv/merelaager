@@ -20,7 +20,7 @@ const generateHTML = (campers, price, regCount) => {
   if (regCount !== campers.length) {
     response += "<ul>";
     for (let i = 0; i < campers.length; ++i) {
-      if (campers[i].shift) continue;
+      if (campers[i].isRegistered) continue;
       response += `<li>${campers[i].name} (${
         shiftData[campers[i].shift].id
       })</li>`;

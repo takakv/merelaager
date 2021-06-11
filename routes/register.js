@@ -65,12 +65,12 @@ let spots = {
 };
 
 // Gather slot data
-for (const [key, value] of Object.entries(spots)) {
-  slots.findByPk(key).then((count) => {
-    value.boys = count.boySlots;
-    value.girls = count.girlSlots;
-  });
-}
+// for (const [key, value] of Object.entries(spots)) {
+//   slots.findByPk(key).then((count) => {
+//     value.boys = count.boySlots;
+//     value.girls = count.girlSlots;
+//   });
+// }
 
 let clients = [];
 
