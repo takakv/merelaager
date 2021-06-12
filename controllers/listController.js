@@ -1,5 +1,6 @@
 require("dotenv").config();
 const db = require("../models/database");
+const { generatePDF } = require("./listGenerator");
 
 const Campers = db.campers;
 const numberOfShifts = 4;
@@ -171,4 +172,33 @@ const updateCamperAndShiftData = async (camper) => {
 
 const getNameStamp = (name) => {
   return name.toLowerCase().replace(/\s/g, "");
+};
+
+exports.print = async (shiftNr) => {
+  const children = await Campers.findAll({
+    order: [["name", "ASC"]],
+    where: {
+      shift: `${shiftNr}v`,
+      isRegistered: true,
+    },
+  });
+
+  if (!children.length) return null;
+
+  let childrenInfo = [];
+
+  children.forEach((child) => {
+    childrenInfo.push({
+      name: child.name,
+      gender: child.gender,
+      birthday: child.birthday,
+      isOld: child.isOld,
+      tsSize: child.tsSize,
+      contactName: child.contactName.trim(),
+      contactEmail: child.contactEmail,
+      contactNr: child.contactNumber,
+    });
+  });
+
+  return generatePDF(shiftNr, childrenInfo);
 };

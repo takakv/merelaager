@@ -76,6 +76,7 @@ router.post("/shift/", async (req, res) => {
 // INTERNAL DATA.
 router.use(jwt.verifyAccessToken);
 
+// Fetch the whole list of children and their registration status.
 router.get("/reglist/fetch/", async (req, res) => {
   try {
     const data = await registrationList.fetch(req, res);
@@ -84,6 +85,14 @@ router.get("/reglist/fetch/", async (req, res) => {
     console.error(e);
     res.sendStatus(500);
   }
+});
+
+router.get("/reglist/print/:shiftNr/", async (req, res) => {
+  if (!req.params["shiftNr"]) return res.sendStatus(400);
+  const shiftNr = parseInt(req.params["shiftNr"]);
+  const filename = await registrationList.print(shiftNr);
+  if (filename) return res.sendFile(filename, { root: "./data/files" });
+  res.sendStatus(404);
 });
 
 router.post("/reglist/update/:userId/:field/:value?/", async (req, res) => {
@@ -96,7 +105,7 @@ router.post("/reglist/update/:userId/:field/:value?/", async (req, res) => {
   }
 });
 
-router.post("/reglist/remove/:userId/", async(req, res) => {
+router.post("/reglist/remove/:userId/", async (req, res) => {
   try {
     const status = await registrationList.remove(req, res);
     if (status) res.sendStatus(200);

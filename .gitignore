@@ -19,7 +19,9 @@ obj/
 node_modules/
 package-lock.json
 .env
+yarn-error.log
 
 # Private files
 data/arved/*.pdf
+data/files/*.pdf
 *.sqlite

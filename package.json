@@ -36,6 +36,7 @@
     "nodemailer-express-handlebars": "^4.0.0",
     "nodemailer-mailgun-transport": "^2.0.3",
     "pdfkit": "^0.12.1",
+    "pdfmake": "^0.1.71",
     "sequelize": "^6.3.5",
     "sqlite3": "^5.0.0"
   },

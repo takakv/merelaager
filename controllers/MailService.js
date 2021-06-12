@@ -92,9 +92,7 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
   let response = "<ul>";
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
-    response += `<li>${campers[i].name} (${
-      shiftData[campers[i].shift].id
-    }), `;
+    response += `<li>${campers[i].name} (${shiftData[campers[i].shift].id}), `;
     response += `sugu: ${campers[i].gender}, `;
     response += `sünnipäev: ${campers[i].birthday}, `;
     response += `t-särgi suurus: ${campers[i].tsSize}, `;
@@ -187,6 +185,23 @@ class MailService {
       to: "kati@merelaager.ee",
       subject: `Registreerimine - ${campers[0].contactName}`,
       html: generateInfoHTML(campers, price, billNr, regCount),
+    });
+  }
+
+  sendCheckMail(source, dest, content) {
+    console.log("Sending email");
+    console.log(source);
+    console.log(dest);
+    console.log(typeof source);
+    console.log(typeof dest);
+    return this._transporter.sendMail({
+      from: {
+        name: "Test",
+        address: source,
+      },
+      to: dest,
+      subject: "Süsteemi katse",
+      html: content,
     });
   }
 }
