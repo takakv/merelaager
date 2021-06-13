@@ -29,13 +29,13 @@ const addCamper = async (shift, name) => {
   }
 };
 
-const editNotes = async (id, note) => {
-  if (!(await exists(Child, id))) return false;
+const editNotes = async (childId, notes) => {
+  if (!(await exists(Child, childId))) return false;
   try {
-    await Child.update({ notes: note }, { where: { id: id } });
+    await Child.update({ notes }, { where: { id: childId } });
     return true;
-  } catch (err) {
-    console.log(err);
+  } catch (e) {
+    console.log(e);
     return false;
   }
 };
@@ -67,9 +67,8 @@ exports.addCamper = async (req, res) => {
   else res.status(400).end();
 };
 
-exports.updateNote = async (req, res) => {
-  if (await editNotes(req.body.id, req.body.notes)) res.status(201).end();
-  else res.status(400).end();
+exports.updateNotes = async (childId, notes) => {
+  return await editNotes(childId, notes);
 };
 
 exports.updateTent = async (entryId, tentNr) => {

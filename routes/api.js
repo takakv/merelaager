@@ -161,6 +161,16 @@ router.post("/tents/update/:entryId/:tentNr/", async (req, res) => {
   return res.sendStatus(404);
 });
 
+router.post("/notes/update/:childId/", async (req, res) => {
+  const childId = parseInt(req.params.childId);
+  if (!childId) return res.sendStatus(400);
+  if (typeof req.body.notes === "undefined") return res.sendStatus(400);
+
+  if (await shiftData.updateNotes(childId, req.body.notes))
+    return res.sendStatus(200);
+  else res.sendStatus(404);
+});
+
 router.get("/shirts/fetch/", async (req, res) => {
   const data = await shirtsData.fetch();
   if (data) res.json(data);
