@@ -26,7 +26,7 @@ db.children = require("./child")(sequelize);
 db.shiftData = require("./newShift")(sequelize);
 db.newChildren = require("./newChild")(sequelize);
 
-db.children.hasMany(db.shiftData);
-db.shiftData.belongsTo(db.children);
+db.newChildren.hasMany(db.shiftData);
+db.shiftData.belongsTo(db.newChildren);
 
 module.exports = db;
