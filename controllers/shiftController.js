@@ -43,6 +43,7 @@ const editNotes = async (childId, notes) => {
 const editTent = async (entryId, tentNr) => {
   if (!(await exists(ShiftData, entryId))) return false;
   try {
+    if (tentNr === 0) tentNr = null;
     await ShiftData.update({ tentNr }, { where: { id: entryId } });
     return true;
   } catch (e) {
