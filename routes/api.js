@@ -151,17 +151,13 @@ router.get("/tents/fetch/:shiftNr/", async (req, res) => {
   res.sendStatus(404);
 });
 
-router.post("/tents/update/:shiftNr/:childId/:tentNr/", async (req, res) => {
-  if (!req.params.shiftNr || !req.params.childId || !req.params.tentNr)
-    return res.sendStatus(400);
+router.post("/tents/update/:entryId/:tentNr/", async (req, res) => {
+  if (!req.params.entryId || !req.params.tentNr) return res.sendStatus(400);
 
-  // Use null not 0 in case of no tent.
-  const tentNr = parseInt(req.params.tentNr) || null;
-  const shiftNr = parseInt(req.params.shiftNr);
-  const { childId } = req.params;
+  const entryId = parseInt(req.params.entryId);
+  const tentNr = parseInt(req.params.tentNr);
 
-  if (await shiftData.updateTent(tentNr, childId, shiftNr))
-    return res.sendStatus(200);
+  if (await shiftData.updateTent(entryId, tentNr)) return res.sendStatus(200);
   return res.sendStatus(404);
 });
 

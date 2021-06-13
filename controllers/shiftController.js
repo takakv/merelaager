@@ -3,11 +3,10 @@ const db = require("../models/database");
 const Campers = db.shiftCampers;
 const RawCampers = db.campers;
 const ShiftData = db.shiftData;
-const Children = db.children;
 
-const exists = async (camperId) => {
-  const camper = await Children.findByPk(camperId);
-  return !!camper;
+const exists = async (entryId) => {
+  const entry = await ShiftData.findByPk(entryId);
+  return !!entry;
 };
 
 const addCamper = async (shift, name) => {
@@ -32,16 +31,7 @@ const addCamper = async (shift, name) => {
 const editNotes = async (id, note) => {
   if (!(await exists(id))) return false;
   try {
-    await Campers.update(
-      {
-        notes: note,
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
+    await Campers.update({ notes: note }, { where: { id: id } });
     return true;
   } catch (err) {
     console.log(err);
@@ -49,10 +39,10 @@ const editNotes = async (id, note) => {
   }
 };
 
-const editTent = async (tentNr, childId, shiftNr) => {
-  if (!(await exists(childId))) return false;
+const editTent = async (entryId, tentNr) => {
+  if (!(await exists(entryId))) return false;
   try {
-    await ShiftData.update({ tentNr }, { where: { childId, shiftNr } });
+    await ShiftData.update({ tentNr }, { where: { id: entryId } });
     return true;
   } catch (e) {
     console.log(e);
@@ -81,40 +71,43 @@ exports.updateNote = async (req, res) => {
   else res.status(400).end();
 };
 
-exports.updateTent = async (tentNr, childId, shiftNr) => {
-  return await editTent(tentNr, childId, shiftNr);
+exports.updateTent = async (entryId, tentNr) => {
+  return await editTent(entryId, tentNr);
 };
 
 // Fetch information about tent rosters.
 // Return an array of tent rosters and an array of kids without tents.
 // Tent rosters are arrays of kids. All kids have a name and an id.
 exports.getTents = async (shiftNr) => {
-  if (shiftNr < 1 || shiftNr > 10) return null;
-
-  let children;
+  let tentData;
 
   try {
-    children = await Children.findAll({
-      include: [{ model: ShiftData, where: { shiftNr } }],
-    });
-    if (!children) return null;
+    tentData = await ShiftData.findAll({ where: { shiftNr: shiftNr } });
+    if (!tentData) return null;
   } catch (e) {
     console.error(e);
     return null;
   }
 
-  const resObj = { tents: [], tentless: [] };
+  const resObj = { tents: [], noTent: [] };
   for (let i = 0; i < 10; ++i) resObj.tents[i] = [];
 
-  children.forEach((child) => {
-    const shiftChild = child.shift_data.find(
-      (child) => child.shiftNr === shiftNr
-    );
-    const tentNr = shiftChild.tentNr;
+  const fetchPromises = [];
+
+  const fetchChild = async (tentEntry) => {
+    const child = await tentEntry.getChild();
+    const tentNr = tentEntry.tentNr;
+
     if (tentNr)
-      resObj.tents[tentNr - 1].push({ id: child.id, name: child.name });
-    else resObj.tentless.push({ id: child.id, name: child.name });
+      resObj.tents[tentNr - 1].push({ id: tentEntry.id, name: child.name });
+    else resObj.noTent.push({ id: tentEntry.id, name: child.name });
+  };
+
+  tentData.forEach((tentEntry) => {
+    fetchPromises.push(fetchChild(tentEntry));
   });
+
+  await Promise.all(fetchPromises);
 
   return resObj;
 };
