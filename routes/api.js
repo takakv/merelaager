@@ -49,6 +49,18 @@ const shirtsData = require("../controllers/shirtController");
 const childData = require("../controllers/childController");
 const newShiftData = require("../controllers/newShiftController");
 
+router.post("/newchildren/", async (req, res) => {
+  if (!("token" in req.body)) return res.sendStatus(401);
+  if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
+  try {
+    await childData.newChildren();
+    res.sendStatus(200);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 router.post("/children/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);

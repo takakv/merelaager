@@ -2,6 +2,7 @@ const db = require("../models/database");
 
 const Children = db.children;
 const Reglist = db.campers;
+const newChildren = db.newChildren;
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
@@ -20,6 +21,23 @@ exports.forceUpdate = async () => {
         name: camper.name,
         gender: camper.gender === "Tüdruk" ? "F" : "M",
         id: nameStamp,
+      },
+    });
+  });
+};
+
+exports.newChildren = async () => {
+  // Fetch all registered campers.
+  const regCampers = await Reglist.findAll({
+    where: { isRegistered: true },
+  });
+
+  regCampers.forEach((camper) => {
+    newChildren.findOrCreate({
+      where: { name: camper.name },
+      defaults: {
+        name: camper.name,
+        gender: camper.gender === "Tüdruk" ? "F" : "M",
       },
     });
   });
