@@ -1,3 +1,6 @@
+const PDFDoc = require("pdfkit");
+const fs = require("fs");
+const QRCode = require("qrcode");
 const db = require("../models/database");
 
 const Campers = db.shiftCampers;
@@ -129,4 +132,94 @@ exports.getTents = async (shiftNr) => {
 
   if (error) return null;
   return resObj;
+};
+
+exports.fetchAllNotes = async (shiftNr) => {
+  const campers = await RawCampers.findAll({
+    where: {
+      isRegistered: true,
+      shift: `${shiftNr}v`,
+    },
+    order: [["name", "ASC"]],
+  });
+
+  const billMeta = {
+    size: "A4",
+    info: {
+      Title: "Usalduslikud andmed",
+      Author: "e-kambüüs",
+    },
+    margins: {
+      top: 60,
+      left: 60,
+      right: 60,
+      bottom: 40,
+    },
+    autoFirstPage: false,
+  };
+
+  let doc = new PDFDoc(billMeta);
+  const writeStream = fs.createWriteStream(
+    `./data/files/andmed_${shiftNr}v.pdf`
+  );
+  doc.pipe(writeStream);
+
+  campers.forEach((camper) => {
+    doc.addPage();
+
+    const birthday = new Date(camper.birthday);
+    let now = new Date();
+    now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const age = Math.floor((now - birthday) / (60 * 60 * 24 * 365 * 1000));
+
+    doc.font("Helvetica-Bold").text(camper.name);
+    doc
+      .font("Helvetica")
+      .moveDown()
+      .text("Sugu: " + camper.gender)
+      .moveDown()
+      .text(
+        "Sünnipäev: " +
+          birthday.toLocaleDateString("et") +
+          ", vanus: " +
+          age +
+          "a"
+      )
+      .moveDown()
+      .text("Vana olija: " + (camper.isOld ? "jah" : "ei"))
+      .moveDown()
+      .text("Särgi suurus: " + camper.tsSize)
+      .moveDown(2);
+    doc.font("Helvetica-Bold").text("Kontakt");
+    doc
+      .font("Helvetica")
+      .moveDown()
+      .text(camper.contactName + ", " + camper.contactNumber)
+      .text(camper.contactEmail)
+      .moveDown()
+      .text("Varu tel: " + (camper.backupTel ? camper.backupTel : "-"))
+      .moveDown()
+      .text(
+        camper.contactName +
+          " kinnitab, et on läbi lugenud ja nõustub laagri kodukorraga."
+      )
+      .moveDown(2);
+    doc.font("Helvetica-Bold").text("Aadress");
+    doc
+      .font("Helvetica")
+      .moveDown()
+      .text(camper.road + ", " + camper.city)
+      .text(camper.county + ", " + camper.country)
+      .moveDown(2);
+    doc.font("Helvetica-Bold").text("Lisainfo");
+    doc.font("Helvetica").moveDown().text(camper.addendum);
+
+    // QRCode.toDataURL("I am a pony!", async function (err, url) {
+    //   console.log(url);
+    //   doc.image(url, { width: 300 });
+    // });
+  });
+
+  doc.save();
+  doc.end();
 };

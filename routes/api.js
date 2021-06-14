@@ -61,6 +61,10 @@ router.post("/newchildren/", async (req, res) => {
   }
 });
 
+router.post("/campers", async (req, res) => {
+  // if (!("token" in req.body)) return res.)
+});
+
 router.post("/children/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
@@ -169,6 +173,16 @@ router.post("/notes/update/:childId/", async (req, res) => {
   if (await shiftData.updateNotes(childId, req.body.notes))
     return res.sendStatus(200);
   else res.sendStatus(404);
+});
+
+router.get("/notes/fetch/:shiftNr/", async (req, res) => {
+  const shiftNr = parseInt(req.params.shiftNr);
+  if (!shiftNr) return res.sendStatus(400);
+
+  const filename = await shiftData.fetchAllNotes(shiftNr);
+  return res.sendStatus(200);
+  if (filename) return res.sendFile(filename, { root: "./data/files" });
+  res.sendStatus(404);
 });
 
 router.get("/shirts/fetch/", async (req, res) => {
