@@ -175,13 +175,16 @@ router.post("/notes/update/:childId/", async (req, res) => {
   else res.sendStatus(404);
 });
 
-router.get("/notes/fetch/:shiftNr/", async (req, res) => {
+router.get("/notes/fetch/:shiftNr/:camperId?/", async (req, res) => {
   const shiftNr = parseInt(req.params.shiftNr);
+  const camperId = parseInt(req.params.camperId);
   if (!shiftNr) return res.sendStatus(400);
 
-  const filename = await shiftData.fetchAllNotes(shiftNr);
-  return res.sendStatus(200);
-  if (filename) return res.sendFile(filename, { root: "./data/files" });
+  let fileName;
+  if (camperId) fileName = await shiftData.fetchCamperNote(shiftNr, camperId);
+  else fileName = await shiftData.fetchAllNotes(shiftNr);
+
+  if (fileName) return res.sendFile(fileName, { root: "./data/files" });
   res.sendStatus(404);
 });
 
