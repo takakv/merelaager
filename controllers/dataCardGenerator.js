@@ -94,6 +94,8 @@ const populateCard = async (doc, camper) => {
 
 exports.generateOneCard = async (shiftNr, camper) => {
   const docName = `andmed_${camper.id}_${shiftNr}v.pdf`;
+  cardMeta.autoFirstPage = true;
+
   let doc = new PDFDoc(cardMeta);
   const writeStream = fs.createWriteStream(`./data/files/${docName}`);
 
