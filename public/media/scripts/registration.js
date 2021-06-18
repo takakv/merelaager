@@ -104,6 +104,7 @@ source.onmessage = (event) => {
     // shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
     // shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
   }
+  shiftSpots[0].children[2].innerText = `Tüdrukud: 1`;
 };
 
 window.onunload = () => {};
