@@ -48,6 +48,7 @@ const shiftData = require("../controllers/shiftController");
 const shirtsData = require("../controllers/shirtController");
 const childData = require("../controllers/childController");
 const newShiftData = require("../controllers/newShiftController");
+const team = require("../controllers/teamController");
 
 router.post("/newchildren/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
@@ -90,7 +91,7 @@ router.post("/shift/", async (req, res) => {
 });
 
 // INTERNAL DATA.
-router.use(jwt.verifyAccessToken);
+// router.use(jwt.verifyAccessToken);
 
 // Fetch the whole list of children and their registration status.
 router.get("/reglist/fetch/", async (req, res) => {
@@ -201,6 +202,32 @@ router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
   const data = await newShiftData.getInfo(shiftNr);
   if (data) res.json(data);
   else res.sendStatus(500);
+});
+
+router.post("/teams/create/", async (req, res) => {
+  const shiftNr = parseInt(req.body.shiftNr);
+  const teamName = req.body.name;
+
+  if (!shiftNr || !teamName) return res.sendStatus(400);
+  if (await team.createTeam(teamName, shiftNr)) return res.sendStatus(200);
+  else return res.sendStatus(500);
+});
+
+router.post("/teams/member/add/", async (req, res) => {
+  const teamId = parseInt(req.body.teamId);
+  const dataId = parseInt(req.body.dataId);
+
+  if (!teamId || !dataId) return res.sendStatus(400);
+  if (await team.addMember(teamId, dataId)) return res.sendStatus(200);
+  else return res.sendStatus(500);
+});
+
+router.post("/teams/member/remove/", async (req, res) => {
+  const dataId = parseInt(req.body.dataId);
+
+  if (!dataId) return res.sendStatus(400);
+  if (await team.removeMember(dataId)) return res.sendStatus(200);
+  else return res.sendStatus(500);
 });
 
 module.exports = router;

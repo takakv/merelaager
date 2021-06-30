@@ -25,8 +25,11 @@ db.shiftCampers = require("./shift")(sequelize);
 db.children = require("./child")(sequelize);
 db.shiftData = require("./newShift")(sequelize);
 db.newChildren = require("./newChild")(sequelize);
+db.team = require("./team")(sequelize);
 
 db.newChildren.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.newChildren);
+db.team.hasMany(db.shiftData);
+db.shiftData.belongsTo(db.team);
 
 module.exports = db;
