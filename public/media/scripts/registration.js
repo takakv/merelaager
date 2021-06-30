@@ -3,9 +3,9 @@ import { updatePrice } from "./registration/price.js";
 import { validators } from "./registration/validation.js";
 import {
   addChild,
-  regClosers,
   priceAffectingFields,
   priceDisplay,
+  regClosers,
   submitButton,
 } from "./registration/htmlElements.js";
 import {
@@ -79,6 +79,12 @@ priceAffectingFields.forEach((fields) => {
 const unlocker = (moment) => {
   const unlockDate = new Date(Date.parse(moment)).getTime();
   const now = new Date().getTime();
+
+  if (now > unlockDate) {
+    submitButton.disabled = false;
+    return;
+  }
+
   const eta = unlockDate - now;
   setTimeout(() => {
     submitButton.disabled = false;

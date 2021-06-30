@@ -3,6 +3,21 @@ const db = require("../models/database");
 const Team = db.team;
 const DE = db.shiftData;
 
+exports.fetchForShift = async (shiftNr) => {
+  const teams = await Team.findAll({ where: { shiftNr } });
+  if (!teams) return null;
+
+  const resObj = {};
+  teams.forEach((team) => {
+    resObj[team.id] = {
+      id: team.id,
+      name: team.name,
+      place: team.place,
+    };
+  });
+  return resObj;
+};
+
 exports.createTeam = async (teamName, shiftNr) => {
   try {
     await Team.create({

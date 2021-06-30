@@ -62,10 +62,6 @@ router.post("/newchildren/", async (req, res) => {
   }
 });
 
-router.post("/campers", async (req, res) => {
-  // if (!("token" in req.body)) return res.)
-});
-
 router.post("/children/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
@@ -204,13 +200,22 @@ router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
   else res.sendStatus(500);
 });
 
+router.get("/teams/fetch/:shiftNr/", async (req, res) => {
+  const shiftNr = parseInt(req.params.shiftNr);
+  if (Number.isNaN(shiftNr)) return res.sendStatus(400);
+
+  const teams = await team.fetchForShift(shiftNr);
+  return teams ? res.json(teams) : res.sendStatus(500);
+});
+
 router.post("/teams/create/", async (req, res) => {
   const shiftNr = parseInt(req.body.shiftNr);
   const teamName = req.body.name;
 
   if (!shiftNr || !teamName) return res.sendStatus(400);
-  if (await team.createTeam(teamName, shiftNr)) return res.sendStatus(200);
-  else return res.sendStatus(500);
+  return (await team.createTeam(teamName, shiftNr))
+    ? res.sendStatus(200)
+    : res.sendStatus(500);
 });
 
 router.post("/teams/member/add/", async (req, res) => {
@@ -218,16 +223,18 @@ router.post("/teams/member/add/", async (req, res) => {
   const dataId = parseInt(req.body.dataId);
 
   if (!teamId || !dataId) return res.sendStatus(400);
-  if (await team.addMember(teamId, dataId)) return res.sendStatus(200);
-  else return res.sendStatus(500);
+  return (await team.addMember(teamId, dataId))
+    ? res.sendStatus(200)
+    : res.sendStatus(500);
 });
 
 router.post("/teams/member/remove/", async (req, res) => {
   const dataId = parseInt(req.body.dataId);
 
   if (!dataId) return res.sendStatus(400);
-  if (await team.removeMember(dataId)) return res.sendStatus(200);
-  else return res.sendStatus(500);
+  return (await team.removeMember(dataId))
+    ? res.sendStatus(200)
+    : res.sendStatus(500);
 });
 
 module.exports = router;
