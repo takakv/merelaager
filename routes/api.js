@@ -91,7 +91,7 @@ router.post("/shift/", async (req, res) => {
 });
 
 // INTERNAL DATA.
-// router.use(jwt.verifyAccessToken);
+router.use(jwt.verifyAccessToken);
 
 // Fetch the whole list of children and their registration status.
 router.get("/reglist/fetch/", async (req, res) => {
