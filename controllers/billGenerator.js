@@ -60,8 +60,12 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   const billTop = contentTop + 80;
 
   const today = new Date();
+  const finalDeadline = new Date(deadline);
   const due = new Date();
   due.setDate(today.getDate() + 4);
+
+  // If bill coincides with final deadline.
+  const lenientDeadline = due > finalDeadline;
 
   // const billDate = today.toLocaleDateString("en-GB").replace(/\//g, ".");
   // const billDue = due.toLocaleDateString("en-GB").replace(/\//g, ".");
@@ -72,19 +76,25 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   const billDue = `${due.getDate()}.${
     due.getMonth() + 1
   }.${today.getFullYear()}`;
+  const billDeadline = `${finalDeadline.getDate()}.${
+    finalDeadline.getMonth() + 1
+  }.${today.getFullYear()}`;
 
   const billNrLength = doc.widthOfString(`${billNr}`);
   const billDateLength = doc.widthOfString(billDate);
   const billDueLength = doc.widthOfString(billDue);
-  const billFinalLength = doc.widthOfString(deadline);
+  const billFinalLength = doc.widthOfString(billDeadline);
 
   const billDataRightOffset = 310;
 
   doc
     .text("Makseteatise number:", sideMargin, billTop)
-    .text("Makseteatise kuupäev:")
-    .text("Broneerimistasu maksetähtaeg:")
-    .text("Laagritasu maksetähtaeg:");
+    .text("Makseteatise kuupäev:");
+
+  if (lenientDeadline) doc.text("Maksetähtaeg:");
+  else
+    doc.text("Broneerimistasu maksetähtaeg:").text("Laagritasu maksetähtaeg:");
+
   doc
     .font("Helvetica-Bold")
     .text(
@@ -94,8 +104,13 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
     )
     .font("Helvetica")
     .text(billDate, doc.page.width - billDataRightOffset - billDateLength)
-    .text(billDue, doc.page.width - billDataRightOffset - billDueLength)
-    .text(deadline, doc.page.width - billDataRightOffset - billFinalLength);
+    .text(billDue, doc.page.width - billDataRightOffset - billDueLength);
+
+  if (!lenientDeadline)
+    doc.text(
+      billDeadline,
+      doc.page.width - billDataRightOffset - billFinalLength
+    );
   doc.moveDown();
   doc
     .fontSize(10)

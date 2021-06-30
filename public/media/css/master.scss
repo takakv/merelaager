@@ -817,6 +817,41 @@ main > section {
   }
 }
 
+.landing-quickies {
+  font-family: Raleway, sans-serif;
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  text-transform: none;
+
+  li {
+    position: relative;
+    display: inline-block;
+    margin-right: 2em;
+
+    &::after {
+      position: absolute;
+      top: 50%;
+      right: calc(-1em - 2.5px);
+      display: block;
+      width: 5px;
+      height: 5px;
+      content: "";
+      transform: translateY(-50%);
+      border-radius: 10px;
+      background-color: #fff;
+    }
+
+    &:last-child {
+      margin-right: 0;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
 .landing-waves {
   position: absolute;
   z-index: 2;

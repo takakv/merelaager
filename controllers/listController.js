@@ -1,35 +1,16 @@
 require("dotenv").config();
 const db = require("../models/database");
+const { generatePDF } = require("./listGenerator");
 
 const Campers = db.campers;
-const shifts = [1, 2, 3, 4];
 const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
-  /*if (
-                                                  !req.body.hasOwnProperty("shift") ||
-                                                  !shifts.includes(parseInt(req.body.shift))
-                                                ) {
-                                                  res.status(400).end();
-                                                  return null;
-                                                }
-                                                const shift = `${req.body.shift}v`;
-                                                 */
-  const isBoss = true; //req.user.role === "boss";
+  const children = await Campers.findAll({
+    order: [["id", "ASC"]],
+  });
 
-  let children;
-  if (!isBoss) {
-    children = await Campers.findAll({
-      where: {
-        shift: shift,
-      },
-      order: [["id", "ASC"]],
-    });
-  } else {
-    children = await Campers.findAll({
-      order: [["id", "ASC"]],
-    });
-  }
+  if (!children.length) return res.sendStatus(404) && null;
 
   let returnData = {};
 
@@ -93,83 +74,131 @@ const pushData = (camper, target) => {
     target.totalRegCount++;
   } else {
     if (camper.gender === "Poiss") target.resBoyCount++;
-    target.resGirlCount++;
+    else target.resGirlCount++;
   }
 };
 
+const Children = db.children;
+const ShiftData = db.shiftData;
+
 exports.update = async (req, res) => {
   // Entry ID and field to update.
-  if (!req.params.userId || !req.params.field) {
-    res.sendStatus(400);
-    return null;
-  }
+  if (!req.params.userId || !req.params.field)
+    return res.sendStatus(400) && null;
+
   const id = req.params.userId;
   const action = req.params.field;
 
   // Entry value, if needed.
-  if (
-    (action === "total-paid" || action === "total-due") &&
-    !req.params.value
-  ) {
-    res.sendStatus(400);
-    return null;
-  }
+  if ((action === "total-paid" || action === "total-due") && !req.params.value)
+    return res.sendStatus(400) && null;
+
   const value = req.params.value;
-  // Fetch user.
-  const child = await Campers.findByPk(id);
-  if (!child) {
-    res.sendStatus(404);
-    return null;
-  }
+
+  const camper = await Campers.findByPk(id);
+  if (!camper) return res.sendStatus(404) && null;
 
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
       await Campers.update(
-        {
-          isRegistered: !child.isRegistered,
-        },
-        {
-          where: { id },
-        }
+        { isRegistered: !camper.isRegistered },
+        { where: { id } }
       );
+      //await updateCamperAndShiftData(camper);
       break;
     // Update the amount that has been paid for the camper.
     case "total-paid":
-      await Campers.update(
-        {
-          pricePaid: value,
-        },
-        {
-          where: { id },
-        }
-      );
+      await Campers.update({ pricePaid: value }, { where: { id } });
       break;
     // Update the total amount due fo the camper.
     case "total-due":
-      await Campers.update(
-        {
-          priceToPay: value,
-        },
-        {
-          where: { id },
-        }
-      );
+      await Campers.update({ priceToPay: value }, { where: { id } });
       break;
     // Toggle whether or not the camper has been to the camp before.
     case "regular":
-      await Campers.update(
-        {
-          isOld: !child.isOld,
-        },
-        {
-          where: { id },
-        }
-      );
+      await Campers.update({ isOld: !camper.isOld }, { where: { id } });
       break;
     default:
       res.sendStatus(400);
       return null;
   }
   return true;
+};
+
+exports.remove = async (req, res) => {
+  // Entry ID check.
+  if (!req.params.userId) return res.sendStatus(400) && null;
+
+  const id = req.params.userId;
+  const camper = await Campers.findByPk(id);
+  if (!camper) return res.sendStatus(404) && null;
+
+  await Campers.destroy({
+    where: {
+      id,
+    },
+  });
+
+  return true;
+};
+
+const updateCamperAndShiftData = async (camper) => {
+  const nameStamp = getNameStamp(camper.name);
+  const gender = camper.gender === "Tüdruk" ? "F" : "M";
+  const shiftNr = parseInt(camper.shift[0]);
+  const child = await Children.findByPk(nameStamp);
+
+  // Create and entry for the child if it doesn't exist.
+  if (!camper.isRegistered) {
+    if (child) {
+      await Children.findOrCreate({
+        where: { id: nameStamp },
+        defaults: {
+          id: nameStamp,
+          name: camper.name,
+          gender,
+        },
+      });
+    }
+
+    await ShiftData.create({
+      childId: nameStamp,
+      shiftNr,
+      parentNotes: camper.addendum,
+    });
+  } else await ShiftData.destroy({ where: { childId: nameStamp, shiftNr } });
+};
+
+const getNameStamp = (name) => {
+  return name.toLowerCase().replace(/\s/g, "");
+};
+
+exports.print = async (shiftNr) => {
+  const children = await Campers.findAll({
+    order: [["name", "ASC"]],
+    where: {
+      shift: `${shiftNr}v`,
+      isRegistered: true,
+    },
+  });
+
+  if (!children.length) return null;
+
+  let childrenInfo = [];
+
+  children.forEach((child) => {
+    childrenInfo.push({
+      name: child.name,
+      gender: child.gender,
+      birthday: child.birthday,
+      isOld: child.isOld,
+      tsSize: child.tsSize,
+      contactName: child.contactName.trim(),
+      contactEmail: child.contactEmail,
+      contactNr: child.contactNumber,
+    });
+  });
+
+  return generatePDF(shiftNr, childrenInfo);
 };

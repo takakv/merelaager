@@ -3,9 +3,9 @@ import { updatePrice } from "./registration/price.js";
 import { validators } from "./registration/validation.js";
 import {
   addChild,
-  regClosers,
   priceAffectingFields,
   priceDisplay,
+  regClosers,
   submitButton,
 } from "./registration/htmlElements.js";
 import {
@@ -79,6 +79,12 @@ priceAffectingFields.forEach((fields) => {
 const unlocker = (moment) => {
   const unlockDate = new Date(Date.parse(moment)).getTime();
   const now = new Date().getTime();
+
+  if (now > unlockDate) {
+    submitButton.disabled = false;
+    return;
+  }
+
   const eta = unlockDate - now;
   setTimeout(() => {
     submitButton.disabled = false;
@@ -99,8 +105,10 @@ source.onmessage = (event) => {
     const boysCount = parsedData[i + 1].boys > 0 ? parsedData[i + 1].boys : 0;
     const girlsCount =
       parsedData[i + 1].girls > 0 ? parsedData[i + 1].girls : 0;
-    shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
-    shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
+    shiftSpots[i].children[1].innerText = `Poisid: 0`;
+    shiftSpots[i].children[2].innerText = `Tüdrukud: 0`;
+    // shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
+    // shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
   }
 };
 
