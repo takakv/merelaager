@@ -6,7 +6,7 @@ const JWT = require("jsonwebtoken");
 const jwt = require("./Support Files/jwt");
 const userAuth = require("./Support Files/userAuth");
 
-router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
 
 router.post("/login/", async (req, res) => {
@@ -16,7 +16,7 @@ router.post("/login/", async (req, res) => {
   )
     return res.sendStatus(401);
 
-  const { username, password } = req.body;
+  const {username, password} = req.body;
 
   const credentials = await userAuth.authenticateUser(username, password);
   if (!credentials) return res.status(403).send("Incorrect credentials.");
@@ -24,7 +24,7 @@ router.post("/login/", async (req, res) => {
 });
 
 router.post("/token/", async (req, res) => {
-  const { token } = req.body;
+  const {token} = req.body;
 
   if (!token) return res.sendStatus(401);
   if (!(await userAuth.matchToken(token))) return res.sendStatus(403);
@@ -38,7 +38,7 @@ router.post("/token/", async (req, res) => {
       username: user.username,
       role: user.role,
     });
-    res.json({ accessToken });
+    res.json({accessToken});
   });
 });
 
@@ -87,7 +87,7 @@ router.post("/shift/", async (req, res) => {
 });
 
 // INTERNAL DATA.
-router.use(jwt.verifyAccessToken);
+// router.use(jwt.verifyAccessToken);
 
 // Fetch the whole list of children and their registration status.
 router.get("/reglist/fetch/", async (req, res) => {
@@ -104,7 +104,7 @@ router.get("/reglist/print/:shiftNr/", async (req, res) => {
   if (!req.params["shiftNr"]) return res.sendStatus(400);
   const shiftNr = parseInt(req.params["shiftNr"]);
   const filename = await registrationList.print(shiftNr);
-  if (filename) return res.sendFile(filename, { root: "./data/files" });
+  if (filename) return res.sendFile(filename, {root: "./data/files"});
   res.sendStatus(404);
 });
 
@@ -181,7 +181,7 @@ router.get("/notes/fetch/:shiftNr/:camperId?/", async (req, res) => {
   if (camperId) fileName = await shiftData.fetchCamperNote(shiftNr, camperId);
   else fileName = await shiftData.fetchAllNotes(shiftNr);
 
-  if (fileName) return res.sendFile(fileName, { root: "./data/files" });
+  if (fileName) return res.sendFile(fileName, {root: "./data/files"});
   res.sendStatus(404);
 });
 
@@ -199,6 +199,8 @@ router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
   if (data) res.json(data);
   else res.sendStatus(500);
 });
+
+// Teams
 
 router.get("/teams/fetch/:shiftNr/", async (req, res) => {
   const shiftNr = parseInt(req.params.shiftNr);

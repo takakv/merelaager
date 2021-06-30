@@ -24,3 +24,22 @@ POST `/reglist/update/{userId}/{field}/{value}/`
 ## Arved
 
 POST `/bills/{action}/{email}/`
+
+## Teams
+
+Prefix path: `api/teams/`.
+
+GET:
+
+- `fetch/{shiftNr}/` - fetch all teams for the shift
+
+POST:
+
+- `create/` - create a team
+  - `shiftNr`: integer
+  - `name`: string
+- `member/add/` - add member to team
+  - `teamId`: integer (pk)
+  - `dataId`: integer (pk)
+- `member/remove/` - remove member from team
+  - `dataId`: integer (pk)

@@ -4,7 +4,7 @@ const Team = db.team;
 const DE = db.shiftData;
 
 exports.fetchForShift = async (shiftNr) => {
-  const teams = await Team.findAll({ where: { shiftNr } });
+  const teams = await Team.findAll({where: {shiftNr}});
   if (!teams) return null;
 
   const resObj = {};
