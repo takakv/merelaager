@@ -5,6 +5,10 @@ const DE = db.shiftData;
 const ShiftData = db.shiftData;
 const Children = db.newChildren;
 
+const createChildObject = (data) => {
+  return {id: data.id, name: data.child.name}
+}
+
 exports.fetchForShift = async (shiftNr) => {
   const teams = await Team.findAll({where: {shiftNr}});
   if (!teams) return null;
@@ -20,12 +24,13 @@ exports.fetchForShift = async (shiftNr) => {
   });
   if (!children) return null;
 
-  const resObj = {};
+  const resObj = {
+    teams: {},
+    teamless: children.filter(child => !child.teamId).map(createChildObject),
+  };
   teams.forEach((team) => {
-    const members = children.filter(child => child.teamId === team.id).map(member => {
-      return {id: member.id, name: member.child.name}
-    })
-    resObj[team.id] = {
+    const members = children.filter(child => child.teamId === team.id).map(createChildObject);
+    resObj.teams[team.id] = {
       id: team.id,
       name: team.name,
       place: team.place,
