@@ -43,3 +43,6 @@ POST:
   - `dataId`: integer (pk)
 - `member/remove/` - remove member from team
   - `dataId`: integer (pk)
+- `set/place/` - sets the place for the team
+  - `teamId`: integer (pk)
+  - `place`: integer
