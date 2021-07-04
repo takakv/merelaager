@@ -46,6 +46,7 @@ exports.create = async (username, password, token, name = null) => {
       password: pwdHash,
     });
     creationData.isExpired = true;
+    creationData.usedDate = new Date();
     await creationData.save();
   } catch (e) {
     console.error(e);
