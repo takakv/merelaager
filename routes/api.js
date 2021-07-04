@@ -50,6 +50,17 @@ router.get("/su/:token/", async (req, res) => {
   else res.sendStatus(401);
 });
 
+router.post("/su/create/", async (req, res) => {
+  const { username, password, token, name } = req.body;
+  if (!username || !password || !token) return res.sendStatus(400);
+  const result = await account.create(username, password, token, name);
+  if (result)
+    return res
+      .status(200)
+      .send("Konto loodud. Sisse saab logida: https://sild.merelaager.ee");
+  else res.sendStatus(400);
+});
+
 router.post("/su/ct/:shiftNr/:role?/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
