@@ -46,19 +46,31 @@ const account = require("../controllers/accountController");
 
 router.get("/su/:token/", async (req, res) => {
   const response = await account.validateSuToken(req.params.token);
-  if (response) res.sendStatus(200);
-  else res.sendStatus(401);
+  if (!response) return res.sendStatus(401);
+  else
+    res.render("accountReg", {
+      title: "Loo kasutaja",
+      layout: "empty",
+      script_path: "/media/scripts/signup.js",
+    });
+});
+
+router.post("/su/chkusr/", async (req, res) => {
+  const { username } = req.body;
+  if (!username) return res.sendStatus(400);
+  if (await account.checkUser(username)) res.sendStatus(200);
+  else res.sendStatus(404);
 });
 
 router.post("/su/create/", async (req, res) => {
   const { username, password, token, name } = req.body;
   if (!username || !password || !token) return res.sendStatus(400);
   const result = await account.create(username, password, token, name);
-  if (result)
+  if (!result)
     return res
       .status(200)
       .send("Konto loodud. Sisse saab logida: https://sild.merelaager.ee");
-  else res.sendStatus(400);
+  else res.json(result);
 });
 
 router.post("/su/ct/:shiftNr/:role?/", async (req, res) => {

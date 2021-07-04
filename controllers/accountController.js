@@ -24,12 +24,17 @@ exports.createSuToken = async (shiftNr, role = "op") => {
   return true;
 };
 
+exports.checkUser = async (username) => {
+  return !!(await User.findByPk(username));
+};
+
 exports.create = async (username, password, token, name = null) => {
   const creationData = await SuToken.findByPk(token);
-  if (!creationData || creationData.isExpired) return false;
+  if (!creationData || creationData.isExpired)
+    return { error: "Kehtetu token" };
 
   const usernameExists = (await User.findByPk(username)) !== null;
-  if (usernameExists) return false;
+  if (usernameExists) return { error: "Kasutajanimi on juba kasutuses" };
 
   const pwdHash = bcrypt.hashSync(password, parseInt(process.env.SALTR));
   try {
@@ -44,7 +49,9 @@ exports.create = async (username, password, token, name = null) => {
     await creationData.save();
   } catch (e) {
     console.error(e);
-    return false;
+    return {
+      error: "Süsteemi viga",
+    };
   }
-  return true;
+  return false;
 };
