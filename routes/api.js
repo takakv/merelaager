@@ -42,6 +42,26 @@ router.post("/token/", async (req, res) => {
   });
 });
 
+const account = require("../controllers/accountController");
+
+router.get("/su/:token/", async (req, res) => {
+  const response = await account.validateSuToken(req.params.token);
+  if (response) res.sendStatus(200);
+  else res.sendStatus(401);
+});
+
+router.post("/su/ct/:shiftNr/:role?/", async (req, res) => {
+  if (!("token" in req.body)) return res.sendStatus(401);
+  if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
+
+  const shiftNr = parseInt(req.params.shiftNr);
+  if (!shiftNr) return res.sendStatus(400);
+
+  const result = await account.createSuToken(shiftNr);
+  if (result) res.sendStatus(200);
+  else res.sendStatus(400);
+});
+
 const registrationList = require("../controllers/listController");
 const bill = require("../controllers/billController");
 const shiftData = require("../controllers/shiftController");

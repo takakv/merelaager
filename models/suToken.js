@@ -1,5 +1,5 @@
 require("dotenv").config();
-const {DataTypes} = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   return sequelize.define(
@@ -9,13 +9,22 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         primaryKey: true,
       },
-      used: {
+      isExpired: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
       },
+      shiftNr: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      role: {
+        type: DataTypes.ENUM("boss", "master", "op", "camper"),
+        allowNull: false,
+        defaultValue: "op",
+      },
       usedDate: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
     },
     {
