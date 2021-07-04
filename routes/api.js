@@ -73,7 +73,7 @@ router.post("/su/create/", async (req, res) => {
   else res.json(result);
 });
 
-router.post("/su/ct/:shiftNr/:role?/", async (req, res) => {
+router.post("/su/cta/:shiftNr/:role?/", async (req, res) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
 
@@ -290,6 +290,22 @@ router.post("/teams/set/place/", async (req, res) => {
   return (await team.setPlace(teamId, place))
     ? res.sendStatus(200)
     : res.sendStatus(500);
+});
+
+router.post("/su/ct/", async (req, res) => {
+  const shiftNr = parseInt(req.body.shiftNr);
+  const { email } = req.body;
+  if (!shiftNr || !email) return res.sendStatus(400);
+
+  const result = await account.createSuToken(shiftNr);
+  if (!result) res.sendStatus(400);
+
+  const mailStatus = await account.sendEmail(email, result);
+  if (mailStatus) res.sendStatus(200);
+  else {
+    await account.destroyToken(result);
+    res.sendStatus(400);
+  }
 });
 
 module.exports = router;

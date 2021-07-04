@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const UIDGenerator = require("uid-generator");
 const db = require("../models/database");
+const MailService = require("./MailService");
 
 const uidgen = new UIDGenerator(512);
 const SuToken = db.suToken;
@@ -17,6 +18,21 @@ exports.createSuToken = async (shiftNr, role = "op") => {
   const uid = await uidgen.generate();
   try {
     await SuToken.create({ token: uid, shiftNr, role });
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+  return uid;
+};
+
+exports.destroyToken = async (token) => {
+  await SuToken.destroy({ where: { token } });
+};
+
+exports.sendEmail = async (email, token) => {
+  const mailService = new MailService();
+  try {
+    await mailService.sendAccountCreationMail(email, token);
   } catch (e) {
     console.error(e);
     return false;

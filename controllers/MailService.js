@@ -176,6 +176,19 @@ class MailService {
     });
   }
 
+  sendAccountCreationMail(email, token) {
+    const link = `https://merelaager.ee/api/su${token}/`;
+    return this._transporter.sendMail({
+      from: {
+        name: "Süsteem - merelaager",
+        address: "webmaster@merelaager.ee",
+      },
+      to: email,
+      subject: "e-Kambüüsi konto loomine",
+      html: `<p>Konto loomise link: <a href="${link}">${link}</a>. Link toimib 24 tundi.</p><br />`,
+    });
+  }
+
   sendCampMasterEmail(campers, price, billNr, regCount) {
     return this._transporter.sendMail({
       from: {
