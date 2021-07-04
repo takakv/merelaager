@@ -87,7 +87,7 @@ router.post("/shift/", async (req, res) => {
 });
 
 // INTERNAL DATA.
-router.use(jwt.verifyAccessToken);
+// router.use(jwt.verifyAccessToken);
 
 // Fetch the whole list of children and their registration status.
 router.get("/reglist/fetch/", async (req, res) => {
@@ -200,6 +200,8 @@ router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
   else res.sendStatus(500);
 });
 
+// Teams
+
 router.get("/teams/fetch/:shiftNr/", async (req, res) => {
   const shiftNr = parseInt(req.params.shiftNr);
   if (Number.isNaN(shiftNr)) return res.sendStatus(400);
@@ -233,6 +235,16 @@ router.post("/teams/member/remove/", async (req, res) => {
 
   if (!dataId) return res.sendStatus(400);
   return (await team.removeMember(dataId))
+    ? res.sendStatus(200)
+    : res.sendStatus(500);
+});
+
+router.post("/teams/set/place/", async (req, res) => {
+  const teamId = parseInt(req.body.teamId);
+  const place = parseInt(req.body.place);
+
+  if (!teamId || !place) return res.sendStatus(400);
+  return (await team.setPlace(teamId, place))
     ? res.sendStatus(200)
     : res.sendStatus(500);
 });
