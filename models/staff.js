@@ -30,6 +30,7 @@ module.exports = (sequelize) =>
       role: {
         type: DataTypes.ENUM(roles.boss, roles.full, roles.part),
         allowNull: false,
+        defaultValue: roles.full,
       },
     },
     { tableName: "staff" }
