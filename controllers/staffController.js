@@ -19,6 +19,7 @@ exports.fetch = async (shiftNr) => {
       id: member.id,
       name: member.name,
       role: member.role,
+      linked: !!member.userId,
     };
   });
   return resObj;
