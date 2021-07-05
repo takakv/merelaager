@@ -5,10 +5,18 @@ module.exports = (sequelize) => {
   return sequelize.define(
     "user",
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true,
+        unique: true,
+      },
+      nickname: {
+        type: DataTypes.STRING,
       },
       name: {
         type: DataTypes.STRING,
@@ -28,7 +36,7 @@ module.exports = (sequelize) => {
       },
     },
     {
-      tableName: process.env.NODE_ENV === "prod" ? "Kasutajad" : "Testijad",
+      tableName: "users",
     }
   );
 };

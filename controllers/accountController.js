@@ -41,7 +41,7 @@ exports.sendEmail = async (email, token) => {
 };
 
 exports.checkUser = async (username) => {
-  return !!(await User.findByPk(username));
+  return !!(await User.findOne({ where: { username } }));
 };
 
 exports.create = async (username, password, token, name = null) => {
@@ -49,7 +49,7 @@ exports.create = async (username, password, token, name = null) => {
   if (!creationData || creationData.isExpired)
     return { error: "Kehtetu token" };
 
-  const usernameExists = (await User.findByPk(username)) !== null;
+  const usernameExists = (await User.findOne({ where: { username } })) !== null;
   if (usernameExists) return { error: "Kasutajanimi on juba kasutuses" };
 
   const pwdHash = bcrypt.hashSync(password, parseInt(process.env.SALTR));
