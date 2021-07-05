@@ -26,6 +26,7 @@ db.children = require("./child")(sequelize);
 db.shiftData = require("./newShift")(sequelize);
 db.newChildren = require("./newChild")(sequelize);
 db.team = require("./team")(sequelize);
+db.suToken = require("./suToken")(sequelize);
 
 db.newChildren.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.newChildren);
