@@ -311,15 +311,22 @@ router.post("/su/ct/", async (req, res) => {
 const staff = require("../controllers/staffController");
 
 router.post("/staff/create/", async (req, res) => {
-  // const {shiftNr}
-})
+  const shiftNr = parseInt(req.body.shiftNr);
+  const { name, role } = req.body;
+  if (!shiftNr || !name || !role) return res.sendStatus(400);
+
+  const result = await staff.create(shiftNr, name, role);
+  if (result) res.sendStatus(201);
+  else res.sendStatus(500);
+});
 
 router.get("/staff/:shiftNr/", async (req, res) => {
   const shiftNr = parseInt(req.params.shiftNr);
   if (!shiftNr) return res.sendStatus(400);
 
   const result = await staff.fetch(shiftNr);
-  res.sendStatus(200);
-})
+  if (!result) return res.sendStatus(404);
+  res.json(result);
+});
 
 module.exports = router;

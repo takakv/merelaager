@@ -1,9 +1,40 @@
 const db = require("../models/database");
 
 const Staff = db.staff;
+const roles = {
+  boss: "boss",
+  full: "full",
+  part: "part",
+};
 
 exports.fetch = async (shiftNr) => {
   const year = new Date().getUTCFullYear();
-  const staff = await Staff.findAll({where: {shiftNr, year}});
-  console.log(staff);
-}
+  const staff = await Staff.findAll({ where: { shiftNr, year } });
+
+  if (!staff) return false;
+  const resObj = {};
+
+  staff.forEach((member) => {
+    resObj[member.id] = {
+      id: member.id,
+      name: member.name,
+      role: member.role,
+    };
+  });
+  return resObj;
+};
+
+exports.create = async (shiftNr, name, role) => {
+  if (!roles[role]) return false;
+  try {
+    await Staff.create({
+      shiftNr,
+      name,
+      role,
+    });
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+  return true;
+};

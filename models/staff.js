@@ -1,5 +1,11 @@
 const { DataTypes } = require("sequelize");
 
+const roles = {
+  boss: "boss",
+  full: "full",
+  part: "part",
+};
+
 module.exports = (sequelize) =>
   sequelize.define(
     "staff",
@@ -15,6 +21,14 @@ module.exports = (sequelize) =>
       },
       year: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: new Date().getUTCFullYear(),
+      },
+      name: {
+        type: DataTypes.STRING,
+      },
+      role: {
+        type: DataTypes.ENUM(roles.boss, roles.full, roles.part),
         allowNull: false,
       },
     },
