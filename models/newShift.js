@@ -19,6 +19,10 @@ module.exports = (sequelize) =>
       parentNotes: {
         type: DataTypes.TEXT,
       },
+      isPresent: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
     { tableName: "shift_data" }
   );
