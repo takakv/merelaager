@@ -24,7 +24,9 @@ const authenticateUser = async (username, password) => {
 };
 
 const secureFetchUser = async (username, password) => {
-  const user = await Users.findByPk(username.toLowerCase());
+  const user = await Users.findOne({
+    where: { username: username.toLowerCase() },
+  });
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return null;
   }

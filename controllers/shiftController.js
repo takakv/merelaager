@@ -118,7 +118,11 @@ exports.getTents = async (shiftNr) => {
     const tentNr = tentEntry.tentNr;
 
     if (tentNr)
-      resObj.tents[tentNr - 1].push({ id: tentEntry.id, name: child.name });
+      resObj.tents[tentNr - 1].push({
+        id: tentEntry.id,
+        name: child.name,
+        isPresent: tentEntry.isPresent,
+      });
     else resObj.noTent.push({ id: tentEntry.id, name: child.name });
   };
 
@@ -130,6 +134,21 @@ exports.getTents = async (shiftNr) => {
 
   if (error) return null;
   return resObj;
+};
+
+exports.updatePresence = async (id) => {
+  let child;
+  try {
+    child = await ShiftData.findByPk(id);
+    if (!child) return false;
+    child.isPresent = !child.isPresent;
+    child.save();
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+
+  return true;
 };
 
 exports.fetchCamperNote = async (shiftNr, camperId) => {

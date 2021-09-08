@@ -195,6 +195,14 @@ router.get("/tents/fetch/:shiftNr/", async (req, res) => {
   res.sendStatus(404);
 });
 
+router.post("/tents/update/presence/", async (req, res) => {
+  const id = parseInt(req.body.id);
+  if (!id) return res.sendStatus(400);
+  const result = await shiftData.updatePresence(id);
+  if (result) return res.sendStatus(200);
+  else return res.sendStatus(404);
+});
+
 router.post("/tents/update/:entryId/:tentNr/", async (req, res) => {
   if (!req.params.entryId || !req.params.tentNr) return res.sendStatus(400);
 
@@ -306,6 +314,27 @@ router.post("/su/ct/", async (req, res) => {
     await account.destroyToken(result);
     res.sendStatus(400);
   }
+});
+
+const staff = require("../controllers/staffController");
+
+router.post("/staff/create/", async (req, res) => {
+  const shiftNr = parseInt(req.body.shiftNr);
+  const { name, role } = req.body;
+  if (!shiftNr || !name || !role) return res.sendStatus(400);
+
+  const result = await staff.create(shiftNr, name, role);
+  if (result) res.sendStatus(201);
+  else res.sendStatus(500);
+});
+
+router.get("/staff/:shiftNr/", async (req, res) => {
+  const shiftNr = parseInt(req.params.shiftNr);
+  if (!shiftNr) return res.sendStatus(400);
+
+  const result = await staff.fetch(shiftNr);
+  if (!result) return res.sendStatus(404);
+  res.json(result);
 });
 
 module.exports = router;

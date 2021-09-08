@@ -27,10 +27,14 @@ db.shiftData = require("./newShift")(sequelize);
 db.newChildren = require("./newChild")(sequelize);
 db.team = require("./team")(sequelize);
 db.suToken = require("./suToken")(sequelize);
+db.staff = require("./staff")(sequelize);
 
 db.newChildren.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.newChildren);
 db.team.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.team);
+
+db.users.hasMany(db.staff);
+db.staff.belongsTo(db.users);
 
 module.exports = db;
