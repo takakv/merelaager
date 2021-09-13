@@ -131,13 +131,13 @@ router.post("/shift/", async (req, res) => {
 // INTERNAL DATA.
 router.use(jwt.verifyAccessToken);
 
-const registration = require("./registration");
+const registration = require("./api/registration");
 router.use("/reglist", registration);
 
-const campers = require("./campers");
+const campers = require("./api/campers");
 router.use("/campers", campers);
 
-const notes = require("./notes");
+const notes = require("./api/notes");
 router.use("/notes", notes);
 
 router.post("/bills/:action/:email", async (req, res) => {

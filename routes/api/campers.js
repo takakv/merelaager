@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const newShiftData = require("../controllers/newShiftController");
-const { approveShift } = require("../routes/Support Files/shiftAuth");
+const newShiftData = require("../../controllers/newShiftController");
+const { approveShift } = require("../Support Files/shiftAuth");
 
 router.get("/info/fetch/:shiftNr?/", async (req, res) => {
   const shiftNr = parseInt(req.params.shiftNr);

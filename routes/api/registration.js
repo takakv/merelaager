@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const registrationList = require("../controllers/listController");
+const registrationList = require("../../controllers/listController");
 
 // Fetch the whole list of children and their registration status.
 router.get("/fetch/", async (req, res) => {

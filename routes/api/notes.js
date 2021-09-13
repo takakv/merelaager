@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const shiftData = require("../controllers/shiftController");
+const shiftData = require("../../controllers/shiftController");
 
 router.post("/update/:childId/", async (req, res) => {
   const childId = parseInt(req.params.childId);
