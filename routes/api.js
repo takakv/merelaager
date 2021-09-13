@@ -134,6 +134,12 @@ router.use(jwt.verifyAccessToken);
 const registration = require("./registration");
 router.use("/reglist", registration);
 
+const campers = require("./campers");
+router.use("/campers", campers);
+
+const notes = require("./notes");
+router.use("/notes", notes);
+
 router.post("/bills/:action/:email", async (req, res) => {
   if (!req.params["action"] || !req.params["email"]) {
     return res.sendStatus(400);
@@ -176,40 +182,8 @@ router.post("/tents/update/:entryId/:tentNr/", async (req, res) => {
   return res.sendStatus(404);
 });
 
-router.post("/notes/update/:childId/", async (req, res) => {
-  const childId = parseInt(req.params.childId);
-  if (!childId) return res.sendStatus(400);
-  if (typeof req.body.notes === "undefined") return res.sendStatus(400);
-
-  if (await shiftData.updateNotes(childId, req.body.notes))
-    return res.sendStatus(200);
-  else res.sendStatus(404);
-});
-
-router.get("/notes/fetch/:shiftNr/:camperId?/", async (req, res) => {
-  const shiftNr = parseInt(req.params.shiftNr);
-  const camperId = parseInt(req.params.camperId);
-  if (!shiftNr) return res.sendStatus(400);
-
-  let fileName;
-  if (camperId) fileName = await shiftData.fetchCamperNote(shiftNr, camperId);
-  else fileName = await shiftData.fetchAllNotes(shiftNr);
-
-  if (fileName) return res.sendFile(fileName, { root: "./data/files" });
-  res.sendStatus(404);
-});
-
 router.get("/shirts/fetch/", async (req, res) => {
   const data = await shirtsData.fetch();
-  if (data) res.json(data);
-  else res.sendStatus(500);
-});
-
-router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
-  const shiftNr = parseInt(req.params.shiftNr);
-  if (Number.isNaN(shiftNr)) return res.sendStatus(400);
-
-  const data = await newShiftData.getInfo(shiftNr);
   if (data) res.json(data);
   else res.sendStatus(500);
 });
