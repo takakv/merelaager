@@ -167,13 +167,23 @@ exports.fetchCamperNote = async (shiftNr, camperId) => {
 };
 
 exports.fetchAllNotes = async (shiftNr) => {
-  const campers = await RawCampers.findAll({
-    where: {
-      isRegistered: true,
-      shift: `${shiftNr}v`,
-    },
-    order: [["name", "ASC"]],
-  });
+  let campers;
+  if (shiftNr === 2) {
+    campers = await RawCampers.findAll({
+      where: {
+        isRegistered: true,
+      },
+      order: [["name", "ASC"]],
+    });
+  } else {
+    campers = await RawCampers.findAll({
+      where: {
+        isRegistered: true,
+        shift: `${shiftNr}v`,
+      },
+      order: [["name", "ASC"]],
+    });
+  }
 
   return await generateAllCards(shiftNr, campers);
 };
