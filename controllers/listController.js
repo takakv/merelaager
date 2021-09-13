@@ -30,7 +30,6 @@ exports.fetch = async (req, res) => {
     const data = {
       id: child["id"],
       name: child["name"],
-      idCode: child["idCode"],
       gender: child["gender"],
       bDay: child["birthday"],
       isOld: child["isOld"],
@@ -47,6 +46,8 @@ exports.fetch = async (req, res) => {
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };
+
+    if (req.user.role === "boss") data.idCode = child.idCode;
 
     switch (child["shift"]) {
       case "1v":
