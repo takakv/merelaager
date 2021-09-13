@@ -1,6 +1,7 @@
 require("dotenv").config();
 const db = require("../models/database");
 const { generatePDF } = require("./listGenerator");
+const { approveShift } = require("../routes/Support Files/shiftAuth");
 
 const Campers = db.campers;
 const numberOfShifts = 4;
@@ -98,6 +99,13 @@ exports.update = async (req, res) => {
   const camper = await Campers.findByPk(id);
   if (!camper) return res.sendStatus(404) && null;
 
+  // Evaluate access rights.
+  const shift = parseInt(camper.shift[0]);
+  if (!(await approveShift(req.user, shift))) {
+    console.log("User not authorised for the shift.");
+    return res.sendStatus(403) && null;
+  }
+
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
@@ -105,8 +113,19 @@ exports.update = async (req, res) => {
         { isRegistered: !camper.isRegistered },
         { where: { id } }
       );
-      //await updateCamperAndShiftData(camper);
-      break;
+      return true;
+    // Toggle whether or not the camper has been to the camp before.
+    case "regular":
+      await Campers.update({ isOld: !camper.isOld }, { where: { id } });
+      return true;
+  }
+
+  if (req.user.role !== "boss") {
+    console.log("User not authorised for price manipulation.");
+    return res.sendStatus(404) && null;
+  }
+
+  switch (action) {
     // Update the amount that has been paid for the camper.
     case "total-paid":
       await Campers.update({ pricePaid: value }, { where: { id } });
@@ -114,10 +133,6 @@ exports.update = async (req, res) => {
     // Update the total amount due fo the camper.
     case "total-due":
       await Campers.update({ priceToPay: value }, { where: { id } });
-      break;
-    // Toggle whether or not the camper has been to the camp before.
-    case "regular":
-      await Campers.update({ isOld: !camper.isOld }, { where: { id } });
       break;
     default:
       res.sendStatus(400);
