@@ -29,6 +29,8 @@ const verifyAccessToken = (req, res, next) => {
         where: { username: user.username },
       });
       req.user.role = dbUser.role;
+      req.user.id = dbUser.id;
+      req.user.shift = dbUser.shifts;
       next();
     });
   } else {
