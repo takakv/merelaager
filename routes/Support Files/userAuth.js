@@ -8,11 +8,11 @@ const authenticateUser = async (username, password) => {
   const user = await secureFetchUser(username, password);
   if (!user) return false;
   const accessToken = jwt.generateAccessToken({
-    username: user.name,
+    username: user.username,
     role: user.role,
   });
   const refreshToken = jwt.generateRefreshToken({
-    username: user.name,
+    username: user.username,
     role: user.role,
   });
   storeRefreshToken(refreshToken, username);
@@ -34,6 +34,7 @@ const secureFetchUser = async (username, password) => {
     name: user.name,
     role: user.role,
     shift: user.shifts,
+    username: user.username,
   };
 };
 
