@@ -80,9 +80,6 @@ const pushData = (camper, target) => {
   }
 };
 
-const Children = db.children;
-const ShiftData = db.shiftData;
-
 exports.update = async (req, res) => {
   // Entry ID and field to update.
   if (!req.params.userId || !req.params.field)
@@ -95,17 +92,8 @@ exports.update = async (req, res) => {
   if ((action === "total-paid" || action === "total-due") && !req.params.value)
     return res.sendStatus(400) && null;
 
-  const value = req.params.value;
-
-  const camper = await Campers.findByPk(id);
-  if (!camper) return res.sendStatus(404) && null;
-
-  // Evaluate access rights.
-  const shift = parseInt(camper.shift[0]);
-  if (!(await approveShift(req.user, shift))) {
-    console.log("User not authorised for the shift.");
-    return res.sendStatus(403) && null;
-  }
+  const camper = await getCamper(id, req.user);
+  if (!camper.ok) return res.sendStatus(camper.code) && null;
 
   switch (action) {
     // Toggle the camper registration status.
@@ -126,6 +114,8 @@ exports.update = async (req, res) => {
     return res.sendStatus(404) && null;
   }
 
+  const value = req.params.value;
+
   switch (action) {
     // Update the amount that has been paid for the camper.
     case "total-paid":
@@ -142,52 +132,45 @@ exports.update = async (req, res) => {
   return true;
 };
 
+const getCamper = async (id, queryUser) => {
+  const camper = await Campers.findByPk(id);
+  if (!camper)
+    return {
+      code: 404,
+      message: "Camper not found",
+      ok: false,
+    };
+
+  // Evaluate access rights.
+  const shift = parseInt(camper.shift[0]);
+  if (!(await approveShift(queryUser, shift))) {
+    const message = "User not authorised for the shift";
+    console.log(message);
+    return {
+      code: 403,
+      message,
+      ok: false,
+    };
+  }
+
+  return {
+    code: 400,
+    message: "",
+    ok: true,
+    data: camper,
+  };
+};
+
 exports.remove = async (req, res) => {
   // Entry ID check.
   if (!req.params.userId) return res.sendStatus(400) && null;
 
   const id = req.params.userId;
-  const camper = await Campers.findByPk(id);
-  if (!camper) return res.sendStatus(404) && null;
+  const camper = await getCamper(id, req.user);
+  if (!camper.ok) return res.sendStatus(camper.code) && null;
 
-  await Campers.destroy({
-    where: {
-      id,
-    },
-  });
-
+  await Campers.destroy({ where: { id } });
   return true;
-};
-
-const updateCamperAndShiftData = async (camper) => {
-  const nameStamp = getNameStamp(camper.name);
-  const gender = camper.gender === "Tüdruk" ? "F" : "M";
-  const shiftNr = parseInt(camper.shift[0]);
-  const child = await Children.findByPk(nameStamp);
-
-  // Create and entry for the child if it doesn't exist.
-  if (!camper.isRegistered) {
-    if (child) {
-      await Children.findOrCreate({
-        where: { id: nameStamp },
-        defaults: {
-          id: nameStamp,
-          name: camper.name,
-          gender,
-        },
-      });
-    }
-
-    await ShiftData.create({
-      childId: nameStamp,
-      shiftNr,
-      parentNotes: camper.addendum,
-    });
-  } else await ShiftData.destroy({ where: { childId: nameStamp, shiftNr } });
-};
-
-const getNameStamp = (name) => {
-  return name.toLowerCase().replace(/\s/g, "");
 };
 
 exports.print = async (shiftNr) => {
