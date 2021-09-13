@@ -158,7 +158,7 @@ exports.fetchCamperNote = async (shiftNr, camperId) => {
   const camper = await RawCampers.findOne({
     where: {
       isRegistered: true,
-      shift: `${shiftNr}v`,
+      // shift: `${shiftNr}v`,
       name: camperName,
     },
   });
