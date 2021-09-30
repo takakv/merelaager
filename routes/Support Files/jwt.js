@@ -1,5 +1,8 @@
 require("dotenv").config();
+const db = require("../../models/database");
 const jwt = require("jsonwebtoken");
+
+const Users = db.users;
 
 const accessTokenSecret = process.env.TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -17,11 +20,17 @@ const verifyAccessToken = (req, res, next) => {
 
   if (authHeader) {
     const token = authHeader.split(" ")[1];
-    jwt.verify(token, accessTokenSecret, (err, user) => {
+    jwt.verify(token, accessTokenSecret, async (err, user) => {
       if (err) {
         return res.sendStatus(403);
       }
       req.user = user;
+      const dbUser = await Users.findOne({
+        where: { username: user.username },
+      });
+      req.user.role = dbUser.role;
+      req.user.id = dbUser.id;
+      req.user.shift = dbUser.shifts;
       next();
     });
   } else {

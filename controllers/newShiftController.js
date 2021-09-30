@@ -7,7 +7,7 @@ const ShiftData = db.shiftData;
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
   const regCampers = await Reglist.findAll({
-    where: {isRegistered: true},
+    where: { isRegistered: true },
   });
 
   // Associate all registered campers with shifts.
@@ -15,11 +15,11 @@ exports.forceUpdate = async () => {
     const shiftNr = parseInt(camper.shift[0]);
 
     Children.findOne({
-      where: {name: camper.name},
+      where: { name: camper.name },
     })
       .then((child) => {
         ShiftData.findOrCreate({
-          where: {childId: child.id, shiftNr},
+          where: { childId: child.id, shiftNr },
           defaults: {
             childId: child.id,
             shiftNr,
@@ -34,11 +34,18 @@ exports.forceUpdate = async () => {
 exports.getInfo = async (shiftNr) => {
   let entries;
   try {
-    entries = await ShiftData.findAll({
-      where: {shiftNr},
-      order: [["childId", "ASC"]],
-      include: Children,
-    });
+    if (shiftNr === 2) {
+      entries = await ShiftData.findAll({
+        order: [["childId", "ASC"]],
+        include: Children,
+      });
+    } else {
+      entries = await ShiftData.findAll({
+        where: { shiftNr },
+        order: [["childId", "ASC"]],
+        include: Children,
+      });
+    }
     if (!entries) return null;
   } catch (e) {
     console.error(e);

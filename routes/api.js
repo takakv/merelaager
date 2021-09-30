@@ -85,7 +85,6 @@ router.post("/su/cta/:shiftNr/:role?/", async (req, res) => {
   else res.sendStatus(400);
 });
 
-const registrationList = require("../controllers/listController");
 const bill = require("../controllers/billController");
 const shiftData = require("../controllers/shiftController");
 const shirtsData = require("../controllers/shirtController");
@@ -132,44 +131,14 @@ router.post("/shift/", async (req, res) => {
 // INTERNAL DATA.
 router.use(jwt.verifyAccessToken);
 
-// Fetch the whole list of children and their registration status.
-router.get("/reglist/fetch/", async (req, res) => {
-  try {
-    const data = await registrationList.fetch(req, res);
-    if (data) res.json(data);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
+const registration = require("./api/registration");
+router.use("/reglist", registration);
 
-router.get("/reglist/print/:shiftNr/", async (req, res) => {
-  if (!req.params["shiftNr"]) return res.sendStatus(400);
-  const shiftNr = parseInt(req.params["shiftNr"]);
-  const filename = await registrationList.print(shiftNr);
-  if (filename) return res.sendFile(filename, { root: "./data/files" });
-  res.sendStatus(404);
-});
+const campers = require("./api/campers");
+router.use("/campers", campers);
 
-router.post("/reglist/update/:userId/:field/:value?/", async (req, res) => {
-  try {
-    const status = await registrationList.update(req, res);
-    if (status) res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
-router.post("/reglist/remove/:userId/", async (req, res) => {
-  try {
-    const status = await registrationList.remove(req, res);
-    if (status) res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
+const notes = require("./api/notes");
+router.use("/notes", notes);
 
 router.post("/bills/:action/:email", async (req, res) => {
   if (!req.params["action"] || !req.params["email"]) {
@@ -213,40 +182,8 @@ router.post("/tents/update/:entryId/:tentNr/", async (req, res) => {
   return res.sendStatus(404);
 });
 
-router.post("/notes/update/:childId/", async (req, res) => {
-  const childId = parseInt(req.params.childId);
-  if (!childId) return res.sendStatus(400);
-  if (typeof req.body.notes === "undefined") return res.sendStatus(400);
-
-  if (await shiftData.updateNotes(childId, req.body.notes))
-    return res.sendStatus(200);
-  else res.sendStatus(404);
-});
-
-router.get("/notes/fetch/:shiftNr/:camperId?/", async (req, res) => {
-  const shiftNr = parseInt(req.params.shiftNr);
-  const camperId = parseInt(req.params.camperId);
-  if (!shiftNr) return res.sendStatus(400);
-
-  let fileName;
-  if (camperId) fileName = await shiftData.fetchCamperNote(shiftNr, camperId);
-  else fileName = await shiftData.fetchAllNotes(shiftNr);
-
-  if (fileName) return res.sendFile(fileName, { root: "./data/files" });
-  res.sendStatus(404);
-});
-
 router.get("/shirts/fetch/", async (req, res) => {
   const data = await shirtsData.fetch();
-  if (data) res.json(data);
-  else res.sendStatus(500);
-});
-
-router.get("/campers/info/fetch/:shiftNr?/", async (req, res) => {
-  const shiftNr = parseInt(req.params.shiftNr);
-  if (Number.isNaN(shiftNr)) return res.sendStatus(400);
-
-  const data = await newShiftData.getInfo(shiftNr);
   if (data) res.json(data);
   else res.sendStatus(500);
 });
