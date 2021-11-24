@@ -9,6 +9,7 @@ router.get("/fetch/", async (req, res) => {
   try {
     const data = await registrationList.fetch(req, res);
     if (data) res.json(data);
+    else res.sendStatus(500);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);

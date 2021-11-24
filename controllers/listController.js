@@ -4,11 +4,13 @@ const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
 const Campers = db.campers;
+const Children = db.newChildren;
 const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
   const children = await Campers.findAll({
     order: [["id", "ASC"]],
+    include: Children,
   });
 
   if (!children.length) return res.sendStatus(404) && null;
@@ -29,8 +31,8 @@ exports.fetch = async (req, res) => {
   children.forEach((child) => {
     const data = {
       id: child["id"],
-      name: child["name"],
-      gender: child["gender"],
+      name: child["child"]["name"],
+      gender: child["child"]["gender"],
       bDay: child["birthday"],
       isOld: child["isOld"],
       shift: child["shift"],
@@ -71,11 +73,11 @@ exports.fetch = async (req, res) => {
 const pushData = (camper, target) => {
   target.campers[camper.id] = camper;
   if (camper.registered) {
-    if (camper.gender === "Poiss") target.regBoyCount++;
+    if (camper.gender === "M") target.regBoyCount++;
     else target.regGirlCount++;
     target.totalRegCount++;
   } else {
-    if (camper.gender === "Poiss") target.resBoyCount++;
+    if (camper.gender === "M") target.resBoyCount++;
     else target.resGirlCount++;
   }
 };
