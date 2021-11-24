@@ -11,17 +11,9 @@ module.exports = (sequelize) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       idCode: {
         type: DataTypes.STRING,
         defaultValue: "",
-      },
-      gender: {
-        type: DataTypes.ENUM("Tüdruk", "Poiss"),
-        allowNull: false,
       },
       birthday: {
         type: DataTypes.DATEONLY,
