@@ -128,6 +128,18 @@ router.post("/shift/", async (req, res) => {
   }
 });
 
+router.post("/reg/fk/update", async (req, res) => {
+  if (!("token" in req.body)) return res.sendStatus(401);
+  if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
+  try {
+    await childData.linkReg();
+    res.sendStatus(200);
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 // INTERNAL DATA.
 router.use(jwt.verifyAccessToken);
 

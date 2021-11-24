@@ -42,3 +42,40 @@ exports.newChildren = async () => {
     });
   });
 };
+
+const addChildEntry = async (data) => {
+  await newChildren.create({
+    name: data.name,
+    gender: data.gender === "Poiss" ? "M" : "F",
+  });
+  return await newChildren.findOne({
+    where: { name: data.name },
+  });
+};
+
+exports.linkReg = async () => {
+  // Fetch all registrations.
+  const regs = await Reglist.findAll();
+
+  const idless = [];
+
+  for (const entry of regs) {
+    const result = await newChildren.findAll({
+      where: { name: entry.name },
+    });
+
+    if (result.length === 0) {
+      idless.push(entry.name);
+      const tmp = await addChildEntry(entry);
+      entry.childId = tmp.id;
+    } else if (result.length === 1) {
+      entry.childId = result[0].id;
+    } else {
+      console.error(entry);
+      console.error(result);
+      continue;
+    }
+    await entry.save();
+  }
+  console.log(idless.sort());
+};

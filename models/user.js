@@ -35,8 +35,6 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
       },
     },
-    {
-      tableName: "users",
-    }
+    { tableName: "users" }
   );
 };

@@ -37,4 +37,7 @@ db.shiftData.belongsTo(db.team);
 db.users.hasMany(db.staff);
 db.staff.belongsTo(db.users);
 
+db.newChildren.hasMany(db.campers);
+db.campers.belongsTo(db.newChildren);
+
 module.exports = db;

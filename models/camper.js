@@ -3,7 +3,7 @@ const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   return sequelize.define(
-    "camper",
+    "reg",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -98,7 +98,7 @@ module.exports = (sequelize) => {
     },
     {
       tableName:
-        process.env.NODE_ENV === "prod" ? "Laagrilapsed" : "Testlapsed",
+        process.env.NODE_ENV === "prod" ? "registrations" : "Testlapsed",
     }
   );
 };
