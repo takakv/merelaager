@@ -25,6 +25,9 @@ module.exports = (sequelize) => {
         defaultValue: true,
       },
       shift: {
+        type: DataTypes.INTEGER,
+      },
+      oldShift: {
         type: DataTypes.ENUM("1v", "2v", "3v", "4v"),
         allowNull: false,
       },

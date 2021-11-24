@@ -46,7 +46,7 @@ const globalRegCount = {
   "1v": {},
   "2v": {},
   "3v": {},
-  "4v": {}
+  "4v": {},
 };
 
 const getBillNr = async () => {
@@ -214,4 +214,13 @@ const calculatePrice = (campers) => {
     else if (camper.isOld) price -= 10;
   });
   return price;
+};
+
+exports.migrateShifts = async () => {
+  const campers = await Camper.findAll();
+
+  for (const camper of campers) {
+    camper.shift = parseInt(camper["oldShift"][0]);
+    await camper.save();
+  }
 };

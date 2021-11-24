@@ -63,4 +63,13 @@ router.post("/ct/", async (req, res) => {
   }
 });
 
+router.post("/email/update", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.sendStatus(400);
+
+  const status = await account.updateEmail(req.user.id, email);
+  if (status) return 200;
+  else return 500;
+});
+
 module.exports = router;
