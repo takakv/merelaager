@@ -28,6 +28,7 @@ db.newChildren = require("./newChild")(sequelize);
 db.team = require("./team")(sequelize);
 db.suToken = require("./suToken")(sequelize);
 db.staff = require("./staff")(sequelize);
+db.shiftInfo = require("./shiftInfo")(sequelize);
 
 db.newChildren.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.newChildren);
@@ -39,5 +40,21 @@ db.staff.belongsTo(db.users);
 
 db.newChildren.hasMany(db.campers);
 db.campers.belongsTo(db.newChildren);
+
+db.shiftInfo.hasMany(db.campers, {
+  foreignKey: "shiftNr",
+  onDelete: "RESTRICT",
+  onUpdate: "CASCADE",
+});
+db.campers.belongsTo(db.shiftInfo, {
+  foreignKey: "shiftNr",
+});
+
+db.users.hasMany(db.shiftInfo, {
+  foreignKey: "bossId",
+});
+db.shiftInfo.belongsTo(db.users, {
+  foreignKey: "bossId",
+});
 
 module.exports = db;

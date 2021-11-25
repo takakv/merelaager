@@ -220,7 +220,7 @@ exports.migrateShifts = async () => {
   const campers = await Camper.findAll();
 
   for (const camper of campers) {
-    camper.shift = parseInt(camper["oldShift"][0]);
+    camper.shiftNr = parseInt(camper["oldShift"][0]);
     await camper.save();
   }
 };

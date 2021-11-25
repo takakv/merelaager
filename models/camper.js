@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: true,
       },
-      shift: {
+      shiftNr: {
         type: DataTypes.INTEGER,
       },
       oldShift: {
