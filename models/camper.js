@@ -27,10 +27,6 @@ module.exports = (sequelize) => {
       shiftNr: {
         type: DataTypes.INTEGER,
       },
-      oldShift: {
-        type: DataTypes.ENUM("1v", "2v", "3v", "4v"),
-        allowNull: false,
-      },
       tsSize: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -93,7 +89,9 @@ module.exports = (sequelize) => {
     },
     {
       tableName:
-        process.env.NODE_ENV === "prod" ? "registrations" : "Testlapsed",
+        process.env.NODE_ENV === "prod"
+          ? "registrations"
+          : "test_registrations",
     }
   );
 };

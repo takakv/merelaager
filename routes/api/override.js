@@ -2,7 +2,6 @@ const router = require("express").Router();
 
 const childData = require("../../controllers/childController");
 const newShiftData = require("../../controllers/newShiftController");
-const regData = require("../../controllers/camperController");
 
 router.use((req, res, next) => {
   if (!("token" in req.body)) return res.sendStatus(401);
@@ -43,16 +42,6 @@ router.post("/shift/", async (req, res) => {
 router.post("/reg/fk/update/", async (req, res) => {
   try {
     await childData.linkReg();
-    res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
-router.post("/migrateshifts/", async (req, res) => {
-  try {
-    await regData.migrateShifts();
     res.sendStatus(200);
   } catch (e) {
     console.error(e);

@@ -215,12 +215,3 @@ const calculatePrice = (campers) => {
   });
   return price;
 };
-
-exports.migrateShifts = async () => {
-  const campers = await Camper.findAll();
-
-  for (const camper of campers) {
-    camper.shiftNr = parseInt(camper["oldShift"][0]);
-    await camper.save();
-  }
-};
