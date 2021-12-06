@@ -14,6 +14,8 @@ import {
   removeCard,
 } from "./registration/cardLogic.js";
 
+const regPrice = 100;
+
 // --- Functions
 export const hide = (element, isHidden) => {
   if (isHidden) element.classList.add("is-hidden");
@@ -39,14 +41,14 @@ const childCountEl = document.getElementById("childCount");
 let childCount = childCountEl.value;
 
 const preDisplay = document.getElementById("pre-total");
-preDisplay.innerText = `${childCount * 50}`;
+preDisplay.innerText = `${childCount * regPrice}`;
 
 addChild.onclick = () => {
   addCard(childCount);
   ++childCount;
   childCountEl.value = childCount;
-  preDisplay.innerText = `${childCount * 50}`;
-  priceDisplay.innerText = `${parseInt(priceDisplay.innerText) + 50}`;
+  preDisplay.innerText = `${childCount * regPrice}`;
+  priceDisplay.innerText = `${parseInt(priceDisplay.innerText) + regPrice}`;
 };
 
 for (let i = 1; i < 4; ++i) {
@@ -54,8 +56,8 @@ for (let i = 1; i < 4; ++i) {
     --childCount;
     childCountEl.value = childCount;
     removeCard(childCount);
-    preDisplay.innerText = `${childCount * 50}`;
-    priceDisplay.innerText = `${parseInt(priceDisplay.innerText) - 50}`;
+    preDisplay.innerText = `${childCount * regPrice}`;
+    priceDisplay.innerText = `${parseInt(priceDisplay.innerText) - regPrice}`;
   };
 }
 
@@ -65,7 +67,7 @@ for (let i = 1; i < childCount; ++i) {
 
 updatePrice(childCount);
 priceDisplay.innerText = `${
-  parseInt(priceDisplay.innerText) + childCount * 50
+  parseInt(priceDisplay.innerText) + childCount * regPrice
 }`;
 
 priceAffectingFields.forEach((fields) => {
@@ -78,7 +80,9 @@ priceAffectingFields.forEach((fields) => {
 
 const unlocker = (moment) => {
   const unlockDate = new Date(Date.parse(moment)).getTime();
+  console.log(unlockDate);
   const now = new Date().getTime();
+  console.log(now);
 
   if (now > unlockDate) {
     submitButton.disabled = false;
@@ -86,16 +90,19 @@ const unlocker = (moment) => {
   }
 
   const eta = unlockDate - now;
+  console.log(eta);
   setTimeout(() => {
     submitButton.disabled = false;
   }, eta);
 };
 
+/*
 if (window.location.hostname === "merelaager.ee") {
-  unlocker("01 Jan 2021 12:00:00 UTC");
+  unlocker("01 Jan 2022 12:00:00 UTC");
 } else {
-  unlocker("01 Jan 2021 11:04:00 UTC");
+  unlocker("01 Jan 2022 11:04:00 UTC");
 }
+*/
 
 const source = new EventSource("/registreerimine/events/");
 const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];

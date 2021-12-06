@@ -35,7 +35,7 @@ exports.fetch = async (req, res) => {
       gender: child["child"]["gender"],
       bDay: child["birthday"],
       isOld: child["isOld"],
-      shift: child["shift"],
+      shift: child["shiftNr"],
       tShirtSize: child["tsSize"],
       // city: child["city"],
       // county: child["county"],
@@ -51,20 +51,7 @@ exports.fetch = async (req, res) => {
 
     if (req.user.role === "boss") data.idCode = child.idCode;
 
-    switch (child["shift"]) {
-      case "1v":
-        pushData(data, returnData[1]);
-        break;
-      case "2v":
-        pushData(data, returnData[2]);
-        break;
-      case "3v":
-        pushData(data, returnData[3]);
-        break;
-      case "4v":
-        pushData(data, returnData[4]);
-        break;
-    }
+    pushData(data, returnData[child.shiftNr]);
   });
 
   return returnData;

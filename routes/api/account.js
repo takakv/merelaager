@@ -63,6 +63,11 @@ router.post("/ct/", async (req, res) => {
   }
 });
 
+router.post("/password/update", async (req, res) => {
+  const { password } = req.body;
+  if (!password) return res.sendStatus(400);
+});
+
 router.post("/email/update", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.sendStatus(400);

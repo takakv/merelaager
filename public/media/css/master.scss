@@ -1074,6 +1074,22 @@ main > section {
     .lite {
       opacity: 0.7;
     }
+
+    .start {
+      position: relative;
+
+      &::after {
+        position: absolute;
+        left: 50%;
+        display: block;
+        width: 50%;
+        height: 2px;
+        content: "";
+        transform: translateX(-50%);
+        opacity: 0.8;
+        background-color: var(--highlight);
+      }
+    }
   }
 }
 
