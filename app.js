@@ -6,6 +6,7 @@ const slashes = require("connect-slashes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
+const pictures = require("./routes/pictures");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -77,12 +78,11 @@ app.get("/lastenurk/", (req, res, next) => {
 });
 
 app.get("/pildid/", (req, res, next) => {
-  res.render("pildid", {
-    title: meta.pildid.title,
-    description: meta.pildid.description,
-    url_path: "pildid/",
-    body_class: "pildid",
+  const imageList = [];
+  fs.readdirSync("./public/img").forEach((file) => {
+    if (file !== ".gitkeep") imageList.push({ src: `../img/${file}` });
   });
+  pictures.renderPictures(req, res, meta, imageList);
 });
 
 app.get("/sisukaart/", (req, res) => {
@@ -137,3 +137,4 @@ const runApp = async () => {
 runApp().catch(console.error);
 
 require("./models/bills");
+const renderPictures = require("./routes/pictures");
