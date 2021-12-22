@@ -11,7 +11,7 @@ const mailService = new MailService();
 
 const Camper = db.campers;
 
-const unlockTime = new Date(Date.parse("01 Jan 2021 11:59:30 UTC"));
+const unlockTime = new Date(Date.parse("01 Jan 2022 11:59:30 UTC"));
 const now = new Date().getTime();
 const eta = unlockTime - now;
 
@@ -33,10 +33,14 @@ const openSlots = {
     resGirls: 20,
   },
   3: {
+    resBoys: 20,
+    resGirls: 20,
+  },
+  4: {
     resBoys: 16,
     resGirls: 24,
   },
-  4: {
+  5: {
     resBoys: 20,
     resGirls: 20,
   },

@@ -96,13 +96,11 @@ const unlocker = (moment) => {
   }, eta);
 };
 
-/*
 if (window.location.hostname === "merelaager.ee") {
   unlocker("01 Jan 2022 12:00:00 UTC");
 } else {
   unlocker("01 Jan 2022 11:04:00 UTC");
 }
-*/
 
 const source = new EventSource("/registreerimine/events/");
 const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
