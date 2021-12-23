@@ -13,6 +13,9 @@ router.use("/su", account);
 const override = require("./api/override");
 router.use("/or", override);
 
+const pub = require("./api/public");
+router.use("/pb", pub);
+
 // ---------- AUTH ZONE ------------------------------
 const jwt = require("./Support Files/jwt");
 router.use(jwt.verifyAccessToken);

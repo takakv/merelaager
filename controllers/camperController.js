@@ -51,6 +51,7 @@ const globalRegCount = {
   "2v": {},
   "3v": {},
   "4v": {},
+  "5v": {},
 };
 
 const getBillNr = async () => {

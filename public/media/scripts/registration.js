@@ -1,6 +1,7 @@
 // --- Imports
 import { updatePrice } from "./registration/price.js";
 import { validators } from "./registration/validation.js";
+import { getSyncTime } from "./registration/clock.js";
 import {
   addChild,
   priceAffectingFields,
@@ -116,5 +117,32 @@ source.onmessage = (event) => {
     // shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
   }
 };
+
+const loadClock = async () => {
+  const svClock = document.getElementById("serverClock");
+  // const lcClock = document.getElementById("localClock");
+  // lcClock.innerHTML = new Date().toLocaleTimeString();
+
+  const locale = "et-EE";
+  const tz = { timeZone: "Europe/Tallinn" };
+
+  const syncTime = await getSyncTime();
+  let current = new Date(syncTime);
+  svClock.innerHTML = current.toLocaleTimeString(locale, tz);
+
+  setInterval(() => {
+    current.setUTCSeconds(current.getUTCSeconds() + 1);
+    const tmp = current;
+    svClock.innerHTML = current.toLocaleTimeString(locale, tz);
+    // lcClock.innerHTML = new Date().toLocaleTimeString();
+  }, 1000);
+
+  return syncTime;
+};
+
+loadClock().then((time) => {
+  console.log(`Server time: ${new Date(time).toISOString()}`);
+  console.log(`Local time: ${new Date().toISOString()}`);
+});
 
 window.onunload = () => {};
