@@ -38,6 +38,8 @@ if (pageAccessedByReload) {
 displayFirstCard();
 validators();
 
+console.log("Registreerimisportaali diagnostika:");
+
 const childCountEl = document.getElementById("childCount");
 let childCount = childCountEl.value;
 
@@ -79,28 +81,35 @@ priceAffectingFields.forEach((fields) => {
   });
 });
 
-const unlocker = (moment) => {
-  const unlockDate = new Date(Date.parse(moment)).getTime();
-  console.log(unlockDate);
-  const now = new Date().getTime();
-  console.log(now);
+const unlocker = async (moment) => {
+  const unlockDate = new Date(Date.parse(moment));
+  const ulTime = unlockDate.getTime();
+  console.log(`Avaneb: ${unlockDate.toISOString()}`);
+  const now = await getSyncTime();
+  console.log(`Hetkel: ${new Date(now).toISOString()}`);
 
-  if (now > unlockDate) {
+  if (now > ulTime) {
     submitButton.disabled = false;
-    return;
+    return true;
   }
 
-  const eta = unlockDate - now;
-  console.log(eta);
+  const eta = ulTime - now;
+  console.log(`Sekundeid jäänud: ${eta}`);
   setTimeout(() => {
     submitButton.disabled = false;
   }, eta);
+
+  return false;
 };
 
 if (window.location.hostname === "merelaager.ee") {
-  unlocker("01 Jan 2022 12:00:00 UTC");
+  unlocker("01 Jan 2022 12:00:00 UTC").then((res) =>
+    console.log(`Avatud: ${res ? "jah" : "ei"}`)
+  );
 } else {
-  unlocker("01 Jan 2022 11:04:00 UTC");
+  unlocker("01 Jan 2022 11:04:00 UTC").then((res) =>
+    console.log(`Avatud: ${res ? "jah" : "ei"}`)
+  );
 }
 
 const source = new EventSource("/registreerimine/events/");
@@ -120,8 +129,8 @@ source.onmessage = (event) => {
 
 const loadClock = async () => {
   const svClock = document.getElementById("serverClock");
-  const lcClock = document.getElementById("localClock");
-  lcClock.innerHTML = new Date().toLocaleTimeString();
+  // const lcClock = document.getElementById("localClock");
+  // lcClock.innerHTML = new Date().toLocaleTimeString();
 
   const locale = "et-EE";
   const tz = { timeZone: "Europe/Tallinn" };
@@ -134,7 +143,7 @@ const loadClock = async () => {
     current.setUTCSeconds(current.getUTCSeconds() + 1);
     const tmp = current;
     svClock.innerHTML = current.toLocaleTimeString(locale, tz);
-    lcClock.innerHTML = new Date().toLocaleTimeString();
+    // lcClock.innerHTML = new Date().toLocaleTimeString();
   }, 1000);
 
   return syncTime;
