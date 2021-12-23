@@ -2,10 +2,11 @@ import { priceAffectingFields, priceDisplay } from "./htmlElements.js";
 import { ChildPrice } from "../classes/ChildPrice.js";
 
 const shiftPrices = {
-  "1v": 200,
-  "2v": 290,
-  "3v": 290,
-  "4v": 290,
+  1: 240,
+  2: 320,
+  3: 200,
+  4: 320,
+  5: 320,
 };
 
 const childPrices = [
@@ -18,11 +19,11 @@ const childPrices = [
 const getValues = (count) => {
   for (let i = 0; i < count; ++i) {
     const shiftValue = priceAffectingFields[0][i].value;
+
     if (shiftValue) childPrices[i].shiftPrice = shiftPrices[shiftValue];
-    else return;
+    else childPrices[i].shiftPrice = null;
+
     childPrices[i].isOld = !priceAffectingFields[1][i].checked;
-    const city = priceAffectingFields[2][i].value;
-    childPrices[i].isFromTallinn = city.toLowerCase() === "tallinn";
   }
 };
 
@@ -32,8 +33,7 @@ const calculatePrice = (count) => {
   childPrices.forEach((child) => {
     if (child.shiftPrice) price += child.shiftPrice;
     else return;
-    if (child.isFromTallinn) price -= 20;
-    else if (child.isOld) price -= 10;
+    if (child.isOld) price -= 20;
   });
   return price;
 };

@@ -50,6 +50,7 @@ addChild.onclick = () => {
   addCard(childCount);
   ++childCount;
   childCountEl.value = childCount;
+
   preDisplay.innerText = `${childCount * regPrice}`;
   priceDisplay.innerText = `${parseInt(priceDisplay.innerText) + regPrice}`;
 };
@@ -59,8 +60,10 @@ for (let i = 1; i < 4; ++i) {
     --childCount;
     childCountEl.value = childCount;
     removeCard(childCount);
+
     preDisplay.innerText = `${childCount * regPrice}`;
     priceDisplay.innerText = `${parseInt(priceDisplay.innerText) - regPrice}`;
+    updatePrice(childCount);
   };
 }
 

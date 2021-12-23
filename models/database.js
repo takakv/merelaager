@@ -29,6 +29,7 @@ db.team = require("./team")(sequelize);
 db.suToken = require("./suToken")(sequelize);
 db.staff = require("./staff")(sequelize);
 db.shiftInfo = require("./shiftInfo")(sequelize);
+db.records = require("./record")(sequelize);
 
 db.newChildren.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.newChildren);
@@ -56,5 +57,8 @@ db.users.hasMany(db.shiftInfo, {
 db.shiftInfo.belongsTo(db.users, {
   foreignKey: "bossId",
 });
+
+db.newChildren.hasMany(db.records);
+db.records.belongsTo(db.newChildren);
 
 module.exports = db;
