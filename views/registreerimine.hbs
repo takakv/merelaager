@@ -71,10 +71,10 @@
         sama vormi abil.</p>
     </div>
     <form
-        class="registration-form"
-        action="/registreerimine/register/"
-        method="post"
-        id="regform"
+      class="registration-form"
+      action="/registreerimine/register/"
+      method="post"
+      id="regform"
     >
       <b class="u-italic u-regular"><span class="u-required"></span>
         Tärniga märgitud väljad on kohustuslikud.</b>
@@ -94,61 +94,61 @@
           <div class="registration-form__field">
             <label for="guardian_name" class="u-required">Nimi</label>
             <input
-                type="text"
-                name="guardian_name"
-                id="guardian_name"
-                required
+              type="text"
+              name="contactName"
+              id="guardian_name"
+              required
             />
           </div>
           <div class="registration-form__field">
             <label for="guardian_phone" class="u-required">Telefon</label>
             <input
-                type="tel"
-                name="guardian_phone"
-                id="guardian_phone"
-                required
+              type="tel"
+              name="contactNumber"
+              id="guardian_phone"
+              required
             />
           </div>
           <div class="registration-form__field">
             <label for="guardian_email" class="u-required">E-post</label>
             <input
-                type="email"
-                name="guardian_email"
-                id="guardian_email"
-                required
+              type="email"
+              name="contactEmail"
+              id="guardian_email"
+              required
             />
           </div>
         </div>
         <div class="registration-form__row">
           <div class="registration-form__field">
             <label for="alt_phone">Varutelefon</label>
-            <input type="tel" name="alt_phone" id="alt_phone"/>
+            <input type="tel" name="backupTel" id="alt_phone"/>
           </div>
           <div class="registration-form__field registration-form__field--row">
             <label for="disclaimer" class="u-required">Nõustun laagri
               <a
-                  href="/info/laagrist/#kodukord"
-                  class="t-visible"
+                href="/info/laagrist/#kodukord"
+                class="t-visible"
               >kodukorraga</a>.</label>
             <input type="checkbox" id="disclaimer" required/>
           </div>
         </div>
       </div>
       <input
-          type="number"
-          name="childCount"
-          value="1"
-          id="childCount"
-          hidden
-          readonly
-          required
+        type="number"
+        name="childCount"
+        value="1"
+        id="childCount"
+        hidden
+        readonly
+        required
       />
       <button
-          name="submit"
-          value="submit"
-          class="c-btn"
-          id="submitBtn"
-          disabled
+        name="submit"
+        value="submit"
+        class="c-btn"
+        id="submitBtn"
+        disabled
       >Registreerin
       </button>
       <p class="u-inline-block">Broneerimistasu:

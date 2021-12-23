@@ -21,7 +21,7 @@ router.get("/", (req, res, next) => {
 
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
-const campers = require("../controllers/camperController");
+const campers = require("../controllers/registrationController");
 
 router.post("/register/", urlEncParser, campers.create);
 
@@ -59,6 +59,10 @@ let spots = {
     girls: 20,
   },
   4: {
+    boys: 16,
+    girls: 24,
+  },
+  5: {
     boys: 20,
     girls: 20,
   },

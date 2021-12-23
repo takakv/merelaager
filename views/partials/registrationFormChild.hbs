@@ -6,7 +6,7 @@
         <label for="name-{{this}}" class="u-required">Nimi</label>
         <input
           type="text"
-          name="name-{{this}}"
+          name="name"
           id="name-{{this}}"
           class="nameField"
         />
@@ -15,7 +15,7 @@
         <label for="idCode-{{this}}" class="u-required">Isikukood</label>
         <input
           type="text"
-          name="idCode-{{this}}"
+          name="idCode"
           id="idCode-{{this}}"
           class="idCodeField"
           pattern="[0-9]{11}"
@@ -26,7 +26,7 @@
         <label for="gender-m-{{this}}">Poiss</label>
         <input
           type="radio"
-          name="gender-{{this}}"
+          name="gender"
           id="gender-m-{{this}}"
           value="M"
           class="genderField"
@@ -34,7 +34,7 @@
         <label for="gender-f-{{this}}">Tüdruk</label>
         <input
           type="radio"
-          name="gender-{{this}}"
+          name="gender"
           id="gender-f-{{this}}"
           value="F"
         />
@@ -43,7 +43,7 @@
         <label for="bDay-{{this}}" class="u-required">Sünnipäev</label>
         <input
           type="date"
-          name="bDay-{{this}}"
+          name="bDay"
           id="bDay-{{this}}"
           class="birthdayField"
         />
@@ -54,7 +54,7 @@
         <label for="useIdCode-{{this}}">Pole Eesti isikukoodi</label>
         <input
           type="checkbox"
-          name="useIdCode-{{this}}"
+          name="useIdCode"
           id="useIdCode-{{this}}"
           class="useIdCode"
           value="false"
@@ -67,14 +67,14 @@
         <select
           id="vahetus-{{this}}"
           class="shiftField"
-          name="vahetus-{{this}}"
+          name="shiftNr"
         >
           <option value="">--Valige vahetus--</option>
-          <option value="1v">1. vahetus (25.06–02.07)</option>
-          <option value="2v">2. vahetus (04.07–15.07)</option>
-          <option value="3v">3. vahetus (17.07–22.07)</option>
-          <option value="4v">4. vahetus (25.07–05.08)</option>
-          <option value="5v">5. vahetus (08.08–19.08)</option>
+          <option value="1">1. vahetus (25.06–02.07)</option>
+          <option value="2">2. vahetus (04.07–15.07)</option>
+          <option value="3">3. vahetus (17.07–22.07)</option>
+          <option value="4">4. vahetus (25.07–05.08)</option>
+          <option value="5">5. vahetus (08.08–19.08)</option>
         </select>
       </div>
       <div class="registration-form__field">
@@ -82,7 +82,7 @@
         <select
           id="shirtsize-{{this}}"
           class="shirtSizeField"
-          name="shirtsize-{{this}}"
+          name="tsSize"
         >
           <option value="">--Valige suurus--</option>
           <option value="118/128">118/128</option>
@@ -98,7 +98,7 @@
         <label for="newAtCamp-{{this}}">Esimest korda merelaagris?</label>
         <input
           type="checkbox"
-          name="newAtCamp-{{this}}"
+          name="isNew"
           id="newAtCamp-{{this}}"
           class="newField"
           value="true"
@@ -112,7 +112,7 @@
         <label for="road-{{this}}" class="u-required">Tänav</label>
         <input
           type="text"
-          name="road-{{this}}"
+          name="road"
           id="road-{{this}}"
           class="roadField"
         />
@@ -121,7 +121,7 @@
         <label for="city-{{this}}" class="u-required">Linn / Küla / Vald</label>
         <input
           type="text"
-          name="city-{{this}}"
+          name="city"
           id="city-{{this}}"
           class="cityField"
         />
@@ -131,7 +131,7 @@
         <input
           list="counties"
           id="county-{{this}}"
-          name="county-{{this}}"
+          name="county"
           class="countyField"
         />
         <datalist id="counties">
@@ -156,7 +156,7 @@
         <label for="country-{{this}}" class="u-required">Riik</label>
         <input
           type="text"
-          name="country-{{this}}"
+          name="country"
           id="country-{{this}}"
           value="Eesti"
           class="countryField"
@@ -167,7 +167,7 @@
       <div class="registration-form__field registration-form__field--full">
         <label for="addendum-{{this}}">Muu info (allergiad, erivajadused jms):</label>
         <textarea
-          name="addendum-{{this}}"
+          name="addendum"
           id="addendum-{{this}}"
           class="full-width"
           placeholder="Võib tühjaks jääda (maksimum 255 tähemärki)."

@@ -1,17 +1,17 @@
 const db = require("../models/database");
 
 const Children = db.newChildren;
-const Reglist = db.campers;
+const Registrations = db.registrations;
 const ShiftData = db.shiftData;
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
-  const regCampers = await Reglist.findAll({
+  const registered = await Registrations.findAll({
     where: { isRegistered: true },
   });
 
   // Associate all registered campers with shifts.
-  await regCampers.forEach((camper) => {
+  await registered.forEach((camper) => {
     const shiftNr = parseInt(camper.shift[0]);
 
     Children.findOne({

@@ -1,6 +1,6 @@
 const db = require("../models/database");
 
-const Campers = db.campers;
+const Campers = db.registrations;
 
 exports.fetch = async () => {
   let children;

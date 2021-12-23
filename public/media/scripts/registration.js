@@ -107,7 +107,7 @@ if (window.location.hostname === "merelaager.ee") {
     console.log(`Avatud: ${res ? "jah" : "ei"}`)
   );
 } else {
-  unlocker("01 Jan 2022 11:04:00 UTC").then((res) =>
+  unlocker("23 Dec 2021 12:35:00 UTC").then((res) =>
     console.log(`Avatud: ${res ? "jah" : "ei"}`)
   );
 }

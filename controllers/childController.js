@@ -1,12 +1,12 @@
 const db = require("../models/database");
 
 const Children = db.children;
-const Reglist = db.campers;
+const Registrations = db.registrations;
 const newChildren = db.newChildren;
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
-  const regCampers = await Reglist.findAll({
+  const regCampers = await Registrations.findAll({
     where: { isRegistered: true },
   });
 
@@ -28,7 +28,7 @@ exports.forceUpdate = async () => {
 
 exports.newChildren = async () => {
   // Fetch all registered campers.
-  const regCampers = await Reglist.findAll({
+  const regCampers = await Registrations.findAll({
     where: { isRegistered: true },
   });
 
@@ -55,7 +55,7 @@ const addChildEntry = async (data) => {
 
 exports.linkReg = async () => {
   // Fetch all registrations.
-  const regs = await Reglist.findAll();
+  const regs = await Registrations.findAll();
 
   const idless = [];
 

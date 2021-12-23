@@ -2,7 +2,7 @@ const db = require("../models/database");
 const { generateAllCards, generateOneCard } = require("./dataCardGenerator");
 
 const Campers = db.shiftCampers;
-const RawCampers = db.campers;
+const Registrations = db.registrations;
 const ShiftData = db.shiftData;
 const Child = db.newChildren;
 
@@ -54,7 +54,7 @@ const editTent = async (entryId, tentNr) => {
 };
 
 exports.addAll = async (req, res) => {
-  const campers = await RawCampers.findAll({
+  const campers = await Registrations.findAll({
     where: { isRegistered: true },
   });
 
@@ -155,7 +155,7 @@ exports.fetchCamperNote = async (shiftNr, camperId) => {
   const camperName = (await Child.findByPk(camperId)).name;
   if (!camperName) return null;
 
-  const camper = await RawCampers.findOne({
+  const camper = await Registrations.findOne({
     where: {
       isRegistered: true,
       // shift: `${shiftNr}v`,
@@ -169,14 +169,14 @@ exports.fetchCamperNote = async (shiftNr, camperId) => {
 exports.fetchAllNotes = async (shiftNr) => {
   let campers;
   if (shiftNr === 2) {
-    campers = await RawCampers.findAll({
+    campers = await Registrations.findAll({
       where: {
         isRegistered: true,
       },
       order: [["name", "ASC"]],
     });
   } else {
-    campers = await RawCampers.findAll({
+    campers = await Registrations.findAll({
       where: {
         isRegistered: true,
         shift: `${shiftNr}v`,

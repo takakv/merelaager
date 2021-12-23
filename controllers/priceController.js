@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
-const Camper = db.campers;
+const Camper = db.registrations;
 
 exports.updateAll = async (req, res) => {
   if (req.body["password"] !== process.env.BOSSPASS) {

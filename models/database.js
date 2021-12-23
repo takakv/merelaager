@@ -19,7 +19,7 @@ sequelize
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.campers = require("./camper")(sequelize);
+db.registrations = require("./registration")(sequelize);
 db.users = require("./user")(sequelize);
 db.shiftCampers = require("./shift")(sequelize);
 db.children = require("./child")(sequelize);
@@ -38,15 +38,15 @@ db.shiftData.belongsTo(db.team);
 db.users.hasMany(db.staff);
 db.staff.belongsTo(db.users);
 
-db.newChildren.hasMany(db.campers);
-db.campers.belongsTo(db.newChildren);
+db.newChildren.hasMany(db.registrations);
+db.registrations.belongsTo(db.newChildren);
 
-db.shiftInfo.hasMany(db.campers, {
+db.shiftInfo.hasMany(db.registrations, {
   foreignKey: "shiftNr",
   onDelete: "RESTRICT",
   onUpdate: "CASCADE",
 });
-db.campers.belongsTo(db.shiftInfo, {
+db.registrations.belongsTo(db.shiftInfo, {
   foreignKey: "shiftNr",
 });
 

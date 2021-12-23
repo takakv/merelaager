@@ -3,12 +3,12 @@ const db = require("../models/database");
 const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
-const Campers = db.campers;
+const Registrations = db.registrations;
 const Children = db.newChildren;
 const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
-  const children = await Campers.findAll({
+  const children = await Registrations.findAll({
     order: [["id", "ASC"]],
     include: Children,
   });
@@ -87,14 +87,14 @@ exports.update = async (req, res) => {
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
-      await Campers.update(
+      await Registrations.update(
         { isRegistered: !camper.isRegistered },
         { where: { id } }
       );
       return true;
     // Toggle whether or not the camper has been to the camp before.
     case "regular":
-      await Campers.update({ isOld: !camper.isOld }, { where: { id } });
+      await Registrations.update({ isOld: !camper.isOld }, { where: { id } });
       return true;
   }
 
@@ -108,11 +108,11 @@ exports.update = async (req, res) => {
   switch (action) {
     // Update the amount that has been paid for the camper.
     case "total-paid":
-      await Campers.update({ pricePaid: value }, { where: { id } });
+      await Registrations.update({ pricePaid: value }, { where: { id } });
       break;
     // Update the total amount due fo the camper.
     case "total-due":
-      await Campers.update({ priceToPay: value }, { where: { id } });
+      await Registrations.update({ priceToPay: value }, { where: { id } });
       break;
     default:
       res.sendStatus(400);
@@ -122,7 +122,7 @@ exports.update = async (req, res) => {
 };
 
 const getCamper = async (id, queryUser) => {
-  const camper = await Campers.findByPk(id);
+  const camper = await Registrations.findByPk(id);
   if (!camper)
     return {
       code: 404,
@@ -158,12 +158,12 @@ exports.remove = async (req, res) => {
   const camper = await getCamper(id, req.user);
   if (!camper.ok) return res.sendStatus(camper.code) && null;
 
-  await Campers.destroy({ where: { id } });
+  await Registrations.destroy({ where: { id } });
   return true;
 };
 
 exports.print = async (shiftNr) => {
-  const children = await Campers.findAll({
+  const children = await Registrations.findAll({
     order: [["name", "ASC"]],
     where: {
       shift: `${shiftNr}v`,
