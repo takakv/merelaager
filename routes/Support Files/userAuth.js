@@ -31,7 +31,7 @@ const secureFetchUser = async (username, password) => {
     return null;
   }
   return {
-    name: user.name,
+    name: user.nickname,
     role: user.role,
     shift: user.shifts,
     username: user.username,
