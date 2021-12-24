@@ -58,8 +58,7 @@ router.post("/bills/:action/:email", async (req, res) => {
 const shirtsData = require("../controllers/shirtController");
 router.get("/shirts/fetch/", async (req, res) => {
   const data = await shirtsData.fetch();
-  if (data) res.json(data);
-  else res.sendStatus(500);
+  res.json(data);
 });
 
 module.exports = router;
