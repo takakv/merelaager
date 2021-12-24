@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const account = require("../../controllers/accountController");
+const user = require("../../controllers/userController");
 const jwt = require("../Support Files/jwt");
 
 router.get("/:token/", async (req, res) => {
@@ -75,6 +76,35 @@ router.post("/email/update", async (req, res) => {
   const status = await account.updateEmail(req.user.id, email);
   if (status) return 200;
   else return 500;
+});
+
+router.post("/info", async (req, res) => {
+  const userInfo = await user.getInfo(req.user.id);
+  res.json(userInfo);
+});
+
+router.post("/shift/swap", async (req, res) => {
+  let { shiftNr } = req.body;
+  shiftNr = parseInt(shiftNr);
+  if (!shiftNr) return res.sendStatus(400);
+
+  const userIsBoss = req.user.role === "boss";
+
+  const result = await user.swapShift(req.user.id, shiftNr, userIsBoss);
+  if (result) res.status(200).json({ role: result });
+  else res.sendStatus(403);
+});
+
+router.post("/shift/validate", async (req, res) => {
+  let { shiftNr } = req.body;
+  shiftNr = parseInt(shiftNr);
+  if (!shiftNr) return res.sendStatus(400);
+
+  if (req.user.role === "boss") return res.status(200).json({ role: "boss" });
+
+  const role = await user.validateShift(req.user.id, shiftNr);
+  if (role) res.status(200).json({ role });
+  else res.status(403).json({ role });
 });
 
 module.exports = router;
