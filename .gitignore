@@ -24,4 +24,5 @@ yarn-error.log
 # Private files
 data/arved/*.pdf
 data/files/*.pdf
+public/img/*.JPG
 *.sqlite

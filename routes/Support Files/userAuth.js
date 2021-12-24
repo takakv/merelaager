@@ -9,18 +9,12 @@ const authenticateUser = async (username, password) => {
   if (!user) return false;
   const accessToken = jwt.generateAccessToken({
     username: user.username,
-    role: user.role,
   });
   const refreshToken = jwt.generateRefreshToken({
     username: user.username,
-    role: user.role,
   });
   storeRefreshToken(refreshToken, username);
-  return {
-    accessToken,
-    refreshToken,
-    user: { name: user.name, role: user.role, shift: user.shift },
-  };
+  return { accessToken, refreshToken };
 };
 
 const secureFetchUser = async (username, password) => {
@@ -30,12 +24,7 @@ const secureFetchUser = async (username, password) => {
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return null;
   }
-  return {
-    name: user.name,
-    role: user.role,
-    shift: user.shifts,
-    username: user.username,
-  };
+  return { username: user.username };
 };
 
 const storeRefreshToken = (refreshToken, username) => {

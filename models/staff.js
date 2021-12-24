@@ -4,6 +4,7 @@ const roles = {
   boss: "boss",
   full: "full",
   part: "part",
+  guest: "guest",
 };
 
 module.exports = (sequelize) =>
@@ -28,7 +29,7 @@ module.exports = (sequelize) =>
         type: DataTypes.STRING,
       },
       role: {
-        type: DataTypes.ENUM(roles.boss, roles.full, roles.part),
+        type: DataTypes.ENUM(roles.boss, roles.full, roles.part, roles.guest),
         allowNull: false,
         defaultValue: roles.full,
       },

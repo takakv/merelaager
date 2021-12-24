@@ -10,6 +10,9 @@ module.exports = (sequelize) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      email: {
+        type: DataTypes.STRING,
+      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -35,8 +38,6 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
       },
     },
-    {
-      tableName: "users",
-    }
+    { tableName: "users" }
   );
 };

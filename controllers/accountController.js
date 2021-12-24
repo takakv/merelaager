@@ -72,3 +72,12 @@ exports.create = async (username, password, token, name = null) => {
   }
   return false;
 };
+
+exports.updateEmail = async (userId, email) => {
+  const user = await User.findByPk(userId);
+
+  if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(email)) return false;
+  user.email = email;
+  await user.save();
+  return true;
+};

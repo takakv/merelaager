@@ -8,7 +8,9 @@ const roles = {
 };
 
 exports.fetch = async (shiftNr) => {
-  const year = new Date().getUTCFullYear();
+  const currentDate = new Date();
+  let year = currentDate.getUTCFullYear();
+  if (currentDate.getMonth() === 11) ++year;
   const staff = await Staff.findAll({ where: { shiftNr, year } });
 
   if (!staff) return false;

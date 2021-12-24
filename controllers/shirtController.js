@@ -1,6 +1,6 @@
 const db = require("../models/database");
 
-const Campers = db.campers;
+const Campers = db.registrations;
 
 exports.fetch = async () => {
   let children;
@@ -17,16 +17,15 @@ exports.fetch = async () => {
   if (children.length === 0) return null;
 
   const shirtBlocks = {
-    "1v": {},
-    "2v": {},
-    "3v": {},
-    "4v": {},
     total: {},
   };
 
   children.forEach((child) => {
-    shirtBlocks[child.shift][child.tsSize] =
-      (shirtBlocks[child.shift][child.tsSize] ?? 0) + 1;
+    if (!shirtBlocks.hasOwnProperty(child.shiftNr))
+      shirtBlocks[child.shiftNr] = {};
+
+    shirtBlocks[child.shiftNr][child.tsSize] =
+      (shirtBlocks[child.shiftNr][child.tsSize] ?? 0) + 1;
     shirtBlocks.total[child.tsSize] =
       (shirtBlocks.total[child.tsSize] ?? 0) + 1;
   });

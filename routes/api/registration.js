@@ -8,7 +8,7 @@ router.use(requireShiftBoss);
 router.get("/fetch/", async (req, res) => {
   try {
     const data = await registrationList.fetch(req, res);
-    if (data) res.json(data);
+    res.json(data);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);

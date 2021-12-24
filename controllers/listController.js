@@ -3,15 +3,17 @@ const db = require("../models/database");
 const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
-const Campers = db.campers;
+const Registrations = db.registrations;
+const Children = db.newChildren;
 const numberOfShifts = 4;
 
 exports.fetch = async (req, res) => {
-  const children = await Campers.findAll({
+  const children = await Registrations.findAll({
     order: [["id", "ASC"]],
+    include: Children,
   });
 
-  if (!children.length) return res.sendStatus(404) && null;
+  if (!children.length) return null;
 
   let returnData = {};
 
@@ -29,11 +31,11 @@ exports.fetch = async (req, res) => {
   children.forEach((child) => {
     const data = {
       id: child["id"],
-      name: child["name"],
-      gender: child["gender"],
+      name: child["child"]["name"],
+      gender: child["child"]["gender"],
       bDay: child["birthday"],
       isOld: child["isOld"],
-      shift: child["shift"],
+      shift: child["shiftNr"],
       tShirtSize: child["tsSize"],
       // city: child["city"],
       // county: child["county"],
@@ -42,27 +44,13 @@ exports.fetch = async (req, res) => {
       contactEmail: child["contactEmail"],
       contactNr: child["contactNumber"],
       registered: child["isRegistered"],
-      tln: child["city"].toLowerCase().trim() === "tallinn",
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };
 
     if (req.user.role === "boss") data.idCode = child.idCode;
 
-    switch (child["shift"]) {
-      case "1v":
-        pushData(data, returnData[1]);
-        break;
-      case "2v":
-        pushData(data, returnData[2]);
-        break;
-      case "3v":
-        pushData(data, returnData[3]);
-        break;
-      case "4v":
-        pushData(data, returnData[4]);
-        break;
-    }
+    pushData(data, returnData[child.shiftNr]);
   });
 
   return returnData;
@@ -71,11 +59,11 @@ exports.fetch = async (req, res) => {
 const pushData = (camper, target) => {
   target.campers[camper.id] = camper;
   if (camper.registered) {
-    if (camper.gender === "Poiss") target.regBoyCount++;
+    if (camper.gender === "M") target.regBoyCount++;
     else target.regGirlCount++;
     target.totalRegCount++;
   } else {
-    if (camper.gender === "Poiss") target.resBoyCount++;
+    if (camper.gender === "M") target.resBoyCount++;
     else target.resGirlCount++;
   }
 };
@@ -98,14 +86,14 @@ exports.update = async (req, res) => {
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
-      await Campers.update(
+      await Registrations.update(
         { isRegistered: !camper.isRegistered },
         { where: { id } }
       );
       return true;
     // Toggle whether or not the camper has been to the camp before.
     case "regular":
-      await Campers.update({ isOld: !camper.isOld }, { where: { id } });
+      await Registrations.update({ isOld: !camper.isOld }, { where: { id } });
       return true;
   }
 
@@ -119,11 +107,11 @@ exports.update = async (req, res) => {
   switch (action) {
     // Update the amount that has been paid for the camper.
     case "total-paid":
-      await Campers.update({ pricePaid: value }, { where: { id } });
+      await Registrations.update({ pricePaid: value }, { where: { id } });
       break;
     // Update the total amount due fo the camper.
     case "total-due":
-      await Campers.update({ priceToPay: value }, { where: { id } });
+      await Registrations.update({ priceToPay: value }, { where: { id } });
       break;
     default:
       res.sendStatus(400);
@@ -133,7 +121,7 @@ exports.update = async (req, res) => {
 };
 
 const getCamper = async (id, queryUser) => {
-  const camper = await Campers.findByPk(id);
+  const camper = await Registrations.findByPk(id);
   if (!camper)
     return {
       code: 404,
@@ -169,12 +157,12 @@ exports.remove = async (req, res) => {
   const camper = await getCamper(id, req.user);
   if (!camper.ok) return res.sendStatus(camper.code) && null;
 
-  await Campers.destroy({ where: { id } });
+  await Registrations.destroy({ where: { id } });
   return true;
 };
 
 exports.print = async (shiftNr) => {
-  const children = await Campers.findAll({
+  const children = await Registrations.findAll({
     order: [["name", "ASC"]],
     where: {
       shift: `${shiftNr}v`,

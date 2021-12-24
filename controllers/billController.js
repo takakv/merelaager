@@ -3,7 +3,7 @@ const path = require("path");
 const billGenerator = require("./billGenerator");
 const fs = require("fs");
 
-const Camper = db.campers;
+const Camper = db.registrations;
 
 const bulkQueryByEmail = (contactEmail) => {
   return Camper.findAll({
