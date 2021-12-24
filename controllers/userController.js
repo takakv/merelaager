@@ -28,7 +28,7 @@ const createUser = async (username, password) => {
 exports.swapShift = async (userId, shiftNr, isBoss = false) => {
   let role = "boss";
 
-  if (isBoss) {
+  if (!isBoss) {
     const shiftInfo = await Staff.findOne({
       where: {
         userId,
