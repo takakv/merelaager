@@ -13,7 +13,7 @@ exports.fetch = async (req, res) => {
     include: Children,
   });
 
-  if (!children.length) return res.sendStatus(404) && null;
+  if (!children.length) return null;
 
   let returnData = {};
 
@@ -44,7 +44,6 @@ exports.fetch = async (req, res) => {
       contactEmail: child["contactEmail"],
       contactNr: child["contactNumber"],
       registered: child["isRegistered"],
-      tln: child["city"].toLowerCase().trim() === "tallinn",
       pricePaid: child["pricePaid"],
       priceToPay: child["priceToPay"],
     };
