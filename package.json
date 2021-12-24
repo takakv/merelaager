@@ -22,30 +22,30 @@
   "dependencies": {
     "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.1",
     "connect-slashes": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "express-handlebars": "^6.0.1",
+    "express": "^4.17.2",
+    "express-handlebars": "^6.0.2",
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.0",
-    "nodemailer": "^6.6.5",
+    "nodemailer": "^6.7.2",
     "nodemailer-express-handlebars": "^4.0.0",
     "nodemailer-mailgun-transport": "^2.0.3",
     "pdfkit": "^0.13.0",
     "pdfmake": "^0.2.2",
     "qrcode": "^1.4.4",
-    "sequelize": "^6.12.0-alpha.1",
+    "sequelize": "^7.0.0-alpha.2",
     "sqlite3": "^5.0.0",
     "uid-generator": "^2.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.3.0",
+    "eslint": "^8.5.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.24.2",
-    "prettier": "^2.4.1"
+    "prettier": "^2.5.1"
   }
 }
