@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 const Users = db.users;
 const Staff = db.staff;
+const ShiftInfo = db.shiftInfo;
 
 const userExists = async (username) => {
   const user = await Users.findByPk(username);
@@ -54,23 +55,34 @@ exports.getInfo = async (userId) => {
   const user = await Users.findByPk(userId);
   const shiftNr = user.shifts;
   const name = user.nickname;
+
   let role;
+  const shifts = [];
 
   if (user.role !== "boss") {
-    const shiftInfo = await Staff.findOne({
+    const shiftInfo = await Staff.findAll({
       where: {
         userId,
-        shiftNr,
         year: new Date().getFullYear(),
       },
     });
-    role = shiftInfo.role;
-  } else role = "boss";
+    shiftInfo.forEach((shift) => {
+      shifts.push(shift.shiftNr);
+      if (shift.shiftNr === shiftNr) role = shift.role;
+    });
+  } else {
+    const allShifts = await ShiftInfo.findAll();
+    allShifts.forEach((shift) => {
+      shifts.push(shift.id);
+    });
+    role = "boss";
+  }
 
   return {
     name,
     shiftNr,
     role,
+    shifts,
   };
 };
 
@@ -101,4 +113,14 @@ exports.create = async (req, res) => {
   const creationSuccessful = await createUser(username, password);
   if (!creationSuccessful) res.status(400).end();
   else res.status(201).end();
+};
+
+exports.getShifts = async (userId) => {
+  const shiftInfo = await Staff.findAll({
+    where: {
+      userId,
+      year: new Date().getFullYear(),
+    },
+  });
+  console.log(shiftInfo);
 };

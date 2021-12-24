@@ -107,4 +107,9 @@ router.post("/shift/validate", async (req, res) => {
   else res.status(403).json({ role });
 });
 
+router.post("/shifts/get", async (req, res) => {
+  const shifts = await user.getShifts();
+  res.json(shifts);
+});
+
 module.exports = router;
