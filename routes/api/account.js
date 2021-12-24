@@ -80,7 +80,8 @@ router.post("/email/update", async (req, res) => {
 
 router.post("/info", async (req, res) => {
   const userInfo = await user.getInfo(req.user.id);
-  res.json(userInfo);
+  if (userInfo) return res.json(userInfo);
+  res.sendStatus(403);
 });
 
 router.post("/shift/swap", async (req, res) => {

@@ -59,17 +59,20 @@ exports.getInfo = async (userId) => {
   let role;
   const shifts = [];
 
+  const now = new Date();
+  let year = now.getFullYear();
+  if (now.getMonth() === 11) ++year;
+
   if (user.role !== "boss") {
     const shiftInfo = await Staff.findAll({
-      where: {
-        userId,
-        year: new Date().getFullYear(),
-      },
+      where: { userId, year },
     });
+    if (!shiftInfo) return null;
     shiftInfo.forEach((shift) => {
       shifts.push(shift.shiftNr);
       if (shift.shiftNr === shiftNr) role = shift.role;
     });
+    if (!shifts.includes(shiftNr)) return null;
   } else {
     const allShifts = await ShiftInfo.findAll();
     allShifts.forEach((shift) => {
@@ -116,11 +119,10 @@ exports.create = async (req, res) => {
 };
 
 exports.getShifts = async (userId) => {
-  const shiftInfo = await Staff.findAll({
-    where: {
-      userId,
-      year: new Date().getFullYear(),
-    },
-  });
+  const now = new Date();
+  let year = now.getFullYear();
+  if (now.getMonth() === 11) ++year;
+
+  const shiftInfo = await Staff.findAll({ where: { userId, year } });
   console.log(shiftInfo);
 };
