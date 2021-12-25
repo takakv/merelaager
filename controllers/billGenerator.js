@@ -25,8 +25,8 @@ exports.getName = (child) => {
   return `arve_${name}.pdf`;
 };
 
-exports.generatePDF = async (campers, billNr, regCampers) => {
-  const name = campers[0].contactName.replace(/ /g, "_").toLowerCase();
+exports.generatePDF = async (campers, contact, billNr, regCampers) => {
+  const name = contact.name.replace(/ /g, "_").toLowerCase();
   let doc = new PDFDoc(billMeta);
 
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
@@ -49,12 +49,12 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
     .text(campers[0].contactName, sideMargin, contentTop);
   doc.fontSize(11).font("Helvetica").text(campers[0].contactEmail);
 
-  let firstShift = "4v";
+  let firstShift = "5v";
   campers.forEach((camper) => {
-    if (camper.isRegistered && camper.shift < firstShift)
-      firstShift = camper.shift;
+    if (camper.isRegistered && camper.shiftNr < firstShift)
+      firstShift = camper.shiftNr;
   });
-  const deadline = shiftData[firstShift]["deadline"];
+  const deadline = Date.now(); // shiftData[firstShift]["deadline"];
 
   // Bill details
   const billTop = contentTop + 80;
@@ -132,55 +132,61 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.fontSize(10).font("Helvetica");
 
   const counters = {
-    sv1: {
-      txt: "8päevane vahetus Tallinna lapsele",
+    svOld: {
+      txt: "6päevane vahetus vanale olijale",
       count: 0,
-      price: 130,
+      price: 80,
     },
-    sv2: {
+    svNew: {
+      txt: "6päevane vahetus uuele tulijale",
+      count: 0,
+      price: 100,
+    },
+    mvOld: {
       txt: "8päevane vahetus vanale olijale",
+      count: 0,
+      price: 120,
+    },
+    mvNew: {
+      txt: "8päevane vahetus uuele tulijale",
       count: 0,
       price: 140,
     },
-    sv3: {
-      txt: "8päevane vahetus uuele tulijale",
-      count: 0,
-      price: 150,
-    },
-    lv1: {
-      txt: "12päevane vahetus Tallinna lapsele",
-      count: 0,
-      price: 220,
-    },
-    lv2: {
+    lvOld: {
       txt: "12päevane vahetus vanale olijale",
       count: 0,
-      price: 230,
+      price: 200,
     },
-    lv3: {
+    lvNew: {
       txt: "12päevane vahetus uuele tulijale",
       count: 0,
-      price: 240,
+      price: 220,
     },
     br: {
       txt: "Broneerimistasu",
       count: 0,
-      price: 50,
+      price: 100,
     },
   };
+
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
-    if (campers[i].shift === "1v") {
-      if (campers[i].city.toLowerCase().trim() === "tallinn")
-        ++counters.sv1.count;
-      else if (campers[i].isOld) ++counters.sv2.count;
-      else ++counters.sv3.count;
-    } else {
-      if (campers[i].city.toLowerCase().trim() === "tallinn")
-        ++counters.lv1.count;
-      else if (campers[i].isOld) ++counters.lv2.count;
-      else ++counters.lv3.count;
+
+    switch (campers[i].shiftNr) {
+      case 1:
+        if (campers[i].isOld) ++counters.mvOld.count;
+        else ++counters.mvNew.count;
+        break;
+      case 3:
+        if (campers[i].isOld) ++counters.svOld.count;
+        else ++counters.svNew.count;
+        break;
+      default:
+        if (campers[i].isOld) ++counters.lvOld.count;
+        else ++counters.lvNew.count;
+        break;
     }
+
     ++counters.br.count;
   }
 
@@ -222,12 +228,9 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
     ++processedCampers;
-    doc.text(
-      `${campers[i].name} ${shiftData[campers[i].shift].id.slice(0, 4)}`,
-      {
-        continued: true,
-      }
-    );
+    doc.text(`${campers[i].name} ${campers[i].shiftNr}v`, {
+      continued: true,
+    });
     if (processedCampers !== regCampers) doc.text(", ", { continued: true });
   }
 

@@ -27,26 +27,34 @@ if (process.env.UNLOCK === "true") {
   }, eta);
 }
 
+const prices = {
+  1: 240,
+  2: 320,
+  3: 200,
+  4: 320,
+  5: 320,
+};
+
 const openSlots = {
   1: {
-    resBoys: 20,
-    resGirls: 20,
+    M: 0,
+    F: 0,
   },
   2: {
-    resBoys: 20,
-    resGirls: 20,
+    M: 20,
+    F: 20,
   },
   3: {
-    resBoys: 20,
-    resGirls: 20,
+    M: 20,
+    F: 20,
   },
   4: {
-    resBoys: 16,
-    resGirls: 24,
+    M: 16,
+    F: 24,
   },
   5: {
-    resBoys: 20,
-    resGirls: 20,
+    M: 20,
+    F: 20,
   },
 };
 
@@ -65,7 +73,7 @@ const getBillNr = async () => {
   if (previousBill) {
     return previousBill.billNr + 1;
   }
-  return 1;
+  return 21001;
 };
 
 const daysInMonth = (m, y) => {
@@ -143,7 +151,7 @@ const addChild = async (name, gender) => {
   return res.id;
 };
 
-const getData = async (src, i) => {
+const registerOne = async (src, i, billNr) => {
   let gender, birthday;
 
   const idCode = src.idCode[i];
@@ -176,12 +184,13 @@ const getData = async (src, i) => {
 
   const isOld = src.isNew[i] !== "true";
 
-  return {
+  const regObj = {
     childId,
     shiftNr,
     idCode,
     birthday,
     isOld,
+    isRegistered: false,
     tsSize: src.tsSize[i],
     addendum: src.addendum[i],
     road: src.road[i],
@@ -193,35 +202,94 @@ const getData = async (src, i) => {
     contactEmail: src.contactEmail,
     backupTel: src.backupTel,
   };
+
+  const regCount = await Registrations.count({
+    where: {
+      shiftNr,
+      isRegistered: true,
+    },
+    include: {
+      model: Children,
+      where: { gender },
+    },
+  });
+
+  if (regCount < openSlots[shiftNr][gender]) {
+    regObj.isRegistered = true;
+    regObj.billNr = billNr;
+  }
+
+  const [data, created] = await Registrations.findOrCreate({
+    where: { childId, shiftNr },
+    defaults: regObj,
+  });
+
+  return {
+    ok: created,
+    data: {
+      isRegistered: created ? regObj.isRegistered : data.isRegistered,
+      gender,
+      name,
+      isOld,
+      shiftNr,
+      message: created ? "" : "Laps on juba vahetuse nimekirjas",
+    },
+  };
 };
 
-const register = async (req, res) => {
+const registerAll = async (req, res) => {
   if (!unlocked) return res.status(409).send("Vara veel!");
 
   console.log(req.body);
   const childCount = parseInt(req.body.childCount);
   if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
 
+  const billNr = await getBillNr();
+
+  let regCount = 0;
   const childList = [];
+  const errorList = [];
 
   for (let i = 0; i < childCount; ++i) {
     let data;
     try {
-      data = await getData(req.body, i);
+      data = await registerOne(req.body, i, billNr);
     } catch (e) {
       console.error(e);
       return false;
     }
-    if (!data) return false;
-    childList.push(data);
+
+    if (data.ok) {
+      childList.push(data.data);
+      if (data.data.isRegistered) ++regCount;
+    } else errorList.push(data.data);
   }
 
-  console.log(childList);
+  if (regCount === 0) return;
+  const price = calculatePrice(childList);
+
+  const contact = {
+    name: req.body.contactName,
+  };
+
+  if (regCount) {
+    res.redirect("../edu/");
+    const billName = await billGenerator.generatePDF(
+      childList,
+      contact,
+      billNr,
+      regCount
+    );
+    // mailer(campers, price, billName, regCount, billNr);
+  } else {
+    res.redirect("../reserv/");
+    // mailService.sendFailureMail(campers);
+  }
 };
 
 exports.create = async (req, res) => {
-  await register(req, res);
-  return res.sendStatus(200);
+  await registerAll(req, res);
+  return;
 
   // Get the children.
   const childCount = parseInt(req.body["childCount"]);
@@ -296,13 +364,12 @@ const mailer = (campers, price, pdfName, regCount, billNr) => {
   mailService.sendConfirmationMail(campers, price, pdfName, regCount, billNr);
 };
 
-const calculatePrice = (campers) => {
+const calculatePrice = (regList) => {
   let price = 0;
-  campers.forEach((camper) => {
+  regList.forEach((camper) => {
     if (!camper.isRegistered) return;
-    price += shiftData[camper.shift].price;
-    if (camper.city.toLowerCase().trim() === "tallinn") price -= 20;
-    else if (camper.isOld) price -= 10;
+    price += prices[camper.shiftNr];
+    if (camper.isOld) price -= 20;
   });
   return price;
 };

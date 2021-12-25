@@ -51,10 +51,6 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: "Eesti",
       },
-      isEmsa: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
       billNr: {
         type: DataTypes.INTEGER,
       },
