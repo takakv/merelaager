@@ -130,7 +130,7 @@ const getCamper = async (id, queryUser) => {
     };
 
   // Evaluate access rights.
-  const shift = parseInt(camper.shift[0]);
+  const shift = parseInt(camper.shiftNr);
   if (!(await approveShift(queryUser, shift))) {
     const message = "User not authorised for the shift";
     console.log(message);
@@ -142,7 +142,7 @@ const getCamper = async (id, queryUser) => {
   }
 
   return {
-    code: 400,
+    code: 200,
     message: "",
     ok: true,
     data: camper,
@@ -163,10 +163,10 @@ exports.remove = async (req, res) => {
 
 exports.print = async (shiftNr) => {
   const children = await Registrations.findAll({
-    order: [["name", "ASC"]],
-    where: {
-      shift: `${shiftNr}v`,
-      isRegistered: true,
+    where: { shiftNr, isRegistered: true },
+    include: {
+      model: Children,
+      order: [["name", "ASC"]],
     },
   });
 
@@ -176,14 +176,14 @@ exports.print = async (shiftNr) => {
 
   children.forEach((child) => {
     childrenInfo.push({
-      name: child.name,
-      gender: child.gender,
+      name: child.child.name,
+      gender: child.child.gender,
       birthday: child.birthday,
       isOld: child.isOld,
       tsSize: child.tsSize,
       contactName: child.contactName.trim(),
-      contactEmail: child.contactEmail,
-      contactNr: child.contactNumber,
+      contactEmail: child.contactEmail.trim(),
+      contactNr: child.contactNumber.trim(),
     });
   });
 
