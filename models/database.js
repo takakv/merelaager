@@ -9,9 +9,7 @@ const dbname = process.env.MYSQL_DB;
 
 const sequelize = new Sequelize(
   `mysql://${user}:${pass}@${host}:3306/${dbname}`,
-  {
-    logging: false,
-  }
+  { logging: false }
 );
 
 sequelize

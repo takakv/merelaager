@@ -21,7 +21,7 @@ router.get("/", (req, res, next) => {
 
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
-const campers = require("../controllers/registrationController");
+const campers = require("../controllers/registration/registrationController");
 
 router.post("/register/", urlEncParser, campers.create);
 

@@ -107,17 +107,14 @@ const getFirstName = (firstNames, gender) => {
   return firstNames[gender][Math.floor(Math.random() * count)];
 };
 
-const getData = (names, simCount, lName) => {
+const getData = (names, simCount, lName, gender) => {
   let res = "";
   let name;
 
   for (let shiftNr = 1; shiftNr <= 5; ++shiftNr) {
     for (let i = 0; i < simCount; ++i) {
-      name = `${getFirstName(names.first, "M")} ${lName}`;
-      res += getSingle(name, shiftNr, "M");
-
-      name = `${getFirstName(names.first, "F")} ${lName}`;
-      res += getSingle(name, shiftNr, "F");
+      name = `${getFirstName(names.first, gender)} ${lName}`;
+      res += getSingle(name, shiftNr, gender);
     }
   }
 
@@ -132,7 +129,7 @@ const getMeta = (simCount, fNames, lName) => {
   res += `contactName=${encodeURIComponent(`${fName} ${lName}`)}` + separator;
   res += `contactNumber=%2B372 xxx` + separator;
   res += `contactEmail=${encodeURIComponent(`${fName}@${lName}`)}` + separator;
-  res += `childCount=${simCount * 2 * 5}` + separator;
+  res += `childCount=${simCount * 5}` + separator;
   res += `noEmail=true`;
   return res;
 };
@@ -180,24 +177,27 @@ exports.generateData = () => {
   const names = JSON.parse(fs.readFileSync("./data/names.json", "utf-8"));
   const path = "./data/files/regTest.jmx";
 
-  fs.unlinkSync(path);
+  if (fs.existsSync(path)) fs.unlinkSync(path);
   const stream = fs.createWriteStream(path, { flags: "a" });
 
   const count = 22;
 
   stream.write(headerData());
 
-  for (let i = 1; i <= count; ++i) {
-    const simCount = 1; //Math.floor(300 / count / (2 * 5));
-    const lastNames = names.last;
-    const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  const genders = ["M", "F"];
+  genders.forEach((gender) => {
+    for (let i = 1; i <= count; ++i) {
+      const simCount = 1; //Math.floor(300 / count / (2 * 5));
+      const lastNames = names.last;
+      const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
-    let data = getData(names, simCount, lName);
-    data += getMeta(simCount, names.first, lName);
+      let data = getData(names, simCount, lName, gender);
+      data += getMeta(simCount, names.first, lName);
 
-    data = fillerData(data, i);
-    stream.write(data);
-  }
+      data = fillerData(data, i);
+      stream.write(data);
+    }
+  });
 
   stream.write(footerData());
 

@@ -1,0 +1,27 @@
+const unlockTime = new Date(Date.parse("01 Jan 2022 11:59:50 UTC"));
+const now = new Date().getTime();
+const eta = unlockTime - now;
+
+const prices = {
+  1: 240,
+  2: 320,
+  3: 200,
+  4: 320,
+  5: 320,
+};
+
+const openSlots = {
+  1: { M: 19, F: 19 },
+  2: { M: 13, F: 17 },
+  3: { M: 19, F: 19 },
+  4: { M: 12, F: 20 },
+  5: { M: 18, F: 18 },
+};
+
+module.exports = {
+  unlockTime,
+  now,
+  eta,
+  prices,
+  openSlots,
+};
