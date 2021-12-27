@@ -8,7 +8,10 @@ const requireShiftBoss = async (req, res, next) => {
 
   if (user.role === "boss") return next();
 
-  const year = new Date().getUTCFullYear();
+  const now = new Date();
+  let year = now.getUTCFullYear();
+  if (now.getMonth() === 11) ++year;
+
   const result = await ShiftStaff.findOne({
     where: {
       userId: user.id,
