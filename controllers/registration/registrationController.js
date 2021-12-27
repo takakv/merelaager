@@ -9,7 +9,7 @@ const meta = require("./meta");
 
 const mailService = new MailService();
 
-const DEBUG = true;
+const DEBUG = false;
 
 const Registrations = db.registrations;
 const Children = db.child;
@@ -161,14 +161,7 @@ const registerOne = async (regObj, billNr) => {
   });
   */
 
-  let regCount;
-  try {
-    regCount = availableSlots[shiftNr][gender];
-  } catch (e) {
-    console.error(e);
-    console.log(regObj);
-    return null;
-  }
+  const regCount = availableSlots[shiftNr][gender];
 
   if (regCount > 0) {
     --availableSlots[shiftNr][gender];
@@ -179,13 +172,13 @@ const registerOne = async (regObj, billNr) => {
   let childId = await fetchChild(name);
   if (!childId) {
     childId = await addChild(name, gender);
-    regObj.childId = childId;
     if (!childId) {
       console.log("Error creating child");
       return false;
     }
   }
 
+  regObj.childId = childId;
   delete regObj.name;
   delete regObj.gender;
 
@@ -250,16 +243,61 @@ const prepChild = (data, i) => {
   return regObj;
 };
 
+// This is only for API testing.
+// There will always be arrays from the website.
+const prepSingle = (data) => {
+  let gender, birthday;
+
+  const idCode = data.idCode;
+
+  if (idCode) {
+    const idData = parser.validateIdCode(idCode);
+    if (!idData) return false;
+    gender = idData.gender;
+    birthday = idData.birthday;
+  } else {
+    gender = data.gender;
+    if (gender !== "M" && gender !== "F") return false;
+    birthday = data.bDay;
+  }
+
+  const name = data.name;
+  if (!name) return false;
+
+  const shiftNr = parseInt(data.shiftNr);
+  if (isNaN(shiftNr) || (shiftNr < 1 && shiftNr > 5)) return false;
+
+  const isOld = data.isNew !== "true";
+
+  const regObj = {
+    shiftNr,
+    name,
+    idCode,
+    gender,
+    birthday,
+    isOld,
+    isRegistered: false,
+    tsSize: data.tsSize,
+    addendum: data.addendum ? data.addendum : null,
+    road: data.road,
+    city: data.city,
+    county: data.county,
+    country: data.country ? data.country : "Eesti",
+  };
+
+  return regObj;
+};
+
 const prepareAllChildren = async (data, childCount) => {
   const childList = [];
   const errorList = [];
 
-  const billNr = 2021;
+  const billNr = billNumber++;
   let regCount = 0;
 
   for (let i = 0; i < childCount; ++i) {
     let res;
-    let regObj = prepChild(data, i);
+    let regObj = childCount > 1 ? prepChild(data, i) : prepSingle(data);
 
     regObj.contactName = data.contactName;
     regObj.contactEmail = data.contactEmail;

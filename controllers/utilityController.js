@@ -27,8 +27,8 @@ const getIdCode = (gender) => {
   return idCode;
 };
 
-const fillerData = (data, index) => {
-  return `      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group ${index}" enabled="true">
+const fillerData = (data, shift, gender, index) => {
+  return `      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group ${shift}-${gender}-${index}" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -107,16 +107,16 @@ const getFirstName = (firstNames, gender) => {
   return firstNames[gender][Math.floor(Math.random() * count)];
 };
 
-const getData = (names, simCount, lName, gender) => {
+const getData = (names, simCount, lName, gender, shiftNr) => {
   let res = "";
   let name;
 
-  for (let shiftNr = 1; shiftNr <= 5; ++shiftNr) {
-    for (let i = 0; i < simCount; ++i) {
-      name = `${getFirstName(names.first, gender)} ${lName}`;
-      res += getSingle(name, shiftNr, gender);
-    }
+  // for (let shiftNr = 1; shiftNr <= 5; ++shiftNr) {
+  for (let i = 0; i < simCount; ++i) {
+    name = `${getFirstName(names.first, gender)} ${lName}`;
+    res += getSingle(name, shiftNr, gender);
   }
+  //}
 
   return res;
 };
@@ -129,7 +129,7 @@ const getMeta = (simCount, fNames, lName) => {
   res += `contactName=${encodeURIComponent(`${fName} ${lName}`)}` + separator;
   res += `contactNumber=%2B372 xxx` + separator;
   res += `contactEmail=${encodeURIComponent(`${fName}@${lName}`)}` + separator;
-  res += `childCount=${simCount * 5}` + separator;
+  res += `childCount=${simCount}` + separator;
   res += `noEmail=true`;
   return res;
 };
@@ -184,19 +184,23 @@ exports.generateData = () => {
 
   stream.write(headerData());
 
+  const shifts = [1, 2, 3, 4, 5];
   const genders = ["M", "F"];
-  genders.forEach((gender) => {
-    for (let i = 1; i <= count; ++i) {
-      const simCount = 1; //Math.floor(300 / count / (2 * 5));
-      const lastNames = names.last;
-      const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
-      let data = getData(names, simCount, lName, gender);
-      data += getMeta(simCount, names.first, lName);
+  shifts.forEach((shift) => {
+    genders.forEach((gender) => {
+      for (let i = 1; i <= count; ++i) {
+        const simCount = 1; //Math.floor(300 / count / (2 * 5));
+        const lastNames = names.last;
+        const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
-      data = fillerData(data, i);
-      stream.write(data);
-    }
+        let data = getData(names, simCount, lName, gender, shift);
+        data += getMeta(simCount, names.first, lName);
+
+        data = fillerData(data, shift, gender, i);
+        stream.write(data);
+      }
+    });
   });
 
   stream.write(footerData());
