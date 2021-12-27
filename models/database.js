@@ -8,7 +8,10 @@ const pass = process.env.MYSQL_PWD;
 const dbname = process.env.MYSQL_DB;
 
 const sequelize = new Sequelize(
-  `mysql://${user}:${pass}@${host}:3306/${dbname}`
+  `mysql://${user}:${pass}@${host}:3306/${dbname}`,
+  {
+    logging: false,
+  }
 );
 
 sequelize
@@ -21,8 +24,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.registrations = require("./registration")(sequelize);
 db.users = require("./user")(sequelize);
-db.shiftCampers = require("./shift")(sequelize);
-db.shiftData = require("./newShift")(sequelize);
+db.shiftData = require("./shiftData")(sequelize);
 db.child = require("./child")(sequelize);
 db.team = require("./team")(sequelize);
 db.suToken = require("./suToken")(sequelize);
