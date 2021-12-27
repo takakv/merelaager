@@ -83,11 +83,6 @@ module.exports = (sequelize) => {
         defaultValue: 0,
       },
     },
-    {
-      tableName:
-        process.env.NODE_ENV === "prod"
-          ? "registrations"
-          : "test_registrations",
-    }
+    { tableName: "registrations" }
   );
 };

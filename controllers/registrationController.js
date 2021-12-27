@@ -11,7 +11,7 @@ const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 const mailService = new MailService();
 
 const Registrations = db.registrations;
-const Children = db.newChildren;
+const Children = process.env.TEST === db.child;
 
 const unlockTime = new Date(Date.parse("01 Jan 2022 11:59:50 UTC"));
 const now = new Date().getTime();
@@ -37,8 +37,8 @@ const prices = {
 
 const openSlots = {
   1: {
-    M: 0,
-    F: 0,
+    M: 20,
+    F: 20,
   },
   2: {
     M: 20,
@@ -56,14 +56,6 @@ const openSlots = {
     M: 20,
     F: 20,
   },
-};
-
-const globalRegCount = {
-  "1v": {},
-  "2v": {},
-  "3v": {},
-  "4v": {},
-  "5v": {},
 };
 
 const getBillNr = async () => {
@@ -192,11 +184,11 @@ const registerOne = async (src, i, billNr) => {
     isOld,
     isRegistered: false,
     tsSize: src.tsSize[i],
-    addendum: src.addendum[i],
+    addendum: src.addendum ? src.addendum[i] : null,
     road: src.road[i],
     city: src.city[i],
     county: src.county[i],
-    country: src.country[i],
+    country: src.country ? src.country[i] : "Eesti",
     contactName: src.contactName,
     contactNumber: src.contactNumber,
     contactEmail: src.contactEmail,
@@ -242,7 +234,7 @@ const registerAll = async (req, res) => {
 
   console.log(req.body);
   const childCount = parseInt(req.body.childCount);
-  if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
+  if (isNaN(childCount) || childCount < 1) return false; // || childCount > 4) return false;
 
   const billNr = await getBillNr();
 
@@ -265,103 +257,51 @@ const registerAll = async (req, res) => {
     } else errorList.push(data.data);
   }
 
-  if (regCount === 0) return;
+  // console.log("Registered the children");
   const price = calculatePrice(childList);
-
   const contact = {
     name: req.body.contactName,
+    mail: req.body.contactEmail,
   };
 
   if (regCount) {
-    res.redirect("../edu/");
+    // res.redirect("../edu/");
+    res.sendStatus(200);
+    // console.log("Start PDF generation");
     const billName = await billGenerator.generatePDF(
       childList,
       contact,
       billNr,
       regCount
     );
-    // mailer(campers, price, billName, regCount, billNr);
+    // console.log("PDF generated");
+    // console.log("Start sending mail");
+    if (!req.body.noEmail)
+      mailer(childList, contact, price, billName, regCount, billNr);
+    else console.log("No email");
+    // console.log("Mail sent");
   } else {
-    res.redirect("../reserv/");
-    // mailService.sendFailureMail(campers);
+    res.sendStatus(200);
+    // res.redirect("../reserv/");
+    if (!req.body.noEmail) mailService.sendFailureMail(childList, contact);
+    else console.log("No email");
   }
 };
 
 exports.create = async (req, res) => {
   await registerAll(req, res);
-  return;
-
-  // Get the children.
-  const childCount = parseInt(req.body["childCount"]);
-  const campers = [];
-  const errors = [];
-
-  let regCount = 0;
-  const billNr = await getBillNr();
-
-  // Number of distinct shifts in a single registration.
-  // This avoids async calls returning the wrong number of slots.
-  const distinctShifts = [];
-  // await updateDbSlotData();
-
-  for (let i = 0; i < childCount; ++i) {
-    const shift = campers[i].shift;
-    const gender = campers[i].gender;
-
-    if (distinctShifts.indexOf(`${shift}+${gender}`) === -1) {
-      globalRegCount[shift][gender] = await Registrations.count({
-        where: {
-          shift: shift,
-          gender: gender,
-          isRegistered: true,
-        },
-      });
-      distinctShifts.push(`${shift}+${gender}`);
-    }
-
-    const shiftNr = parseInt(campers[i].shift[0]);
-
-    if (
-      (gender === "Poiss" &&
-        globalRegCount[shift][gender] < openSlots[shiftNr].resBoys) ||
-      (gender === "Tüdruk" &&
-        globalRegCount[shift][gender] < openSlots[shiftNr].resGirls)
-    ) {
-      campers[i].isRegistered = true;
-      campers[i].billNr = billNr;
-
-      ++globalRegCount[shift][gender];
-      ++regCount;
-    }
-
-    try {
-      await Registrations.create(campers[i]);
-    } catch (e) {
-      console.error(e);
-      return res
-        .status(500)
-        .send(
-          "Tekkis ootamatu tõrge. Palun võtke kohe meiega ühendust aadressil webmaster@merelaager.ee."
-        );
-    }
-  }
-
-  const price = calculatePrice(campers);
-
-  if (regCount) {
-    res.redirect("../edu/");
-    const billName = await billGenerator.generatePDF(campers, billNr, regCount);
-    mailer(campers, price, billName, regCount, billNr);
-  } else {
-    res.redirect("../reserv/");
-    mailService.sendFailureMail(campers);
-  }
-
-  axios.post(process.env.URL, openSlots);
+  // axios.post(process.env.URL, openSlots);
 };
 
-const mailer = (campers, price, pdfName, regCount, billNr) => {
-  mailService.sendConfirmationMail(campers, price, pdfName, regCount, billNr);
+const mailer = (campers, contact, price, pdfName, regCount, billNr) => {
+  mailService.sendConfirmationMail(
+    campers,
+    contact,
+    price,
+    pdfName,
+    regCount,
+    billNr
+  );
 };
 
 const calculatePrice = (regList) => {

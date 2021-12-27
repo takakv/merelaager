@@ -22,25 +22,25 @@ db.sequelize = sequelize;
 db.registrations = require("./registration")(sequelize);
 db.users = require("./user")(sequelize);
 db.shiftCampers = require("./shift")(sequelize);
-db.children = require("./child")(sequelize);
 db.shiftData = require("./newShift")(sequelize);
-db.newChildren = require("./newChild")(sequelize);
+db.child = require("./child")(sequelize);
 db.team = require("./team")(sequelize);
 db.suToken = require("./suToken")(sequelize);
 db.staff = require("./staff")(sequelize);
 db.shiftInfo = require("./shiftInfo")(sequelize);
 db.records = require("./record")(sequelize);
 
-db.newChildren.hasMany(db.shiftData);
-db.shiftData.belongsTo(db.newChildren);
+db.child.hasMany(db.shiftData);
+db.shiftData.belongsTo(db.child);
+
 db.team.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.team);
 
 db.users.hasMany(db.staff);
 db.staff.belongsTo(db.users);
 
-db.newChildren.hasMany(db.registrations);
-db.registrations.belongsTo(db.newChildren);
+db.child.hasMany(db.registrations);
+db.registrations.belongsTo(db.child);
 
 db.shiftInfo.hasMany(db.registrations, {
   foreignKey: "shiftNr",
@@ -58,7 +58,7 @@ db.shiftInfo.belongsTo(db.users, {
   foreignKey: "bossId",
 });
 
-db.newChildren.hasMany(db.records);
-db.records.belongsTo(db.newChildren);
+db.child.hasMany(db.records);
+db.records.belongsTo(db.child);
 
 module.exports = db;

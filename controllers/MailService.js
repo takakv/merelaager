@@ -5,36 +5,46 @@ const fs = require("fs");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
-const generateHTML = (campers, price, regCount) => {
-  const shifts = [];
-  let response = "<b>Täname, et valisite merelaagri!</b>" + "<ul>";
+const registered = (campers, shifts) => {
+  let response = "<ul>";
+
   for (let i = 0; i < campers.length; ++i) {
-    if (!shifts.includes(campers[i].shift)) shifts.push(campers[i].shift);
-    if (!campers[i].isRegistered) continue;
-    response += `<li>${campers[i].name} (${
-      shiftData[campers[i].shift].id
-    })</li>`;
+    const camper = campers[i];
+
+    if (!shifts.includes(camper.shiftNr)) shifts.push(camper.shiftNr);
+    if (!camper.isRegistered) continue;
+    response += `<li>${camper.name} (${camper.shiftNr}. vahetus)</li>`;
   }
+
   response += "</ul>";
   response += "<p>on registreeritud.</p>";
-  if (regCount !== campers.length) {
-    response += "<ul>";
-    for (let i = 0; i < campers.length; ++i) {
-      if (campers[i].isRegistered) continue;
-      response += `<li>${campers[i].name} (${
-        shiftData[campers[i].shift].id
-      })</li>`;
-    }
-    response += "</ul>";
-    response +=
-      "<p>on lisatud reservnimekirja. Kui põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust. " +
-      "Palun võtke vahetuse juhatajaga ühendust, kui soovite registreerimise tühistada.</p>";
+
+  return response;
+};
+
+const nonRegistered = (campers) => {
+  let response = "<ul>";
+
+  for (let i = 0; i < campers.length; ++i) {
+    const camper = campers[i];
+    if (camper.isRegistered) continue;
+    response += `<li>${camper.name} (${camper.shiftNr}. vahetus)</li>`;
   }
+
+  response += "</ul>";
   response +=
+    "<p>on lisatud reservnimekirja. Kui põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust. " +
+    "Palun võtke vahetuse juhatajaga ühendust, kui soovite registreerimise tühistada.</p>";
+
+  return response;
+};
+
+const payment = (regCount, price) => {
+  let response =
     "<p>Palume üle kanda ka koha broneerimise tasu (või kogu summa). " +
     "Laagrikoht saab lõpliku kinnituse, kui makse on meile laekunud kolme päeva jooksul. Makseteatise leiate manusest.</p>";
   response += `<p>Tasuda: ${
-    50 * regCount
+    100 * regCount
   } €. Kogusumma (k.a broneerimistasu): ${price} €.`;
   response +=
     "<p>MTÜ Noorte Mereklubi" +
@@ -44,7 +54,12 @@ const generateHTML = (campers, price, regCount) => {
     "<br><b>Kindlasti märkige selgitusse lapse nimi ja vahetus!</b></p>";
   response +=
     "<p>Kui makse pole kolme päeva jooksul meile laekunud, tõstame lapse reservnimekirja.</p>";
-  response += "<p>Parimate soovidega</p>";
+
+  return response;
+};
+
+const footer = (shifts) => {
+  let response = "<p>Parimate soovidega</p>";
   response += "<p>";
   for (let i = 0; i < shifts.length; ++i) {
     response += `${shiftData[shifts[i]].name} (${
@@ -56,15 +71,38 @@ const generateHTML = (campers, price, regCount) => {
   response +=
     "<small>Tegu on automaatvastusega, palume sellele meilile mitte vastata. " +
     "Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</small>";
+
+  return response;
+};
+
+const generateHTML = (campers, price, regCount) => {
+  const shifts = [];
+  let response = "<b>Täname, et valisite merelaagri!</b>";
+
+  // Registered campers.
+  response += registered(campers, shifts);
+
+  // Non-registered campers.
+  if (regCount !== campers.length) response += nonRegistered(campers);
+
+  // Payment and Price.
+  response += payment(regCount, price);
+
+  // Footer.
+  response += footer(shifts);
+
   return response;
 };
 
 const generateFailureHTML = (campers) => {
   const shifts = [];
+
   for (let i = 0; i < campers.length; ++i) {
-    if (!shifts.includes(campers[i].shift)) shifts.push(campers[i].shift);
+    if (!shifts.includes(campers[i].shiftNr)) shifts.push(campers[i].shiftNr);
   }
+
   let response = "<b>Täname, et valisite merelaagri!</b>";
+
   if (campers.length === 1)
     response +=
       "<p>Kahjuks on vahetuse kohad juba täis. Oleme lapse registreerinud reservnimekirja. " +
@@ -73,18 +111,8 @@ const generateFailureHTML = (campers) => {
     response +=
       "<p>Kahjuks on kõik soovitud kohad juba täis. Oleme registreerinud lapsed reservnimekirja. " +
       "Kui põhinimekirjas mõni koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>";
-  response += "<p>Parimate soovidega</p>";
-  response += "<p>";
-  for (let i = 0; i < shifts.length; ++i) {
-    response += `${shiftData[shifts[i]].name} (${
-      shiftData[shifts[i]]["email"]
-    }, tel. ${shiftData[shifts[i]].phone})`;
-    if (i + 1 !== shifts.length) response += ", ";
-  }
-  response += "</p>";
-  response +=
-    "<small>Tegu on automaatvastusega, palume sellele meilile mitte vastata. " +
-    "Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</small>";
+
+  response += footer(shifts);
   return response;
 };
 
@@ -128,7 +156,7 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
   response +=
     `${campers[0].contactName}, ${campers[0].contactEmail}, tel: ${campers[0].contactNumber}` +
     `${campers[0].backupTel ? " (" + campers[0].backupTel + "), " : ", "}` +
-    `Arve nr ${billNr}, hind: ${price}, bronnitasu: ${regCount * 50}.`;
+    `Arve nr ${billNr}, hind: ${price}, bronnitasu: ${regCount * 100}.`;
   return response;
 };
 
@@ -145,13 +173,13 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendConfirmationMail(campers, price, pdfName, regCount, billNr) {
+  sendConfirmationMail(campers, contact, price, pdfName, regCount, billNr) {
     return this._transporter.sendMail({
       from: {
-        name: "Broneerimine - merelaager",
+        name: "Merelaager",
         address: "bronn@merelaager.ee",
       },
-      to: campers[0].contactEmail,
+      to: contact.mail,
       subject: "Broneeringu kinnitus",
       html: generateHTML(campers, price, regCount),
       attachments: [
@@ -164,13 +192,13 @@ class MailService {
     });
   }
 
-  sendFailureMail(campers) {
+  sendFailureMail(campers, contact) {
     return this._transporter.sendMail({
       from: {
-        name: "Broneerimine - merelaager",
+        name: "Merelaager",
         address: "bronn@merelaager.ee",
       },
-      to: campers[0].contactEmail,
+      to: contact.mail,
       subject: "Reservnimekirja kandmise teade",
       html: generateFailureHTML(campers),
     });
@@ -180,7 +208,7 @@ class MailService {
     const link = `https://merelaager.ee/api/su/${token}/`;
     return this._transporter.sendMail({
       from: {
-        name: "Süsteem - merelaager",
+        name: "Merelaager - süsteem",
         address: "webmaster@merelaager.ee",
       },
       to: email,

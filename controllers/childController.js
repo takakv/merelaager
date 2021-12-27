@@ -2,7 +2,7 @@ const db = require("../models/database");
 
 const Children = db.children;
 const Registrations = db.registrations;
-const newChildren = db.newChildren;
+const newChildren = db.child;
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.

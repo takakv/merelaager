@@ -31,7 +31,9 @@ exports.generatePDF = async (campers, contact, billNr, regCampers) => {
 
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
 
-  const writeStream = fs.createWriteStream(`./data/arved/arve_${name}.pdf`);
+  const billName = `arve_${name}.pdf`;
+
+  const writeStream = fs.createWriteStream(`./data/arved/${billName}`);
   doc.pipe(writeStream);
 
   // ML logo
@@ -241,7 +243,7 @@ exports.generatePDF = async (campers, contact, billNr, regCampers) => {
   doc.end();
 
   await new Promise((fulfill) => writeStream.on("finish", fulfill));
-  return `arve_${name}.pdf`;
+  return billName;
 };
 
 const generateFooter = (doc, oneThird) => {

@@ -4,7 +4,7 @@ const { generateAllCards, generateOneCard } = require("./dataCardGenerator");
 const Campers = db.shiftCampers;
 const Registrations = db.registrations;
 const ShiftData = db.shiftData;
-const Child = db.newChildren;
+const Child = db.child;
 
 const exists = async (model, entryId) => {
   const entry = await model.findByPk(entryId);

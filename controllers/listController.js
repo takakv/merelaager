@@ -4,8 +4,8 @@ const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
 const Registrations = db.registrations;
-const Children = db.newChildren;
-const numberOfShifts = 4;
+const Children = db.child;
+const numberOfShifts = 5;
 
 exports.fetch = async (req, res) => {
   const children = await Registrations.findAll({

@@ -1,6 +1,6 @@
 const db = require("../models/database");
 
-const Children = db.newChildren;
+const Children = db.child;
 const Registrations = db.registrations;
 const ShiftData = db.shiftData;
 
