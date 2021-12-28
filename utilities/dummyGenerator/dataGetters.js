@@ -1,3 +1,4 @@
+const Chance = require("chance");
 const rand = require("./randGetters");
 
 const separator = "&amp;";
@@ -34,7 +35,10 @@ exports.getMeta = (simCount, fNames, lName) => {
   let res = "";
   res += `contactName=${encodeURIComponent(`${fName} ${lName}`)}` + separator;
   res += `contactNumber=%2B372 xxx` + separator;
-  res += `contactEmail=${encodeURIComponent(`${fName}@${lName}`)}` + separator;
+  res +=
+    `contactEmail=${encodeURIComponent(
+      `${fName.toLowerCase()}@${lName.toLowerCase()}`
+    )}` + separator;
   res += `childCount=${simCount}` + separator;
   res += `noEmail=true`;
   return res;
@@ -52,4 +56,31 @@ exports.getData = (names, simCount, lName, gender, shiftNr) => {
   //}
 
   return res;
+};
+
+exports.getAccurate = (names, lName) => {
+  const chance = new Chance();
+
+  let childCount;
+  if (chance.bool({ likelihood: 45 })) childCount = 1;
+  else if (chance.bool({ likelihood: 50 })) childCount = 2;
+  else if (chance.bool({ likelihood: 60 })) childCount = 3;
+  else childCount = 4;
+
+  let res = "";
+
+  let shiftNr = chance.integer({ min: 1, max: 5 });
+  let randomisedShift = false;
+
+  for (let i = 0; i < childCount; ++i) {
+    const gender = chance.bool() ? "M" : "F";
+    if (!randomisedShift && chance.bool({ likelihood: 35 })) {
+      shiftNr = chance.integer({ min: 1, max: 5 });
+      randomisedShift = true;
+    }
+    const name = `${getFirstName(names.first, gender)} ${lName}`;
+    res += getChildData(name, shiftNr, gender);
+  }
+
+  return { res, childCount };
 };
