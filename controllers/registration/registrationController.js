@@ -134,7 +134,7 @@ const addChild = async (name, gender) => {
   return res.id;
 };
 
-const registerOne = async (regObj, billNr) => {
+const registerOne = async (regObj, billNr, savedSlots) => {
   const { shiftNr, gender, isOld, name } = regObj;
 
   /*
@@ -161,10 +161,10 @@ const registerOne = async (regObj, billNr) => {
   });
   */
 
-  const regCount = availableSlots[shiftNr][gender];
+  const regCount = savedSlots[shiftNr][gender];
 
   if (regCount > 0) {
-    --availableSlots[shiftNr][gender];
+    // --availableSlots[shiftNr][gender];
     regObj.isRegistered = true;
     regObj.billNr = billNr;
   }
@@ -288,7 +288,7 @@ const prepSingle = (data) => {
   return regObj;
 };
 
-const prepareAllChildren = async (data, childCount) => {
+const prepareAllChildren = async (data, childCount, tmpSlots) => {
   const childList = [];
   const errorList = [];
 
@@ -305,7 +305,7 @@ const prepareAllChildren = async (data, childCount) => {
     regObj.backupTel = data.backupTel;
 
     try {
-      res = await registerOne(regObj, billNr);
+      res = await registerOne(regObj, billNr, tmpSlots);
       // const temp = preRegister(req.body, i);
       // console.log(temp);
     } catch (e) {
@@ -326,11 +326,57 @@ const prepareAllChildren = async (data, childCount) => {
   };
 };
 
+const deduceSpots = (shiftNrArray, genderArray) => {
+  const deepCopy = {
+    1: { M: availableSlots[1].M, F: availableSlots[1].F },
+    2: { M: availableSlots[2].M, F: availableSlots[2].F },
+    3: { M: availableSlots[3].M, F: availableSlots[3].F },
+    4: { M: availableSlots[4].M, F: availableSlots[4].F },
+    5: { M: availableSlots[5].M, F: availableSlots[5].F },
+  };
+  for (let i = 0; i < shiftNrArray.length; ++i) {
+    if (availableSlots[shiftNrArray[i]][genderArray[i]] !== 0)
+      --availableSlots[shiftNrArray[i]][genderArray[i]];
+  }
+  return deepCopy;
+};
+
+const getGenders = (idCodeArray) => {
+  const genders = [];
+  idCodeArray.forEach((idCode) => {
+    genders.push(idCode[0] === "5" ? "M" : "F");
+  });
+  return genders;
+};
+
 const registerAll = async (req, res) => {
   if (!unlocked) return res.status(409).send("Vara veel!");
 
   const childCount = parseInt(req.body.childCount);
   if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
+
+  let shiftNrs, genders;
+
+  if (Array.isArray(req.body.shiftNr)) {
+    shiftNrs = req.body.shiftNr;
+    genders = getGenders(req.body.idCode);
+  } else {
+    shiftNrs = [req.body.shiftNr];
+    genders = getGenders([req.body.idCode]);
+  }
+
+  if (shiftNrs.length !== genders.length) return false;
+  const rand = Math.floor(Math.random() * 1000);
+  console.log(`TOREG ${rand}: ${req.body.childCount}`);
+  console.log(`SHIFTS ${rand}: ${shiftNrs}`);
+  console.log(`GENDERS ${rand}: ${genders}`);
+  console.log(`AVBEFORE ${rand}:`);
+  console.log(availableSlots);
+  const tmpSlots = deduceSpots(shiftNrs, genders);
+  console.log(`AVAFTER ${rand}:`);
+  console.log(availableSlots);
+  console.log(`TMP SLOTS ${rand}:`);
+  console.log(tmpSlots);
 
   let seed;
 
@@ -345,7 +391,8 @@ const registerAll = async (req, res) => {
 
   const { childList, errorList, regCount } = await prepareAllChildren(
     req.body,
-    childCount
+    childCount,
+    tmpSlots
   );
 
   if (DEBUG) console.log(`${seed}: Registered ${regCount} children`);
