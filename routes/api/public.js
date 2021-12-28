@@ -4,10 +4,10 @@ router.get("/time/", async (req, res) => {
   res.json({ time: Date.now(), isOk: true });
 });
 
-const utility = require("../../controllers/utilityController");
+const dummyGenerator = require("../../utilities/dummyGenerator/dummyGenerator");
 
 router.post("/namegen/", async (req, res) => {
-  utility.generateData();
+  dummyGenerator.generate();
   res.sendStatus(200);
 });
 
