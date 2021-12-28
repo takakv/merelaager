@@ -7,7 +7,7 @@ const getAuthentic = (names) => {
   const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 };
 
-exports.generate = (authentic = true) => {
+exports.generate = async (authentic, factor) => {
   const names = JSON.parse(fs.readFileSync("./data/names.json", "utf-8"));
   const path = "./data/files/regTest.jmx";
 
@@ -23,10 +23,10 @@ exports.generate = (authentic = true) => {
 
   if (authentic) {
     // Attempt to generate authentic data.
-    for (let i = 0; i < 10; ++i) {
+    for (let i = 0; i < factor; ++i) {
       stream.write(config.getThreadGroup(i, "t"));
       stream.write(config.getParallelHeader());
-      for (let i = 0; i < 18; ++i) {
+      for (let i = 0; i < 10; ++i) {
         const lastNames = names.last;
         const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
@@ -65,4 +65,6 @@ exports.generate = (authentic = true) => {
   stream.write(config.getConfigFooter());
 
   stream.end();
+  await new Promise((fulfill) => stream.on("finish", fulfill));
+  return path;
 };
