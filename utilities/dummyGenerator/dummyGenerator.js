@@ -15,6 +15,7 @@ exports.generate = async (authentic, factor) => {
   const stream = fs.createWriteStream(path, { flags: "a" });
 
   const count = 22;
+  let authenticCount = 10;
 
   stream.write(config.getConfigHeader());
 
@@ -22,11 +23,14 @@ exports.generate = async (authentic, factor) => {
   const genders = ["M", "F"];
 
   if (authentic) {
+    if (factor > 10) {
+      [factor, authenticCount] = [authenticCount, factor];
+    }
     // Attempt to generate authentic data.
     for (let i = 0; i < factor; ++i) {
       stream.write(config.getThreadGroup(i, "t"));
       stream.write(config.getParallelHeader());
-      for (let i = 0; i < 10; ++i) {
+      for (let i = 0; i < authenticCount; ++i) {
         const lastNames = names.last;
         const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
