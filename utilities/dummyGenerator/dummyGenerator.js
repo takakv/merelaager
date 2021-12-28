@@ -16,6 +16,7 @@ exports.generate = () => {
   const shifts = [1, 2, 3, 4, 5];
   const genders = ["M", "F"];
 
+  // Generate separately 22 boys and 22 girls for each shift.
   shifts.forEach((shift) => {
     genders.forEach((gender) => {
       stream.write(config.getThreadGroup(shift, gender));

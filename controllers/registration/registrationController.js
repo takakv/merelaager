@@ -330,7 +330,7 @@ const registerAll = async (req, res) => {
   if (!unlocked) return res.status(409).send("Vara veel!");
 
   const childCount = parseInt(req.body.childCount);
-  if (isNaN(childCount) || childCount < 1) return false; // || childCount > 4) return false;
+  if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
 
   let seed;
 
