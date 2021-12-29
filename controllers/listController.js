@@ -15,6 +15,10 @@ exports.fetch = async (req, res) => {
 
   if (!children.length) return null;
 
+  const { role } = req.user;
+  const allowedRoles = ["op", "master", "boss", "root"];
+  if (!allowedRoles.includes(role)) return null;
+
   let returnData = {};
 
   for (let i = 1; i <= numberOfShifts; ++i) {
@@ -38,18 +42,21 @@ exports.fetch = async (req, res) => {
       shift: child["shiftNr"],
       tShirtSize: child["tsSize"],
       regOrder: child.regOrder,
+      registered: child.isRegistered,
       // city: child["city"],
       // county: child["county"],
-      billNr: child["billNr"],
-      contactName: child["contactName"].trim(),
-      contactEmail: child["contactEmail"],
-      contactNr: child["contactNumber"],
-      registered: child["isRegistered"],
-      pricePaid: child["pricePaid"],
-      priceToPay: child["priceToPay"],
     };
 
-    if (req.user.role === "boss") data.idCode = child.idCode;
+    if (role !== "op") {
+      data.billNr = child.billNr;
+      data.contactName = child.contactName.trim();
+      data.contactEmail = child.contactEmail.trim();
+      data.contactNr = child.contactNumber.trim();
+      data.pricePaid = child["pricePaid"];
+      data.priceToPay = child["priceToPay"];
+    }
+
+    if (req.user.role === "root") data.idCode = child.idCode;
 
     pushData(data, returnData[child.shiftNr]);
   });
