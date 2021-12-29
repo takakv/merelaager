@@ -9,7 +9,7 @@ const numberOfShifts = 5;
 
 exports.fetch = async (req, res) => {
   const children = await Registrations.findAll({
-    order: [["id", "ASC"]],
+    order: [["regOrder", "ASC"]],
     include: Children,
   });
 
@@ -37,6 +37,7 @@ exports.fetch = async (req, res) => {
       isOld: child["isOld"],
       shift: child["shiftNr"],
       tShirtSize: child["tsSize"],
+      regOrder: child.regOrder,
       // city: child["city"],
       // county: child["county"],
       billNr: child["billNr"],
