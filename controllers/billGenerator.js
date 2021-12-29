@@ -22,16 +22,16 @@ const contentTop = 60;
 
 exports.getName = (child) => {
   const name = child.contactName.replace(/ /g, "_").toLowerCase();
-  return `arve_${name}.pdf`;
+  return `arve_${name}_${child.billNr}.pdf`;
 };
 
-exports.generatePDF = async (campers, contact, billNr, regCampers) => {
+exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
   const name = contact.name.replace(/ /g, "_").toLowerCase();
   let doc = new PDFDoc(billMeta);
 
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
 
-  const billName = `arve_${name}.pdf`;
+  const billName = `arve_${name}_${billNr}.pdf`;
 
   const writeStream = fs.createWriteStream(`./data/arved/${billName}`);
   doc.pipe(writeStream);
@@ -48,8 +48,8 @@ exports.generatePDF = async (campers, contact, billNr, regCampers) => {
   doc
     .fontSize(22)
     .font("Helvetica-Bold")
-    .text(campers[0].contactName, sideMargin, contentTop);
-  doc.fontSize(11).font("Helvetica").text(campers[0].contactEmail);
+    .text(contact.name, sideMargin, contentTop);
+  doc.fontSize(11).font("Helvetica").text(contact.email);
 
   let firstShift = "5v";
   campers.forEach((camper) => {
@@ -64,7 +64,7 @@ exports.generatePDF = async (campers, contact, billNr, regCampers) => {
   const today = new Date();
   const finalDeadline = new Date(deadline);
   const due = new Date();
-  due.setDate(today.getDate() + 4);
+  due.setDate(today.getDate() + 3);
 
   // If bill coincides with final deadline.
   const lenientDeadline = due > finalDeadline;
@@ -230,10 +230,8 @@ exports.generatePDF = async (campers, contact, billNr, regCampers) => {
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
     ++processedCampers;
-    doc.text(`${campers[i].name} ${campers[i].shiftNr}v`, {
-      continued: true,
-    });
-    if (processedCampers !== regCampers) doc.text(", ", { continued: true });
+    doc.text(`${names[i]} ${campers[i].shiftNr}v`, { continued: true });
+    if (processedCampers !== regCount) doc.text(", ", { continued: true });
   }
 
   // Footer

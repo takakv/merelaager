@@ -200,7 +200,7 @@ const getChildData = (
     childId: childIds[i],
     isRegistered,
     regOrder,
-    priceToPay: getPrice(isRegistered, shiftNr, isOld),
+    priceToPay: getPrice(shiftNr, isOld),
     tsSize: rawData.tsSize[i],
     addendum: rawData.addendum ? rawData.addendum[i] : null,
     road: rawData.road[i],
@@ -290,15 +290,17 @@ const registerAll = async (req, res) => {
   // Immediately lock the available slots,
   // store whether there was room or not.
   const isRegistered = [];
+  let regCount = 0;
   for (let i = 0; i < shiftNrs.length; ++i) {
     if (availableSlots[shiftNrs[i]][genders[i]] > 0) {
       isRegistered.push(true);
+      ++regCount;
       --availableSlots[shiftNrs[i]][genders[i]];
     } else isRegistered.push(false);
   }
 
-  // Keep track of registration order.
-  const billNr = isRegistered.includes(true) ? billNumber++ : null;
+  // Keep track of registration bill order.
+  const billNr = regCount ? billNumber++ : null;
 
   if (DEBUG) console.log(`RegStatus: ${isRegistered}`);
 
@@ -325,25 +327,29 @@ const registerAll = async (req, res) => {
 
   await Registrations.bulkCreate(childrenData);
 
-  return res.sendStatus(200);
+  const contact = {
+    name: childrenData[0].contactName,
+    email: childrenData[0].contactEmail,
+  };
 
   if (regCount) {
+    res.sendStatus(200);
     // res.redirect("../edu/");
-    // console.log("Start PDF generation");
     const billName = await billGenerator.generatePDF(
-      childList,
+      childrenData,
+      names,
       contact,
       billNr,
       regCount
     );
-    res.sendStatus(200);
     // console.log("PDF generated");
     if (!req.body.noEmail)
-      mailer(childList, contact, price, billName, regCount, billNr);
+      mailer(childrenData, names, contact, billName, regCount, billNr);
   } else {
     res.sendStatus(200);
     // res.redirect("../reserv/");
-    if (!req.body.noEmail) mailService.sendFailureMail(childList, contact);
+    if (!req.body.noEmail)
+      mailService.sendFailureMail(childrenData, names, contact);
   }
 };
 
@@ -352,19 +358,19 @@ exports.create = async (req, res) => {
   // axios.post(process.env.URL, openSlots);
 };
 
-const mailer = (campers, contact, price, pdfName, regCount, billNr) => {
+const mailer = (campers, names, contact, pdfName, regCount, billNr) => {
   mailService.sendConfirmationMail(
     campers,
+    names,
     contact,
-    price,
+    calculatePrice(campers),
     pdfName,
     regCount,
     billNr
   );
 };
 
-const getPrice = (isRegistered, shiftNr, isOld) => {
-  if (!isRegistered) return 0;
+const getPrice = (shiftNr, isOld) => {
   let price = meta.prices[shiftNr];
   if (isOld) price -= 20;
   return price;
@@ -374,8 +380,7 @@ const calculatePrice = (regList) => {
   let price = 0;
   regList.forEach((camper) => {
     if (!camper.isRegistered) return;
-    price += meta.prices[camper.shiftNr];
-    if (camper.isOld) price -= 20;
+    price += getPrice(campers.shiftNr, camper.isOld);
   });
   return price;
 };
