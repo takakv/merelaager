@@ -126,7 +126,7 @@ const db = require("./models/database");
 
 const runApp = async () => {
   try {
-    await db.sequelize.sync();
+    await db.sequelize.sync({ alter: true });
     const port = process.env.PORT;
     app.listen(port, () => console.log(`Listening on port ${port}`));
   } catch (error) {

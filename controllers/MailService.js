@@ -204,12 +204,25 @@ class MailService {
     });
   }
 
+  sendPwdResetMail(email, token) {
+    const link = `https://merelaager.ee/api/su/reset/${token}`;
+    return this._transporter.sendMail({
+      from: {
+        name: "Merelaager - süsteem",
+        address: "no-reply@merelaager.ee",
+      },
+      to: email,
+      subject: "Salasõna lähtestamine",
+      html: `<p>Salasõna lähtestamise link: <a href="${link}">${link}</a>. Link toimib 20 minutit.</p><br />`,
+    });
+  }
+
   sendAccountCreationMail(email, token) {
     const link = `https://merelaager.ee/api/su/${token}/`;
     return this._transporter.sendMail({
       from: {
         name: "Merelaager - süsteem",
-        address: "webmaster@merelaager.ee",
+        address: "no-reply@merelaager.ee",
       },
       to: email,
       subject: "e-Kambüüsi konto loomine",

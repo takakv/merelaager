@@ -25,12 +25,22 @@ router.post("/chkusr/", async (req, res) => {
 router.post("/create/", async (req, res) => {
   const { username, password, token, name } = req.body;
   if (!username || !password || !token) return res.sendStatus(400);
-  const result = await account.create(username, password, token, name);
+  const result = await account.createAccount(username, password, token, name);
   if (!result)
     return res
       .status(200)
       .send("Konto loodud. Sisse saab logida: https://sild.merelaager.ee");
   else res.json(result);
+});
+
+router.get("/reset/:token/", async (req, res) => {
+  const isValid = await account.validateResetToken(req.params.token);
+  if (!isValid) return res.sendStatus(403);
+  res.render("pwdReset", {
+    title: "Vaheta salasõna",
+    layout: "empty",
+    script_path: "/media/scripts/pwdreset.js",
+  });
 });
 
 router.post("/cta/:shiftNr/:role?/", async (req, res) => {
@@ -43,6 +53,22 @@ router.post("/cta/:shiftNr/:role?/", async (req, res) => {
   const result = await account.createSuToken(shiftNr);
   if (result) res.sendStatus(200);
   else res.sendStatus(400);
+});
+
+router.post("/pwd/reset", async (req, res) => {
+  if (!("email" in req.body)) res.sendStatus(400);
+  const state = await account.resetPwd(req.body.email);
+  if (state) res.sendStatus(200);
+  else res.sendStatus(500);
+});
+
+router.post("/reset", async (req, res) => {
+  if (!("token" in req.body)) res.status(400).send("Token puudub");
+  if (!("password" in req.body)) res.status(400).send("Salasõna puudub");
+
+  const state = await account.changePwd(req.body.password, req.body.token);
+  if (state) return res.status(200).send("Salasõna edukalt muudetud");
+  res.sendStatus(400);
 });
 
 // ---------- AUTH ZONE ------------------------------

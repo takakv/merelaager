@@ -1,0 +1,13 @@
+<p>Lähtesta salasõna</p>
+<form action="/api/su/reset" method="post">
+  <label for="password">Uus salasõna</label>
+  <input id="password" type="password" required name="password"/>
+  <br/>
+  <label for="re-password">Salasõna uuesti</label>
+  <input id="re-password" type="password" required name="re-password"/>
+  <br/>
+  <label for="token">Token</label>
+  <input id="token" type="text" required name="token"/>
+  <button id="submit">Loo</button>
+  <p id="msg"></p>
+</form>

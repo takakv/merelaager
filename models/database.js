@@ -29,9 +29,13 @@ db.suToken = require("./suToken")(sequelize);
 db.staff = require("./staff")(sequelize);
 db.shiftInfo = require("./shiftInfo")(sequelize);
 db.records = require("./record")(sequelize);
+db.resetToken = require("./resetToken")(sequelize);
 
 db.child.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.child);
+
+db.users.hasOne(db.resetToken);
+db.resetToken.belongsTo(db.users);
 
 db.team.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.team);
