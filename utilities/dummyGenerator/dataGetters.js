@@ -50,7 +50,7 @@ exports.getData = (names, simCount, lName, gender, shiftNr) => {
 
   // for (let shiftNr = 1; shiftNr <= 5; ++shiftNr) {
   for (let i = 0; i < simCount; ++i) {
-    name = `${getFirstName(names.first, gender)} ${lName}`;
+    name = `${getFirstName(names.childFirst, gender)} ${lName}`;
     res += getChildData(name, shiftNr, gender);
   }
   //}
@@ -78,7 +78,7 @@ exports.getAccurate = (names, lName) => {
       shiftNr = chance.integer({ min: 1, max: 5 });
       randomisedShift = true;
     }
-    const name = `${getFirstName(names.first, gender)} ${lName}`;
+    const name = `${getFirstName(names.childFirst, gender)} ${lName}`;
     res += getChildData(name, shiftNr, gender);
   }
 
