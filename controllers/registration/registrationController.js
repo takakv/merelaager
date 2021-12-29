@@ -33,6 +33,7 @@ const availableSlots = {
 };
 
 let billNumber = 0;
+let registrationOrder = 1;
 let slotsReady = false;
 let billReady = false;
 let ready = false;
@@ -75,6 +76,14 @@ const initializeBillNr = async () => {
   } else billNumber = 21001;
 };
 
+const initializeRegistrationOrder = async () => {
+  const prevReg = await Registrations.findOne({
+    order: [["regOrder", "DESC"]],
+    attributes: ["regOrder"],
+  });
+  if (prevReg) registrationOrder = prevReg.regOrder + 1;
+};
+
 initializeAvailableSlots().then(() => {
   console.log("Available slots:");
   console.log(availableSlots);
@@ -86,6 +95,10 @@ initializeBillNr().then(() => {
   console.log(`First bill: ${billNumber}`);
   billReady = true;
   if (slotsReady) ready = true;
+});
+
+initializeRegistrationOrder().then(() => {
+  console.log(`Reg order: ${registrationOrder}`);
 });
 
 const getBillNr = async () => {
@@ -134,213 +147,6 @@ const addChild = async (name, gender) => {
   return res.id;
 };
 
-const registerOne = async (regObj, billNr, savedSlots) => {
-  const { shiftNr, gender, isOld, name } = regObj;
-
-  /*
-  let childId = await fetchChild(name);
-  if (!childId) {
-    childId = await addChild(name, gender);
-    if (!childId) {
-      console.log("Error creating child");
-      return false;
-    }
-  }
-  */
-
-  /*
-  const regCount = await Registrations.count({
-    where: {
-      shiftNr,
-      isRegistered: true,
-    },
-    include: {
-      model: Children,
-      where: { gender },
-    },
-  });
-  */
-
-  const regCount = savedSlots[shiftNr][gender];
-
-  if (regCount > 0) {
-    // --availableSlots[shiftNr][gender];
-    regObj.isRegistered = true;
-    regObj.billNr = billNr;
-  }
-
-  let childId = await fetchChild(name);
-  if (!childId) {
-    childId = await addChild(name, gender);
-    if (!childId) {
-      console.log("Error creating child");
-      return false;
-    }
-  }
-
-  regObj.childId = childId;
-  delete regObj.name;
-  delete regObj.gender;
-
-  const [data, created] = await Registrations.findOrCreate({
-    where: { childId, shiftNr },
-    defaults: regObj,
-  });
-
-  return {
-    ok: created,
-    data: {
-      isRegistered: created ? regObj.isRegistered : data.isRegistered,
-      gender,
-      name,
-      isOld,
-      shiftNr,
-      message: created ? "" : "Laps on juba vahetuse nimekirjas",
-    },
-  };
-};
-
-const prepChild = (data, i) => {
-  let gender, birthday;
-
-  const idCode = data.idCode[i];
-
-  if (idCode) {
-    const idData = parser.validateIdCode(idCode);
-    if (!idData) return false;
-    gender = idData.gender;
-    birthday = idData.birthday;
-  } else {
-    gender = data.gender[i];
-    if (gender !== "M" && gender !== "F") return false;
-    birthday = data.bDay[i];
-  }
-
-  const name = data.name[i];
-  if (!name) return false;
-
-  const shiftNr = parseInt(data.shiftNr[i]);
-  if (isNaN(shiftNr) || (shiftNr < 1 && shiftNr > 5)) return false;
-
-  const isOld = data.isNew[i] !== "true";
-
-  const regObj = {
-    shiftNr,
-    name,
-    idCode,
-    gender,
-    birthday,
-    isOld,
-    isRegistered: false,
-    tsSize: data.tsSize[i],
-    addendum: data.addendum ? data.addendum[i] : null,
-    road: data.road[i],
-    city: data.city[i],
-    county: data.county[i],
-    country: data.country ? data.country[i] : "Eesti",
-  };
-
-  return regObj;
-};
-
-// This is only for API testing.
-// There will always be arrays from the website.
-const prepSingle = (data) => {
-  let gender, birthday;
-
-  const idCode = data.idCode;
-
-  if (idCode) {
-    const idData = parser.validateIdCode(idCode);
-    if (!idData) return false;
-    gender = idData.gender;
-    birthday = idData.birthday;
-  } else {
-    gender = data.gender;
-    if (gender !== "M" && gender !== "F") return false;
-    birthday = data.bDay;
-  }
-
-  const name = data.name;
-  if (!name) return false;
-
-  const shiftNr = parseInt(data.shiftNr);
-  if (isNaN(shiftNr) || (shiftNr < 1 && shiftNr > 5)) return false;
-
-  const isOld = data.isNew !== "true";
-
-  const regObj = {
-    shiftNr,
-    name,
-    idCode,
-    gender,
-    birthday,
-    isOld,
-    isRegistered: false,
-    tsSize: data.tsSize,
-    addendum: data.addendum ? data.addendum : null,
-    road: data.road,
-    city: data.city,
-    county: data.county,
-    country: data.country ? data.country : "Eesti",
-  };
-
-  return regObj;
-};
-
-const prepareAllChildren = async (data, childCount, tmpSlots) => {
-  const childList = [];
-  const errorList = [];
-
-  const billNr = billNumber++;
-  let regCount = 0;
-
-  for (let i = 0; i < childCount; ++i) {
-    let res;
-    let regObj = childCount > 1 ? prepChild(data, i) : prepSingle(data);
-
-    regObj.contactName = data.contactName;
-    regObj.contactEmail = data.contactEmail;
-    regObj.contactNumber = data.contactNumber;
-    regObj.backupTel = data.backupTel;
-
-    try {
-      res = await registerOne(regObj, billNr, tmpSlots);
-      // const temp = preRegister(req.body, i);
-      // console.log(temp);
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-
-    if (res.ok) {
-      childList.push(res.data);
-      if (res.data.isRegistered) ++regCount;
-    } else errorList.push(res.data);
-  }
-
-  return {
-    childList,
-    errorList,
-    regCount,
-  };
-};
-
-const deduceSpots = (shiftNrArray, genderArray) => {
-  const deepCopy = {
-    1: { M: availableSlots[1].M, F: availableSlots[1].F },
-    2: { M: availableSlots[2].M, F: availableSlots[2].F },
-    3: { M: availableSlots[3].M, F: availableSlots[3].F },
-    4: { M: availableSlots[4].M, F: availableSlots[4].F },
-    5: { M: availableSlots[5].M, F: availableSlots[5].F },
-  };
-  for (let i = 0; i < shiftNrArray.length; ++i) {
-    if (availableSlots[shiftNrArray[i]][genderArray[i]] !== 0)
-      --availableSlots[shiftNrArray[i]][genderArray[i]];
-  }
-  return deepCopy;
-};
-
 const getGenders = (idCodeArray) => {
   const genders = [];
   idCodeArray.forEach((idCode) => {
@@ -349,64 +155,177 @@ const getGenders = (idCodeArray) => {
   return genders;
 };
 
+const postChildren = async (names, genders) => {
+  const childIds = [];
+  for (let i = 0; i < names.length; ++i) {
+    let childId = await fetchChild(names[i]);
+    if (!childId) {
+      childId = await addChild(names[i], genders[i]);
+      if (!childId) return null;
+    }
+    childIds.push(childId);
+  }
+  return childIds;
+};
+
+const getChildData = (
+  rawData,
+  childIds,
+  registrations,
+  shiftNrs,
+  i,
+  billNr,
+  regOrder
+) => {
+  let birthday;
+  const idCode = rawData.idCode[i];
+
+  if (idCode) {
+    birthday = parser.validateIdCode(idCode).birthday;
+  } else {
+    birthday = rawData.bDay[i];
+  }
+
+  const isOld = rawData.isNew[i] !== "true";
+
+  const isRegistered = registrations[i];
+  const shiftNr = parseInt(shiftNrs[i].trim());
+
+  return {
+    idCode,
+    birthday,
+    isOld,
+    billNr: isRegistered ? billNr : null,
+    shiftNr,
+    childId: childIds[i],
+    isRegistered,
+    regOrder,
+    priceToPay: getPrice(isRegistered, shiftNr, isOld),
+    tsSize: rawData.tsSize[i],
+    addendum: rawData.addendum ? rawData.addendum[i] : null,
+    road: rawData.road[i],
+    city: rawData.city[i],
+    county: rawData.county[i],
+    country: rawData.country ? rawData.country[i] : "Eesti",
+    contactName: rawData.contactName,
+    contactEmail: rawData.contactEmail,
+    contactNumber: rawData.contactNumber,
+    backupTel: rawData.backupTel,
+  };
+};
+
+const prepRawData = (rawData) => {
+  rawData.idCode = [rawData.idCode];
+  rawData.isNew = [rawData.isNew];
+  rawData.tsSize = [rawData.tsSize];
+  rawData.addendum = [rawData.addendum];
+  rawData.road = [rawData.road];
+  rawData.city = [rawData.city];
+  rawData.county = [rawData.county];
+  rawData.country = [rawData.country];
+  return rawData;
+};
+
+const getChildrenData = (
+  childCount,
+  rawData,
+  childIds,
+  registrations,
+  shiftNrs,
+  billNr,
+  regOrder
+) => {
+  if (childCount === 1) rawData = prepRawData(rawData);
+  const childrenData = [];
+  for (let i = 0; i < childCount; ++i) {
+    childrenData.push(
+      getChildData(
+        rawData,
+        childIds,
+        registrations,
+        shiftNrs,
+        i,
+        billNr,
+        regOrder
+      )
+    );
+  }
+  return childrenData;
+};
+
 const registerAll = async (req, res) => {
   if (!unlocked) return res.status(409).send("Vara veel!");
 
   const childCount = parseInt(req.body.childCount);
   if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
 
-  let shiftNrs, genders;
+  const order = registrationOrder++;
 
+  let shiftNrs, genders, names;
+
+  // Determine how many children need to be registered,
+  // their gender and desired shift to lock the slots.
+
+  // First determine genders, shifts, and names.
+  // Names will be needed later.
   if (Array.isArray(req.body.shiftNr)) {
     shiftNrs = req.body.shiftNr;
     genders = getGenders(req.body.idCode);
+    names = req.body.name;
   } else {
     shiftNrs = [req.body.shiftNr];
     genders = getGenders([req.body.idCode]);
+    names = [req.body.name];
   }
-
-  if (shiftNrs.length !== genders.length) return false;
-  const rand = Math.floor(Math.random() * 1000);
-  console.log(`TOREG ${rand}: ${req.body.childCount}`);
-  console.log(`SHIFTS ${rand}: ${shiftNrs}`);
-  console.log(`GENDERS ${rand}: ${genders}`);
-  console.log(`AVBEFORE ${rand}:`);
-  console.log(availableSlots);
-  const tmpSlots = deduceSpots(shiftNrs, genders);
-  console.log(`AVAFTER ${rand}:`);
-  console.log(availableSlots);
-  console.log(`TMP SLOTS ${rand}:`);
-  console.log(tmpSlots);
-
-  let seed;
 
   if (DEBUG) {
-    seed = Math.random();
-    console.log(`${seed}: Attempting to register ${childCount} children`);
+    console.log(`Shifts: ${shiftNrs}`);
+    console.log(`Genders: ${genders}`);
   }
 
-  // const billNr = await getBillNr();
-  // ++billNumber;
-  const billNr = billNumber;
+  // Sanity check.
+  if (shiftNrs.length !== genders.length || shiftNrs.length !== names.length)
+    return false;
 
-  const { childList, errorList, regCount } = await prepareAllChildren(
-    req.body,
+  // Immediately lock the available slots,
+  // store whether there was room or not.
+  const isRegistered = [];
+  for (let i = 0; i < shiftNrs.length; ++i) {
+    if (availableSlots[shiftNrs[i]][genders[i]] > 0) {
+      isRegistered.push(true);
+      --availableSlots[shiftNrs[i]][genders[i]];
+    } else isRegistered.push(false);
+  }
+
+  // Keep track of registration order.
+  const billNr = isRegistered.includes(true) ? billNumber++ : null;
+
+  if (DEBUG) console.log(`RegStatus: ${isRegistered}`);
+
+  // Commit children into the database.
+  const childIds = await postChildren(names, genders);
+
+  if (DEBUG) console.log(`ChildIds: ${childIds}`);
+
+  // Fetch data regarding the children.
+  const childrenData = getChildrenData(
     childCount,
-    tmpSlots
+    req.body,
+    childIds,
+    isRegistered,
+    shiftNrs,
+    billNr,
+    order
   );
 
-  if (DEBUG) console.log(`${seed}: Registered ${regCount} children`);
-
-  const price = calculatePrice(childList);
-  const contact = {
-    name: req.body.contactName,
-    mail: req.body.contactEmail,
-  };
-
   if (DEBUG) {
-    console.log(`${seed}: Available slots:`);
-    console.log(availableSlots);
+    console.log("ChildrenData:");
+    console.log(childrenData);
   }
+
+  await Registrations.bulkCreate(childrenData);
+
+  return res.sendStatus(200);
 
   if (regCount) {
     // res.redirect("../edu/");
@@ -442,6 +361,13 @@ const mailer = (campers, contact, price, pdfName, regCount, billNr) => {
     regCount,
     billNr
   );
+};
+
+const getPrice = (isRegistered, shiftNr, isOld) => {
+  if (!isRegistered) return 0;
+  let price = meta.prices[shiftNr];
+  if (isOld) price -= 20;
+  return price;
 };
 
 const calculatePrice = (regList) => {

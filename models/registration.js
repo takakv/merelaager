@@ -24,9 +24,6 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: true,
       },
-      shiftNr: {
-        type: DataTypes.INTEGER,
-      },
       tsSize: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -54,10 +51,16 @@ module.exports = (sequelize) => {
       billNr: {
         type: DataTypes.INTEGER,
       },
+      regOrder: {
+        type: DataTypes.INTEGER,
+      },
       isRegistered: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      shiftNr: {
+        type: DataTypes.INTEGER,
       },
       contactName: {
         type: DataTypes.TEXT,
