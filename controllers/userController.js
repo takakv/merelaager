@@ -26,7 +26,7 @@ const createUser = async (username, password) => {
 };
 
 exports.swapShift = async (userId, shiftNr, isBoss = false) => {
-  let role = "boss";
+  let role = "root";
 
   if (!isBoss) {
     const shiftInfo = await Staff.findOne({
@@ -63,7 +63,7 @@ exports.getInfo = async (userId) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  if (user.role !== "boss") {
+  if (user.role !== "root") {
     const shiftInfo = await Staff.findAll({
       where: { userId, year },
     });
@@ -78,7 +78,7 @@ exports.getInfo = async (userId) => {
     allShifts.forEach((shift) => {
       shifts.push(shift.id);
     });
-    role = "boss";
+    role = "root";
   }
 
   return {

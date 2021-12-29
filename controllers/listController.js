@@ -98,7 +98,7 @@ exports.update = async (req, res) => {
       return true;
   }
 
-  if (req.user.role !== "boss") {
+  if (req.user.role !== "root") {
     console.log("User not authorised for price manipulation.");
     return res.sendStatus(404) && null;
   }

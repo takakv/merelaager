@@ -115,7 +115,7 @@ router.post("/shift/swap", async (req, res) => {
   shiftNr = parseInt(shiftNr);
   if (!shiftNr) return res.sendStatus(400);
 
-  const userIsBoss = req.user.role === "boss";
+  const userIsBoss = req.user.role === "root";
 
   const result = await user.swapShift(req.user.id, shiftNr, userIsBoss);
   if (result) res.status(200).json({ role: result });

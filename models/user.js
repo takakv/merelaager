@@ -25,7 +25,7 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
       },
       role: {
-        type: DataTypes.ENUM("boss", "master", "op", "camper"),
+        type: DataTypes.ENUM("root", "boss", "master", "op", "camper"),
       },
       shifts: {
         type: DataTypes.INTEGER,
