@@ -25,6 +25,43 @@ const createUser = async (username, password) => {
   }
 };
 
+// Fetches all users from the database.
+// No filters.
+exports.fetchAll = async () => {
+  const response = { isOk: false };
+  let users;
+
+  try {
+    users = await Users.findAll({
+      attributes: ["username", "name", "nickname", "role", "email"],
+    });
+  } catch (e) {
+    console.error(e);
+    response.code = 500;
+    return response;
+  }
+
+  if (!users) {
+    response.code = 404;
+    return response;
+  }
+
+  response.isOk = true;
+  response.users = [];
+
+  users.forEach((user) => {
+    response.users.push({
+      username: user.username,
+      name: user.name,
+      nickname: user.nickname,
+      role: user.role,
+      email: user.email,
+    });
+  });
+
+  return response;
+};
+
 exports.swapShift = async (userId, shiftNr, isBoss = false) => {
   let role = "root";
 

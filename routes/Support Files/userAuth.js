@@ -7,14 +7,15 @@ const Users = db.users;
 const authenticateUser = async (username, password) => {
   const user = await secureFetchUser(username, password);
   if (!user) return false;
-  const accessToken = jwt.generateAccessToken({
+  const tokenType = "Bearer";
+  const { accessToken, expiresIn } = jwt.generateAccessToken({
     username: user.username,
   });
   const refreshToken = jwt.generateRefreshToken({
     username: user.username,
   });
   storeRefreshToken(refreshToken, username);
-  return { accessToken, refreshToken };
+  return { tokenType, accessToken, expiresIn, refreshToken };
 };
 
 const secureFetchUser = async (username, password) => {

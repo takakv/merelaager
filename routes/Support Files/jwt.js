@@ -7,8 +7,15 @@ const Users = db.users;
 const accessTokenSecret = process.env.TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
+const rootRole = "root";
+
 const generateAccessToken = (userData) => {
-  return jwt.sign(userData, accessTokenSecret, { expiresIn: "1800s" });
+  const expiresIn = 1799;
+  // noinspection JSCheckFunctionSignatures
+  const accessToken = jwt.sign(userData, accessTokenSecret, {
+    expiresIn: `${expiresIn}s`,
+  });
+  return { accessToken, expiresIn };
 };
 
 const generateRefreshToken = (userData) => {
@@ -31,6 +38,7 @@ const verifyAccessToken = (req, res, next) => {
       req.user.role = dbUser.role;
       req.user.id = dbUser.id;
       req.user.shift = dbUser.shifts;
+      req.user.isRoot = dbUser.role === rootRole;
       next();
     });
   } else {

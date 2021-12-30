@@ -38,6 +38,10 @@ router.use("/teams", teams);
 const staff = require("./api/staff");
 router.use("/staff", staff);
 
+// Disable since unneeded
+// const users = require("./api/users");
+// router.use("/users", users);
+
 const bill = require("../controllers/billController");
 router.post("/bills/:action/:email", async (req, res) => {
   if (!req.params["action"] || !req.params["email"]) {
