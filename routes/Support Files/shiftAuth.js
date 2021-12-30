@@ -6,7 +6,7 @@ const Users = db.users;
 const requireShiftBoss = async (req, res, next) => {
   const { user } = req;
 
-  if (user.role === "root") return next();
+  if (user.isRoot) return next();
 
   const now = new Date();
   let year = now.getUTCFullYear();
@@ -37,12 +37,12 @@ const requireShiftBoss = async (req, res, next) => {
 };
 
 const approveShift = async (user, shiftNr) => {
-  if (user.role === "root") return true;
+  if (user.isRoot) return true;
   return user.shift === shiftNr;
 };
 
 const approveShiftFull = async (user, shiftNr) => {
-  if (user.role === "root") return true;
+  if (user.isRoot) return true;
 
   const userId = (
     await Users.findOne({
