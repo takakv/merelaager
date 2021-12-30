@@ -75,8 +75,12 @@ const footer = (shifts) => {
   return response;
 };
 
-const generateHTML = (campers, price, regCount) => {
+const generateHTML = (campers, names, price, regCount) => {
   const shifts = [];
+  for (let i = 0; i < campers.length; ++i) {
+    campers[i].name = names[i];
+  }
+
   let response = "<b>Täname, et valisite merelaagri!</b>";
 
   // Registered campers.
@@ -173,15 +177,23 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendConfirmationMail(campers, contact, price, pdfName, regCount, billNr) {
+  sendConfirmationMail(
+    campers,
+    names,
+    contact,
+    price,
+    pdfName,
+    regCount,
+    billNr
+  ) {
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",
         address: "bronn@merelaager.ee",
       },
-      to: contact.mail,
+      to: contact.email,
       subject: "Broneeringu kinnitus",
-      html: generateHTML(campers, price, regCount),
+      html: generateHTML(campers, names, price, regCount),
       attachments: [
         {
           filename: `${billNr}.pdf`,
@@ -198,7 +210,7 @@ class MailService {
         name: "Merelaager",
         address: "bronn@merelaager.ee",
       },
-      to: contact.mail,
+      to: contact.email,
       subject: "Reservnimekirja kandmise teade",
       html: generateFailureHTML(campers),
     });

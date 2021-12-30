@@ -186,7 +186,7 @@ const getChildData = (
     birthday = rawData.bDay[i];
   }
 
-  const isOld = rawData.isNew[i] !== "true";
+  const isOld = rawData[`newAtCamp-${i + 1}`] !== "true";
 
   const isRegistered = registrations[i];
   const shiftNr = parseInt(shiftNrs[i].trim());
@@ -235,20 +235,26 @@ const getChildrenData = (
   billNr,
   regOrder
 ) => {
-  if (childCount === 1) rawData = prepRawData(rawData);
+  if (childCount === 1 && !Array.isArray(rawData.tsSize))
+    rawData = prepRawData(rawData);
   const childrenData = [];
   for (let i = 0; i < childCount; ++i) {
-    childrenData.push(
-      getChildData(
-        rawData,
-        childIds,
-        registrations,
-        shiftNrs,
-        i,
-        billNr,
-        regOrder
-      )
-    );
+    try {
+      childrenData.push(
+        getChildData(
+          rawData,
+          childIds,
+          registrations,
+          shiftNrs,
+          i,
+          billNr,
+          regOrder
+        )
+      );
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
   return childrenData;
 };
@@ -291,7 +297,7 @@ const registerAll = async (req, res) => {
   // store whether there was room or not.
   const isRegistered = [];
   let regCount = 0;
-  for (let i = 0; i < shiftNrs.length; ++i) {
+  for (let i = 0; i < childCount; ++i) {
     if (availableSlots[shiftNrs[i]][genders[i]] > 0) {
       isRegistered.push(true);
       ++regCount;
@@ -320,6 +326,8 @@ const registerAll = async (req, res) => {
     order
   );
 
+  if (!childrenData) return res.sendStatus(400);
+
   if (DEBUG) {
     console.log("ChildrenData:");
     console.log(childrenData);
@@ -343,23 +351,36 @@ const registerAll = async (req, res) => {
       regCount
     );
     // console.log("PDF generated");
-    if (!req.body.noEmail)
-      mailer(childrenData, names, contact, billName, regCount, billNr);
+    if (req.body.noEmail) return;
+
+    try {
+      await mailer(childrenData, names, contact, billName, regCount, billNr);
+    } catch (e) {
+      console.error(e);
+    }
   } else {
     res.sendStatus(200);
     // res.redirect("../reserv/");
-    if (!req.body.noEmail)
-      mailService.sendFailureMail(childrenData, names, contact);
+    if (req.body.noEmail) return;
+    try {
+      await mailService.sendFailureMail(childrenData, contact);
+    } catch (e) {
+      console.error(e);
+    }
   }
 };
 
 exports.create = async (req, res) => {
-  await registerAll(req, res);
+  try {
+    await registerAll(req, res);
+  } catch (e) {
+    console.error(e);
+  }
   // axios.post(process.env.URL, openSlots);
 };
 
-const mailer = (campers, names, contact, pdfName, regCount, billNr) => {
-  mailService.sendConfirmationMail(
+const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
+  await mailService.sendConfirmationMail(
     campers,
     names,
     contact,
@@ -380,7 +401,7 @@ const calculatePrice = (regList) => {
   let price = 0;
   regList.forEach((camper) => {
     if (!camper.isRegistered) return;
-    price += getPrice(campers.shiftNr, camper.isOld);
+    price += getPrice(camper.shiftNr, camper.isOld);
   });
   return price;
 };
