@@ -32,7 +32,7 @@ router.post("/token/", async (req, res) => {
     const accessToken = jwt.generateAccessToken({
       username: user.username,
       role: user.role,
-    });
+    }).accessToken;
     res.json({ accessToken });
   });
 });
