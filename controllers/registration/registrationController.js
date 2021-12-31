@@ -350,6 +350,7 @@ const registerAll = async (req, res) => {
       billNr,
       regCount
     );
+
     // console.log("PDF generated");
     if (req.body.noEmail) return;
 
@@ -380,7 +381,7 @@ exports.create = async (req, res) => {
 };
 
 const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
-  await mailService.sendConfirmationMail(
+  return mailService.sendConfirmationMail(
     campers,
     names,
     contact,

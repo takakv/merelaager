@@ -2,6 +2,8 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const mg = require("nodemailer-mailgun-transport");
 const fs = require("fs");
+const path = require("path");
+const boilerplate = require("./mailService/boilerplate");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
 
@@ -186,19 +188,22 @@ class MailService {
     regCount,
     billNr
   ) {
+    const pdfPath = path.resolve(
+      path.join(__dirname, "../data/arved", pdfName)
+    );
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",
-        address: "bronn@merelaager.ee",
+        address: "no-reply@info.merelaager.ee",
       },
       to: contact.email,
       subject: "Broneeringu kinnitus",
-      html: generateHTML(campers, names, price, regCount),
+      html: boilerplate.getBoilerplate(campers, names, price, regCount), //generateHTML(campers, names, price, regCount),
       attachments: [
         {
-          filename: `${billNr}.pdf`,
-          path: `./data/arved/${pdfName}`,
+          filename: `arve_${billNr}.pdf`,
           contentType: "application/pdf",
+          content: fs.createReadStream(pdfPath),
         },
       ],
     });
@@ -208,7 +213,7 @@ class MailService {
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",
-        address: "bronn@merelaager.ee",
+        address: "no-reply@info.merelaager.ee",
       },
       to: contact.email,
       subject: "Reservnimekirja kandmise teade",

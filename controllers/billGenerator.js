@@ -22,7 +22,7 @@ const contentTop = 60;
 
 exports.getName = (child) => {
   const name = child.contactName.replace(/ /g, "_").toLowerCase();
-  return `arve_${name}_${child.billNr}.pdf`;
+  return `${child.billNr}.pdf`;
 };
 
 exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
@@ -31,7 +31,7 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
 
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
 
-  const billName = `arve_${name}_${billNr}.pdf`;
+  const billName = `${billNr}.pdf`;
 
   const writeStream = fs.createWriteStream(`./data/arved/${billName}`);
   doc.pipe(writeStream);
@@ -240,7 +240,12 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
   doc.save();
   doc.end();
 
-  await new Promise((fulfill) => writeStream.on("finish", fulfill));
+  await new Promise((resolve) => {
+    writeStream.on("finish", () => {
+      resolve();
+    });
+  });
+
   return billName;
 };
 
