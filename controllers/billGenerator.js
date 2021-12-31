@@ -51,12 +51,12 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
     .text(contact.name, sideMargin, contentTop);
   doc.fontSize(11).font("Helvetica").text(contact.email);
 
-  let firstShift = "5v";
+  let firstShift = 5;
   campers.forEach((camper) => {
     if (camper.isRegistered && camper.shiftNr < firstShift)
       firstShift = camper.shiftNr;
   });
-  const deadline = Date.now(); // shiftData[firstShift]["deadline"];
+  const deadline = shiftData[firstShift]["deadline"];
 
   // Bill details
   const billTop = contentTop + 80;
