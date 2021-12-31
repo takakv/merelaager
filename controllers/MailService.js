@@ -217,7 +217,7 @@ class MailService {
       },
       to: contact.email,
       subject: "Reservnimekirja kandmise teade",
-      html: generateFailureHTML(campers),
+      html: boilerplate.getFailed(campers),
     });
   }
 
