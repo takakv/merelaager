@@ -7,6 +7,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
 const pictures = require("./routes/pictures");
+const path = require("path");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,8 +17,8 @@ const hbs = exphbs.create({
   extname: "hbs",
   defaultView: "index",
   defaultLayout: "default",
-  layoutsDir: __dirname + "/views/layouts/",
-  partialsDir: __dirname + "/views/partials/",
+  layoutsDir: path.join(__dirname, "..", "/views/layouts/"),
+  partialsDir: path.join(__dirname, "..", "/views/partials/"),
   helpers: {
     times: (n, block) => {
       let accum = "";

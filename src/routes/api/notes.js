@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const shiftData = require("../../controllers/shiftController");
-const {requireShiftBoss} = require("../Support Files/shiftAuth");
+const { requireShiftBoss } = require("../Support Files/shiftAuth");
 
 router.use(requireShiftBoss);
 

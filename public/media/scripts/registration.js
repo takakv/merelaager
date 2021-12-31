@@ -121,8 +121,7 @@ source.onmessage = (event) => {
   const parsedData = JSON.parse(event.data);
   for (let i = 0; i < 5; ++i) {
     const boysCount = parsedData[i + 1].M > 0 ? parsedData[i + 1].M : 0;
-    const girlsCount =
-      parsedData[i + 1].F > 0 ? parsedData[i + 1].F : 0;
+    const girlsCount = parsedData[i + 1].F > 0 ? parsedData[i + 1].F : 0;
     //shiftSpots[i].children[1].innerText = `Poisid: 20`;
     //shiftSpots[i].children[2].innerText = `Tüdrukud: 20`;
     shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;

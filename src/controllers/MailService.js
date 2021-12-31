@@ -74,7 +74,7 @@ class MailService {
     billNr
   ) {
     const pdfPath = path.resolve(
-      path.join(__dirname, "../data/arved", pdfName)
+      path.join(__dirname, "../../data/arved", pdfName)
     );
     return this._transporter.sendMail({
       from: {
