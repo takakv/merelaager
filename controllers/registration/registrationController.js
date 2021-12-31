@@ -266,6 +266,7 @@ const registerAll = async (req, res) => {
   if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
 
   const order = registrationOrder++;
+  console.log(`Registration: ${order} at ${Date.now()}`);
 
   let shiftNrs, genders, names;
 
@@ -305,6 +306,8 @@ const registerAll = async (req, res) => {
     } else isRegistered.push(false);
   }
 
+  axios.post(process.env.URL, availableSlots).catch();
+
   // Keep track of registration bill order.
   const billNr = regCount ? billNumber++ : null;
 
@@ -341,8 +344,8 @@ const registerAll = async (req, res) => {
   };
 
   if (regCount) {
-    res.sendStatus(200);
-    // res.redirect("../edu/");
+    // res.sendStatus(200);
+    res.redirect("../edu/");
     const billName = await billGenerator.generatePDF(
       childrenData,
       names,
@@ -360,8 +363,8 @@ const registerAll = async (req, res) => {
       console.error(e);
     }
   } else {
-    res.sendStatus(200);
-    // res.redirect("../reserv/");
+    // res.sendStatus(200);
+    res.redirect("../reserv/");
     if (req.body.noEmail) return;
     try {
       await mailService.sendFailureMail(childrenData, contact);
@@ -377,7 +380,6 @@ exports.create = async (req, res) => {
   } catch (e) {
     console.error(e);
   }
-  // axios.post(process.env.URL, openSlots);
 };
 
 const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {

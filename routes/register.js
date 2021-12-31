@@ -46,26 +46,11 @@ router.get("/reserv/", (req, res) => {
 });
 
 let spots = {
-  1: {
-    boys: 20,
-    girls: 20,
-  },
-  2: {
-    boys: 20,
-    girls: 20,
-  },
-  3: {
-    boys: 20,
-    girls: 20,
-  },
-  4: {
-    boys: 16,
-    girls: 24,
-  },
-  5: {
-    boys: 20,
-    girls: 20,
-  },
+  1: { M: 20, F: 20 },
+  2: { M: 20, F: 20 },
+  3: { M: 20, F: 20 },
+  4: { M: 20, F: 20 },
+  5: { M: 20, F: 20 },
 };
 
 // Gather slot data
@@ -85,7 +70,7 @@ const sendEventsToAll = () => {
 router.post("/events/", [urlEncParser, bodyParser.json()], (req, res) => {
   spots = req.body;
   sendEventsToAll();
-  res.status(200).end();
+  res.sendStatus(200);
 });
 
 router.post(
@@ -140,7 +125,6 @@ router.post(
 );
 
 router.get("/events/", async (req, res) => {
-  console.log("Got events");
   // Headers
   const headers = {
     "Content-Type": "text/event-stream",
@@ -150,6 +134,7 @@ router.get("/events/", async (req, res) => {
   res.writeHead(200, headers);
 
   const clientId = Date.now();
+  console.log(`${clientId} Connection opened`);
   const newClient = {
     id: clientId,
     res,
