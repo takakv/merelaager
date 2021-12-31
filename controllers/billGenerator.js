@@ -22,16 +22,18 @@ const contentTop = 60;
 
 exports.getName = (child) => {
   const name = child.contactName.replace(/ /g, "_").toLowerCase();
-  return `arve_${name}.pdf`;
+  return `${child.billNr}.pdf`;
 };
 
-exports.generatePDF = async (campers, billNr, regCampers) => {
-  const name = campers[0].contactName.replace(/ /g, "_").toLowerCase();
+exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
+  const name = contact.name.replace(/ /g, "_").toLowerCase();
   let doc = new PDFDoc(billMeta);
 
   const oneThird = (doc.page.width - sideMargin * 2 - 10) / 3;
 
-  const writeStream = fs.createWriteStream(`./data/arved/arve_${name}.pdf`);
+  const billName = `${billNr}.pdf`;
+
+  const writeStream = fs.createWriteStream(`./data/arved/${billName}`);
   doc.pipe(writeStream);
 
   // ML logo
@@ -46,13 +48,13 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc
     .fontSize(22)
     .font("Helvetica-Bold")
-    .text(campers[0].contactName, sideMargin, contentTop);
-  doc.fontSize(11).font("Helvetica").text(campers[0].contactEmail);
+    .text(contact.name, sideMargin, contentTop);
+  doc.fontSize(11).font("Helvetica").text(contact.email);
 
-  let firstShift = "4v";
+  let firstShift = 5;
   campers.forEach((camper) => {
-    if (camper.isRegistered && camper.shift < firstShift)
-      firstShift = camper.shift;
+    if (camper.isRegistered && camper.shiftNr < firstShift)
+      firstShift = camper.shiftNr;
   });
   const deadline = shiftData[firstShift]["deadline"];
 
@@ -62,7 +64,7 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   const today = new Date();
   const finalDeadline = new Date(deadline);
   const due = new Date();
-  due.setDate(today.getDate() + 4);
+  due.setDate(today.getDate() + 3);
 
   // If bill coincides with final deadline.
   const lenientDeadline = due > finalDeadline;
@@ -132,55 +134,61 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.fontSize(10).font("Helvetica");
 
   const counters = {
-    sv1: {
-      txt: "8päevane vahetus Tallinna lapsele",
+    svOld: {
+      txt: "6päevane vahetus vanale olijale",
       count: 0,
-      price: 130,
+      price: 80,
     },
-    sv2: {
+    svNew: {
+      txt: "6päevane vahetus uuele tulijale",
+      count: 0,
+      price: 100,
+    },
+    mvOld: {
       txt: "8päevane vahetus vanale olijale",
+      count: 0,
+      price: 120,
+    },
+    mvNew: {
+      txt: "8päevane vahetus uuele tulijale",
       count: 0,
       price: 140,
     },
-    sv3: {
-      txt: "8päevane vahetus uuele tulijale",
-      count: 0,
-      price: 150,
-    },
-    lv1: {
-      txt: "12päevane vahetus Tallinna lapsele",
-      count: 0,
-      price: 220,
-    },
-    lv2: {
+    lvOld: {
       txt: "12päevane vahetus vanale olijale",
       count: 0,
-      price: 230,
+      price: 200,
     },
-    lv3: {
+    lvNew: {
       txt: "12päevane vahetus uuele tulijale",
       count: 0,
-      price: 240,
+      price: 220,
     },
     br: {
       txt: "Broneerimistasu",
       count: 0,
-      price: 50,
+      price: 100,
     },
   };
+
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
-    if (campers[i].shift === "1v") {
-      if (campers[i].city.toLowerCase().trim() === "tallinn")
-        ++counters.sv1.count;
-      else if (campers[i].isOld) ++counters.sv2.count;
-      else ++counters.sv3.count;
-    } else {
-      if (campers[i].city.toLowerCase().trim() === "tallinn")
-        ++counters.lv1.count;
-      else if (campers[i].isOld) ++counters.lv2.count;
-      else ++counters.lv3.count;
+
+    switch (campers[i].shiftNr) {
+      case 1:
+        if (campers[i].isOld) ++counters.mvOld.count;
+        else ++counters.mvNew.count;
+        break;
+      case 3:
+        if (campers[i].isOld) ++counters.svOld.count;
+        else ++counters.svNew.count;
+        break;
+      default:
+        if (campers[i].isOld) ++counters.lvOld.count;
+        else ++counters.lvNew.count;
+        break;
     }
+
     ++counters.br.count;
   }
 
@@ -222,13 +230,8 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   for (let i = 0; i < campers.length; ++i) {
     if (!campers[i].isRegistered) continue;
     ++processedCampers;
-    doc.text(
-      `${campers[i].name} ${shiftData[campers[i].shift].id.slice(0, 4)}`,
-      {
-        continued: true,
-      }
-    );
-    if (processedCampers !== regCampers) doc.text(", ", { continued: true });
+    doc.text(`${names[i]} ${campers[i].shiftNr}v`, { continued: true });
+    if (processedCampers !== regCount) doc.text(", ", { continued: true });
   }
 
   // Footer
@@ -237,8 +240,13 @@ exports.generatePDF = async (campers, billNr, regCampers) => {
   doc.save();
   doc.end();
 
-  await new Promise((fulfill) => writeStream.on("finish", fulfill));
-  return `arve_${name}.pdf`;
+  await new Promise((resolve) => {
+    writeStream.on("finish", () => {
+      resolve();
+    });
+  });
+
+  return billName;
 };
 
 const generateFooter = (doc, oneThird) => {

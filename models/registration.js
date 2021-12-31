@@ -24,9 +24,6 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: true,
       },
-      shiftNr: {
-        type: DataTypes.INTEGER,
-      },
       tsSize: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -51,17 +48,19 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: "Eesti",
       },
-      isEmsa: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
       billNr: {
+        type: DataTypes.INTEGER,
+      },
+      regOrder: {
         type: DataTypes.INTEGER,
       },
       isRegistered: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      shiftNr: {
+        type: DataTypes.INTEGER,
       },
       contactName: {
         type: DataTypes.TEXT,
@@ -87,11 +86,6 @@ module.exports = (sequelize) => {
         defaultValue: 0,
       },
     },
-    {
-      tableName:
-        process.env.NODE_ENV === "prod"
-          ? "registrations"
-          : "test_registrations",
-    }
+    { tableName: "registrations" }
   );
 };

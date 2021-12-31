@@ -119,14 +119,14 @@ const source = new EventSource("/registreerimine/events/");
 const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
 source.onmessage = (event) => {
   const parsedData = JSON.parse(event.data);
-  for (let i = 0; i < 4; ++i) {
-    const boysCount = parsedData[i + 1].boys > 0 ? parsedData[i + 1].boys : 0;
+  for (let i = 0; i < 5; ++i) {
+    const boysCount = parsedData[i + 1].M > 0 ? parsedData[i + 1].M : 0;
     const girlsCount =
-      parsedData[i + 1].girls > 0 ? parsedData[i + 1].girls : 0;
-    shiftSpots[i].children[1].innerText = `Poisid: 0`;
-    shiftSpots[i].children[2].innerText = `Tüdrukud: 0`;
-    // shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
-    // shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
+      parsedData[i + 1].F > 0 ? parsedData[i + 1].F : 0;
+    //shiftSpots[i].children[1].innerText = `Poisid: 20`;
+    //shiftSpots[i].children[2].innerText = `Tüdrukud: 20`;
+    shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
+    shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
   }
 };
 

@@ -6,9 +6,12 @@ const Users = db.users;
 const requireShiftBoss = async (req, res, next) => {
   const { user } = req;
 
-  if (user.role === "boss") return next();
+  if (user.isRoot) return next();
 
-  const year = new Date().getUTCFullYear();
+  const now = new Date();
+  let year = now.getUTCFullYear();
+  if (now.getMonth() === 11) ++year;
+
   const result = await ShiftStaff.findOne({
     where: {
       userId: user.id,
@@ -34,12 +37,12 @@ const requireShiftBoss = async (req, res, next) => {
 };
 
 const approveShift = async (user, shiftNr) => {
-  if (user.role === "boss") return true;
+  if (user.isRoot) return true;
   return user.shift === shiftNr;
 };
 
 const approveShiftFull = async (user, shiftNr) => {
-  if (user.role === "boss") return true;
+  if (user.isRoot) return true;
 
   const userId = (
     await Users.findOne({

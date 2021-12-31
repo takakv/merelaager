@@ -6,6 +6,7 @@ const MailService = require("./MailService");
 const uidgen = new UIDGenerator(512);
 const SuToken = db.suToken;
 const User = db.users;
+const ResetToken = db.resetToken;
 
 const validateToken = async (token) => {
   const response = await SuToken.findByPk(token);
@@ -44,7 +45,76 @@ exports.checkUser = async (username) => {
   return !!(await User.findOne({ where: { username } }));
 };
 
-exports.create = async (username, password, token, name = null) => {
+const validateResetToken = async (token, disable = false) => {
+  const response = await ResetToken.findByPk(token);
+  if (!response || response.isExpired) return false;
+  const { createdAt } = response;
+  const elapsed = Date.now() - createdAt;
+  if (elapsed > 1200000 || disable) {
+    response.isExpired = true;
+    await response.save();
+    return false;
+  }
+  return response.userId;
+};
+
+const disableResetToken = async (token) => {
+  const response = await ResetToken.findByPk(token);
+  if (token) {
+    response.isExpired = true;
+    await response.save();
+  }
+};
+
+exports.validateResetToken = validateResetToken;
+
+const getPwdHash = (password) => {
+  return bcrypt.hashSync(password, parseInt(process.env.SALTR));
+};
+
+exports.changePwd = async (password, token) => {
+  const userId = await validateResetToken(token);
+  if (!userId) return false;
+
+  const pwdHash = getPwdHash(password);
+  const user = await User.findByPk(userId);
+  if (!user) return false;
+  user.password = pwdHash;
+  await user.save();
+  await disableResetToken(token);
+  return true;
+};
+
+exports.resetPwd = async (email) => {
+  const user = await User.findOne({ where: { email }, attributes: ["id"] });
+  if (!user) return false;
+
+  const uid = await uidgen.generate();
+
+  try {
+    const exists = await ResetToken.findByPk(uid);
+    if (exists) return false;
+    await ResetToken.create({
+      token: uid,
+      userId: user.id,
+    });
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+
+  try {
+    const mailService = new MailService();
+    await mailService.sendPwdResetMail(email, uid);
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+
+  return true;
+};
+
+exports.createAccount = async (username, password, token, name = null) => {
   const creationData = await SuToken.findByPk(token);
   if (!creationData || creationData.isExpired)
     return { error: "Kehtetu token" };
@@ -52,7 +122,7 @@ exports.create = async (username, password, token, name = null) => {
   const usernameExists = (await User.findOne({ where: { username } })) !== null;
   if (usernameExists) return { error: "Kasutajanimi on juba kasutuses" };
 
-  const pwdHash = bcrypt.hashSync(password, parseInt(process.env.SALTR));
+  const pwdHash = getPwdHash(password);
   try {
     await User.create({
       username,

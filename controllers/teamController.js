@@ -3,7 +3,7 @@ const db = require("../models/database");
 const Team = db.team;
 const DE = db.shiftData;
 const ShiftData = db.shiftData;
-const Children = db.newChildren;
+const Children = db.child;
 
 const createChildObject = (data) => {
   return { id: data.id, name: data.child.name };

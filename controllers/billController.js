@@ -4,31 +4,28 @@ const billGenerator = require("./billGenerator");
 const fs = require("fs");
 
 const Camper = db.registrations;
+const Child = db.child;
 
 const bulkQueryByEmail = (contactEmail) => {
-  return Camper.findAll({
-    where: {
-      contactEmail,
-    },
-  });
+  return Camper.findAll({ where: { contactEmail }, include: Child });
 };
 
 const queryByEmail = (contactEmail) => {
   return Camper.findOne({
-    where: {
-      contactEmail,
-    },
+    where: { contactEmail },
+    attributes: ["contactName", "billNr"],
   });
 };
 
 const getBillNr = async () => {
   const previousBill = await Camper.findOne({
     order: [["billNr", "DESC"]],
+    attributes: ["billNr"],
   });
   if (previousBill) {
     return previousBill.billNr + 1;
   }
-  return 1;
+  return 21001;
 };
 
 exports.create = async (req, res) => {
@@ -38,26 +35,39 @@ exports.create = async (req, res) => {
     res.status(404).send("Pole sellist meiliaadressi.");
     return;
   }
+
   const campers = [];
-  let billNr;
+  const names = [];
+  let billNr = 0;
+
   children.forEach((child) => {
-    if (!billNr && child["billNr"]) billNr = child["billNr"];
-    if (child["isRegistered"]) campers.push(child);
+    if (billNr === 0 && child["billNr"]) billNr = child["billNr"];
+    if (child["isRegistered"]) {
+      campers.push(child);
+      names.push(child.child.name);
+    }
   });
+
   if (!billNr) {
     billNr = await getBillNr();
     await children.forEach((child) => {
-      child.update({
-        billNr: billNr,
-      });
+      child.update({ billNr: billNr });
     });
   }
   if (campers.length) {
+    const contact = {
+      name: campers[0].contactName,
+      email: campers[0].contactEmail,
+    };
+
     const billName = await billGenerator.generatePDF(
       campers,
+      names,
+      contact,
       billNr,
       campers.length
     );
+
     res.sendFile(`${billName}`, {
       root: "./data/arved",
     });

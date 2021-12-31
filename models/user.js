@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { DataTypes } = require("sequelize");
+const {DataTypes} = require("sequelize");
 
 module.exports = (sequelize) => {
   return sequelize.define(
@@ -25,7 +25,8 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
       },
       role: {
-        type: DataTypes.ENUM("boss", "master", "op", "camper"),
+        type: DataTypes.ENUM("root", "boss", "std", "master", "op", "camper"),
+        defaultValue: "std"
       },
       shifts: {
         type: DataTypes.INTEGER,
@@ -38,6 +39,6 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
       },
     },
-    { tableName: "users" }
+    {tableName: "users"}
   );
 };

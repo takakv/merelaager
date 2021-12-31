@@ -25,10 +25,47 @@ const createUser = async (username, password) => {
   }
 };
 
-exports.swapShift = async (userId, shiftNr, isBoss = false) => {
-  let role = "boss";
+// Fetches all users from the database.
+// No filters.
+exports.fetchAll = async () => {
+  const response = { isOk: false };
+  let users;
 
-  if (isBoss) {
+  try {
+    users = await Users.findAll({
+      attributes: ["username", "name", "nickname", "role", "email"],
+    });
+  } catch (e) {
+    console.error(e);
+    response.code = 500;
+    return response;
+  }
+
+  if (!users) {
+    response.code = 404;
+    return response;
+  }
+
+  response.isOk = true;
+  response.users = [];
+
+  users.forEach((user) => {
+    response.users.push({
+      username: user.username,
+      name: user.name,
+      nickname: user.nickname,
+      role: user.role,
+      email: user.email,
+    });
+  });
+
+  return response;
+};
+
+exports.swapShift = async (userId, shiftNr, isBoss = false) => {
+  let role = "root";
+
+  if (!isBoss) {
     const shiftInfo = await Staff.findOne({
       where: {
         userId,
@@ -63,7 +100,7 @@ exports.getInfo = async (userId) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  if (user.role !== "boss") {
+  if (user.role !== "root") {
     const shiftInfo = await Staff.findAll({
       where: { userId, year },
     });
@@ -78,7 +115,7 @@ exports.getInfo = async (userId) => {
     allShifts.forEach((shift) => {
       shifts.push(shift.id);
     });
-    role = "boss";
+    role = "root";
   }
 
   return {

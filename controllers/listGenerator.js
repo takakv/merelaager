@@ -30,7 +30,7 @@ const createDoc = (shiftNr, campers) => {
 
   return {
     content: [
-      { text: `${shiftNr}v 2021`, style: "header" },
+      { text: `${shiftNr}v ${new Date().getFullYear()}`, style: "header" },
       {
         table: {
           body: tableContent,

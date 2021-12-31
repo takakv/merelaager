@@ -2,8 +2,6 @@ const router = require("express").Router();
 const registrationList = require("../../controllers/listController");
 const { requireShiftBoss } = require("../Support Files/shiftAuth");
 
-router.use(requireShiftBoss);
-
 // Fetch the whole list of children and their registration status.
 router.get("/fetch/", async (req, res) => {
   try {
@@ -14,6 +12,8 @@ router.get("/fetch/", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+router.use(requireShiftBoss);
 
 router.get("/print/:shiftNr/", async (req, res) => {
   if (!req.params["shiftNr"]) return res.sendStatus(400);

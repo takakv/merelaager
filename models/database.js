@@ -8,7 +8,8 @@ const pass = process.env.MYSQL_PWD;
 const dbname = process.env.MYSQL_DB;
 
 const sequelize = new Sequelize(
-  `mysql://${user}:${pass}@${host}:3306/${dbname}`
+  `mysql://${user}:${pass}@${host}:3306/${dbname}`,
+  { logging: false }
 );
 
 sequelize
@@ -21,26 +22,29 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.registrations = require("./registration")(sequelize);
 db.users = require("./user")(sequelize);
-db.shiftCampers = require("./shift")(sequelize);
-db.children = require("./child")(sequelize);
-db.shiftData = require("./newShift")(sequelize);
-db.newChildren = require("./newChild")(sequelize);
+db.shiftData = require("./shiftData")(sequelize);
+db.child = require("./child")(sequelize);
 db.team = require("./team")(sequelize);
 db.suToken = require("./suToken")(sequelize);
 db.staff = require("./staff")(sequelize);
 db.shiftInfo = require("./shiftInfo")(sequelize);
 db.records = require("./record")(sequelize);
+db.resetToken = require("./resetToken")(sequelize);
 
-db.newChildren.hasMany(db.shiftData);
-db.shiftData.belongsTo(db.newChildren);
+db.child.hasMany(db.shiftData);
+db.shiftData.belongsTo(db.child);
+
+db.users.hasOne(db.resetToken);
+db.resetToken.belongsTo(db.users);
+
 db.team.hasMany(db.shiftData);
 db.shiftData.belongsTo(db.team);
 
 db.users.hasMany(db.staff);
 db.staff.belongsTo(db.users);
 
-db.newChildren.hasMany(db.registrations);
-db.registrations.belongsTo(db.newChildren);
+db.child.hasMany(db.registrations);
+db.registrations.belongsTo(db.child);
 
 db.shiftInfo.hasMany(db.registrations, {
   foreignKey: "shiftNr",
@@ -58,7 +62,7 @@ db.shiftInfo.belongsTo(db.users, {
   foreignKey: "bossId",
 });
 
-db.newChildren.hasMany(db.records);
-db.records.belongsTo(db.newChildren);
+db.child.hasMany(db.records);
+db.records.belongsTo(db.child);
 
 module.exports = db;

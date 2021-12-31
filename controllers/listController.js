@@ -4,16 +4,20 @@ const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
 const Registrations = db.registrations;
-const Children = db.newChildren;
-const numberOfShifts = 4;
+const Children = db.child;
+const numberOfShifts = 5;
 
 exports.fetch = async (req, res) => {
   const children = await Registrations.findAll({
-    order: [["id", "ASC"]],
+    order: [["regOrder", "ASC"]],
     include: Children,
   });
 
   if (!children.length) return null;
+
+  const { role } = req.user;
+  const allowedRoles = ["op", "master", "boss", "root"];
+  if (!allowedRoles.includes(role)) return null;
 
   let returnData = {};
 
@@ -37,18 +41,22 @@ exports.fetch = async (req, res) => {
       isOld: child["isOld"],
       shift: child["shiftNr"],
       tShirtSize: child["tsSize"],
+      regOrder: child.regOrder,
+      registered: child.isRegistered,
       // city: child["city"],
       // county: child["county"],
-      billNr: child["billNr"],
-      contactName: child["contactName"].trim(),
-      contactEmail: child["contactEmail"],
-      contactNr: child["contactNumber"],
-      registered: child["isRegistered"],
-      pricePaid: child["pricePaid"],
-      priceToPay: child["priceToPay"],
     };
 
-    if (req.user.role === "boss") data.idCode = child.idCode;
+    if (role !== "op") {
+      data.billNr = child.billNr;
+      data.contactName = child.contactName.trim();
+      data.contactEmail = child.contactEmail.trim();
+      data.contactNr = child.contactNumber.trim();
+      data.pricePaid = child["pricePaid"];
+      data.priceToPay = child["priceToPay"];
+    }
+
+    if (req.user.role === "root") data.idCode = child.idCode;
 
     pushData(data, returnData[child.shiftNr]);
   });
@@ -97,7 +105,7 @@ exports.update = async (req, res) => {
       return true;
   }
 
-  if (req.user.role !== "boss") {
+  if (req.user.role !== "root") {
     console.log("User not authorised for price manipulation.");
     return res.sendStatus(404) && null;
   }
@@ -130,7 +138,7 @@ const getCamper = async (id, queryUser) => {
     };
 
   // Evaluate access rights.
-  const shift = parseInt(camper.shift[0]);
+  const shift = parseInt(camper.shiftNr);
   if (!(await approveShift(queryUser, shift))) {
     const message = "User not authorised for the shift";
     console.log(message);
@@ -142,7 +150,7 @@ const getCamper = async (id, queryUser) => {
   }
 
   return {
-    code: 400,
+    code: 200,
     message: "",
     ok: true,
     data: camper,
@@ -163,10 +171,10 @@ exports.remove = async (req, res) => {
 
 exports.print = async (shiftNr) => {
   const children = await Registrations.findAll({
-    order: [["name", "ASC"]],
-    where: {
-      shift: `${shiftNr}v`,
-      isRegistered: true,
+    where: { shiftNr, isRegistered: true },
+    include: {
+      model: Children,
+      order: [["name", "ASC"]],
     },
   });
 
@@ -176,14 +184,14 @@ exports.print = async (shiftNr) => {
 
   children.forEach((child) => {
     childrenInfo.push({
-      name: child.name,
-      gender: child.gender,
+      name: child.child.name,
+      gender: child.child.gender,
       birthday: child.birthday,
       isOld: child.isOld,
       tsSize: child.tsSize,
       contactName: child.contactName.trim(),
-      contactEmail: child.contactEmail,
-      contactNr: child.contactNumber,
+      contactEmail: child.contactEmail.trim(),
+      contactNr: child.contactNumber.trim(),
     });
   });
 
