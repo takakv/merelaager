@@ -24,6 +24,14 @@ if (process.env.UNLOCK === "true") {
   }, meta.eta);
 }
 
+console.log(`Registration is unlocked? ${unlocked}`);
+console.log(
+  `Unlock date: ${meta.unlockTime.toLocaleString("en-GB", {
+    timeZone: "Europe/Tallinn",
+  })} (Estonian time)`
+);
+console.log(`Unlock delta: ${meta.eta}`);
+
 const availableSlots = {
   1: { M: 0, F: 0 },
   2: { M: 0, F: 0 },
@@ -100,19 +108,6 @@ initializeBillNr().then(() => {
 initializeRegistrationOrder().then(() => {
   console.log(`Reg order: ${registrationOrder}`);
 });
-
-const getBillNr = async () => {
-  /*
-  const previousBill = await Registrations.findOne({
-    order: [["billNr", "DESC"]],
-  });
-  if (previousBill) {
-    return previousBill.billNr + 1;
-  }
-  */
-  if (billNumber === 0) await initializeBillNr();
-  return billNumber;
-};
 
 const parser = require("./parser");
 
