@@ -1,5 +1,7 @@
-const router = require("express").Router();
+import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
+
+const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
@@ -58,7 +60,7 @@ import {
   create as createBill,
 } from "../controllers/billController";
 
-router.post("/bills/:action/:email", async (req, res) => {
+router.post("/bills/:action/:email", async (req: Request, res: Response) => {
   if (!req.params["action"] || !req.params["email"]) {
     return res.sendStatus(400);
   }
@@ -76,7 +78,7 @@ router.post("/bills/:action/:email", async (req, res) => {
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
 
-router.get("/shirts/fetch/", async (req, res) => {
+router.get("/shirts/fetch/", async (req: Request, res: Response) => {
   const data = await fetchShirts();
   res.json(data);
 });

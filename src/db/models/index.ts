@@ -1,5 +1,7 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import Child from "./child";
+import Registration from "./registration";
 
 dotenv.config();
 
@@ -14,3 +16,6 @@ const sequelize = new Sequelize(
 );
 
 export { Sequelize, sequelize };
+
+// Child.hasMany(Registration);
+Registration.belongsTo(Child);

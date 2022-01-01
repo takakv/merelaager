@@ -1,6 +1,6 @@
 require("dotenv").config();
 const MailService = require("../MailService");
-import db from "../../models/database";
+
 const axios = require("axios");
 const billGenerator = require("../billGenerator");
 const sequelize = require("sequelize");
@@ -11,8 +11,8 @@ const mailService = new MailService();
 
 const DEBUG = false;
 
-const Registrations = db.registrations;
-const Children = db.child;
+import Registration from "../../db/models/registration";
+import Child from "../../db/models/child";
 
 let unlocked = process.env.NODE_ENV === "dev";
 
@@ -51,15 +51,15 @@ const fetchPromises = () => {
 
   for (let i = 1; i <= 5; ++i) {
     promises.push(
-      Registrations.count({
+      Registration.count({
         where: { isRegistered: true, shiftNr: i },
-        include: { model: Children, where: { gender: "M" } },
+        include: { model: Child, where: { gender: "M" } },
       })
     );
     promises.push(
-      Registrations.count({
+      Registration.count({
         where: { isRegistered: true, shiftNr: i },
-        include: { model: Children, where: { gender: "F" } },
+        include: { model: Child, where: { gender: "F" } },
       })
     );
   }
@@ -76,7 +76,7 @@ const initializeAvailableSlots = async () => {
 };
 
 const initializeBillNr = async () => {
-  const previousBill = await Registrations.findOne({
+  const previousBill = await Registration.findOne({
     order: [["billNr", "DESC"]],
   });
   if (previousBill) {
@@ -85,7 +85,7 @@ const initializeBillNr = async () => {
 };
 
 const initializeRegistrationOrder = async () => {
-  const prevReg = await Registrations.findOne({
+  const prevReg = await Registration.findOne({
     order: [["regOrder", "DESC"]],
     attributes: ["regOrder"],
   });
@@ -113,7 +113,7 @@ const parser = require("./parser");
 
 const fetchChild = async (name) => {
   // Case-insensitive name search.
-  const child = await Children.findOne({
+  const child = await Child.findOne({
     where: {
       name: sequelize.where(
         sequelize.fn("LOWER", sequelize.col("name")),
@@ -127,13 +127,13 @@ const fetchChild = async (name) => {
 };
 
 const addChild = async (name, gender) => {
-  const child = await Children.create({ name, gender });
+  const child = await Child.create({ name, gender });
   if (!child) {
     console.log(child);
     console.log("Error creating child");
     return null;
   }
-  const res = await Children.findOne({ where: { name } });
+  const res = await Child.findOne({ where: { name } });
   if (!res) {
     console.log(res);
     console.log("Sanity check failed");
@@ -331,7 +331,7 @@ const registerAll = async (req, res) => {
     console.log(childrenData);
   }
 
-  await Registrations.bulkCreate(childrenData);
+  await Registration.bulkCreate(childrenData);
 
   const contact = {
     name: childrenData[0].contactName,

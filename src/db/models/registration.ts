@@ -131,3 +131,5 @@ Registration.init(
   },
   { tableName: "registrations", sequelize }
 );
+
+export default Registration;

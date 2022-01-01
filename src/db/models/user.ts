@@ -70,3 +70,5 @@ User.init(
   },
   { tableName: "users", sequelize }
 );
+
+export default User;
