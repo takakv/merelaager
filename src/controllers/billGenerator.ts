@@ -240,7 +240,7 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
   doc.save();
   doc.end();
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     writeStream.on("finish", () => {
       resolve();
     });

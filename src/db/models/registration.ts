@@ -1,5 +1,6 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { Association, DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "./index";
+import Child from "./child";
 
 interface RegistrationAttributes {
   id: number;
@@ -51,6 +52,12 @@ class Registration
   backupTel: string;
   pricePaid: number;
   priceToPay: number;
+
+  declare readonly child?: Child;
+
+  declare static associations: {
+    child: Association<Registration, Child>;
+  };
 }
 
 Registration.init(

@@ -1,16 +1,17 @@
 require("dotenv").config();
-import db from "../models/database";
+
 const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
-const Registrations = db.registrations;
-const Children = db.child;
+import Registration from "../db/models/registration";
+import Child from "../db/models/child";
+
 const numberOfShifts = 5;
 
-exports.fetch = async (req, res) => {
-  const children = await Registrations.findAll({
+exports.fetch = async (req) => {
+  const children = await Registration.findAll({
     order: [["regOrder", "ASC"]],
-    include: Children,
+    include: Child,
   });
 
   if (!children.length) return null;
@@ -45,6 +46,13 @@ exports.fetch = async (req, res) => {
       registered: child.isRegistered,
       // city: child["city"],
       // county: child["county"],
+      billNr: null,
+      contactName: null,
+      contactEmail: null,
+      contactNr: null,
+      pricePaid: null,
+      priceToPay: null,
+      idCode: null,
     };
 
     if (role !== "op") {
@@ -94,14 +102,17 @@ exports.update = async (req, res) => {
   switch (action) {
     // Toggle the camper registration status.
     case "registration":
-      await Registrations.update(
-        { isRegistered: !camper.isRegistered },
+      await Registration.update(
+        { isRegistered: !camper.data.isRegistered },
         { where: { id } }
       );
       return true;
-    // Toggle whether or not the camper has been to the camp before.
+    // Toggle whether the camper has been to the camp before.
     case "regular":
-      await Registrations.update({ isOld: !camper.isOld }, { where: { id } });
+      await Registration.update(
+        { isOld: !camper.data.isOld },
+        { where: { id } }
+      );
       return true;
   }
 
@@ -115,11 +126,11 @@ exports.update = async (req, res) => {
   switch (action) {
     // Update the amount that has been paid for the camper.
     case "total-paid":
-      await Registrations.update({ pricePaid: value }, { where: { id } });
+      await Registration.update({ pricePaid: value }, { where: { id } });
       break;
     // Update the total amount due fo the camper.
     case "total-due":
-      await Registrations.update({ priceToPay: value }, { where: { id } });
+      await Registration.update({ priceToPay: value }, { where: { id } });
       break;
     default:
       res.sendStatus(400);
@@ -129,7 +140,7 @@ exports.update = async (req, res) => {
 };
 
 const getCamper = async (id, queryUser) => {
-  const camper = await Registrations.findByPk(id);
+  const camper = await Registration.findByPk(id);
   if (!camper)
     return {
       code: 404,
@@ -138,7 +149,7 @@ const getCamper = async (id, queryUser) => {
     };
 
   // Evaluate access rights.
-  const shift = parseInt(camper.shiftNr);
+  const shift: number = camper.shiftNr;
   if (!(await approveShift(queryUser, shift))) {
     const message = "User not authorised for the shift";
     console.log(message);
@@ -165,15 +176,15 @@ exports.remove = async (req, res) => {
   const camper = await getCamper(id, req.user);
   if (!camper.ok) return res.sendStatus(camper.code) && null;
 
-  await Registrations.destroy({ where: { id } });
+  await Registration.destroy({ where: { id } });
   return true;
 };
 
 exports.print = async (shiftNr) => {
-  const children = await Registrations.findAll({
+  const children = await Registration.findAll({
     where: { shiftNr, isRegistered: true },
     include: {
-      model: Children,
+      model: Child,
       order: [["name", "ASC"]],
     },
   });

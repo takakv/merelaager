@@ -1,6 +1,6 @@
-const PDFDoc = require("pdfkit");
 import fs from "fs";
-const QRCode = require("qrcode");
+import PDFDoc from "pdfkit";
+import QRCode from "qrcode";
 
 const cardMeta = {
   size: "A4",
@@ -14,13 +14,16 @@ const cardMeta = {
     right: 60,
     bottom: 40,
   },
+  autoFirstPage: true,
 };
 
 const populateCard = async (doc, camper) => {
   const birthday = new Date(camper.birthday);
-  let now = new Date();
-  now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const age = Math.floor((now - birthday) / (60 * 60 * 24 * 365 * 1000));
+  let now = Date.now();
+  // now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const age = Math.floor(
+    (now - birthday.getTime()) / (60 * 60 * 24 * 365 * 1000)
+  );
 
   doc.font("Helvetica-Bold").text(camper.name);
   doc
