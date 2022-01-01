@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "./index";
 
 interface RecordAttributes {
@@ -7,7 +7,12 @@ interface RecordAttributes {
   year: number;
 }
 
-class Record extends Model<RecordAttributes> implements RecordAttributes {
+interface RecordCreationAttributes extends Optional<RecordAttributes, "id"> {}
+
+class Record
+  extends Model<RecordAttributes, RecordCreationAttributes>
+  implements RecordAttributes
+{
   public id!: number;
   public shiftNr!: number;
   public year!: number;

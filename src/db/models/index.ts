@@ -2,6 +2,9 @@ import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 import Child from "./child";
 import Registration from "./registration";
+import Record from "./record";
+import User from "./user";
+import Staff from "./staff";
 
 dotenv.config();
 
@@ -19,3 +22,9 @@ export { Sequelize, sequelize };
 
 // Child.hasMany(Registration);
 Registration.belongsTo(Child);
+
+// Child.hasMany(Record);
+Record.belongsTo(Child);
+
+// User.hasMany(Staff);
+Staff.belongsTo(User);
