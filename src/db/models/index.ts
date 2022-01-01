@@ -5,6 +5,9 @@ import Registration from "./registration";
 import Record from "./record";
 import User from "./user";
 import Staff from "./staff";
+import ResetToken from "./resetToken";
+import ShiftData from "./shiftData";
+import ShiftInfo from "./shiftInfo";
 
 dotenv.config();
 
@@ -18,13 +21,19 @@ const sequelize = new Sequelize(
   { logging: false }
 );
 
-export { Sequelize, sequelize };
-
-// Child.hasMany(Registration);
+Child.hasMany(Registration);
 Registration.belongsTo(Child);
 
-// Child.hasMany(Record);
+Child.hasMany(Record);
 Record.belongsTo(Child);
 
-// User.hasMany(Staff);
+User.hasMany(Staff);
 Staff.belongsTo(User);
+
+User.hasOne(ResetToken);
+ResetToken.belongsTo(User);
+
+ShiftInfo.hasMany(ShiftData);
+ShiftData.belongsTo(ShiftInfo);
+
+export { Sequelize, sequelize };
