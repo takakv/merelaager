@@ -1,9 +1,6 @@
-import db from "../models/database";
-
-const Team = db.team;
-const DE = db.shiftData;
-const ShiftData = db.shiftData;
-const Children = db.child;
+import Team from "../db/models/Team";
+import ShiftData from "../db/models/ShiftData";
+import Child from "../db/models/Child";
 
 const createChildObject = (data) => {
   return { id: data.id, name: data.child.name };
@@ -17,7 +14,7 @@ exports.fetchForShift = async (shiftNr) => {
     where: { shiftNr },
     order: [["childId", "ASC"]],
     include: {
-      model: Children,
+      model: Child,
       attributes: ["name"],
     },
     attributes: ["id", "teamId"],
@@ -58,7 +55,7 @@ exports.createTeam = async (teamName, shiftNr) => {
 
 const addMember = async (teamId, dataId) => {
   try {
-    const entry = await DE.findByPk(dataId);
+    const entry = await ShiftData.findByPk(dataId);
     if (!entry) return false;
     entry.teamId = teamId;
     await entry.save();

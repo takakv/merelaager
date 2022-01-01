@@ -1,11 +1,9 @@
-import db from "../models/database";
-
-const Campers = db.registrations;
+import Registration from "../db/models/Registration";
 
 export const fetch = async () => {
   let children;
   try {
-    children = await Campers.findAll({
+    children = await Registration.findAll({
       order: [["id", "ASC"]],
       where: { isRegistered: true },
     });

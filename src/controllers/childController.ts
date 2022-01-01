@@ -1,16 +1,14 @@
-import db from "../models/database";
-
-const Registrations = db.registrations;
-const newChildren = db.child;
+import Registration from "../db/models/Registration";
+import Child from "../db/models/Child";
 
 exports.newChildren = async () => {
   // Fetch all registered campers.
-  const regCampers = await Registrations.findAll({
+  const regCampers = await Registration.findAll({
     where: { isRegistered: true },
   });
 
   regCampers.forEach((camper) => {
-    newChildren.findOrCreate({
+    Child.findOrCreate({
       where: { name: camper.name },
       defaults: {
         name: camper.name,
@@ -21,23 +19,23 @@ exports.newChildren = async () => {
 };
 
 const addChildEntry = async (data) => {
-  await newChildren.create({
+  await Child.create({
     name: data.name,
     gender: data.gender === "Poiss" ? "M" : "F",
   });
-  return await newChildren.findOne({
+  return await Child.findOne({
     where: { name: data.name },
   });
 };
 
 exports.linkReg = async () => {
   // Fetch all registrations.
-  const regs = await Registrations.findAll();
+  const regs = await Registration.findAll();
 
   const idless = [];
 
   for (const entry of regs) {
-    const result = await newChildren.findAll({
+    const result = await Child.findAll({
       where: { name: entry.name },
     });
 

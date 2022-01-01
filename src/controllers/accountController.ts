@@ -1,16 +1,15 @@
+import SignUpToken from "../db/models/SignUpToken";
+import User from "../db/models/User";
+import ResetToken from "../db/models/ResetToken";
+
 const bcrypt = require("bcrypt");
 const UIDGenerator = require("uid-generator");
 const MailService = require("./MailService");
 
-import db from "../models/database";
-
 const uidgen = new UIDGenerator(512);
-const SuToken = db.suToken;
-const User = db.users;
-const ResetToken = db.resetToken;
 
 const validateToken = async (token) => {
-  const response = await SuToken.findByPk(token);
+  const response = await SignUpToken.findByPk(token);
   return response && !response.isExpired;
 };
 
@@ -19,7 +18,7 @@ exports.validateSuToken = validateToken;
 exports.createSuToken = async (shiftNr, role = "op") => {
   const uid = await uidgen.generate();
   try {
-    await SuToken.create({ token: uid, shiftNr, role });
+    await SignUpToken.create({ token: uid, shiftNr, role });
   } catch (e) {
     console.error(e);
     return false;
@@ -28,7 +27,7 @@ exports.createSuToken = async (shiftNr, role = "op") => {
 };
 
 exports.destroyToken = async (token) => {
-  await SuToken.destroy({ where: { token } });
+  await SignUpToken.destroy({ where: { token } });
 };
 
 exports.sendEmail = async (email, token) => {
@@ -116,7 +115,7 @@ exports.resetPwd = async (email) => {
 };
 
 exports.createAccount = async (username, password, token, name = null) => {
-  const creationData = await SuToken.findByPk(token);
+  const creationData = await SignUpToken.findByPk(token);
   if (!creationData || creationData.isExpired)
     return { error: "Kehtetu token" };
 

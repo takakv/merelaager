@@ -98,6 +98,8 @@ app.get("/sisukaart/", (req: Request, res: Response) => {
   });
 });
 
+/*
+
 const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
@@ -116,6 +118,7 @@ app.use("/api/", api);
 app.get("/broneerimine/", (req, res, next) => {
   res.redirect("/registreerimine/");
 });
+ */
 
 app.use((req, res, next) => {
   res.status(404).render("404", {
@@ -127,7 +130,13 @@ app.use((req, res, next) => {
   });
 });
 
-const db = require("./models/database");
+import Child from "./db/models/Child";
+import Registration from "./db/models/Registration";
+import Record from "./db/models/Record";
+import ShiftData from "./db/models/ShiftData";
+import ResetToken from "./db/models/ResetToken";
+import ShiftInfo from "./db/models/ShiftInfo";
+import Staff from "./db/models/Staff";
 
 const runApp = async () => {
   try {
@@ -135,6 +144,16 @@ const runApp = async () => {
     await sequelize.sync({ force: true });
     const port = process.env.PORT;
     app.listen(port, () => console.log(`Listening on port ${port}`));
+    await Child.create({
+      name: "Taaniel Kraavi",
+      gender: "M",
+    });
+    await Registration.findByPk(1);
+    await ShiftData.findByPk(1);
+    await Record.findByPk(1);
+    await ResetToken.findByPk(1);
+    await ShiftInfo.findByPk(1);
+    await Staff.findByPk(1);
   } catch (error) {
     console.log(error);
   }

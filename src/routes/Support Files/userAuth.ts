@@ -1,10 +1,8 @@
 import bcrypt from "bcrypt";
-import db from "../../models/database";
 import { generateAccessToken, generateRefreshToken } from "./jwt";
+import User from "../../db/models/User";
 
-const Users = db.users;
-
-const authenticateUser = async (username, password) => {
+export const authenticateUser = async (username, password) => {
   const user = await secureFetchUser(username, password);
   if (!user) return false;
   const tokenType = "Bearer";
@@ -19,7 +17,7 @@ const authenticateUser = async (username, password) => {
 };
 
 const secureFetchUser = async (username, password) => {
-  const user = await Users.findOne({
+  const user = await User.findOne({
     where: { username: username.toLowerCase() },
   });
   if (!user || !bcrypt.compareSync(password, user.password)) {
@@ -30,15 +28,10 @@ const secureFetchUser = async (username, password) => {
 
 const storeRefreshToken = (refreshToken, username) => {
   username = username.toLowerCase();
-  Users.update({ refreshToken }, { where: { username } }).catch(console.error);
+  User.update({ refreshToken }, { where: { username } }).catch(console.error);
 };
 
-const matchToken = async (refreshToken) => {
-  const user = await Users.findOne({ where: { refreshToken } });
+export const matchToken = async (refreshToken) => {
+  const user = await User.findOne({ where: { refreshToken } });
   return !!user;
-};
-
-module.exports = {
-  authenticateUser,
-  matchToken,
 };

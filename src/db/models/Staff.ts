@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "./index";
+import User from "./User";
 
 const roles = {
   boss: "boss",
@@ -14,6 +15,7 @@ interface StaffAttributes {
   year: number;
   name: string;
   role: string;
+  userId: number;
 }
 
 interface StaffCreationAttributes extends Optional<StaffAttributes, "id"> {}
@@ -27,6 +29,7 @@ class Staff
   public year!: number;
   public name: string;
   public role!: string;
+  public userId: number;
 }
 
 Staff.init(
@@ -53,8 +56,14 @@ Staff.init(
       allowNull: false,
       defaultValue: roles.full,
     },
+    userId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+    },
   },
   { tableName: "staff", sequelize }
 );
 
 export default Staff;
+
+User.hasMany(Staff, { foreignKey: "userId" });
+Staff.belongsTo(User, { foreignKey: "userId" });

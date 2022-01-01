@@ -1,12 +1,10 @@
-import db from "../models/database";
-
-const Children = db.child;
-const Registrations = db.registrations;
-const ShiftData = db.shiftData;
+import Registration from "../db/models/Registration";
+import Child from "../db/models/Child";
+import ShiftData from "../db/models/ShiftData";
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
-  const registered = await Registrations.findAll({
+  const registered = await Registration.findAll({
     where: { isRegistered: true },
   });
 
@@ -14,7 +12,7 @@ exports.forceUpdate = async () => {
   await registered.forEach((camper) => {
     const shiftNr = parseInt(camper.shift[0]);
 
-    Children.findOne({
+    Child.findOne({
       where: { name: camper.name },
     })
       .then((child) => {
@@ -37,13 +35,13 @@ export const getInfo = async (shiftNr) => {
     if (shiftNr === 2) {
       entries = await ShiftData.findAll({
         order: [["childId", "ASC"]],
-        include: Children,
+        include: Child,
       });
     } else {
       entries = await ShiftData.findAll({
         where: { shiftNr },
         order: [["childId", "ASC"]],
-        include: Children,
+        include: Child,
       });
     }
     if (!entries) return null;

@@ -1,24 +1,23 @@
-import db from "../models/database";
-const path = require("path");
-const billGenerator = require("./billGenerator");
-const fs = require("fs");
+import path from "path";
+import fs from "fs";
+import Registration from "../db/models/Registration";
+import Child from "../db/models/Child";
 
-const Camper = db.registrations;
-const Child = db.child;
+const billGenerator = require("./billGenerator");
 
 const bulkQueryByEmail = (contactEmail) => {
-  return Camper.findAll({ where: { contactEmail }, include: Child });
+  return Registration.findAll({ where: { contactEmail }, include: Child });
 };
 
 const queryByEmail = (contactEmail) => {
-  return Camper.findOne({
+  return Registration.findOne({
     where: { contactEmail },
     attributes: ["contactName", "billNr"],
   });
 };
 
 const getBillNr = async () => {
-  const previousBill = await Camper.findOne({
+  const previousBill = await Registration.findOne({
     order: [["billNr", "DESC"]],
     attributes: ["billNr"],
   });
@@ -85,7 +84,7 @@ export const fetch = async (req, res) => {
   const billName = billGenerator.getName(child);
   const loc = `${path.join(__dirname, "../")}data/arved/${billName}`;
 
-  fs.access(loc, fs.F_OK, (err) => {
+  fs.access(loc, fs.constants.F_OK, (err) => {
     if (err) {
       res.status(404).send("Puudub olemasolev arve");
     } else {

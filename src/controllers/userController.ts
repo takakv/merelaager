@@ -1,13 +1,12 @@
+import User from "../db/models/User";
+import Staff from "../db/models/Staff";
+import ShiftInfo from "../db/models/ShiftInfo";
+
 require("dotenv").config();
-import db from "../models/database";
 const bcrypt = require("bcrypt");
 
-const Users = db.users;
-const Staff = db.staff;
-const ShiftInfo = db.shiftInfo;
-
 const userExists = async (username) => {
-  const user = await Users.findByPk(username);
+  const user = await User.findByPk(username);
   return !!user;
 };
 
@@ -15,7 +14,7 @@ const createUser = async (username, password) => {
   const salt = bcrypt.genSaltSync(parseInt(process.env.SALTR));
   const hash = bcrypt.hashSync(password, salt);
   try {
-    await Users.create({
+    await User.create({
       username: username,
       password: hash,
     });
@@ -28,11 +27,11 @@ const createUser = async (username, password) => {
 // Fetches all users from the database.
 // No filters.
 exports.fetchAll = async () => {
-  const response = { isOk: false };
+  const response = { isOk: false, code: 200, users: null };
   let users;
 
   try {
-    users = await Users.findAll({
+    users = await User.findAll({
       attributes: ["username", "name", "nickname", "role", "email"],
     });
   } catch (e) {
@@ -78,7 +77,7 @@ exports.swapShift = async (userId, shiftNr, isBoss = false) => {
   }
 
   try {
-    const res = await Users.findByPk(userId);
+    const res = await User.findByPk(userId);
     res.shifts = shiftNr;
     await res.save();
     return role;
@@ -89,7 +88,7 @@ exports.swapShift = async (userId, shiftNr, isBoss = false) => {
 };
 
 exports.getInfo = async (userId) => {
-  const user = await Users.findByPk(userId);
+  const user = await User.findByPk(userId);
   const shiftNr = user.shifts;
   const name = user.nickname;
 

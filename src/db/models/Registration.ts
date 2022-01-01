@@ -1,9 +1,11 @@
 import { Association, DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "./index";
 import Child from "./child";
+import ShiftInfo from "./ShiftInfo";
 
 interface RegistrationAttributes {
   id: number;
+  childId: number;
   idCode: string;
   shiftNr: number;
   isRegistered: boolean;
@@ -33,6 +35,7 @@ class Registration
   implements RegistrationAttributes
 {
   public id!: number;
+  public childId!: number;
   public idCode: string;
   public shiftNr!: number;
   public isRegistered!: boolean;
@@ -66,6 +69,10 @@ Registration.init(
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
+    },
+    childId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
     },
     idCode: {
       type: DataTypes.STRING,
@@ -140,3 +147,9 @@ Registration.init(
 );
 
 export default Registration;
+
+Child.hasMany(Registration, { foreignKey: "childId" });
+Registration.belongsTo(Child, { foreignKey: "childId" });
+
+ShiftInfo.hasMany(Registration, { foreignKey: "shiftNr" });
+Registration.belongsTo(ShiftInfo, { foreignKey: "shiftNr" });

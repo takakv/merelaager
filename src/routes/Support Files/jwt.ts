@@ -1,8 +1,7 @@
-require("dotenv").config();
-import db from "../../models/database";
-import jwt from "jsonwebtoken";
+import User from "../../db/models/User";
 
-const Users = db.users;
+require("dotenv").config();
+import jwt from "jsonwebtoken";
 
 const accessTokenSecret = process.env.TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -32,7 +31,7 @@ const verifyAccessToken = (req, res, next) => {
         return res.sendStatus(403);
       }
       req.user = user;
-      const dbUser = await Users.findOne({
+      const dbUser = await User.findOne({
         where: { username: user.username },
       });
       req.user.role = dbUser.role;

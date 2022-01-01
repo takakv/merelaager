@@ -1,10 +1,8 @@
-import db from "../models/database";
-const { generateAllCards, generateOneCard } = require("./dataCardGenerator");
+import ShiftData from "../db/models/ShiftData";
+import Child from "../db/models/Child";
+import Registration from "../db/models/Registration";
 
-const Campers = db.shiftCampers;
-const Registrations = db.registrations;
-const ShiftData = db.shiftData;
-const Child = db.child;
+const { generateAllCards, generateOneCard } = require("./dataCardGenerator");
 
 const exists = async (model, entryId) => {
   const entry = await model.findByPk(entryId);
@@ -13,7 +11,7 @@ const exists = async (model, entryId) => {
 
 const addCamper = async (shift, name) => {
   try {
-    await Campers.findOrCreate({
+    await ShiftData.findOrCreate({
       where: {
         shift: shift,
         name: name,
@@ -54,7 +52,7 @@ const editTent = async (entryId, tentNr) => {
 };
 
 exports.addAll = async (req, res) => {
-  const campers = await Registrations.findAll({
+  const campers = await Registration.findAll({
     where: { isRegistered: true },
   });
 
@@ -155,7 +153,7 @@ exports.fetchCamperNote = async (shiftNr, camperId) => {
   const camperName = (await Child.findByPk(camperId)).name;
   if (!camperName) return null;
 
-  const camper = await Registrations.findOne({
+  const camper = await Registration.findOne({
     where: {
       isRegistered: true,
       // shift: `${shiftNr}v`,
@@ -169,14 +167,14 @@ exports.fetchCamperNote = async (shiftNr, camperId) => {
 exports.fetchAllNotes = async (shiftNr) => {
   let campers;
   if (shiftNr === 2) {
-    campers = await Registrations.findAll({
+    campers = await Registration.findAll({
       where: {
         isRegistered: true,
       },
       order: [["name", "ASC"]],
     });
   } else {
-    campers = await Registrations.findAll({
+    campers = await Registration.findAll({
       where: {
         isRegistered: true,
         shift: `${shiftNr}v`,

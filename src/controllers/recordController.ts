@@ -1,10 +1,8 @@
-import db from "../models/database";
-
-const Registrations = db.registrations;
-const Records = db.records;
+import Registration from "../db/models/Registration";
+import Record from "../db/models/Record";
 
 exports.updateCurrentYear = async () => {
-  const registered = await Registrations.findAll({
+  const registered = await Registration.findAll({
     where: { isRegistered: true },
   });
 
@@ -13,7 +11,7 @@ exports.updateCurrentYear = async () => {
   const year = new Date().getFullYear();
 
   for (const entry of registered) {
-    await Records.findOrCreate({
+    await Record.findOrCreate({
       where: {
         year,
         shiftNr: entry.shiftNr,

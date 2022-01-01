@@ -1,6 +1,5 @@
-import db from "../models/database";
+import Staff from "../db/models/Staff";
 
-const Staff = db.staff;
 const roles = {
   boss: "boss",
   full: "full",

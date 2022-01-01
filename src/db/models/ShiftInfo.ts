@@ -1,8 +1,10 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "./index";
+import User from "./User";
 
 interface ShiftInfoAttributes {
   id: number;
+  bossId: number;
   bossName: string;
   bossEmail: string;
   bossPhone: string;
@@ -15,6 +17,7 @@ class ShiftInfo
   implements ShiftInfoAttributes
 {
   public id!: number;
+  bossId: number;
   bossName: string;
   bossEmail: string;
   bossPhone: string;
@@ -27,6 +30,9 @@ ShiftInfo.init(
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
+    },
+    bossId: {
+      type: DataTypes.INTEGER.UNSIGNED,
     },
     bossName: {
       type: DataTypes.STRING,
@@ -44,7 +50,10 @@ ShiftInfo.init(
       type: DataTypes.INTEGER.UNSIGNED,
     },
   },
-  { tableName: "shiftInfo", sequelize }
+  { tableName: "shift_info", sequelize }
 );
 
 export default ShiftInfo;
+
+User.hasMany(ShiftInfo, { foreignKey: "bossId" });
+ShiftInfo.belongsTo(User, { foreignKey: "bossId" });

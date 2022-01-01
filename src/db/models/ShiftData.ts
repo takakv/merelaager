@@ -1,8 +1,11 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "./index";
+import Child from "./Child";
+import Team from "./Team";
 
 interface ShiftDataAttributes {
   id: number;
+  childId: number;
   shiftNr: number;
   tentNr: number;
   parentNotes: string;
@@ -14,6 +17,7 @@ class ShiftData
   implements ShiftDataAttributes
 {
   public id!: number;
+  public childId!: number;
   public shiftNr!: number;
   public tentNr: number;
   public parentNotes: string;
@@ -26,6 +30,10 @@ ShiftData.init(
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
+    },
+    childId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
     },
     shiftNr: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -46,3 +54,9 @@ ShiftData.init(
 );
 
 export default ShiftData;
+
+Child.hasMany(ShiftData, { foreignKey: "childId" });
+ShiftData.belongsTo(Child, { foreignKey: "childId" });
+
+Team.hasMany(ShiftData);
+ShiftData.belongsTo(Team);

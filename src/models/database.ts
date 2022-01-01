@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 
 const sequelize = "";
 
+/*
 const db = {
   Sequelize: Sequelize,
   sequelize: sequelize,
@@ -51,4 +52,4 @@ db.shiftInfo.belongsTo(db.users, {
 db.child.hasMany(db.records);
 db.records.belongsTo(db.child);
 
-export default db;
+*/

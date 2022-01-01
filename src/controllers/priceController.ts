@@ -1,10 +1,9 @@
+import Registration from "../db/models/Registration";
+
 require("dotenv").config();
-import db from "../models/database";
-const fs = require("fs");
+import fs from "fs";
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
-
-const Camper = db.registrations;
 
 exports.updateAll = async (req, res) => {
   if (req.body["password"] !== process.env.BOSSPASS) {
@@ -12,7 +11,7 @@ exports.updateAll = async (req, res) => {
     return;
   }
 
-  const children = await Camper.findAll();
+  const children = await Registration.findAll();
   for (const child of children) {
     try {
       await child.update({

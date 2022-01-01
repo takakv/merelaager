@@ -1,7 +1,5 @@
-import db from "../../models/database";
-
-const ShiftStaff = db.staff;
-const Users = db.users;
+import Staff from "../../db/models/Staff";
+import User from "../../db/models/User";
 
 const requireShiftBoss = async (req, res, next) => {
   const { user } = req;
@@ -12,7 +10,7 @@ const requireShiftBoss = async (req, res, next) => {
   let year = now.getUTCFullYear();
   if (now.getMonth() === 11) ++year;
 
-  const result = await ShiftStaff.findOne({
+  const result = await Staff.findOne({
     where: {
       userId: user.id,
       shiftNr: user.shift,
@@ -45,11 +43,11 @@ const approveShiftFull = async (user, shiftNr) => {
   if (user.isRoot) return true;
 
   const userId = (
-    await Users.findOne({
+    await User.findOne({
       where: { username: user.username },
     })
   ).id;
-  const accessEntry = await ShiftStaff.findOne({
+  const accessEntry = await Staff.findOne({
     where: { userId, shiftNr, year: new Date().getUTCFullYear() },
   });
   return !!accessEntry;
