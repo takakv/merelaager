@@ -1,8 +1,12 @@
-require("dotenv").config();
-const nodemailer = require("nodemailer");
-const mg = require("nodemailer-mailgun-transport");
 import fs from "fs";
-const path = require("path");
+import path from "path";
+import dotenv from "dotenv";
+import nodemailer, { Transporter } from "nodemailer";
+
+dotenv.config();
+
+const mg = require("nodemailer-mailgun-transport");
+
 const boilerplate = require("./mailService/boilerplate");
 
 const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
@@ -52,6 +56,8 @@ const generateInfoHTML = (campers, price, billNr, regCount) => {
 };
 
 class MailService {
+  private _transporter: Transporter;
+
   constructor() {
     const config = {
       auth: {
@@ -162,4 +168,4 @@ class MailService {
   }
 }
 
-module.exports = MailService;
+export default MailService;

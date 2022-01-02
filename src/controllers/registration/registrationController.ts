@@ -1,20 +1,24 @@
-require("dotenv").config();
-const MailService = require("../MailService");
+import { Request, Response } from "express";
+import sequelize from "sequelize";
+import axios from "axios";
+import dotenv from "dotenv";
 
-const axios = require("axios");
+import MailService from "../MailService";
+
+dotenv.config();
+
 const billGenerator = require("../billGenerator");
-const sequelize = require("sequelize");
 
 const meta = require("./meta");
 
-const mailService = new MailService();
+const mailService: MailService = new MailService();
 
-const DEBUG = false;
+const DEBUG: boolean = false;
 
 import Registration from "../../db/models/registration";
 import Child from "../../db/models/child";
 
-let unlocked = process.env.NODE_ENV === "dev";
+let unlocked: boolean = process.env.NODE_ENV === "dev";
 
 if (process.env.UNLOCK === "true") {
   unlocked = true;
@@ -111,9 +115,9 @@ initializeRegistrationOrder().then(() => {
 
 const parser = require("./parser");
 
-const fetchChild = async (name) => {
+const fetchChild = async (name: string) => {
   // Case-insensitive name search.
-  const child = await Child.findOne({
+  const child: Child = await Child.findOne({
     where: {
       name: sequelize.where(
         sequelize.fn("LOWER", sequelize.col("name")),
@@ -126,14 +130,14 @@ const fetchChild = async (name) => {
   return child ? child.id : null;
 };
 
-const addChild = async (name, gender) => {
-  const child = await Child.create({ name, gender });
+const addChild = async (name: string, gender: string) => {
+  const child: Child = await Child.create({ name, gender });
   if (!child) {
     console.log(child);
     console.log("Error creating child");
     return null;
   }
-  const res = await Child.findOne({ where: { name } });
+  const res: Child = await Child.findOne({ where: { name } });
   if (!res) {
     console.log(res);
     console.log("Sanity check failed");
@@ -254,7 +258,7 @@ const getChildrenData = (
   return childrenData;
 };
 
-const registerAll = async (req, res) => {
+const registerAll = async (req: Request, res: Response) => {
   if (!unlocked) return res.status(409).send("Vara veel!");
 
   const childCount = parseInt(req.body.childCount);
@@ -369,7 +373,7 @@ const registerAll = async (req, res) => {
   }
 };
 
-exports.create = async (req, res) => {
+export const create = async (req: Request, res: Response) => {
   try {
     await registerAll(req, res);
   } catch (e) {
@@ -389,7 +393,7 @@ const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
   );
 };
 
-const getPrice = (shiftNr, isOld) => {
+const getPrice = (shiftNr: number, isOld: boolean) => {
   let price = meta.prices[shiftNr];
   if (isOld) price -= 20;
   return price;

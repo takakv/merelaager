@@ -1,14 +1,14 @@
-import express from "express";
+import fs from "fs";
+import express, { Request, Response } from "express";
 
 const router = express.Router();
 
-const fs = require("fs");
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 meta = meta.legal;
 
 const url_prefix = "oiguslik/";
 
-router.get("/", (req, res, next) => {
+router.get("/", (req: Request, res: Response) => {
   res.render("legal", {
     title: meta.title,
     description: meta.description,
@@ -17,7 +17,7 @@ router.get("/", (req, res, next) => {
   });
 });
 
-router.get("/kasutajatingimused/", (req, res, next) => {
+router.get("/kasutajatingimused/", (req: Request, res: Response) => {
   res.render("tos", {
     title: meta.tingimused.title,
     description: meta.tingimused.description,
@@ -26,7 +26,7 @@ router.get("/kasutajatingimused/", (req, res, next) => {
   });
 });
 
-router.get("/isikuandmed/", (req, res, next) => {
+router.get("/isikuandmed/", (req: Request, res: Response) => {
   res.render("privacy", {
     title: meta.isikuandmed.title,
     description: meta.isikuandmed.description,
@@ -35,7 +35,7 @@ router.get("/isikuandmed/", (req, res, next) => {
   });
 });
 
-router.get("/kupsised/", (req, res, next) => {
+router.get("/kupsised/", (req: Request, res: Response) => {
   res.render("cookies", {
     title: meta.cookies.title,
     description: meta.cookies.description,
@@ -44,7 +44,7 @@ router.get("/kupsised/", (req, res, next) => {
   });
 });
 
-router.get("/brand/", (req, res, next) => {
+router.get("/brand/", (req: Request, res: Response) => {
   res.render("brand", {
     title: meta.brand.title,
     description: meta.brand.description,
@@ -53,4 +53,4 @@ router.get("/brand/", (req, res, next) => {
   });
 });
 
-module.exports = router;
+export default router;

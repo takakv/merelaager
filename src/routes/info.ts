@@ -1,15 +1,14 @@
-import express from "express";
+import fs from "fs";
+import express, { Router, Request, Response } from "express";
 
-const router = express.Router();
-
-import * as fs from "fs";
+const router: Router = express.Router();
 
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 meta = meta.info;
 
-const url_prefix = "info/";
+const url_prefix: string = "info/";
 
-router.get("/", (req, res, next) => {
+router.get("/", (req: Request, res: Response) => {
   res.render("info", {
     title: meta.title,
     description: meta.description,
@@ -18,7 +17,7 @@ router.get("/", (req, res, next) => {
   });
 });
 
-router.get("/vahetused/", (req, res, next) => {
+router.get("/vahetused/", (req: Request, res: Response) => {
   res.render("vahetused", {
     title: meta.vahetused.title,
     description: meta.vahetused.description,
@@ -27,7 +26,7 @@ router.get("/vahetused/", (req, res, next) => {
   });
 });
 
-router.get("/laagrist/", (req, res, next) => {
+router.get("/laagrist/", (req: Request, res: Response) => {
   res.render("laagrist", {
     title: meta.laagrist.title,
     description: meta.laagrist.description,
@@ -36,7 +35,7 @@ router.get("/laagrist/", (req, res, next) => {
   });
 });
 
-router.get("/maksmine/", (req, res, next) => {
+router.get("/maksmine/", (req: Request, res: Response) => {
   res.render("maksmine", {
     title: meta.maksmine.title,
     description: meta.maksmine.description,
@@ -45,7 +44,7 @@ router.get("/maksmine/", (req, res, next) => {
   });
 });
 
-router.get("/kkk/", (req, res, next) => {
+router.get("/kkk/", (req: Request, res: Response) => {
   res.render("kkk", {
     title: meta.kkk.title,
     description: meta.kkk.description,
@@ -54,7 +53,7 @@ router.get("/kkk/", (req, res, next) => {
   });
 });
 
-router.get("/ajalugu/", (req, res, next) => {
+router.get("/ajalugu/", (req: Request, res: Response) => {
   res.render("ajalugu", {
     title: meta.ajalugu.title,
     description: meta.ajalugu.description,
@@ -63,4 +62,4 @@ router.get("/ajalugu/", (req, res, next) => {
   });
 });
 
-module.exports = router;
+export default router;

@@ -4,33 +4,31 @@ import ShiftData from "../db/models/ShiftData";
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
-  const registered = await Registration.findAll({
+  const registrations: Registration[] = await Registration.findAll({
     where: { isRegistered: true },
   });
 
   // Associate all registered campers with shifts.
-  await registered.forEach((camper) => {
-    const shiftNr = parseInt(camper.shift[0]);
+  for (const registration of registrations) {
+    const { shiftNr } = registration;
 
-    Child.findOne({
-      where: { name: camper.name },
-    })
-      .then((child) => {
-        ShiftData.findOrCreate({
-          where: { childId: child.id, shiftNr },
-          defaults: {
-            childId: child.id,
-            shiftNr,
-            parentNotes: camper.addendum,
-          },
-        });
-      })
-      .catch(console.error);
-  });
+    const child: Child = await Child.findOne({
+      where: { id: registration.childId },
+    });
+
+    await ShiftData.findOrCreate({
+      where: { childId: child.id, shiftNr },
+      defaults: {
+        childId: child.id,
+        shiftNr,
+        parentNotes: registration.addendum,
+      },
+    });
+  }
 };
 
-export const getInfo = async (shiftNr) => {
-  let entries;
+export const getInfo = async (shiftNr: number) => {
+  let entries: ShiftData[];
   try {
     if (shiftNr === 2) {
       entries = await ShiftData.findAll({
@@ -52,7 +50,7 @@ export const getInfo = async (shiftNr) => {
 
   const resObj = {};
 
-  entries.forEach((entry) => {
+  entries.forEach((entry: ShiftData) => {
     resObj[entry.child.id] = {
       id: entry.child.id, // Child data entry id
       shiftId: entry.id, // Shift data entry id

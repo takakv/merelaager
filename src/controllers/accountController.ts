@@ -49,7 +49,7 @@ const validateResetToken = async (token, disable = false) => {
   const response = await ResetToken.findByPk(token);
   if (!response || response.isExpired) return false;
   const { createdAt } = response;
-  const elapsed = Date.now() - createdAt;
+  const elapsed = Date.now() - createdAt.getTime();
   if (elapsed > 1200000 || disable) {
     response.isExpired = true;
     await response.save();
@@ -114,7 +114,13 @@ exports.resetPwd = async (email) => {
   return true;
 };
 
-exports.createAccount = async (username, password, token, name = null) => {
+exports.createAccount = async (
+  username,
+  password,
+  email,
+  token,
+  name = null
+) => {
   const creationData = await SignUpToken.findByPk(token);
   if (!creationData || creationData.isExpired)
     return { error: "Kehtetu token" };
@@ -127,6 +133,7 @@ exports.createAccount = async (username, password, token, name = null) => {
     await User.create({
       username,
       name,
+      email,
       shifts: creationData.shiftNr,
       role: creationData.role,
       password: pwdHash,

@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "./index";
 
 interface SignUpTokenAttributes {
@@ -9,8 +9,11 @@ interface SignUpTokenAttributes {
   usedDate: Date;
 }
 
+interface SignUpTokenCreationAttributes
+  extends Optional<SignUpTokenAttributes, "isExpired" | "role" | "usedDate"> {}
+
 class SignUpToken
-  extends Model<SignUpTokenAttributes>
+  extends Model<SignUpTokenAttributes, SignUpTokenCreationAttributes>
   implements SignUpTokenAttributes
 {
   public token!: string;

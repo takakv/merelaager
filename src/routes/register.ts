@@ -1,16 +1,15 @@
-import express from "express";
-
-const router = express.Router();
-
+import fs from "fs";
+import express, { Router, Request, Response } from "express";
 import bodyParser from "body-parser";
 
-const fs = require("fs");
+const router: Router = express.Router();
+
 let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 meta = meta.broneeri;
 
-const url_prefix = "registreerimine/";
+const url_prefix: string = "registreerimine/";
 
-router.get("/", (req, res, next) => {
+router.get("/", (req: Request, res: Response) => {
   res.render("registreerimine", {
     title: meta.title,
     description: meta.description,
@@ -22,11 +21,11 @@ router.get("/", (req, res, next) => {
 
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
-const campers = require("../controllers/registration/registrationController");
+import { create } from "../controllers/registration/registrationController";
 
-router.post("/register/", urlEncParser, campers.create);
+router.post("/register/", urlEncParser, create);
 
-router.get("/edu/", (req, res) => {
+router.get("/edu/", (req: Request, res: Response) => {
   res.render("success", {
     title: meta.title,
     description: meta.description,
@@ -100,4 +99,4 @@ router.get("/events/", async (req, res) => {
   res.write(`data: ${JSON.stringify(spots)}\n\n`);
 });
 
-module.exports = router;
+export default router;

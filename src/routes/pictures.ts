@@ -1,4 +1,4 @@
-exports.renderPictures = (req, res, meta, imageList) => {
+export const renderPictures = (req, res, meta, imageList) => {
   res.render("pildid", {
     title: meta.pildid.title,
     description: meta.pildid.description,

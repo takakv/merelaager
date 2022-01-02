@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "./index";
 
 interface TeamAttributes {
@@ -9,7 +9,13 @@ interface TeamAttributes {
   place: number;
 }
 
-class Team extends Model<TeamAttributes> implements TeamAttributes {
+interface TeamCreationAttributes
+  extends Optional<TeamAttributes, "id" | "year" | "place"> {}
+
+class Team
+  extends Model<TeamAttributes, TeamCreationAttributes>
+  implements TeamAttributes
+{
   public id!: number;
   public shiftNr!: number;
   public name!: string;
@@ -20,12 +26,12 @@ class Team extends Model<TeamAttributes> implements TeamAttributes {
 Team.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     },
     shiftNr: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
     name: {
@@ -33,11 +39,12 @@ Team.init(
       allowNull: false,
     },
     year: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+      defaultValue: new Date().getFullYear(),
     },
     place: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
     },
   },
   { tableName: "teams", sequelize }

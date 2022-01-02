@@ -1,25 +1,24 @@
+import fs from "fs";
+import path from "path";
+
+import express, { Application, Request, Response } from "express";
+import bodyParser from "body-parser";
 import { sequelize } from "./db/models";
 
-require("dotenv").config();
-import fs from "fs";
-import express, { Application, Request, Response } from "express";
-import path from "path";
-import slashes from "connect-slashes";
 import cors from "cors";
-import bodyParser from "body-parser";
+import slashes from "connect-slashes";
+import { create, ExpressHandlebars } from "express-handlebars";
 
-const exphbs = require("express-handlebars");
+require("dotenv").config();
 
 const app: Application = express();
-const pictures = require("./routes/pictures");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const hbs = exphbs.create({
+const hbs: ExpressHandlebars = create({
   extname: "hbs",
-  defaultView: "index",
   defaultLayout: "default",
   layoutsDir: path.join(__dirname, "..", "/views/layouts/"),
   partialsDir: path.join(__dirname, "..", "/views/partials/"),
@@ -82,12 +81,14 @@ app.get("/lastenurk/", (req: Request, res: Response) => {
   });
 });
 
+import { renderPictures } from "./routes/pictures";
+
 app.get("/pildid/", (req: Request, res: Response) => {
   const imageList = [];
   fs.readdirSync("./public/img").forEach((file) => {
     if (file !== ".gitkeep") imageList.push({ src: `../img/${file}` });
   });
-  pictures.renderPictures(req, res, meta, imageList);
+  renderPictures(req, res, meta, imageList);
 });
 
 app.get("/sisukaart/", (req: Request, res: Response) => {
@@ -98,29 +99,27 @@ app.get("/sisukaart/", (req: Request, res: Response) => {
   });
 });
 
-/*
+import infoRouter from "./routes/info";
 
-const infoRouter = require("./routes/info");
 app.use("/info/", infoRouter);
 
-const registerRouter = require("./routes/register");
+import registerRouter from "./routes/register";
+
 app.use("/registreerimine/", registerRouter);
 
-const legal = require("./routes/legal");
+import legal from "./routes/legal";
+
 app.use("/oiguslik/", legal);
 
-const adminpanel = require("./routes/adminpanel");
-app.use("/kambyys/", adminpanel);
+import api from "./routes/api";
 
-const api = require("./routes/api");
 app.use("/api/", api);
 
-app.get("/broneerimine/", (req, res, next) => {
+app.get("/broneerimine/", (req: Request, res: Response) => {
   res.redirect("/registreerimine/");
 });
- */
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response) => {
   res.status(404).render("404", {
     layout: "metadata",
     title: "Kaardistamata asukoht",
@@ -130,35 +129,16 @@ app.use((req, res, next) => {
   });
 });
 
-import Child from "./db/models/Child";
-import Registration from "./db/models/Registration";
-import Record from "./db/models/Record";
-import ShiftData from "./db/models/ShiftData";
-import ResetToken from "./db/models/ResetToken";
-import ShiftInfo from "./db/models/ShiftInfo";
-import Staff from "./db/models/Staff";
-
 const runApp = async () => {
   try {
+    console.log(sequelize.models);
     await sequelize.authenticate();
     await sequelize.sync({ force: true });
     const port = process.env.PORT;
     app.listen(port, () => console.log(`Listening on port ${port}`));
-    await Child.create({
-      name: "Taaniel Kraavi",
-      gender: "M",
-    });
-    await Registration.findByPk(1);
-    await ShiftData.findByPk(1);
-    await Record.findByPk(1);
-    await ResetToken.findByPk(1);
-    await ShiftInfo.findByPk(1);
-    await Staff.findByPk(1);
   } catch (error) {
     console.log(error);
   }
 };
 
 runApp().catch(console.error);
-
-const renderPictures = require("./routes/pictures");

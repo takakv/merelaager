@@ -13,7 +13,10 @@ interface UserAttributes {
   refreshToken: string;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+interface UserCreationAttributes
+  extends Optional<    UserAttributes,
+    "id" | "role" | "shifts" | "nickname" | "refreshToken"
+  > {}
 
 class User
   extends Model<UserAttributes, UserCreationAttributes>

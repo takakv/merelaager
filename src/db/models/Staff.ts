@@ -18,7 +18,8 @@ interface StaffAttributes {
   userId: number;
 }
 
-interface StaffCreationAttributes extends Optional<StaffAttributes, "id"> {}
+interface StaffCreationAttributes
+  extends Optional<StaffAttributes, "id" | "year" | "userId"> {}
 
 class Staff
   extends Model<StaffAttributes, StaffCreationAttributes>

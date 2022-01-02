@@ -9,17 +9,10 @@ const exists = async (model, entryId) => {
   return !!entry;
 };
 
-const addCamper = async (shift, name) => {
+const addCamper = async (shiftNr: number, childId: number) => {
   try {
     await ShiftData.findOrCreate({
-      where: {
-        shift: shift,
-        name: name,
-      },
-      defaults: {
-        shift: shift,
-        name: name,
-      },
+      where: { shiftNr, childId },
     });
     return true;
   } catch (err) {
@@ -28,7 +21,7 @@ const addCamper = async (shift, name) => {
   }
 };
 
-const editNotes = async (childId, notes) => {
+const editNotes = async (childId: number, notes: string) => {
   if (!(await exists(Child, childId))) return false;
   try {
     await Child.update({ notes }, { where: { id: childId } });
@@ -78,7 +71,7 @@ exports.updateTent = async (entryId, tentNr) => {
 // Fetch information about tent rosters.
 // Return an array of tent rosters and an array of kids without tents.
 // Tent rosters are arrays of tent member objects.
-exports.getTents = async (shiftNr) => {
+exports.getTents = async (shiftNr: number) => {
   let tentData;
 
   // Get all tent member entries for the given shift.
@@ -149,15 +142,14 @@ exports.updatePresence = async (id) => {
   return true;
 };
 
-exports.fetchCamperNote = async (shiftNr, camperId) => {
-  const camperName = (await Child.findByPk(camperId)).name;
-  if (!camperName) return null;
+exports.fetchCamperNote = async (shiftNr: number, id: number) => {
+  const camperId: number = (await Child.findByPk(id)).id;
+  if (!camperId) return null;
 
   const camper = await Registration.findOne({
     where: {
       isRegistered: true,
-      // shift: `${shiftNr}v`,
-      name: camperName,
+      childId: camperId,
     },
   });
 
@@ -168,17 +160,12 @@ exports.fetchAllNotes = async (shiftNr) => {
   let campers;
   if (shiftNr === 2) {
     campers = await Registration.findAll({
-      where: {
-        isRegistered: true,
-      },
+      where: { isRegistered: true },
       order: [["name", "ASC"]],
     });
   } else {
     campers = await Registration.findAll({
-      where: {
-        isRegistered: true,
-        shift: `${shiftNr}v`,
-      },
+      where: { isRegistered: true, shiftNr },
       order: [["name", "ASC"]],
     });
   }

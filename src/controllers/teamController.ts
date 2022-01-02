@@ -44,7 +44,6 @@ exports.createTeam = async (teamName, shiftNr) => {
     await Team.create({
       name: teamName,
       shiftNr: shiftNr,
-      year: new Date().getUTCFullYear(),
     });
   } catch (e) {
     console.error(e);

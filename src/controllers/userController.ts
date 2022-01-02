@@ -10,12 +10,14 @@ const userExists = async (username) => {
   return !!user;
 };
 
-const createUser = async (username, password) => {
+const createUser = async (data) => {
   const salt = bcrypt.genSaltSync(parseInt(process.env.SALTR));
-  const hash = bcrypt.hashSync(password, salt);
+  const hash = bcrypt.hashSync(data.password, salt);
   try {
     await User.create({
-      username: username,
+      username: data.username,
+      email: data.email,
+      name: data.name,
       password: hash,
     });
     return true;
@@ -140,8 +142,7 @@ exports.validateShift = async (
 };
 
 exports.create = async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
+  const { username, password, email, name } = req.body;
 
   const isNew = !(await userExists(username));
   if (!isNew) {
@@ -149,7 +150,12 @@ exports.create = async (req, res) => {
     return;
   }
 
-  const creationSuccessful = await createUser(username, password);
+  const creationSuccessful = await createUser({
+    username,
+    password,
+    email,
+    name,
+  });
   if (!creationSuccessful) res.status(400).end();
   else res.status(201).end();
 };

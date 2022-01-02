@@ -18,6 +18,8 @@ class ResetToken
   public token!: string;
   public userId!: number;
   public isExpired!: boolean;
+
+  declare readonly createdAt: Date;
 }
 
 ResetToken.init(
