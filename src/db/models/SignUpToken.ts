@@ -1,5 +1,13 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  Column,
+  DataType,
+  Default,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
 
 interface SignUpTokenAttributes {
   token: string;
@@ -12,45 +20,29 @@ interface SignUpTokenAttributes {
 interface SignUpTokenCreationAttributes
   extends Optional<SignUpTokenAttributes, "isExpired" | "role" | "usedDate"> {}
 
-class SignUpToken
+@Table({ tableName: "signup_tokens" })
+export class SignUpToken
   extends Model<SignUpTokenAttributes, SignUpTokenCreationAttributes>
   implements SignUpTokenAttributes
 {
+  @PrimaryKey
+  @Column(DataType.STRING)
   public token!: string;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
   public isExpired!: boolean;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
+
+  @AllowNull(false)
+  @Default("std")
+  @Column(DataType.ENUM("boss", "master", "op", "std", "camper"))
   public role!: string;
+
+  @Column(DataType.DATE)
   public usedDate: Date;
 }
-
-SignUpToken.init(
-  {
-    token: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-    },
-    isExpired: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    shiftNr: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM("boss", "master", "op", "std", "camper"),
-      allowNull: false,
-      defaultValue: "std",
-    },
-    usedDate: {
-      type: DataTypes.DATE,
-    },
-  },
-  {
-    tableName: "signup_tokens",
-    sequelize,
-  }
-);
-
-export default SignUpToken;

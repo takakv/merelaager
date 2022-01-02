@@ -10,6 +10,8 @@ import {
   Table,
 } from "sequelize-typescript";
 import { Registration } from "./Registration";
+import { Record } from "./Record";
+import { ShiftData } from "./ShiftData";
 
 interface ChildAttributes {
   id: number;
@@ -48,4 +50,10 @@ export class Child
 
   @HasMany(() => Registration)
   public registrations?: Registration[];
+
+  @HasMany(() => Record)
+  public records?: Record[];
+
+  @HasMany(() => ShiftData)
+  public shiftData?: ShiftData[];
 }

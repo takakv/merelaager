@@ -1,6 +1,6 @@
-import Team from "../db/models/Team";
-import ShiftData from "../db/models/ShiftData";
-import Child from "../db/models/Child";
+import {Team} from "../db/models/Team";
+import {ShiftData} from "../db/models/ShiftData";
+import {Child} from "../db/models/Child";
 
 const createChildObject = (data) => {
   return { id: data.id, name: data.child.name };

@@ -1,6 +1,6 @@
-import Registration from "../db/models/Registration";
-import Child from "../db/models/Child";
-import ShiftData from "../db/models/ShiftData";
+import {Registration} from "../db/models/Registration";
+import {Child} from "../db/models/Child";
+import {ShiftData} from "../db/models/ShiftData";
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.

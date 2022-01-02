@@ -1,4 +1,4 @@
-import Staff from "../db/models/Staff";
+import {Staff} from "../db/models/Staff";
 
 const roles = {
   boss: "boss",

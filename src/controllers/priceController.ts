@@ -1,4 +1,4 @@
-import Registration from "../db/models/Registration";
+import {Registration} from "../db/models/Registration";
 
 require("dotenv").config();
 import fs from "fs";

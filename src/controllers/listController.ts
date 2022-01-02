@@ -3,8 +3,8 @@ require("dotenv").config();
 const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
-import Registration from "../db/models/registration";
-import Child from "../db/models/child";
+import {Registration} from "../db/models/registration";
+import {Child} from "../db/models/child";
 
 const numberOfShifts = 5;
 

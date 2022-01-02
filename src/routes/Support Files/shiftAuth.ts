@@ -1,5 +1,5 @@
-import Staff from "../../db/models/Staff";
-import User from "../../db/models/User";
+import {Staff} from "../../db/models/Staff";
+import {User} from "../../db/models/User";
 
 const requireShiftBoss = async (req, res, next) => {
   const { user } = req;

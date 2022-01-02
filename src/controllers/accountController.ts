@@ -1,6 +1,6 @@
-import SignUpToken from "../db/models/SignUpToken";
-import User from "../db/models/User";
-import ResetToken from "../db/models/ResetToken";
+import {SignUpToken} from "../db/models/SignUpToken";
+import {User} from "../db/models/User";
+import {ResetToken} from "../db/models/ResetToken";
 
 const bcrypt = require("bcrypt");
 const UIDGenerator = require("uid-generator");
@@ -134,7 +134,7 @@ exports.createAccount = async (
       username,
       name,
       email,
-      shifts: creationData.shiftNr,
+      currentShift: creationData.shiftNr,
       role: creationData.role,
       password: pwdHash,
     });

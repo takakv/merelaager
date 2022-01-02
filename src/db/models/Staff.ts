@@ -1,6 +1,17 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
-import User from "./User";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { User } from "./User";
 
 const roles = {
   boss: "boss",
@@ -21,50 +32,36 @@ interface StaffAttributes {
 interface StaffCreationAttributes
   extends Optional<StaffAttributes, "id" | "year" | "userId"> {}
 
-class Staff
+@Table({ tableName: "staff" })
+export class Staff
   extends Model<StaffAttributes, StaffCreationAttributes>
   implements StaffAttributes
 {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
+
+  @AllowNull(false)
+  @Default(new Date().getFullYear())
+  @Column(DataType.INTEGER.UNSIGNED)
   public year!: number;
+
+  @Column(DataType.STRING)
   public name: string;
+
+  @AllowNull(false)
+  @Default(roles.full)
+  @Column(DataType.ENUM(roles.boss, roles.full, roles.part, roles.guest))
   public role!: string;
+
+  @ForeignKey(() => User)
   public userId: number;
+
+  @BelongsTo(() => User)
+  public user?: User;
 }
-
-Staff.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    shiftNr: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    year: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: new Date().getUTCFullYear(),
-    },
-    name: {
-      type: DataTypes.STRING,
-    },
-    role: {
-      type: DataTypes.ENUM(roles.boss, roles.full, roles.part, roles.guest),
-      allowNull: false,
-      defaultValue: roles.full,
-    },
-    userId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-    },
-  },
-  { tableName: "staff", sequelize }
-);
-
-export default Staff;
-
-User.hasMany(Staff, { foreignKey: "userId" });
-Staff.belongsTo(User, { foreignKey: "userId" });

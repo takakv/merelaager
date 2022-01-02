@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import Registration from "../db/models/Registration";
-import Child from "../db/models/Child";
+import {Registration} from "../db/models/Registration";
+import {Child} from "../db/models/Child";
 
 const billGenerator = require("./billGenerator");
 

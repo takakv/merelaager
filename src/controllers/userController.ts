@@ -1,6 +1,6 @@
-import User from "../db/models/User";
-import Staff from "../db/models/Staff";
-import ShiftInfo from "../db/models/ShiftInfo";
+import { User } from "../db/models/User";
+import { Staff } from "../db/models/Staff";
+import { ShiftInfo } from "../db/models/ShiftInfo";
 
 require("dotenv").config();
 const bcrypt = require("bcrypt");
@@ -90,8 +90,8 @@ exports.swapShift = async (userId, shiftNr, isBoss = false) => {
 };
 
 exports.getInfo = async (userId) => {
-  const user = await User.findByPk(userId);
-  const shiftNr = user.shifts;
+  const user: User = await User.findByPk(userId);
+  const shiftNr = user.currentShift;
   const name = user.nickname;
 
   let role;
@@ -106,7 +106,7 @@ exports.getInfo = async (userId) => {
       where: { userId, year },
     });
     if (!shiftInfo) return null;
-    shiftInfo.forEach((shift) => {
+    shiftInfo.forEach((shift: Staff) => {
       shifts.push(shift.shiftNr);
       if (shift.shiftNr === shiftNr) role = shift.role;
     });

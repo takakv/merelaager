@@ -15,8 +15,8 @@ const mailService: MailService = new MailService();
 
 const DEBUG: boolean = false;
 
-import Registration from "../../db/models/registration";
-import Child from "../../db/models/child";
+import {Registration} from "../../db/models/registration";
+import {Child} from "../../db/models/child";
 
 let unlocked: boolean = process.env.NODE_ENV === "dev";
 

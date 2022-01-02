@@ -1,6 +1,17 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
-import User from "./User";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  Unique,
+} from "sequelize-typescript";
+import { User } from "./User";
 
 interface ResetTokenAttributes {
   token: string;
@@ -11,37 +22,28 @@ interface ResetTokenAttributes {
 interface ResetTokenCreationAttributes
   extends Optional<ResetTokenAttributes, "isExpired"> {}
 
-class ResetToken
+@Table({ tableName: "reset_tokens" })
+export class ResetToken
   extends Model<ResetTokenAttributes, ResetTokenCreationAttributes>
   implements ResetTokenAttributes
 {
+  @PrimaryKey
+  @Column(DataType.STRING)
   public token!: string;
+
+  @Unique
+  @ForeignKey(() => User)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public userId!: number;
+
+  @BelongsTo(() => User)
+  public user?: User;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
   public isExpired!: boolean;
 
   declare readonly createdAt: Date;
 }
-
-ResetToken.init(
-  {
-    token: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-    },
-    userId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    isExpired: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-  },
-  { tableName: "reset_tokens", sequelize }
-);
-
-export default ResetToken;
-
-User.hasOne(ResetToken, { foreignKey: "userId" });
-ResetToken.belongsTo(User, { foreignKey: "userId" });

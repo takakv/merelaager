@@ -1,6 +1,6 @@
-import ShiftData from "../db/models/ShiftData";
-import Child from "../db/models/Child";
-import Registration from "../db/models/Registration";
+import { ShiftData } from "../db/models/ShiftData";
+import { Child } from "../db/models/Child";
+import { Registration } from "../db/models/Registration";
 
 const { generateAllCards, generateOneCard } = require("./dataCardGenerator");
 
@@ -45,11 +45,13 @@ const editTent = async (entryId, tentNr) => {
 };
 
 exports.addAll = async (req, res) => {
-  const campers = await Registration.findAll({
+  const registrations: Registration[] = await Registration.findAll({
     where: { isRegistered: true },
   });
 
-  campers.forEach((camper) => addCamper(camper["shift"], camper["name"]));
+  registrations.forEach((registration: Registration) =>
+    addCamper(registration.shiftNr, registration.childId)
+  );
   res.status(200).end();
 };
 

@@ -1,5 +1,5 @@
-import Registration from "../db/models/Registration";
-import Record from "../db/models/Record";
+import {Registration} from "../db/models/Registration";
+import {Record} from "../db/models/Record";
 
 exports.updateCurrentYear = async () => {
   const registered = await Registration.findAll({

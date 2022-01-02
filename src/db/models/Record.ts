@@ -1,6 +1,17 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
-import Child from "./Child";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { Child } from "./Child";
 
 interface RecordAttributes {
   id: number;
@@ -11,41 +22,30 @@ interface RecordAttributes {
 
 interface RecordCreationAttributes extends Optional<RecordAttributes, "id"> {}
 
-class Record
+@Table({ tableName: "records" })
+export class Record
   extends Model<RecordAttributes, RecordCreationAttributes>
   implements RecordAttributes
 {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
+
+  @ForeignKey(() => Child)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public childId!: number;
+
+  @BelongsTo(() => Child)
+  public child?: Child;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
+
+  @AllowNull(false)
+  @Default(new Date().getFullYear())
+  @Column(DataType.INTEGER.UNSIGNED)
   public year!: number;
 }
-
-Record.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    childId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    shiftNr: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    year: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: new Date().getFullYear(),
-    },
-  },
-  { tableName: "records", sequelize }
-);
-
-export default Record;
-
-Child.hasMany(Record, { foreignKey: "childId" });
-Record.belongsTo(Child, { foreignKey: "childId" });

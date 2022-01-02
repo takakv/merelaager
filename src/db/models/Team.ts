@@ -1,5 +1,16 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  AutoIncrement,
+  Column,
+  DataType,
+  Default,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { Child } from "./Child";
 
 interface TeamAttributes {
   id: number;
@@ -12,42 +23,32 @@ interface TeamAttributes {
 interface TeamCreationAttributes
   extends Optional<TeamAttributes, "id" | "year" | "place"> {}
 
-class Team
+@Table({ tableName: "teams" })
+export class Team
   extends Model<TeamAttributes, TeamCreationAttributes>
   implements TeamAttributes
 {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   public name!: string;
+
+  @AllowNull(false)
+  @Default(new Date().getFullYear())
+  @Column(DataType.INTEGER.UNSIGNED)
   public year!: number;
+
+  @Column(DataType.INTEGER.UNSIGNED)
   public place: number;
+
+  @HasMany(() => Child)
+  public members?: Child[];
 }
-
-Team.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    shiftNr: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    year: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      defaultValue: new Date().getFullYear(),
-    },
-    place: {
-      type: DataTypes.INTEGER.UNSIGNED,
-    },
-  },
-  { tableName: "teams", sequelize }
-);
-
-export default Team;

@@ -5,6 +5,7 @@ import {
   Column,
   DataType,
   Default,
+  HasMany,
   HasOne,
   Model,
   PrimaryKey,
@@ -12,6 +13,8 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { ShiftInfo } from "./ShiftInfo";
+import { ResetToken } from "./ResetToken";
+import { Staff } from "./Staff";
 
 interface UserAttributes {
   id: number;
@@ -19,7 +22,7 @@ interface UserAttributes {
   email: string;
   name: string;
   role: string;
-  shifts: number;
+  currentShift: number;
   nickname: string;
   password: string;
   refreshToken: string;
@@ -28,7 +31,7 @@ interface UserAttributes {
 interface UserCreationAttributes
   extends Optional<
     UserAttributes,
-    "id" | "role" | "shifts" | "nickname" | "refreshToken"
+    "id" | "role" | "currentShift" | "nickname" | "refreshToken"
   > {}
 
 @Table({ tableName: "users" })
@@ -60,7 +63,7 @@ export class User
   public role!: string;
 
   @Column(DataType.INTEGER.UNSIGNED)
-  public shifts: number;
+  public currentShift: number;
 
   @Column(DataType.STRING)
   public nickname: string;
@@ -74,4 +77,10 @@ export class User
 
   @HasOne(() => ShiftInfo)
   public shiftInfo?: ShiftInfo;
+
+  @HasOne(() => ResetToken)
+  public resetToken?: ResetToken;
+
+  @HasMany(() => Staff)
+  public shifts?: Staff[];
 }
