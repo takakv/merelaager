@@ -27,14 +27,6 @@ if (process.env.UNLOCK === "true") {
   }, meta.eta);
 }
 
-console.log(`Registration is unlocked? ${unlocked}`);
-console.log(
-  `Unlock date: ${meta.unlockTime.toLocaleString("en-GB", {
-    timeZone: "Europe/Tallinn",
-  })} (Estonian time)`
-);
-console.log(`Unlock delta: ${meta.eta}`);
-
 const availableSlots = {
   1: { M: 0, F: 0 },
   2: { M: 0, F: 0 },
@@ -45,9 +37,6 @@ const availableSlots = {
 
 let billNumber = 0;
 let registrationOrder = 1;
-let slotsReady = false;
-let billReady = false;
-let ready = false;
 
 const fetchPromises = () => {
   const promises = [];
@@ -95,22 +84,25 @@ const initializeRegistrationOrder = async () => {
   if (prevReg) registrationOrder = prevReg.regOrder + 1;
 };
 
-initializeAvailableSlots().then(() => {
+export const initialiseRegistration = async () => {
+  await initializeAvailableSlots();
   console.log("Available slots:");
   console.log(availableSlots);
-  slotsReady = true;
-  if (billReady) ready = true;
-});
 
-initializeBillNr().then(() => {
+  await initializeBillNr();
   console.log(`First bill: ${billNumber}`);
-  billReady = true;
-  if (slotsReady) ready = true;
-});
 
-initializeRegistrationOrder().then(() => {
+  await initializeRegistrationOrder();
   console.log(`Reg order: ${registrationOrder}`);
-});
+
+  console.log(`Registration is unlocked? ${unlocked}`);
+  console.log(
+    `Unlock date: ${meta.unlockTime.toLocaleString("en-GB", {
+      timeZone: "Europe/Tallinn",
+    })} (Estonian time)`
+  );
+  console.log(`Unlock delta: ${meta.eta}`);
+};
 
 const parser = require("./parser");
 

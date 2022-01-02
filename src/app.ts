@@ -103,17 +103,17 @@ import infoRouter from "./routes/info";
 
 app.use("/info/", infoRouter);
 
-// import registerRouter from "./routes/register";
+import registerRouter from "./routes/register";
 
-// app.use("/registreerimine/", registerRouter);
+app.use("/registreerimine/", registerRouter);
 
 import legal from "./routes/legal";
 
 app.use("/oiguslik/", legal);
 
-// import api from "./routes/api";
+import api from "./routes/api";
 
-// app.use("/api/", api);
+app.use("/api/", api);
 
 app.get("/broneerimine/", (req: Request, res: Response) => {
   res.redirect("/registreerimine/");
@@ -130,10 +130,6 @@ app.use((req: Request, res: Response) => {
 });
 
 export const runApp = () => {
-  try {
-    const port = process.env.PORT;
-    app.listen(port, () => console.log(`Listening on port ${port}`));
-  } catch (error) {
-    console.log(error);
-  }
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`App listening on port ${port}`));
 };
