@@ -1,6 +1,15 @@
-import { DataTypes, Model } from "sequelize";
-import { sequelize } from "./index";
-import User from "./User";
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { User } from "./User";
+import { Registration } from "./Registration";
 
 interface ShiftInfoAttributes {
   id: number;
@@ -8,52 +17,41 @@ interface ShiftInfoAttributes {
   bossName: string;
   bossEmail: string;
   bossPhone: string;
-  startDate: string;
+  startDate: Date;
   length: number;
 }
 
-class ShiftInfo
+@Table({ tableName: "shift_info" })
+export class ShiftInfo
   extends Model<ShiftInfoAttributes>
   implements ShiftInfoAttributes
 {
+  @PrimaryKey
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
-  bossId: number;
-  bossName: string;
-  bossEmail: string;
-  bossPhone: string;
-  startDate: string;
-  length: number;
+
+  @ForeignKey(() => User)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public bossId: number;
+
+  @BelongsTo(() => User)
+  public user?: User;
+
+  @Column(DataType.STRING)
+  public bossName: string;
+
+  @Column(DataType.STRING)
+  public bossEmail: string;
+
+  @Column(DataType.STRING)
+  public bossPhone: string;
+
+  @Column(DataType.DATEONLY)
+  public startDate: Date;
+
+  @Column(DataType.INTEGER.UNSIGNED)
+  public length: number;
+
+  @HasMany(() => Registration)
+  public registrations?: Registration[];
 }
-
-ShiftInfo.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
-    },
-    bossId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-    },
-    bossName: {
-      type: DataTypes.STRING,
-    },
-    bossEmail: {
-      type: DataTypes.STRING,
-    },
-    bossPhone: {
-      type: DataTypes.STRING,
-    },
-    startDate: {
-      type: DataTypes.DATEONLY,
-    },
-    length: {
-      type: DataTypes.INTEGER.UNSIGNED,
-    },
-  },
-  { tableName: "shift_info", sequelize }
-);
-
-export default ShiftInfo;
-
-User.hasMany(ShiftInfo, { foreignKey: "bossId" });
-ShiftInfo.belongsTo(User, { foreignKey: "bossId" });

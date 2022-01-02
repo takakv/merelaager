@@ -1,5 +1,17 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  AutoIncrement,
+  Column,
+  DataType,
+  Default,
+  HasOne,
+  Model,
+  PrimaryKey,
+  Table,
+  Unique,
+} from "sequelize-typescript";
+import { ShiftInfo } from "./ShiftInfo";
 
 interface UserAttributes {
   id: number;
@@ -14,64 +26,52 @@ interface UserAttributes {
 }
 
 interface UserCreationAttributes
-  extends Optional<    UserAttributes,
+  extends Optional<
+    UserAttributes,
     "id" | "role" | "shifts" | "nickname" | "refreshToken"
   > {}
 
-class User
+@Table({ tableName: "users" })
+export class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
+
+  @Unique
+  @AllowNull(false)
+  @Column(DataType.STRING)
   public username!: string;
+
+  @Unique
+  @Column(DataType.STRING)
   public email: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   public name!: string;
+
+  @AllowNull(false)
+  @Default("std")
+  @Column(DataType.ENUM("root", "boss", "std", "master", "op", "camper"))
   public role!: string;
+
+  @Column(DataType.INTEGER.UNSIGNED)
   public shifts: number;
+
+  @Column(DataType.STRING)
   public nickname: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   public password!: string;
+
+  @Column(DataType.STRING)
   public refreshToken: string;
+
+  @HasOne(() => ShiftInfo)
+  public shiftInfo?: ShiftInfo;
 }
-
-User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    email: {
-      type: DataTypes.STRING,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM("root", "boss", "std", "master", "op", "camper"),
-      defaultValue: "std",
-      allowNull: false,
-    },
-    shifts: {
-      type: DataTypes.INTEGER,
-    },
-    nickname: {
-      type: DataTypes.STRING,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    refreshToken: {
-      type: DataTypes.STRING,
-    },
-  },
-  { tableName: "users", sequelize }
-);
-
-export default User;

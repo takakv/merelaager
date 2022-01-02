@@ -1,7 +1,18 @@
-import { Association, DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
-import Child from "./child";
-import ShiftInfo from "./ShiftInfo";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { Child } from "./child";
+import { ShiftInfo } from "./ShiftInfo";
 
 interface RegistrationAttributes {
   id: number;
@@ -30,126 +41,95 @@ interface RegistrationAttributes {
 interface RegistrationCreationAttributes
   extends Optional<RegistrationAttributes, "id"> {}
 
-class Registration
+@Table({ tableName: "registrations" })
+export class Registration
   extends Model<RegistrationAttributes, RegistrationCreationAttributes>
   implements RegistrationAttributes
 {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
+
+  @ForeignKey(() => Child)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public childId!: number;
+
+  @BelongsTo(() => Child)
+  public child?: Child;
+
+  @Column(DataType.STRING)
   public idCode: string;
+
+  @ForeignKey(() => ShiftInfo)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
+
+  @BelongsTo(() => ShiftInfo)
+  public shift?: ShiftInfo;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
   public isRegistered!: boolean;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
   public regOrder!: number;
-  isOld!: boolean;
-  birthday: Date;
-  tsSize: string;
-  addendum: string;
-  road: string;
-  city: string;
-  county: string;
-  country: string;
-  billNr: number;
-  contactName!: string;
-  contactNumber: string;
-  contactEmail!: string;
-  backupTel: string;
-  pricePaid: number;
-  priceToPay: number;
 
-  declare readonly child?: Child;
+  @AllowNull(false)
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  public isOld!: boolean;
 
-  declare static associations: {
-    child: Association<Registration, Child>;
-  };
+  @Column(DataType.DATEONLY)
+  public birthday: Date;
+
+  @Column(DataType.STRING)
+  public tsSize: string;
+
+  @Column(DataType.TEXT)
+  public addendum: string;
+
+  @Column(DataType.STRING)
+  public road: string;
+
+  @Column(DataType.STRING)
+  public city: string;
+
+  @Column(DataType.STRING)
+  public county: string;
+
+  @Default("Eesti")
+  @Column(DataType.STRING)
+  public country: string;
+
+  @Column(DataType.INTEGER.UNSIGNED)
+  public billNr: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  public contactName!: string;
+
+  @Column(DataType.STRING)
+  public contactNumber: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  public contactEmail!: string;
+
+  @Column(DataType.STRING)
+  public backupTel: string;
+
+  @AllowNull(false)
+  @Default(0)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public pricePaid!: number;
+
+  @AllowNull(false)
+  @Default(0)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public priceToPay: number;
 }
-
-Registration.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    childId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    idCode: {
-      type: DataTypes.STRING,
-    },
-    shiftNr: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    isRegistered: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    regOrder: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-    },
-    isOld: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
-    birthday: {
-      type: DataTypes.DATEONLY,
-    },
-    tsSize: {
-      type: DataTypes.TEXT,
-    },
-    addendum: {
-      type: DataTypes.TEXT,
-    },
-    road: {
-      type: DataTypes.TEXT,
-    },
-    city: {
-      type: DataTypes.TEXT,
-    },
-    county: {
-      type: DataTypes.TEXT,
-    },
-    country: {
-      type: DataTypes.TEXT,
-      defaultValue: "Eesti",
-    },
-    billNr: {
-      type: DataTypes.INTEGER.UNSIGNED,
-    },
-    contactName: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    contactNumber: {
-      type: DataTypes.TEXT,
-    },
-    contactEmail: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    backupTel: {
-      type: DataTypes.TEXT,
-    },
-    pricePaid: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: 0,
-    },
-    priceToPay: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: 0,
-    },
-  },
-  { tableName: "registrations", sequelize }
-);
-
-export default Registration;
-
-Child.hasMany(Registration, { foreignKey: "childId" });
-Registration.belongsTo(Child, { foreignKey: "childId" });
-
-ShiftInfo.hasMany(Registration, { foreignKey: "shiftNr" });
-Registration.belongsTo(ShiftInfo, { foreignKey: "shiftNr" });

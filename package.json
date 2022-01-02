@@ -38,7 +38,9 @@
     "pdfkit": "^0.13.0",
     "pdfmake": "^0.2.2",
     "qrcode": "^1.4.4",
+    "reflect-metadata": "^0.1.13",
     "sequelize": "^7.0.0-alpha.2",
+    "sequelize-typescript": "^2.1.1",
     "sqlite3": "^5.0.0",
     "uid-generator": "^2.0.0"
   },

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 
 const router = express.Router();
 
@@ -6,7 +6,7 @@ const account = require("../../controllers/accountController");
 const user = require("../../controllers/userController");
 const jwt = require("../Support Files/jwt");
 
-router.get("/:token/", async (req, res) => {
+router.get("/:token/", async (req: Request, res: Response) => {
   const response = await account.validateSuToken(req.params.token);
   if (!response) return res.sendStatus(401);
   else
@@ -17,14 +17,14 @@ router.get("/:token/", async (req, res) => {
     });
 });
 
-router.post("/chkusr/", async (req, res) => {
+router.post("/chkusr/", async (req: Request, res: Response) => {
   const { username } = req.body;
   if (!username) return res.sendStatus(400);
   if (await account.checkUser(username)) res.sendStatus(200);
   else res.sendStatus(404);
 });
 
-router.post("/create/", async (req, res) => {
+router.post("/create/", async (req: Request, res: Response) => {
   const { username, password, token, name } = req.body;
   if (!username || !password || !token) return res.sendStatus(400);
   const result = await account.createAccount(username, password, token, name);
@@ -35,7 +35,7 @@ router.post("/create/", async (req, res) => {
   else res.json(result);
 });
 
-router.get("/reset/:token/", async (req, res) => {
+router.get("/reset/:token/", async (req: Request, res: Response) => {
   const isValid = await account.validateResetToken(req.params.token);
   if (!isValid) return res.sendStatus(403);
   res.render("pwdReset", {
@@ -45,7 +45,7 @@ router.get("/reset/:token/", async (req, res) => {
   });
 });
 
-router.post("/cta/:shiftNr/:role?/", async (req, res) => {
+router.post("/cta/:shiftNr/:role?/", async (req: Request, res: Response) => {
   if (!("token" in req.body)) return res.sendStatus(401);
   if (req.body.token !== process.env.API_OVERRIDE) return res.sendStatus(403);
 
@@ -57,14 +57,14 @@ router.post("/cta/:shiftNr/:role?/", async (req, res) => {
   else res.sendStatus(400);
 });
 
-router.post("/pwd/reset", async (req, res) => {
+router.post("/pwd/reset", async (req: Request, res: Response) => {
   if (!("email" in req.body)) res.sendStatus(400);
   const state = await account.resetPwd(req.body.email);
   if (state) res.sendStatus(200);
   else res.sendStatus(500);
 });
 
-router.post("/reset", async (req, res) => {
+router.post("/reset", async (req: Request, res: Response) => {
   if (!("token" in req.body)) res.status(400).send("Token puudub");
   if (!("password" in req.body)) res.status(400).send("Salasõna puudub");
 
@@ -76,7 +76,7 @@ router.post("/reset", async (req, res) => {
 // ---------- AUTH ZONE ------------------------------
 router.use(jwt.verifyAccessToken);
 
-router.post("/ct/", async (req, res) => {
+router.post("/ct/", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.body.shiftNr);
   const { email } = req.body;
   if (!shiftNr || !email) return res.sendStatus(400);
@@ -92,12 +92,12 @@ router.post("/ct/", async (req, res) => {
   }
 });
 
-router.post("/password/update", async (req, res) => {
+router.post("/password/update", async (req: Request, res: Response) => {
   const { password } = req.body;
   if (!password) return res.sendStatus(400);
 });
 
-router.post("/email/update", async (req, res) => {
+router.post("/email/update", async (req: Request, res: Response) => {
   const { email } = req.body;
   if (!email) return res.sendStatus(400);
 
@@ -106,13 +106,13 @@ router.post("/email/update", async (req, res) => {
   else return 500;
 });
 
-router.post("/info", async (req, res) => {
+router.post("/info", async (req: Request, res: Response) => {
   const userInfo = await user.getInfo(req.user.id);
   if (userInfo) return res.json(userInfo);
   res.sendStatus(403);
 });
 
-router.post("/shift/swap", async (req, res) => {
+router.post("/shift/swap", async (req: Request, res: Response) => {
   let { shiftNr } = req.body;
   shiftNr = parseInt(shiftNr);
   if (!shiftNr) return res.sendStatus(400);
@@ -124,7 +124,7 @@ router.post("/shift/swap", async (req, res) => {
   else res.sendStatus(403);
 });
 
-router.post("/shift/validate", async (req, res) => {
+router.post("/shift/validate", async (req: Request, res: Response) => {
   let { shiftNr } = req.body;
   shiftNr = parseInt(shiftNr);
   if (!shiftNr) return res.sendStatus(400);
@@ -136,7 +136,7 @@ router.post("/shift/validate", async (req, res) => {
   else res.status(403).json({ role });
 });
 
-router.post("/shifts/get", async (req, res) => {
+router.post("/shifts/get", async (req: Request, res: Response) => {
   const shifts = await user.getShifts();
   res.json(shifts);
 });

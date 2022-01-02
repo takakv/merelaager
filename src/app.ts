@@ -3,7 +3,7 @@ import path from "path";
 
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
-import { sequelize } from "./db/models";
+import { sequelize } from "./db/sequelize";
 
 import cors from "cors";
 import slashes from "connect-slashes";
@@ -131,7 +131,6 @@ app.use((req: Request, res: Response) => {
 
 const runApp = async () => {
   try {
-    console.log(sequelize.models);
     await sequelize.authenticate();
     await sequelize.sync({ force: true });
     const port = process.env.PORT;

@@ -1,5 +1,15 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "./index";
+import { Optional } from "sequelize";
+import {
+  AllowNull,
+  AutoIncrement,
+  Column,
+  DataType,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { Registration } from "./Registration";
 
 interface ChildAttributes {
   id: number;
@@ -12,41 +22,30 @@ interface ChildAttributes {
 interface ChildCreationAttributes
   extends Optional<ChildAttributes, "id" | "yearsAtCamp" | "notes"> {}
 
-class Child
+@Table({ tableName: "children" })
+export class Child
   extends Model<ChildAttributes, ChildCreationAttributes>
   implements ChildAttributes
 {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   public name!: string;
+
+  @AllowNull(false)
+  @Column(DataType.ENUM("M", "F"))
   public gender!: string;
+
+  @Column(DataType.INTEGER.UNSIGNED)
   public yearsAtCamp: number;
+
+  @Column(DataType.TEXT)
   public notes: string;
+
+  @HasMany(() => Registration)
+  public registrations?: Registration[];
 }
-
-Child.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    gender: {
-      type: DataTypes.ENUM("M", "F"),
-      allowNull: false,
-    },
-    yearsAtCamp: {
-      type: DataTypes.INTEGER.UNSIGNED,
-    },
-    notes: {
-      type: DataTypes.TEXT,
-    },
-  },
-  { tableName: "children", sequelize }
-);
-
-export default Child;
