@@ -56,13 +56,13 @@ const fetchPromises = () => {
     promises.push(
       Registration.count({
         where: { isRegistered: true, shiftNr: i },
-        include: { model: Child, where: { gender: "M" } },
+        include: { model: Child, as: "child", where: { gender: "M" } },
       })
     );
     promises.push(
       Registration.count({
         where: { isRegistered: true, shiftNr: i },
-        include: { model: Child, where: { gender: "F" } },
+        include: { model: Child, as: "child", where: { gender: "F" } },
       })
     );
   }
@@ -374,7 +374,7 @@ const registerAll = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    await registerAll(req, res);
+    // await registerAll(req, res);
   } catch (e) {
     console.error(e);
   }

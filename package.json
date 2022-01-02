@@ -2,9 +2,9 @@
   "name": "merelaager",
   "version": "1.0.0",
   "description": "Merelaagri veebisait",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node ./build/app.js",
+    "start": "node ./build/server.js",
     "build": "tsc",
     "serve": "webpack serve",
     "test": "echo \"Error: no test specified\" && exit 1"

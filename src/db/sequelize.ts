@@ -33,5 +33,6 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     Team,
     User,
   ],
+  logging: false,
   // models: [__dirname + "/models"],
 });
