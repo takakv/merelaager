@@ -132,7 +132,7 @@ app.use((req: Request, res: Response) => {
 const runApp = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     const port = process.env.PORT;
     app.listen(port, () => console.log(`Listening on port ${port}`));
   } catch (error) {

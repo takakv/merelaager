@@ -10,7 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { Child } from "./Child";
+import { ShiftData } from "./ShiftData";
 
 interface TeamAttributes {
   id: number;
@@ -49,6 +49,6 @@ export class Team
   @Column(DataType.INTEGER.UNSIGNED)
   public place: number;
 
-  @HasMany(() => Child)
-  public members?: Child[];
+  @HasMany(() => ShiftData)
+  public members?: ShiftData[];
 }

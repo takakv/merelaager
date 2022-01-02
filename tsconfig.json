@@ -2,6 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "target": "es6",
     "sourceMap": true,
     "outDir": "build",
@@ -10,6 +11,9 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

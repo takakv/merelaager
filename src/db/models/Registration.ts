@@ -56,7 +56,7 @@ export class Registration
   @Column(DataType.INTEGER.UNSIGNED)
   public childId!: number;
 
-  @BelongsTo(() => Child)
+  @BelongsTo(() => Child, "childId")
   public child?: Child;
 
   @Column(DataType.STRING)

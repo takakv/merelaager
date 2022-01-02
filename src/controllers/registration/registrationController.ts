@@ -4,6 +4,8 @@ import axios from "axios";
 import dotenv from "dotenv";
 
 import MailService from "../MailService";
+import { Registration } from "../../db/models/Registration";
+import { Child } from "../../db/models/Child";
 
 dotenv.config();
 
@@ -14,9 +16,6 @@ const meta = require("./meta");
 const mailService: MailService = new MailService();
 
 const DEBUG: boolean = false;
-
-import {Registration} from "../../db/models/registration";
-import {Child} from "../../db/models/child";
 
 let unlocked: boolean = process.env.NODE_ENV === "dev";
 

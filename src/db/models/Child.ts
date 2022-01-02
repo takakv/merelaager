@@ -48,7 +48,7 @@ export class Child
   @Column(DataType.TEXT)
   public notes: string;
 
-  @HasMany(() => Registration)
+  @HasMany(() => Registration, "childId")
   public registrations?: Registration[];
 
   @HasMany(() => Record)

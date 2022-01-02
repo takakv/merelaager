@@ -1,7 +1,16 @@
 import { Sequelize } from "sequelize-typescript";
-import dotenv from "dotenv";
+import { Child } from "./models/Child";
+import { Record } from "./models/Record";
+import { Registration } from "./models/Registration";
+import { ResetToken } from "./models/ResetToken";
+import { ShiftData } from "./models/ShiftData";
+import { ShiftInfo } from "./models/ShiftInfo";
+import { SignUpToken } from "./models/SignUpToken";
+import { Staff } from "./models/Staff";
+import { Team } from "./models/Team";
+import { User } from "./models/User";
 
-dotenv.config();
+require("dotenv").config();
 
 const host = process.env.MYSQL_HOST;
 const user = process.env.MYSQL_USER;
@@ -12,5 +21,17 @@ export const sequelize = new Sequelize(dbname, user, pass, {
   dialect: "mariadb",
   host: host,
   port: 3306,
-  models: [__dirname + "/models"],
+  models: [
+    Child,
+    Record,
+    Registration,
+    ResetToken,
+    ShiftData,
+    ShiftInfo,
+    SignUpToken,
+    Staff,
+    Team,
+    User,
+  ],
+  // models: [__dirname + "/models"],
 });
