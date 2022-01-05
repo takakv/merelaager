@@ -37,7 +37,7 @@ app.set("view engine", "hbs");
 
 app.use(express.static("public")).use(slashes());
 
-let meta = JSON.parse(fs.readFileSync("../data/metadata.json", "utf-8"));
+let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
 
 app.get("/robots.txt", (req: Request, res: Response) => {
   res.type("text/plain");
