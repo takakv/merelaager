@@ -1,10 +1,11 @@
 import bcrypt from "bcrypt";
 import { generateAccessToken, generateRefreshToken } from "./jwt";
-import {User} from "../../db/models/User";
+import { User } from "../../db/models/User";
 
-export const authenticateUser = async (username, password) => {
+export const authenticateUser = async (username: string, password: string) => {
   const user = await secureFetchUser(username, password);
-  if (!user) return false;
+  if (!user) return null;
+
   const tokenType = "Bearer";
   const { accessToken, expiresIn } = generateAccessToken({
     username: user.username,

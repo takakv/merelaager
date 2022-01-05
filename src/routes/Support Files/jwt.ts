@@ -13,13 +13,13 @@ const rootRole = "root";
 const generateAccessToken = (userData) => {
   const expiresIn = 1799;
   // noinspection JSCheckFunctionSignatures
-  const accessToken = jwt.sign(userData, accessTokenSecret, {
+  const accessToken: string = jwt.sign(userData, accessTokenSecret, {
     expiresIn: `${expiresIn}s`,
   });
   return { accessToken, expiresIn };
 };
 
-const generateRefreshToken = (userData) => {
+const generateRefreshToken = (userData): string => {
   return jwt.sign(userData, refreshTokenSecret);
 };
 

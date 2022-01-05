@@ -1,4 +1,5 @@
-import express from "express";
+import express, { Request, Response } from "express";
+import {InvalidTokenError, MissingTokenError} from "../Support Files/Errors/jwtAuth";
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ const JWT = require("jsonwebtoken");
 const userAuth = require("../Support Files/userAuth");
 const jwt = require("../Support Files/jwt");
 
-router.post("/login/", async (req, res) => {
+router.post("/login/", async (req: Request, res: Response) => {
   if (
     typeof req.body.username === "undefined" ||
     typeof req.body.password === "undefined"
@@ -24,8 +25,8 @@ router.post("/login/", async (req, res) => {
 router.post("/token/", async (req, res) => {
   const { token } = req.body;
 
-  if (!token) return res.sendStatus(401);
-  if (!(await userAuth.matchToken(token))) return res.sendStatus(403);
+  if (!token) return res.status(401).json(new MissingTokenError().getJson());
+  if (!(await userAuth.matchToken(token))) return res.status(401).json(new InvalidTokenError().getJson());
 
   JWT.verify(token, jwt.refreshTokenSecret, (err, user) => {
     if (err) {
