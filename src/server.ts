@@ -1,10 +1,6 @@
 import { sequelize } from "./db/sequelize";
 import { runApp } from "./app";
-import {
-  availableSlots,
-  initialiseRegistration,
-} from "./controllers/registration/registrationController";
-import axios from "axios";
+import { initialiseRegistration } from "./controllers/registration/registrationController";
 
 (async () => {
   try {
@@ -18,6 +14,5 @@ import axios from "axios";
   }
 
   await initialiseRegistration();
-  // await axios.post(process.env.URL, availableSlots).catch();
   runApp();
 })();

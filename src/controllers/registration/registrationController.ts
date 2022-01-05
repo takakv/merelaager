@@ -345,7 +345,7 @@ const registerAll = async (req: Request, res: Response): Promise<void> => {
     } else isRegistered.push(false);
   }
 
-  axios.post(process.env.URL, availableSlots).catch();
+  axios.post(process.env.URL, availableSlots).catch((e) => console.error(e));
 
   // Keep track of registration bill order.
   const billNr = regCount ? billNumber++ : null;

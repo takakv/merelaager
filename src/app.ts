@@ -8,6 +8,13 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import slashes from "connect-slashes";
 import { create, ExpressHandlebars } from "express-handlebars";
+import { renderPictures } from "./routes/pictures";
+import infoRouter from "./routes/info";
+import registerRouter from "./routes/register";
+import legal from "./routes/legal";
+import api from "./routes/api";
+import axios from "axios";
+import { availableSlots } from "./controllers/registration/registrationController";
 
 dotenv.config();
 
@@ -88,8 +95,6 @@ app.get("/lastenurk/", (req: Request, res: Response) => {
   });
 });
 
-import { renderPictures } from "./routes/pictures";
-
 app.get("/pildid/", (req: Request, res: Response) => {
   const imageList: object[] = [];
   fs.readdirSync("./public/img").forEach((file) => {
@@ -106,19 +111,11 @@ app.get("/sisukaart/", (req: Request, res: Response) => {
   });
 });
 
-import infoRouter from "./routes/info";
-
 app.use("/info/", infoRouter);
-
-import registerRouter from "./routes/register";
 
 app.use("/registreerimine/", registerRouter);
 
-import legal from "./routes/legal";
-
 app.use("/oiguslik/", legal);
-
-import api from "./routes/api";
 
 app.use("/api/", api);
 
@@ -139,4 +136,5 @@ app.use((req: Request, res: Response) => {
 export const runApp = () => {
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log(`App listening on port ${port}`));
+  axios.post(process.env.URL, availableSlots);
 };
