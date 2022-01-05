@@ -1,9 +1,11 @@
 import fs from "fs";
 import express, { Request, Response } from "express";
+import path from "path";
 
 const router = express.Router();
 
-let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
+const metaPath = path.join(__dirname, "../../data/metadata.json");
+let meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
 meta = meta.legal;
 
 const url_prefix = "oiguslik/";
