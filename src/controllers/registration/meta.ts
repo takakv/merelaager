@@ -11,7 +11,7 @@ export const prices = {
 };
 
 const openSlots = {
-  1: { M: 19, F: 17 },
+  1: { M: 19, F: 19 },
   2: { M: 13, F: 17 },
   3: { M: 18, F: 18 },
   4: { M: 9, F: 16 },
