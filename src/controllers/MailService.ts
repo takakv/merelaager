@@ -9,7 +9,8 @@ const mg = require("nodemailer-mailgun-transport");
 
 const boilerplate = require("./mailService/boilerplate");
 
-const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
+const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
+const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
 const generateInfoHTML = (campers, price, billNr, regCount) => {
   let response = "<ul>";
