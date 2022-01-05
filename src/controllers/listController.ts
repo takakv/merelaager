@@ -1,20 +1,22 @@
+import { Request } from "express";
+
 require("dotenv").config();
 
 const { generatePDF } = require("./listGenerator");
 const { approveShift } = require("../routes/Support Files/shiftAuth");
 
-import {Registration} from "../db/models/registration";
-import {Child} from "../db/models/child";
+import { Registration } from "../db/models/Registration";
+import { Child } from "../db/models/Child";
 
 const numberOfShifts = 5;
 
-exports.fetch = async (req) => {
-  const children = await Registration.findAll({
+export const fetchAllRegistrations = async (req: Request) => {
+  const registrations = await Registration.findAll({
     order: [["regOrder", "ASC"]],
     include: Child,
   });
 
-  if (!children.length) return null;
+  if (!registrations.length) return null;
 
   const { role } = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
@@ -33,7 +35,7 @@ exports.fetch = async (req) => {
     };
   }
 
-  children.forEach((child) => {
+  registrations.forEach((child) => {
     const data = {
       id: child["id"],
       name: child["child"]["name"],

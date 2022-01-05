@@ -22,9 +22,9 @@ export const sequelize = new Sequelize(dbname, user, pass, {
   host: host,
   port: 3306,
   models: [
+    Registration,
     Child,
     Record,
-    Registration,
     ResetToken,
     ShiftData,
     ShiftInfo,

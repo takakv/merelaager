@@ -4,7 +4,7 @@ import {ShiftData} from "../db/models/ShiftData";
 
 exports.forceUpdate = async () => {
   // Fetch all registered campers.
-  const registrations: Registration[] = await Registration.findAll({
+  const registrations = await Registration.findAll({
     where: { isRegistered: true },
   });
 

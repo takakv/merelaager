@@ -11,7 +11,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { Child } from "./child";
+import { Child } from "./Child";
 import { ShiftInfo } from "./ShiftInfo";
 
 interface RegistrationAttributes {

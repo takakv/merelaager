@@ -1,14 +1,15 @@
-import express from "express";
+import express, {Request, Response} from "express";
 
 const router = express.Router();
 
 const registrationList = require("../../controllers/listController");
 const { requireShiftBoss } = require("../Support Files/shiftAuth");
+import {fetchAllRegistrations} from "../../controllers/listController";
 
 // Fetch the whole list of children and their registration status.
-router.get("/fetch/", async (req, res) => {
+router.get("/fetch/", async (req: Request, res: Response) => {
   try {
-    const data = await registrationList.fetch(req, res);
+    const data = await fetchAllRegistrations(req);
     res.json(data);
   } catch (e) {
     console.error(e);
