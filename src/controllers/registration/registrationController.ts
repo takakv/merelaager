@@ -28,7 +28,7 @@ if (process.env.UNLOCK === "true") {
   }, meta.eta);
 }
 
-const availableSlots = {
+export const availableSlots = {
   1: { M: 0, F: 0 },
   2: { M: 0, F: 0 },
   3: { M: 0, F: 0 },
@@ -138,15 +138,15 @@ const addChild = async (name: string, gender: string) => {
   return res.id;
 };
 
-const getGenders = (idCodeArray) => {
-  const genders = [];
+const getGenders = (idCodeArray: string[]) => {
+  const genders: string[] = [];
   idCodeArray.forEach((idCode) => {
     genders.push(idCode[0] === "5" ? "M" : "F");
   });
   return genders;
 };
 
-const postChildren = async (names, genders) => {
+const postChildren = async (names: string[], genders: string[]) => {
   const childIds: number[] = [];
 
   for (let i = 0; i < names.length; ++i) {

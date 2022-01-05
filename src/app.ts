@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import dotenv from "dotenv";
 
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
@@ -8,11 +9,17 @@ import cors from "cors";
 import slashes from "connect-slashes";
 import { create, ExpressHandlebars } from "express-handlebars";
 
-require("dotenv").config();
+dotenv.config();
 
 const app: Application = express();
 
-app.use(cors());
+const allowedOrigins = ["https://sild.merelaager.ee", `http://localhost:8080`];
+
+const corsOptions: cors.CorsOptions = {
+  origin: allowedOrigins,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -22,7 +29,7 @@ const hbs: ExpressHandlebars = create({
   layoutsDir: path.join(__dirname, "..", "/views/layouts/"),
   partialsDir: path.join(__dirname, "..", "/views/partials/"),
   helpers: {
-    times: (n, block) => {
+    times: (n: number, block: any) => {
       let accum = "";
       for (let i = 1; i <= 4; ++i) {
         accum += block.fn(i);
@@ -84,7 +91,7 @@ app.get("/lastenurk/", (req: Request, res: Response) => {
 import { renderPictures } from "./routes/pictures";
 
 app.get("/pildid/", (req: Request, res: Response) => {
-  const imageList = [];
+  const imageList: object[] = [];
   fs.readdirSync("./public/img").forEach((file) => {
     if (file !== ".gitkeep") imageList.push({ src: `../img/${file}` });
   });

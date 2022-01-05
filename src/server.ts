@@ -1,6 +1,10 @@
 import { sequelize } from "./db/sequelize";
 import { runApp } from "./app";
-import { initialiseRegistration } from "./controllers/registration/registrationController";
+import {
+  availableSlots,
+  initialiseRegistration,
+} from "./controllers/registration/registrationController";
+import axios from "axios";
 
 (async () => {
   try {
@@ -14,5 +18,6 @@ import { initialiseRegistration } from "./controllers/registration/registrationC
   }
 
   await initialiseRegistration();
+  // await axios.post(process.env.URL, availableSlots).catch();
   runApp();
 })();
