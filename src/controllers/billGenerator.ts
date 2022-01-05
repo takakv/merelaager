@@ -1,7 +1,10 @@
-const PDFDoc = require("pdfkit");
-import * as fs from "fs";
+import path from "path";
+import fs from "fs";
 
-const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
+const PDFDoc = require("pdfkit");
+
+const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
+const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
 const billMeta = {
   size: "A4",
