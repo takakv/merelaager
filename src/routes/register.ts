@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import express, { Router, Request, Response } from "express";
 import bodyParser from "body-parser";
 
@@ -23,7 +24,6 @@ router.get("/", (req: Request, res: Response) => {
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
 import { create } from "../controllers/registration/registrationController";
-import path from "path";
 
 router.post("/register/", urlEncParser, create);
 
