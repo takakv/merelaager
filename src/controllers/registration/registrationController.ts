@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import MailService from "../MailService";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
+import { RegistrationErrorResponse } from "./RegistrationResponse";
 
 dotenv.config();
 
@@ -146,7 +147,8 @@ const getGenders = (idCodeArray) => {
 };
 
 const postChildren = async (names, genders) => {
-  const childIds = [];
+  const childIds: number[] = [];
+
   for (let i = 0; i < names.length; ++i) {
     let childId = await fetchChild(names[i]);
     if (!childId) {
@@ -181,27 +183,27 @@ const getChildData = (
   const isRegistered = registrations[i];
   const shiftNr = parseInt(shiftNrs[i].trim());
 
-  return {
-    idCode,
-    birthday,
-    isOld,
-    billNr: isRegistered ? billNr : null,
-    shiftNr,
+  return new Registration({
     childId: childIds[i],
+    idCode,
+    shiftNr,
     isRegistered,
     regOrder,
-    priceToPay: getPrice(shiftNr, isOld),
+    isOld,
+    birthday,
     tsSize: rawData.tsSize[i],
     addendum: rawData.addendum ? rawData.addendum[i] : null,
     road: rawData.road[i],
     city: rawData.city[i],
     county: rawData.county[i],
     country: rawData.country ? rawData.country[i] : "Eesti",
+    billNr: isRegistered ? billNr : null,
     contactName: rawData.contactName,
     contactEmail: rawData.contactEmail,
     contactNumber: rawData.contactNumber,
     backupTel: rawData.backupTel,
-  };
+    priceToPay: getPrice(shiftNr, isOld),
+  });
 };
 
 const prepRawData = (rawData) => {
@@ -227,44 +229,64 @@ const getChildrenData = (
 ) => {
   if (childCount === 1 && !Array.isArray(rawData.tsSize))
     rawData = prepRawData(rawData);
-  const childrenData = [];
+
+  const childrenData: Registration[] = [];
+
   for (let i = 0; i < childCount; ++i) {
-    try {
-      childrenData.push(
-        getChildData(
-          rawData,
-          childIds,
-          registrations,
-          shiftNrs,
-          i,
-          billNr,
-          regOrder
-        )
-      );
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
+    childrenData.push(
+      getChildData(
+        rawData,
+        childIds,
+        registrations,
+        shiftNrs,
+        i,
+        billNr,
+        regOrder
+      )
+    );
   }
   return childrenData;
 };
 
-const registerAll = async (req: Request, res: Response) => {
-  if (!unlocked) return res.status(409).send("Vara veel!");
+const validateChildCount = (childCount: number, res: Response): boolean => {
+  if (isNaN(childCount)) {
+    const statusCode = 400;
+    const error = new RegistrationErrorResponse(
+      statusCode,
+      "Could not parse the number of children"
+    );
+    res.status(statusCode).json(error.toJson());
+    return false;
+  }
 
-  const childCount = parseInt(req.body.childCount);
-  if (isNaN(childCount) || childCount < 1 || childCount > 4) return false;
+  if (childCount < 1 || childCount > 4) {
+    const statusCode = 400;
+    const error = new RegistrationErrorResponse(
+      statusCode,
+      "Invalid number of children"
+    );
+    res.status(statusCode).json(error.toJson());
+    return false;
+  }
 
-  const order = registrationOrder++;
-  console.log(`Registration: ${order} at ${Date.now()}`);
+  return true;
+};
 
-  let shiftNrs, genders, names;
+const validateUnlock = (res: Response): boolean => {
+  if (unlocked) return true;
 
-  // Determine how many children need to be registered,
-  // their gender and desired shift to lock the slots.
+  const statusCode = 403;
+  const error = new RegistrationErrorResponse(statusCode, "Too early");
+  res.json(error.toJson());
 
-  // First determine genders, shifts, and names.
-  // Names will be needed later.
+  return false;
+};
+
+const getContentArrays = (req: Request) => {
+  let shiftNrs: number[];
+  let genders: string[];
+  let names: string[];
+
   if (Array.isArray(req.body.shiftNr)) {
     shiftNrs = req.body.shiftNr;
     genders = getGenders(req.body.idCode);
@@ -275,18 +297,45 @@ const registerAll = async (req: Request, res: Response) => {
     names = [req.body.name];
   }
 
+  return { shiftNrs, genders, names };
+};
+
+const registerAll = async (req: Request, res: Response): Promise<void> => {
+  if (!validateUnlock(res)) return;
+
+  const childCount = parseInt(req.body.childCount);
+  if (!validateChildCount(childCount, res)) return;
+
+  const order = registrationOrder++;
+  console.log(`Registration: ${order} at ${Date.now()}`);
+
+  // Determine how many children need to be registered,
+  // their gender and desired shift to lock the slots.
+
+  // First determine genders, shifts, and names.
+  // Names will be needed later.
+  let { shiftNrs, genders, names } = getContentArrays(req);
+
   if (DEBUG) {
     console.log(`Shifts: ${shiftNrs}`);
     console.log(`Genders: ${genders}`);
   }
 
   // Sanity check.
-  if (shiftNrs.length !== genders.length || shiftNrs.length !== names.length)
-    return false;
+  if (shiftNrs.length !== genders.length || shiftNrs.length !== names.length) {
+    const statusCode = 400;
+    const error = new RegistrationErrorResponse(
+      statusCode,
+      "Uneven parameter lengths"
+    );
+    res.status(statusCode).json(error.toJson());
+    return;
+  }
 
   // Immediately lock the available slots,
   // store whether there was room or not.
-  const isRegistered = [];
+  const isRegistered: boolean[] = [];
+
   let regCount = 0;
   for (let i = 0; i < childCount; ++i) {
     if (availableSlots[shiftNrs[i]][genders[i]] > 0) {
@@ -319,14 +368,20 @@ const registerAll = async (req: Request, res: Response) => {
     order
   );
 
-  if (!childrenData) return res.sendStatus(400);
+  if (!childrenData.length) {
+    res.sendStatus(400);
+    return;
+  }
 
   if (DEBUG) {
     console.log("ChildrenData:");
     console.log(childrenData);
   }
 
-  await Registration.bulkCreate(childrenData);
+  const bulkValues = childrenData.map((child) =>
+    child.getRegistrationProperties()
+  );
+  await Registration.bulkCreate(bulkValues);
 
   const contact = {
     name: childrenData[0].contactName,
@@ -366,7 +421,7 @@ const registerAll = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    // await registerAll(req, res);
+    await registerAll(req, res);
   } catch (e) {
     console.error(e);
   }
@@ -385,7 +440,7 @@ const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
 };
 
 const getPrice = (shiftNr: number, isOld: boolean) => {
-  let price = meta.prices[shiftNr];
+  let price: number = meta.prices[shiftNr];
   if (isOld) price -= 20;
   return price;
 };

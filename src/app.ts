@@ -3,7 +3,6 @@ import path from "path";
 
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
-import { sequelize } from "./db/sequelize";
 
 import cors from "cors";
 import slashes from "connect-slashes";

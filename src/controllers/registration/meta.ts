@@ -2,7 +2,7 @@ const unlockTime = new Date(Date.parse("01 Jan 2022 11:59:50 UTC"));
 const now = Date.now();
 const eta = unlockTime.getTime() - now;
 
-const prices = {
+export const prices = {
   1: 240,
   2: 320,
   3: 200,
