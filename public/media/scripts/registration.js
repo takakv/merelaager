@@ -124,8 +124,8 @@ source.onmessage = (event) => {
     const girlsCount = parsedData[i + 1].F > 0 ? parsedData[i + 1].F : 0;
     //shiftSpots[i].children[1].innerText = `Poisid: 20`;
     //shiftSpots[i].children[2].innerText = `Tüdrukud: 20`;
-    shiftSpots[i].children[1].innerText = `Poisid: ${boysCount}`;
-    shiftSpots[i].children[2].innerText = `Tüdrukud: ${girlsCount}`;
+    shiftSpots[i].children[1].children[0].innerText = `Poisid: ${boysCount}`;
+    shiftSpots[i].children[1].children[1].innerText = `Tüdrukud: ${girlsCount}`;
   }
 };
 
