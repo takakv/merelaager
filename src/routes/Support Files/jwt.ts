@@ -30,7 +30,7 @@ const populateInternalUser = async (req: Request, user) => {
   });
   req.user.role = dbUser.role;
   req.user.id = dbUser.id;
-  req.user.shift = dbUser.shifts;
+  req.user.shift = dbUser.currentShift;
   req.user.isRoot = dbUser.role === rootRole;
 };
 

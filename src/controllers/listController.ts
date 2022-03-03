@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 
 require("dotenv").config();
 
@@ -86,7 +86,7 @@ const pushData = (camper, target) => {
   }
 };
 
-exports.update = async (req, res) => {
+export const update = async (req: Request, res: Response) => {
   // Entry ID and field to update.
   if (!req.params.userId || !req.params.field)
     return res.sendStatus(400) && null;
@@ -170,7 +170,7 @@ const getCamper = async (id, queryUser) => {
   };
 };
 
-exports.remove = async (req, res) => {
+exports.remove = async (req: Request, res: Response) => {
   // Entry ID check.
   if (!req.params.userId) return res.sendStatus(400) && null;
 
@@ -182,7 +182,7 @@ exports.remove = async (req, res) => {
   return true;
 };
 
-exports.print = async (shiftNr) => {
+exports.print = async (shiftNr: number) => {
   const children = await Registration.findAll({
     where: { shiftNr, isRegistered: true },
     include: {

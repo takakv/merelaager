@@ -1,21 +1,26 @@
-import {Staff} from "../../db/models/Staff";
-import {User} from "../../db/models/User";
+import { Request, Response, NextFunction } from "express";
+import { Staff } from "../../db/models/Staff";
+import { User } from "../../db/models/User";
 
-const requireShiftBoss = async (req, res, next) => {
+const requireShiftBoss = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { user } = req;
 
   if (user.isRoot) return next();
 
   const now = new Date();
   let year = now.getUTCFullYear();
+  // Access updates happen in december.
   if (now.getMonth() === 11) ++year;
 
+  const shiftNr = parseInt(user.shift);
+  if (isNaN(shiftNr)) return res.sendStatus(400);
+
   const result = await Staff.findOne({
-    where: {
-      userId: user.id,
-      shiftNr: user.shift,
-      year,
-    },
+    where: { userId: user.id, shiftNr, year },
   });
   if (!result) {
     console.log(

@@ -4,7 +4,7 @@ const router = express.Router();
 
 const registrationList = require("../../controllers/listController");
 const { requireShiftBoss } = require("../Support Files/shiftAuth");
-import {fetchAllRegistrations} from "../../controllers/listController";
+import {fetchAllRegistrations, update} from "../../controllers/listController";
 
 // Fetch the whole list of children and their registration status.
 router.get("/fetch/", async (req: Request, res: Response) => {
@@ -27,9 +27,9 @@ router.get("/print/:shiftNr/", async (req, res) => {
   res.sendStatus(404);
 });
 
-router.post("/update/:userId/:field/:value?/", async (req, res) => {
+router.post("/update/:userId/:field/:value?/", async (req: Request, res: Response) => {
   try {
-    const status = await registrationList.update(req, res);
+    const status = await update(req, res);
     if (status) res.sendStatus(200);
   } catch (e) {
     console.error(e);

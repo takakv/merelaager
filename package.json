@@ -39,8 +39,8 @@
     "pdfmake": "^0.2.2",
     "qrcode": "^1.4.4",
     "reflect-metadata": "^0.1.13",
-    "sequelize": "^7.0.0-alpha.2",
-    "sequelize-typescript": "^2.1.1",
+    "sequelize": "^6.5.0",
+    "sequelize-typescript": "^2.1.0",
     "uid-generator": "^2.0.0"
   },
   "devDependencies": {
