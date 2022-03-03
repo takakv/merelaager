@@ -2,12 +2,12 @@ const fs = require("fs");
 const config = require("./configGetters");
 const dataGetters = require("./dataGetters");
 
-const getAuthentic = (names) => {
+const getAuthentic = (names: any) => {
   const lastNames = names.last;
   const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 };
 
-exports.generate = async (authentic, factor) => {
+exports.generate = async (authentic: boolean, factor: number) => {
   const names = JSON.parse(fs.readFileSync("./data/names.json", "utf-8"));
   const path = "./data/files/regTest.jmx";
 
