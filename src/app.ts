@@ -74,6 +74,7 @@ app.get("/", (req: Request, res: Response) => {
     title: meta.homepage.title,
     description: meta.homepage.description,
     body_class: "landing",
+    header: process.env.TITLE || "Kohtumiseni suvel"
   });
 });
 

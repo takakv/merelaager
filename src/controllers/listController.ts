@@ -7,6 +7,7 @@ const { approveShift } = require("../routes/Support Files/shiftAuth");
 
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
+import Entity = Express.Entity;
 
 const numberOfShifts = 5;
 
@@ -91,7 +92,7 @@ export const update = async (req: Request, res: Response) => {
   if (!req.params.userId || !req.params.field)
     return res.sendStatus(400) && null;
 
-  const id = req.params.userId;
+  const id: number = parseInt(req.params.userId);
   const action = req.params.field;
 
   // Entry value, if needed.
@@ -123,7 +124,11 @@ export const update = async (req: Request, res: Response) => {
     return res.sendStatus(404) && null;
   }
 
-  const value = req.params.value;
+  const value = parseInt(req.params.value);
+  if (isNaN(value)) {
+    res.sendStatus(400);
+    return null;
+  }
 
   switch (action) {
     // Update the amount that has been paid for the camper.
@@ -141,7 +146,7 @@ export const update = async (req: Request, res: Response) => {
   return true;
 };
 
-const getCamper = async (id, queryUser) => {
+const getCamper = async (id: number, queryUser: Entity) => {
   const camper = await Registration.findByPk(id);
   if (!camper)
     return {
@@ -151,7 +156,7 @@ const getCamper = async (id, queryUser) => {
     };
 
   // Evaluate access rights.
-  const shift: number = camper.shiftNr;
+  const shift = camper.shiftNr;
   if (!(await approveShift(queryUser, shift))) {
     const message = "User not authorised for the shift";
     console.log(message);
@@ -174,7 +179,7 @@ exports.remove = async (req: Request, res: Response) => {
   // Entry ID check.
   if (!req.params.userId) return res.sendStatus(400) && null;
 
-  const id = req.params.userId;
+  const id = parseInt(req.params.userId);
   const camper = await getCamper(id, req.user);
   if (!camper.ok) return res.sendStatus(camper.code) && null;
 

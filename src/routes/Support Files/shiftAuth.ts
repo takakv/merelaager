@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { Staff } from "../../db/models/Staff";
 import { User } from "../../db/models/User";
+import Entity = Express.Entity;
 
 const requireShiftBoss = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { user } = req;
+  let { user } = req;
 
   if (user.isRoot) return next();
 
@@ -16,11 +17,8 @@ const requireShiftBoss = async (
   // Access updates happen in december.
   if (now.getMonth() === 11) ++year;
 
-  const shiftNr = parseInt(user.shift);
-  if (isNaN(shiftNr)) return res.sendStatus(400);
-
   const result = await Staff.findOne({
-    where: { userId: user.id, shiftNr, year },
+    where: { userId: user.id, shiftNr: user.shift, year },
   });
   if (!result) {
     console.log(
@@ -39,19 +37,16 @@ const requireShiftBoss = async (
   next();
 };
 
-const approveShift = async (user, shiftNr) => {
+const approveShift = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return true;
   return user.shift === shiftNr;
 };
 
-const approveShiftFull = async (user, shiftNr) => {
+const approveShiftFull = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return true;
 
-  const userId = (
-    await User.findOne({
-      where: { username: user.username },
-    })
-  ).id;
+  const userId = (await User.findOne({ where: { username: user.username } }))
+    .id;
   const accessEntry = await Staff.findOne({
     where: { userId, shiftNr, year: new Date().getUTCFullYear() },
   });

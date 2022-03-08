@@ -23,7 +23,7 @@ const generateRefreshToken = (userData): string => {
   return jwt.sign(userData, refreshTokenSecret);
 };
 
-const populateInternalUser = async (req: Request, user) => {
+const populateInternalUser = async (req: Request, user: any) => {
   req.user = user;
   const dbUser = await User.findOne({
     where: { username: user.username },
