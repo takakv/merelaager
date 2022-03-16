@@ -27,13 +27,21 @@ router.post("/login/", async (req: Request, res: Response) => {
   const credentials = await userAuth.authenticateUser(username, password);
   if (!credentials) return res.status(403).send("Incorrect credentials.");
 
-  res.cookie("refreshToken", credentials.refreshToken, {
+  const cookieOptions = {
     domain: process.env.COOKIE_DOMAIN,
     secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
     sameSite: "strict",
-    maxAge: parseInt(process.env.COOKIE_MAXAGE) || -1,
-  });
+  };
+
+  const cookieMaxAge = parseInt(process.env.COOKIE_MAXAGE);
+  if (cookieMaxAge) {
+    // @ts-ignore
+    cookieOptions.maxAge = cookieMaxAge;
+  }
+
+  // @ts-ignore
+  res.cookie("refreshToken", credentials.refreshToken, cookieOptions);
   res.json(credentials);
 });
 
