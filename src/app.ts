@@ -24,6 +24,8 @@ const allowedOrigins = ["https://sild.merelaager.ee", `http://localhost:8080`];
 
 const corsOptions: cors.CorsOptions = {
   origin: allowedOrigins,
+  // https://stackoverflow.com/a/59812348
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -74,7 +76,7 @@ app.get("/", (req: Request, res: Response) => {
     title: meta.homepage.title,
     description: meta.homepage.description,
     body_class: "landing",
-    header: process.env.TITLE || "Kohtumiseni suvel"
+    header: process.env.TITLE || "Kohtumiseni suvel",
   });
 });
 
