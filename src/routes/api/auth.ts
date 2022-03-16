@@ -32,6 +32,7 @@ router.post("/login/", async (req: Request, res: Response) => {
     secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
     sameSite: "strict",
+    maxAge: parseInt(process.env.COOKIE_MAXAGE) || -1,
   });
   res.json(credentials);
 });

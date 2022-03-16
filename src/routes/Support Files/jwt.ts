@@ -20,7 +20,10 @@ const generateAccessToken = (userData) => {
 };
 
 const generateRefreshToken = (userData): string => {
-  return jwt.sign(userData, refreshTokenSecret);
+  const expiresIn = process.env.REFRESH_TOKEN_LIFETIME || 86399;
+  return jwt.sign(userData, refreshTokenSecret, {
+    expiresIn: `${expiresIn}s`,
+  });
 };
 
 const populateInternalUser = async (req: Request, user: any) => {
