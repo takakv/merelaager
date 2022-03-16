@@ -28,7 +28,7 @@ router.post("/login/", async (req: Request, res: Response) => {
   if (!credentials) return res.status(403).send("Incorrect credentials.");
 
   res.cookie("refreshToken", credentials.refreshToken, {
-    // domain: process.env.COOKIE_DOMAIN,
+    domain: process.env.COOKIE_DOMAIN,
     secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
     sameSite: "strict",
