@@ -11,7 +11,7 @@ const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const rootRole = "root";
 
 const generateAccessToken = (userData) => {
-  const expiresIn = 1799;
+  const expiresIn = process.env.TOKEN_LIFETIME || 299;
   // noinspection JSCheckFunctionSignatures
   const accessToken: string = jwt.sign(userData, accessTokenSecret, {
     expiresIn: `${expiresIn}s`,

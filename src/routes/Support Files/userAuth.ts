@@ -17,7 +17,7 @@ export const authenticateUser = async (username: string, password: string) => {
   return { tokenType, accessToken, expiresIn, refreshToken };
 };
 
-const secureFetchUser = async (username, password) => {
+const secureFetchUser = async (username: string, password: string) => {
   const user = await User.findOne({
     where: { username: username.toLowerCase() },
   });
@@ -27,12 +27,12 @@ const secureFetchUser = async (username, password) => {
   return { username: user.username };
 };
 
-const storeRefreshToken = (refreshToken, username) => {
+const storeRefreshToken = (refreshToken: string, username: string) => {
   username = username.toLowerCase();
   User.update({ refreshToken }, { where: { username } }).catch(console.error);
 };
 
-export const matchToken = async (refreshToken) => {
+export const matchToken = async (refreshToken: string) => {
   const user = await User.findOne({ where: { refreshToken } });
   return !!user;
 };
