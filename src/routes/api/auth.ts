@@ -28,11 +28,16 @@ router.post("/login/", async (req: Request, res: Response) => {
   if (!credentials) return res.status(403).send("Incorrect credentials.");
 
   const cookieOptions = {
-    domain: process.env.COOKIE_DOMAIN,
     secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
     sameSite: "strict",
   };
+
+  const cookieDomain = process.env.COOKIE_DOMAIN;
+  if (cookieDomain) {
+    // @ts-ignore
+    cookieOptions.domain = cookieDomain;
+  }
 
   const cookieMaxAge = parseInt(process.env.COOKIE_MAXAGE);
   if (cookieMaxAge) {
