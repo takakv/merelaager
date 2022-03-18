@@ -27,9 +27,9 @@ import { verifyAccessToken } from "./Support Files/jwt";
 
 router.use(verifyAccessToken);
 
-import registration from "./api/registration";
+import registrations from "./api/registrations";
 
-router.use("/reglist", registration);
+router.use("/registrations", registrations);
 
 import campers from "./api/campers";
 

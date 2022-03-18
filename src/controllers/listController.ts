@@ -3,88 +3,98 @@ import { Request, Response } from "express";
 require("dotenv").config();
 
 const { generatePDF } = require("./listGenerator");
-const { approveShift } = require("../routes/Support Files/shiftAuth");
+const {
+  approveShift,
+  approveShiftAndGetRole,
+} = require("../routes/Support Files/shiftAuth");
 
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
 import Entity = Express.Entity;
+import { RegistrationEntry } from "../routes/Support Files/registrations";
 
-const numberOfShifts = 5;
-
-export const fetchAllRegistrations = async (req: Request) => {
-  const registrations = await Registration.findAll({
+export const fetchRegistrations = async (req: Request) => {
+  const camperRegistrations = await Registration.findAll({
     order: [["regOrder", "ASC"]],
     include: Child,
   });
 
-  if (!registrations.length) return null;
+  let registrations: RegistrationEntry[] = [];
+
+  if (!camperRegistrations.length) return registrations;
 
   const { role } = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
-  if (!allowedRoles.includes(role)) return null;
+  if (!allowedRoles.includes(role)) return registrations;
 
-  let returnData = {};
-
-  for (let i = 1; i <= numberOfShifts; ++i) {
-    returnData[i] = {
-      campers: {},
-      regBoyCount: 0,
-      regGirlCount: 0,
-      resBoyCount: 0,
-      resGirlCount: 0,
-      totalRegCount: 0,
-    };
-  }
-
-  registrations.forEach((child) => {
-    const data = {
-      id: child["id"],
-      name: child["child"]["name"],
-      gender: child["child"]["gender"],
-      bDay: child["birthday"],
-      isOld: child["isOld"],
-      shift: child["shiftNr"],
-      tShirtSize: child["tsSize"],
-      regOrder: child.regOrder,
-      registered: child.isRegistered,
-      // city: child["city"],
-      // county: child["county"],
-      billNr: null,
-      contactName: null,
-      contactEmail: null,
-      contactNr: null,
-      pricePaid: null,
-      priceToPay: null,
-      idCode: null,
+  camperRegistrations.forEach((registration) => {
+    const entry: RegistrationEntry = {
+      id: registration.id,
+      name: registration.child.name,
+      gender: registration.child.gender,
+      dob: registration.birthday,
+      old: registration.isOld,
+      shiftNr: registration.shiftNr,
+      shirtSize: registration.tsSize,
+      order: registration.regOrder,
+      registered: registration.isRegistered,
     };
 
     if (role !== "op") {
-      data.billNr = child.billNr;
-      data.contactName = child.contactName.trim();
-      data.contactEmail = child.contactEmail.trim();
-      data.contactNr = child.contactNumber.trim();
-      data.pricePaid = child["pricePaid"];
-      data.priceToPay = child["priceToPay"];
+      entry.billNr = registration.billNr;
+      entry.contactName = registration.contactName;
+      entry.contactEmail = registration.contactEmail;
+      entry.contactPhone = registration.contactNumber;
+      entry.pricePaid = registration.pricePaid;
+      entry.priceToPay = registration.priceToPay;
     }
 
-    if (req.user.role === "root") data.idCode = child.idCode;
+    if (role === "root") entry.idCode = registration.idCode;
 
-    pushData(data, returnData[child.shiftNr]);
+    registrations.push(entry);
   });
 
-  return returnData;
+  return registrations;
 };
 
-const pushData = (camper, target) => {
-  target.campers[camper.id] = camper;
-  if (camper.registered) {
-    if (camper.gender === "M") target.regBoyCount++;
-    else target.regGirlCount++;
-    target.totalRegCount++;
-  } else {
-    if (camper.gender === "M") target.resBoyCount++;
-    else target.resGirlCount++;
-  }
+export const patchRegistration = async (req: Request, regId: number) => {
+  if (isNaN(regId)) return 400;
+
+  const registration = await Registration.findByPk(regId);
+  if (!registration) return 404;
+
+  const userRole = await approveShiftAndGetRole(req.user, registration.shiftNr);
+  if (!userRole || (userRole !== "boss" && userRole !== "root")) return 403;
+
+  const keys = Object.keys(req.body);
+
+  let patchError = false;
+
+  keys.forEach((key) => {
+    switch (key) {
+      case "registered":
+        registration.isRegistered = req.body.registered;
+        break;
+      case "old":
+        registration.isOld = req.body.old;
+        break;
+      case "pricePaid":
+        if (userRole !== "root") return;
+        registration.pricePaid = req.body.pricePaid;
+        break;
+      case "priceToPay":
+        if (userRole !== "root") return;
+        registration.priceToPay = req.body.priceToPay;
+        break;
+      default:
+        patchError = true;
+    }
+  });
+
+  if (patchError) return 422;
+
+  await registration.save();
+  return 204;
 };
 
 export const update = async (req: Request, res: Response) => {
