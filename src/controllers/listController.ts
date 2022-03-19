@@ -57,6 +57,11 @@ export const fetchRegistrations = async (req: Request) => {
   return registrations;
 };
 
+const verifyPrice = (price: string) => {
+  const amount = parseInt(price, 10);
+  return !isNaN(amount);
+};
+
 export const patchRegistration = async (req: Request, regId: number) => {
   if (isNaN(regId)) return 400;
 
@@ -68,7 +73,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
 
   const keys = Object.keys(req.body);
 
-  let patchError = false;
+  let patchError = 0;
 
   keys.forEach((key) => {
     switch (key) {
@@ -80,20 +85,27 @@ export const patchRegistration = async (req: Request, regId: number) => {
         break;
       case "pricePaid":
         if (userRole !== "root") return;
+        if (!verifyPrice(req.body.pricePaid)) patchError = 400;
         registration.pricePaid = req.body.pricePaid;
         break;
       case "priceToPay":
         if (userRole !== "root") return;
+        if (!verifyPrice(req.body.priceToPay)) patchError = 400;
         registration.priceToPay = req.body.priceToPay;
         break;
       default:
-        patchError = true;
+        patchError = 422;
     }
   });
 
-  if (patchError) return 422;
+  if (patchError !== 0) return patchError;
 
-  await registration.save();
+  try {
+    await registration.save();
+  } catch (e) {
+    console.error(e);
+    return 500;
+  }
   return 204;
 };
 
