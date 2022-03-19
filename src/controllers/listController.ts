@@ -103,7 +103,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
     }
   });
 
-  if (!patchError) return patchError;
+  if (patchError !== 0) return patchError;
 
   try {
     await registration.save();
@@ -133,7 +133,7 @@ export const deleteRegistration = async (user: Entity, regId: number) => {
 };
 
 export const print = async (user: Entity, shiftNr: number) => {
-  if (!(await approveRole(user, "boss"))) return 403;
+  if (!(await approveRole(user, "master"))) return null;
 
   const registrations = await Registration.findAll({
     where: { shiftNr, isRegistered: true },

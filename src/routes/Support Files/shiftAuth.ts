@@ -3,6 +3,8 @@ import { Staff } from "../../db/models/Staff";
 import { User } from "../../db/models/User";
 import Entity = Express.Entity;
 
+// TODO: Implement integer-based role system for easier hierarchy management.
+
 const requireShiftBoss = async (
   req: Request,
   res: Response,
