@@ -1,20 +1,21 @@
-import { Request, Response } from "express";
+import { Request } from "express";
+import { Registration } from "../db/models/Registration";
+import { Child } from "../db/models/Child";
+import {
+  PrintEntry,
+  RegistrationEntry,
+} from "../routes/Support Files/registrations";
 
 require("dotenv").config();
 
 const { generatePDF } = require("./listGenerator");
 const {
-  approveShift,
-  approveShiftAndGetRole,
+  requireRoot,
+  approveRole,
+  approveShiftRole,
 } = require("../routes/Support Files/shiftAuth");
 
-import { Registration } from "../db/models/Registration";
-import { Child } from "../db/models/Child";
 import Entity = Express.Entity;
-import {
-  PrintEntry,
-  RegistrationEntry,
-} from "../routes/Support Files/registrations";
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -68,11 +69,12 @@ const verifyPrice = (price: string) => {
 export const patchRegistration = async (req: Request, regId: number) => {
   if (isNaN(regId)) return 400;
 
+  // Fetch first to check for permissions.
   const registration = await Registration.findByPk(regId);
   if (!registration) return 404;
 
-  const userRole = await approveShiftAndGetRole(req.user, registration.shiftNr);
-  if (!userRole || (userRole !== "boss" && userRole !== "root")) return 403;
+  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr)))
+    return 403;
 
   const keys = Object.keys(req.body);
 
@@ -87,12 +89,12 @@ export const patchRegistration = async (req: Request, regId: number) => {
         registration.isOld = req.body.old;
         break;
       case "pricePaid":
-        if (userRole !== "root") return;
+        if (!requireRoot(req.user)) patchError = 403;
         if (!verifyPrice(req.body.pricePaid)) patchError = 400;
         registration.pricePaid = req.body.pricePaid;
         break;
       case "priceToPay":
-        if (userRole !== "root") return;
+        if (!requireRoot(req.user)) patchError = 403;
         if (!verifyPrice(req.body.priceToPay)) patchError = 400;
         registration.priceToPay = req.body.priceToPay;
         break;
@@ -101,7 +103,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
     }
   });
 
-  if (patchError !== 0) return patchError;
+  if (!patchError) return patchError;
 
   try {
     await registration.save();
@@ -112,48 +114,27 @@ export const patchRegistration = async (req: Request, regId: number) => {
   return 204;
 };
 
-const getCamper = async (id: number, queryUser: Entity) => {
-  const camper = await Registration.findByPk(id);
-  if (!camper)
-    return {
-      code: 404,
-      message: "Camper not found",
-      ok: false,
-    };
+export const deleteRegistration = async (user: Entity, regId: number) => {
+  if (isNaN(regId)) return 400;
 
-  // Evaluate access rights.
-  const shift = camper.shiftNr;
-  if (!(await approveShift(queryUser, shift))) {
-    const message = "User not authorised for the shift";
-    console.log(message);
-    return {
-      code: 403,
-      message,
-      ok: false,
-    };
+  // Fetch first to check for permissions.
+  const registration = await Registration.findByPk(regId);
+  if (!registration) return 404;
+
+  if (!(await approveShiftRole(user, "boss", registration.shiftNr))) return 403;
+
+  try {
+    await registration.destroy();
+  } catch (e) {
+    console.error(e);
+    return 500;
   }
-
-  return {
-    code: 200,
-    message: "",
-    ok: true,
-    data: camper,
-  };
-};
-
-exports.remove = async (req: Request, res: Response) => {
-  // Entry ID check.
-  if (!req.params.userId) return res.sendStatus(400) && null;
-
-  const id = parseInt(req.params.userId);
-  const camper = await getCamper(id, req.user);
-  if (!camper.ok) return res.sendStatus(camper.code) && null;
-
-  await Registration.destroy({ where: { id } });
-  return true;
+  return 204;
 };
 
 export const print = async (user: Entity, shiftNr: number) => {
+  if (!(await approveRole(user, "boss"))) return 403;
+
   const registrations = await Registration.findAll({
     where: { shiftNr, isRegistered: true },
     include: { model: Child, order: [["name", "ASC"]] },

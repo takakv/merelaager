@@ -1,9 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Staff } from "../../db/models/Staff";
 import { User } from "../../db/models/User";
 import Entity = Express.Entity;
-import { Registration } from "../../db/models/Registration";
-import { Child } from "../../db/models/Child";
 
 const requireShiftBoss = async (
   req: Request,
@@ -55,6 +53,31 @@ const approveShiftFull = async (user: Entity, shiftNr: number) => {
   return !!accessEntry;
 };
 
+const approveRole = async (user: Entity, role: string) => {
+  if (user.isRoot) return true;
+  return user.role === role;
+};
+
+const requireRoot = async (user: Entity) => {
+  return user.isRoot;
+};
+
+const approveShiftRole = async (
+  user: Entity,
+  role: string,
+  shiftNr: number
+) => {
+  if (user.isRoot) return true;
+
+  const userId = user.id;
+  const staffEntry = await Staff.findOne({
+    where: { userId, shiftNr, year: new Date().getUTCFullYear() },
+  });
+
+  if (!staffEntry) return false;
+  return staffEntry.role === role;
+};
+
 const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return "root";
 
@@ -68,6 +91,9 @@ const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
 };
 
 module.exports = {
+  approveRole,
+  requireRoot,
+  approveShiftRole,
   approveShiftAndGetRole,
   requireShiftBoss,
   approveShift,
