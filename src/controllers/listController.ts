@@ -11,7 +11,10 @@ const {
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
 import Entity = Express.Entity;
-import { RegistrationEntry } from "../routes/Support Files/registrations";
+import {
+  PrintEntry,
+  RegistrationEntry,
+} from "../routes/Support Files/registrations";
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -109,65 +112,6 @@ export const patchRegistration = async (req: Request, regId: number) => {
   return 204;
 };
 
-export const update = async (req: Request, res: Response) => {
-  // Entry ID and field to update.
-  if (!req.params.userId || !req.params.field)
-    return res.sendStatus(400) && null;
-
-  const id: number = parseInt(req.params.userId);
-  const action = req.params.field;
-
-  // Entry value, if needed.
-  if ((action === "total-paid" || action === "total-due") && !req.params.value)
-    return res.sendStatus(400) && null;
-
-  const camper = await getCamper(id, req.user);
-  if (!camper.ok) return res.sendStatus(camper.code) && null;
-
-  switch (action) {
-    // Toggle the camper registration status.
-    case "registration":
-      await Registration.update(
-        { isRegistered: !camper.data.isRegistered },
-        { where: { id } }
-      );
-      return true;
-    // Toggle whether the camper has been to the camp before.
-    case "regular":
-      await Registration.update(
-        { isOld: !camper.data.isOld },
-        { where: { id } }
-      );
-      return true;
-  }
-
-  if (req.user.role !== "root") {
-    console.log("User not authorised for price manipulation.");
-    return res.sendStatus(404) && null;
-  }
-
-  const value = parseInt(req.params.value);
-  if (isNaN(value)) {
-    res.sendStatus(400);
-    return null;
-  }
-
-  switch (action) {
-    // Update the amount that has been paid for the camper.
-    case "total-paid":
-      await Registration.update({ pricePaid: value }, { where: { id } });
-      break;
-    // Update the total amount due fo the camper.
-    case "total-due":
-      await Registration.update({ priceToPay: value }, { where: { id } });
-      break;
-    default:
-      res.sendStatus(400);
-      return null;
-  }
-  return true;
-};
-
 const getCamper = async (id: number, queryUser: Entity) => {
   const camper = await Registration.findByPk(id);
   if (!camper)
@@ -209,31 +153,28 @@ exports.remove = async (req: Request, res: Response) => {
   return true;
 };
 
-exports.print = async (shiftNr: number) => {
-  const children = await Registration.findAll({
+export const print = async (user: Entity, shiftNr: number) => {
+  const registrations = await Registration.findAll({
     where: { shiftNr, isRegistered: true },
-    include: {
-      model: Child,
-      order: [["name", "ASC"]],
-    },
+    include: { model: Child, order: [["name", "ASC"]] },
   });
 
-  if (!children.length) return null;
+  if (!registrations.length) return null;
 
-  let childrenInfo = [];
+  const entries: PrintEntry[] = [];
 
-  children.forEach((child) => {
-    childrenInfo.push({
-      name: child.child.name,
-      gender: child.child.gender,
-      birthday: child.birthday,
-      isOld: child.isOld,
-      tsSize: child.tsSize,
-      contactName: child.contactName.trim(),
-      contactEmail: child.contactEmail.trim(),
-      contactNr: child.contactNumber.trim(),
+  registrations.forEach((registration) => {
+    entries.push({
+      name: registration.child.name,
+      gender: registration.child.gender,
+      dob: registration.birthday,
+      old: registration.isOld,
+      shirtSize: registration.tsSize,
+      contactName: registration.contactName.trim(),
+      contactEmail: registration.contactEmail.trim(),
+      contactNumber: registration.contactNumber.trim(),
     });
   });
 
-  return generatePDF(shiftNr, childrenInfo);
+  return generatePDF(shiftNr, entries);
 };

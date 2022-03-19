@@ -7,7 +7,7 @@ const { requireShiftBoss } = require("../Support Files/shiftAuth");
 import {
   fetchRegistrations,
   patchRegistration,
-  update,
+  print,
 } from "../../controllers/listController";
 
 // Fetch the whole list of children and their registration status.
@@ -21,6 +21,14 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
+// Fetch the PDF list of registrations for a single shift.
+router.get("/pdf/:shiftNr", async (req: Request, res: Response) => {
+  const shiftNr = parseInt(req.params.shiftNr);
+  const fileName = await print(req.body.user, shiftNr);
+  if (!fileName) return res.sendStatus(500);
+  return res.sendFile(fileName, { root: "./data/files" });
+});
+
 // Update values for a specific registration.
 router.patch("/:regId", async (req: Request, res: Response) => {
   const regId = parseInt(req.params.regId);
@@ -29,27 +37,6 @@ router.patch("/:regId", async (req: Request, res: Response) => {
 });
 
 router.use(requireShiftBoss);
-
-router.get("/print/:shiftNr/", async (req, res) => {
-  if (!req.params["shiftNr"]) return res.sendStatus(400);
-  const shiftNr = parseInt(req.params["shiftNr"]);
-  const filename = await registrationList.print(shiftNr);
-  if (filename) return res.sendFile(filename, { root: "./data/files" });
-  res.sendStatus(404);
-});
-
-router.post(
-  "/update/:userId/:field/:value?/",
-  async (req: Request, res: Response) => {
-    try {
-      const status = await update(req, res);
-      if (status) res.sendStatus(200);
-    } catch (e) {
-      console.error(e);
-      res.sendStatus(500);
-    }
-  }
-);
 
 router.post("/remove/:userId/", async (req, res) => {
   try {

@@ -1,3 +1,5 @@
+import { PrintEntry } from "../routes/Support Files/registrations";
+
 const fonts = {
   Helvetica: {
     normal: "Helvetica",
@@ -11,20 +13,24 @@ const PdfPrinter = require("pdfmake");
 const printer = new PdfPrinter(fonts);
 import * as fs from "fs";
 
-const createDoc = (shiftNr, campers) => {
+const createDoc = (shiftNr: number, entries: PrintEntry[]) => {
   const tableContent = [
     ["Nimi", "Sugu", "Sünnipäev", "Uus?", "Särk", "Kontakt", "Number", "Meil"],
   ];
-  campers.forEach((camper) => {
+  entries.forEach((entry) => {
     tableContent.push([
-      camper.name,
-      camper.gender,
-      camper.birthday,
-      camper.isOld ? "Ei" : "Jah",
-      camper.tsSize,
-      camper.contactName,
-      camper.contactNr,
-      camper.contactEmail,
+      entry.name,
+      entry.gender,
+      new Date(entry.dob).toLocaleDateString("et-EE", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }),
+      entry.old ? "" : "X",
+      entry.shirtSize,
+      entry.contactName,
+      entry.contactNumber,
+      entry.contactEmail,
     ]);
   });
 
@@ -46,11 +52,11 @@ const createDoc = (shiftNr, campers) => {
 
 const options = {};
 
-exports.generatePDF = async (shiftNr, campers) => {
+exports.generatePDF = async (shiftNr: number, entries: PrintEntry[]) => {
   const filename = shiftNr + "v_nimekiri.pdf";
   try {
     const pdfDoc = printer.createPdfKitDocument(
-      createDoc(shiftNr, campers),
+      createDoc(shiftNr, entries),
       options
     );
     const writeStream = fs.createWriteStream(`data/files/${filename}`);

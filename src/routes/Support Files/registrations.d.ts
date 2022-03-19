@@ -16,3 +16,14 @@ export interface RegistrationEntry {
   priceToPay?: number,
   idCode?: string
 }
+
+export interface PrintEntry {
+  name: string,
+  gender: string,
+  dob: Date,
+  old: boolean,
+  shirtSize: string,
+  contactName: string,
+  contactEmail: string,
+  contactNumber: string,
+}
