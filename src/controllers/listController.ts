@@ -10,7 +10,7 @@ require("dotenv").config();
 
 const { generatePDF } = require("./listGenerator");
 const {
-  requireRoot,
+  userIsRoot,
   approveRole,
   approveShiftRole,
 } = require("../routes/Support Files/shiftAuth");
@@ -89,12 +89,12 @@ export const patchRegistration = async (req: Request, regId: number) => {
         registration.isOld = req.body.old;
         break;
       case "pricePaid":
-        if (!requireRoot(req.user)) patchError = 403;
+        if (!userIsRoot(req.user)) patchError = 403;
         if (!verifyPrice(req.body.pricePaid)) patchError = 400;
         registration.pricePaid = req.body.pricePaid;
         break;
       case "priceToPay":
-        if (!requireRoot(req.user)) patchError = 403;
+        if (!userIsRoot(req.user)) patchError = 403;
         if (!verifyPrice(req.body.priceToPay)) patchError = 400;
         registration.priceToPay = req.body.priceToPay;
         break;

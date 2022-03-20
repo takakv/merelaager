@@ -55,12 +55,12 @@ const approveShiftFull = async (user: Entity, shiftNr: number) => {
   return !!accessEntry;
 };
 
-const approveRole = async (user: Entity, role: string) => {
+const approveRole = (user: Entity, role: string) => {
   if (user.isRoot) return true;
   return user.role === role;
 };
 
-const requireRoot = async (user: Entity) => {
+export const userIsRoot = (user: Entity) => {
   return user.isRoot;
 };
 
@@ -94,7 +94,7 @@ const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
 
 module.exports = {
   approveRole,
-  requireRoot,
+  userIsRoot,
   approveShiftRole,
   approveShiftAndGetRole,
   requireShiftBoss,

@@ -27,6 +27,14 @@ import { verifyAccessToken } from "./Support Files/jwt";
 
 router.use(verifyAccessToken);
 
+import me from "./api/me";
+
+router.use("/me", me);
+
+import users from "./api/users";
+
+router.use("/users", users);
+
 import registrations from "./api/registrations";
 
 router.use("/registrations", registrations);
@@ -77,6 +85,7 @@ router.post("/bills/:action/:email", async (req: Request, res: Response) => {
 });
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
+import { fetchUser } from "../controllers/userController";
 
 router.get("/shirts/fetch/", async (req: Request, res: Response) => {
   const data = await fetchShirts();

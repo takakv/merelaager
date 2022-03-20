@@ -1,10 +1,20 @@
-import {User} from "../db/models/User";
-import {Staff} from "../db/models/Staff";
-import {ShiftInfo} from "../db/models/ShiftInfo";
-import {Request, Response} from "express";
+import { User } from "../db/models/User";
+import { Staff } from "../db/models/Staff";
+import { ShiftInfo } from "../db/models/ShiftInfo";
+import { Request, Response } from "express";
+import { userIsRoot } from "../routes/Support Files/shiftAuth";
+import Entity = Express.Entity;
+import { UserData, UserShift } from "../routes/Support Files/users";
 
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+
+const getYear = () => {
+  const now = new Date();
+  let year = now.getFullYear();
+  if (now.getMonth() === 11) ++year;
+  return year;
+};
 
 const userExists = async (username: string) => {
   const user = await User.findByPk(username);
@@ -30,7 +40,7 @@ const createUser = async (data) => {
 // Fetches all users from the database.
 // No filters.
 exports.fetchAll = async () => {
-  const response = {isOk: false, code: 200, users: null};
+  const response = { isOk: false, code: 200, users: null };
   let users;
 
   try {
@@ -104,7 +114,7 @@ exports.getInfo = async (userId: number) => {
 
   if (user.role !== "root") {
     const shiftInfo = await Staff.findAll({
-      where: {userId, year},
+      where: { userId, year },
     });
     if (!shiftInfo) return null;
     shiftInfo.forEach((shift: Staff) => {
@@ -134,16 +144,16 @@ exports.validateShift = async (
   year = new Date().getFullYear()
 ) => {
   const entry = await Staff.findOne({
-    where: {userId, shiftNr, year},
+    where: { userId, shiftNr, year },
     attributes: ["role"],
   });
 
-  if (entry) return {role: entry.role};
+  if (entry) return { role: entry.role };
   else return null;
 };
 
 exports.create = async (req: Request, res: Response) => {
-  const {username, password, email, name} = req.body;
+  const { username, password, email, name } = req.body;
 
   const isNew = !(await userExists(username));
   if (!isNew) {
@@ -166,6 +176,64 @@ exports.getShifts = async (userId: number) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  const shiftInfo = await Staff.findAll({where: {userId, year}});
+  const shiftInfo = await Staff.findAll({ where: { userId, year } });
   console.log(shiftInfo);
+};
+
+export const fetchUser = async (entity: Entity, userId: number) => {
+  if (isNaN(userId)) return { statusCode: 400, data: {} };
+
+  if (entity.id !== userId && !userIsRoot(entity))
+    return { statusCode: 403, data: {} };
+
+  const user = await User.findByPk(userId);
+  if (!user) return { statusCode: 404, data: {} };
+
+  const currentShifts = await Staff.findAll({
+    where: { userId: userId, year: new Date().getUTCFullYear() },
+    attributes: ["shiftNr", "role"],
+  });
+
+  const shifts: UserShift[] = [];
+
+  currentShifts.forEach((shift) =>
+    shifts.push({ id: shift.shiftNr, role: shift.role })
+  );
+
+  const userData: UserData = {
+    name: user.nickname,
+    currentShift: user.currentShift,
+    isRoot: user.role === "root",
+    role: user.role,
+    shifts,
+  };
+
+  return {
+    statusCode: 200,
+    data: userData,
+  };
+};
+
+export const updateCurrentShift = async (req: Request) => {
+  const newShift = parseInt(req.body.newShift);
+  if (isNaN(newShift)) return 400;
+
+  if (!userIsRoot(req.user)) {
+    const userInShift = await Staff.findOne({
+      where: { shiftNr: newShift, userId: req.user.id, year: getYear() },
+    });
+    if (!userInShift) return 403;
+  }
+
+  const user = await User.findByPk(req.user.id);
+  user.currentShift = newShift;
+
+  try {
+    await user.save();
+  } catch (e) {
+    console.error(e);
+    return 500;
+  }
+
+  return 204;
 };
