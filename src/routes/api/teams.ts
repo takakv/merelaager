@@ -1,8 +1,10 @@
-const router = require("express").Router();
+import express, { Request, Response } from "express";
 
 const team = require("../../controllers/teamController");
 
-router.get("/fetch/:shiftNr/", async (req, res) => {
+const router = express.Router();
+
+router.get("/fetch/:shiftNr/", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
   if (Number.isNaN(shiftNr)) return res.sendStatus(400);
 
@@ -10,7 +12,7 @@ router.get("/fetch/:shiftNr/", async (req, res) => {
   return teams ? res.json(teams) : res.sendStatus(500);
 });
 
-router.post("/create/", async (req, res) => {
+router.post("/create/", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.body.shiftNr);
   const teamName = req.body.name;
 
@@ -20,7 +22,7 @@ router.post("/create/", async (req, res) => {
     : res.sendStatus(500);
 });
 
-router.post("/member/add/", async (req, res) => {
+router.post("/member/add/", async (req: Request, res: Response) => {
   const teamId = parseInt(req.body.teamId);
   const dataId = parseInt(req.body.dataId);
 
@@ -30,7 +32,7 @@ router.post("/member/add/", async (req, res) => {
     : res.sendStatus(500);
 });
 
-router.post("/member/remove/", async (req, res) => {
+router.post("/member/remove/", async (req: Request, res: Response) => {
   const dataId = parseInt(req.body.dataId);
 
   if (!dataId) return res.sendStatus(400);
@@ -39,7 +41,7 @@ router.post("/member/remove/", async (req, res) => {
     : res.sendStatus(500);
 });
 
-router.post("/set/place/", async (req, res) => {
+router.post("/set/place/", async (req: Request, res: Response) => {
   const teamId = parseInt(req.body.teamId);
   const place = parseInt(req.body.place);
 
