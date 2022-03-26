@@ -2,7 +2,6 @@ import express from "express";
 
 const router = express.Router();
 
-// import childData from "../../controllers/childController";
 const newShiftData = require("../../controllers/newShiftController");
 const records = require("../../controllers/recordController");
 
@@ -12,40 +11,10 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post("/newchildren/", async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
-    await childData.newChildren();
-    res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
-router.post("/children/", async (req, res) => {
-  try {
-    await childData.forceUpdate();
-    res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
-router.post("/shift/", async (req, res) => {
-  try {
-    await newShiftData.forceUpdate();
-    res.sendStatus(200);
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
-router.post("/reg/fk/update/", async (req, res) => {
-  try {
-    await childData.linkReg();
-    res.sendStatus(200);
+    await newShiftData.populate();
+    res.sendStatus(201);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);

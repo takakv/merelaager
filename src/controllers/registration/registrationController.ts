@@ -150,9 +150,9 @@ const postChildren = async (names: string[], genders: string[]) => {
   const childIds: number[] = [];
 
   for (let i = 0; i < names.length; ++i) {
-    let childId = await fetchChild(names[i]);
+    let childId = await fetchChild(names[i].trim());
     if (!childId) {
-      childId = await addChild(names[i], genders[i]);
+      childId = await addChild(names[i].trim(), genders[i]);
       if (!childId) return null;
     }
     childIds.push(childId);
@@ -193,15 +193,15 @@ const getChildData = (
     birthday,
     tsSize: rawData.tsSize[i],
     addendum: rawData.addendum ? rawData.addendum[i] : null,
-    road: rawData.road[i],
-    city: rawData.city[i],
-    county: rawData.county[i],
-    country: rawData.country ? rawData.country[i] : "Eesti",
+    road: rawData.road[i].trim(),
+    city: rawData.city[i].trim(),
+    county: rawData.county[i].trim(),
+    country: rawData.country ? rawData.country[i].trim() : "Eesti",
     billNr: isRegistered ? billNr : null,
-    contactName: rawData.contactName,
-    contactEmail: rawData.contactEmail,
-    contactNumber: rawData.contactNumber,
-    backupTel: rawData.backupTel,
+    contactName: rawData.contactName.trim(),
+    contactEmail: rawData.contactEmail.trim(),
+    contactNumber: rawData.contactNumber.trim(),
+    backupTel: rawData.backupTel.trim(),
     priceToPay: getPrice(shiftNr, isOld),
   });
 };

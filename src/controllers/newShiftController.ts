@@ -1,8 +1,9 @@
-import {Registration} from "../db/models/Registration";
-import {Child} from "../db/models/Child";
-import {ShiftData} from "../db/models/ShiftData";
+import { Registration } from "../db/models/Registration";
+import { Child } from "../db/models/Child";
+import { ShiftData } from "../db/models/ShiftData";
+import { CamperEntry } from "../routes/Support Files/campers";
 
-exports.forceUpdate = async () => {
+exports.populate = async () => {
   // Fetch all registered campers.
   const registrations = await Registration.findAll({
     where: { isRegistered: true },
@@ -48,19 +49,21 @@ export const getInfo = async (shiftNr: number) => {
     return null;
   }
 
-  const resObj = {};
+  const resObj: CamperEntry[] = [];
 
   entries.forEach((entry: ShiftData) => {
-    resObj[entry.child.id] = {
-      id: entry.child.id, // Child data entry id
-      shiftId: entry.id, // Shift data entry id
-      name: entry.child.name,
-      gender: entry.child.gender,
-      notes: entry.child.notes,
-      parentNotes: entry.parentNotes,
-      tentNr: entry.tentNr,
-      teamId: entry.teamId,
-    };
+    // Don't expose sensitive data unnecessarily.
+    if (entry.isActive)
+      resObj.push({
+        id: entry.child.id, // Child data entry id
+        shiftId: entry.id, // Shift data entry id
+        name: entry.child.name,
+        gender: entry.child.gender,
+        notes: entry.child.notes,
+        parentNotes: entry.parentNotes,
+        tentNr: entry.tentNr,
+        teamId: entry.teamId,
+      });
   });
 
   return resObj;

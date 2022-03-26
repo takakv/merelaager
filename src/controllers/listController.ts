@@ -16,6 +16,7 @@ const {
 } = require("../routes/Support Files/shiftAuth");
 
 import Entity = Express.Entity;
+import { ShiftData } from "../db/models/ShiftData";
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -66,6 +67,29 @@ const verifyPrice = (price: string) => {
   return !isNaN(amount);
 };
 
+const updateData = async (registration: Registration) => {
+  const { shiftNr } = registration;
+
+  const child = await Child.findOne({
+    where: { id: registration.childId },
+  });
+
+  const [entry, created] = await ShiftData.findOrCreate({
+    where: { childId: child.id, shiftNr },
+    defaults: {
+      childId: child.id,
+      shiftNr,
+      parentNotes: registration.addendum,
+      isActive: registration.isRegistered,
+    },
+  });
+
+  if (!created) {
+    entry.isActive = registration.isRegistered;
+    await entry.save();
+  }
+};
+
 export const patchRegistration = async (req: Request, regId: number) => {
   if (isNaN(regId)) return 400;
 
@@ -84,6 +108,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
     switch (key) {
       case "registered":
         registration.isRegistered = req.body.registered;
+        updateData(registration);
         break;
       case "old":
         registration.isOld = req.body.old;

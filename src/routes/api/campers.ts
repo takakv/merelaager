@@ -1,4 +1,6 @@
-const router = require("express").Router();
+import express, { Request, Response } from "express";
+
+const router = express.Router();
 
 import { getInfo } from "../../controllers/newShiftController";
 
@@ -9,7 +11,7 @@ const {
 
 router.use(requireShiftBoss);
 
-router.get("/info/fetch/:shiftNr?/", async (req, res) => {
+router.get("/:shiftNr?/", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
   if (Number.isNaN(shiftNr)) return res.sendStatus(400);
 
@@ -19,9 +21,13 @@ router.get("/info/fetch/:shiftNr?/", async (req, res) => {
     return res.sendStatus(403);
   }
 
-  const data = await getInfo(shiftNr);
-  if (data) res.json(data);
-  else res.sendStatus(500);
+  try {
+    const data = await getInfo(shiftNr);
+    res.json({ value: data });
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
 });
 
 export default router;

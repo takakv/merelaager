@@ -22,12 +22,13 @@ interface ShiftDataAttributes {
   teamId: number;
   parentNotes: string;
   isPresent: boolean;
+  isActive: boolean;
 }
 
 interface ShiftDataCreationAttributes
   extends Optional<
     ShiftDataAttributes,
-    "id" | "tentNr" | "teamId" | "parentNotes" | "isPresent"
+    "id" | "tentNr" | "teamId" | "parentNotes" | "isPresent" | "isActive"
   > {}
 
 @Table({ tableName: "shift_data" })
@@ -69,4 +70,9 @@ export class ShiftData
   @Default(false)
   @Column(DataType.BOOLEAN)
   public isPresent!: boolean;
+
+  @AllowNull(false)
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  public isActive!: boolean;
 }

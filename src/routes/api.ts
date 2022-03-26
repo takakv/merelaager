@@ -16,7 +16,7 @@ router.use("/su", account);
 
 import override from "./api/override";
 
-router.use("/or", override);
+router.use("/override", override);
 
 import pub from "./api/public";
 
