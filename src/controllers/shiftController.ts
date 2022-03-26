@@ -153,24 +153,19 @@ exports.fetchCamperNote = async (shiftNr: number, id: number) => {
       isRegistered: true,
       childId: camperId,
     },
+    include: Child,
   });
 
   return await generateOneCard(shiftNr, camper);
 };
 
-exports.fetchAllNotes = async (shiftNr) => {
+exports.fetchAllNotes = async (shiftNr: number) => {
   let campers;
-  if (shiftNr === 2) {
-    campers = await Registration.findAll({
-      where: { isRegistered: true },
-      order: [["name", "ASC"]],
-    });
-  } else {
-    campers = await Registration.findAll({
-      where: { isRegistered: true, shiftNr },
-      order: [["name", "ASC"]],
-    });
-  }
+  campers = await Registration.findAll({
+    where: { isRegistered: true, shiftNr },
+    include: Child,
+    order: [["child", "name", "ASC"]],
+  });
 
   return await generateAllCards(shiftNr, campers);
 };
