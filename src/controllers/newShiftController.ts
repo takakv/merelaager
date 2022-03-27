@@ -31,18 +31,11 @@ exports.populate = async () => {
 export const getInfo = async (shiftNr: number) => {
   let entries: ShiftData[];
   try {
-    if (shiftNr === 2) {
-      entries = await ShiftData.findAll({
-        order: [["childId", "ASC"]],
-        include: Child,
-      });
-    } else {
-      entries = await ShiftData.findAll({
-        where: { shiftNr },
-        order: [["childId", "ASC"]],
-        include: Child,
-      });
-    }
+    entries = await ShiftData.findAll({
+      where: { shiftNr },
+      order: [["childId", "ASC"]],
+      include: Child,
+    });
     if (!entries) return null;
   } catch (e) {
     console.error(e);
@@ -55,8 +48,8 @@ export const getInfo = async (shiftNr: number) => {
     // Don't expose sensitive data unnecessarily.
     if (entry.isActive)
       resObj.push({
-        id: entry.child.id, // Child data entry id
-        shiftId: entry.id, // Shift data entry id
+        childId: entry.child.id, // Child data entry id
+        entryRef: entry.id, // Shift data entry id
         name: entry.child.name,
         gender: entry.child.gender,
         notes: entry.child.notes,

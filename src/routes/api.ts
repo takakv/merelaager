@@ -85,7 +85,6 @@ router.post("/bills/:action/:email", async (req: Request, res: Response) => {
 });
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
-import { fetchUser } from "../controllers/userController";
 
 router.get("/shirts/fetch/", async (req: Request, res: Response) => {
   const data = await fetchShirts();

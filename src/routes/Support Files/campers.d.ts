@@ -1,6 +1,6 @@
 export interface CamperEntry {
-  id: number;
-  shiftId: number;
+  childId: number;
+  entryRef: number;
   name: string;
   gender: string;
   notes: string;

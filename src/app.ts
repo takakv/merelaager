@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
 
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+
 import cors from "cors";
 import slashes from "connect-slashes";
 import { create, ExpressHandlebars } from "express-handlebars";
@@ -18,7 +21,7 @@ import { availableSlots } from "./controllers/registration/registrationControlle
 
 dotenv.config();
 
-const app: Application = express();
+const app = express();
 
 const allowedOrigins = ["https://sild.merelaager.ee", `http://localhost:8080`];
 
@@ -31,6 +34,27 @@ const corsOptions: cors.CorsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use("/api", api);
+
+console.log(path.join(__dirname, "/routes/**/*.js"));
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Merelaagri API",
+      version: "1.0.0",
+    },
+    servers: [
+      { url: "http://localhost:3000/api", description: "Development server" },
+    ],
+  },
+  apis: [path.join(__dirname, "/routes/api/*.js")],
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const hbs: ExpressHandlebars = create({
   extname: "hbs",
@@ -119,8 +143,6 @@ app.use("/info/", infoRouter);
 app.use("/registreerimine/", registerRouter);
 
 app.use("/oiguslik/", legal);
-
-app.use("/api/", api);
 
 app.get("/broneerimine/", (req: Request, res: Response) => {
   res.redirect("/registreerimine/");
