@@ -1,4 +1,4 @@
-const getRandomDate = (start, end) => {
+const getRandomDate = (start: Date, end: Date) => {
   return new Date(
     start.getTime() + Math.random() * (end.getTime() - start.getTime())
   );
@@ -10,7 +10,7 @@ exports.getTsSize = () => {
   return tsSizes[Math.floor(Math.random() * tsSizes.length)];
 };
 
-exports.getIdCode = (gender) => {
+exports.getIdCode = (gender: string) => {
   let idCode = gender === "M" ? "5" : "6";
   const bDay = getRandomDate(new Date(2005, 0, 1), new Date(2016, 11, 31));
 

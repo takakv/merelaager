@@ -1,6 +1,8 @@
 import fs from "fs";
+import path from "path";
 
-const shiftData = JSON.parse(fs.readFileSync("./data/shiftdata.json", "utf-8"));
+const shiftDataPath = path.join(__dirname, "../../../data/shiftdata.json");
+const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
 const getRegistered = (campers, shifts, regCount) => {
   if (regCount === 0) return "";

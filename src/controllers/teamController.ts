@@ -1,13 +1,14 @@
-import {Team} from "../db/models/Team";
-import {ShiftData} from "../db/models/ShiftData";
-import {Child} from "../db/models/Child";
+import { Team } from "../db/models/Team";
+import { ShiftData } from "../db/models/ShiftData";
+import { Child } from "../db/models/Child";
+import { getYear } from "../routes/Support Files/functions";
 
 const createChildObject = (data) => {
   return { id: data.id, name: data.child.name };
 };
 
-exports.fetchForShift = async (shiftNr) => {
-  const teams = await Team.findAll({ where: { shiftNr } });
+exports.fetchForShift = async (shiftNr: number) => {
+  const teams = await Team.findAll({ where: { shiftNr, year: getYear() } });
   if (!teams) return null;
 
   const children = await ShiftData.findAll({
@@ -39,7 +40,7 @@ exports.fetchForShift = async (shiftNr) => {
   return resObj;
 };
 
-exports.createTeam = async (teamName, shiftNr) => {
+exports.createTeam = async (teamName: string, shiftNr: number) => {
   try {
     await Team.create({
       name: teamName,
@@ -52,7 +53,7 @@ exports.createTeam = async (teamName, shiftNr) => {
   return true;
 };
 
-const addMember = async (teamId, dataId) => {
+const addMember = async (teamId: number, dataId: number) => {
   try {
     const entry = await ShiftData.findByPk(dataId);
     if (!entry) return false;
@@ -67,11 +68,11 @@ const addMember = async (teamId, dataId) => {
 
 exports.addMember = addMember;
 
-exports.removeMember = async (dataId) => {
+exports.removeMember = async (dataId: number) => {
   return addMember(null, dataId);
 };
 
-exports.setPlace = async (teamId, place) => {
+exports.setPlace = async (teamId: number, place: number) => {
   try {
     const team = await Team.findByPk(teamId);
     if (!team) return false;

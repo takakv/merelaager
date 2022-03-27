@@ -1,10 +1,13 @@
 import fs from "fs";
-import express, { Router, Request, Response } from "express";
+import path from "path";
+import express, { Request, Response, Router } from "express";
 import bodyParser from "body-parser";
+import { create } from "../controllers/registration/registrationController";
 
 const router: Router = express.Router();
 
-let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
+const metaPath = path.join(__dirname, "../../data/metadata.json");
+let meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
 meta = meta.broneeri;
 
 const url_prefix: string = "registreerimine/";
@@ -20,8 +23,6 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 const urlEncParser = bodyParser.urlencoded({ extended: false });
-
-import { create } from "../controllers/registration/registrationController";
 
 router.post("/register/", urlEncParser, create);
 

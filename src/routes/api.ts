@@ -16,7 +16,7 @@ router.use("/su", account);
 
 import override from "./api/override";
 
-router.use("/or", override);
+router.use("/override", override);
 
 import pub from "./api/public";
 
@@ -27,9 +27,17 @@ import { verifyAccessToken } from "./Support Files/jwt";
 
 router.use(verifyAccessToken);
 
-import registration from "./api/registration";
+import me from "./api/me";
 
-router.use("/reglist", registration);
+router.use("/me", me);
+
+import users from "./api/users";
+
+router.use("/users", users);
+
+import registrations from "./api/registrations";
+
+router.use("/registrations", registrations);
 
 import campers from "./api/campers";
 

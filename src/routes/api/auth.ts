@@ -1,4 +1,12 @@
-import express from "express";
+import dotenv from "dotenv";
+import express, { Request, Response } from "express";
+import cookieParser from "cookie-parser";
+import {
+  InvalidTokenError,
+  MissingTokenError,
+} from "../Support Files/Errors/jwtAuth";
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -7,7 +15,7 @@ const JWT = require("jsonwebtoken");
 const userAuth = require("../Support Files/userAuth");
 const jwt = require("../Support Files/jwt");
 
-router.post("/login/", async (req, res) => {
+router.post("/login/", async (req: Request, res: Response) => {
   if (
     typeof req.body.username === "undefined" ||
     typeof req.body.password === "undefined"
@@ -18,14 +26,38 @@ router.post("/login/", async (req, res) => {
 
   const credentials = await userAuth.authenticateUser(username, password);
   if (!credentials) return res.status(403).send("Incorrect credentials.");
+
+  const cookieOptions = {
+    secure: process.env.COOKIE_SECURE === "true",
+    httpOnly: true,
+    sameSite: "strict",
+  };
+
+  const cookieDomain = process.env.COOKIE_DOMAIN;
+  if (cookieDomain) {
+    // @ts-ignore
+    cookieOptions.domain = cookieDomain;
+  }
+
+  const cookieMaxAge = parseInt(process.env.COOKIE_MAXAGE);
+  if (cookieMaxAge) {
+    // @ts-ignore
+    cookieOptions.maxAge = cookieMaxAge;
+  }
+
+  // @ts-ignore
+  res.cookie("refreshToken", credentials.refreshToken, cookieOptions);
   res.json(credentials);
 });
 
-router.post("/token/", async (req, res) => {
-  const { token } = req.body;
+router.use(cookieParser());
 
-  if (!token) return res.sendStatus(401);
-  if (!(await userAuth.matchToken(token))) return res.sendStatus(403);
+router.post("/token/", async (req: Request, res: Response) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) return res.status(401).json(new MissingTokenError().getJson());
+  if (!(await userAuth.matchToken(token)))
+    return res.status(401).json(new InvalidTokenError().getJson());
 
   JWT.verify(token, jwt.refreshTokenSecret, (err, user) => {
     if (err) {

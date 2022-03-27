@@ -28,4 +28,5 @@ data/arved/*.pdf
 data/files/*.pdf
 data/files/*.txt
 public/img/*.JPG
+public/img/*.webp
 *.sqlite

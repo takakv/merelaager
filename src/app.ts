@@ -1,21 +1,60 @@
 import fs from "fs";
 import path from "path";
+import dotenv from "dotenv";
 
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
-import { sequelize } from "./db/sequelize";
+
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 
 import cors from "cors";
 import slashes from "connect-slashes";
 import { create, ExpressHandlebars } from "express-handlebars";
+import { renderPictures } from "./routes/pictures";
+import infoRouter from "./routes/info";
+import registerRouter from "./routes/register";
+import legal from "./routes/legal";
+import api from "./routes/api";
+import axios from "axios";
+import { availableSlots } from "./controllers/registration/registrationController";
 
-require("dotenv").config();
+dotenv.config();
 
-const app: Application = express();
+const app = express();
 
-app.use(cors());
+const allowedOrigins = ["https://sild.merelaager.ee", `http://localhost:8080`];
+
+const corsOptions: cors.CorsOptions = {
+  origin: allowedOrigins,
+  // https://stackoverflow.com/a/59812348
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use("/api", api);
+
+console.log(path.join(__dirname, "/routes/**/*.js"));
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Merelaagri API",
+      version: "1.0.0",
+    },
+    servers: [
+      { url: "http://localhost:3000/api", description: "Development server" },
+    ],
+  },
+  apis: [path.join(__dirname, "/routes/api/*.js")],
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const hbs: ExpressHandlebars = create({
   extname: "hbs",
@@ -23,7 +62,7 @@ const hbs: ExpressHandlebars = create({
   layoutsDir: path.join(__dirname, "..", "/views/layouts/"),
   partialsDir: path.join(__dirname, "..", "/views/partials/"),
   helpers: {
-    times: (n, block) => {
+    times: (n: number, block: any) => {
       let accum = "";
       for (let i = 1; i <= 4; ++i) {
         accum += block.fn(i);
@@ -38,7 +77,8 @@ app.set("view engine", "hbs");
 
 app.use(express.static("public")).use(slashes());
 
-let meta = JSON.parse(fs.readFileSync("./data/metadata.json", "utf-8"));
+const metaPath = path.join(__dirname, "../data/metadata.json");
+const meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
 
 app.get("/robots.txt", (req: Request, res: Response) => {
   res.type("text/plain");
@@ -60,6 +100,7 @@ app.get("/", (req: Request, res: Response) => {
     title: meta.homepage.title,
     description: meta.homepage.description,
     body_class: "landing",
+    header: process.env.TITLE || "Kohtumiseni suvel",
   });
 });
 
@@ -81,10 +122,8 @@ app.get("/lastenurk/", (req: Request, res: Response) => {
   });
 });
 
-import { renderPictures } from "./routes/pictures";
-
 app.get("/pildid/", (req: Request, res: Response) => {
-  const imageList = [];
+  const imageList: object[] = [];
   fs.readdirSync("./public/img").forEach((file) => {
     if (file !== ".gitkeep") imageList.push({ src: `../img/${file}` });
   });
@@ -99,21 +138,11 @@ app.get("/sisukaart/", (req: Request, res: Response) => {
   });
 });
 
-import infoRouter from "./routes/info";
-
 app.use("/info/", infoRouter);
-
-import registerRouter from "./routes/register";
 
 app.use("/registreerimine/", registerRouter);
 
-import legal from "./routes/legal";
-
 app.use("/oiguslik/", legal);
-
-import api from "./routes/api";
-
-app.use("/api/", api);
 
 app.get("/broneerimine/", (req: Request, res: Response) => {
   res.redirect("/registreerimine/");
@@ -132,4 +161,5 @@ app.use((req: Request, res: Response) => {
 export const runApp = () => {
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log(`App listening on port ${port}`));
+  axios.post(process.env.URL, availableSlots);
 };

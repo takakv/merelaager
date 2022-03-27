@@ -824,6 +824,7 @@ main > section {
 .landing-quickies {
   font-family: Raleway, sans-serif;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   list-style: none;
   text-transform: none;
@@ -1532,6 +1533,11 @@ main > section {
   }
 }
 
+.c-counters {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .vahetused-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -1540,10 +1546,23 @@ main > section {
 
 .vahetuste-kohad {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  flex-direction: column;
   width: 100%;
-  @media screen and(min-width: $tablet-break) {
+  margin-bottom: 1em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and(min-width: 400px) {
+    width: 50%;
+  }
+
+  @media screen and(min-width: 800px) {
+    width: calc(100% / 3);
+  }
+
+  @media screen and(min-width: 1000px) {
     width: 20%;
   }
 
@@ -1553,7 +1572,6 @@ main > section {
 }
 
 .vahetused-info {
-  margin-top: 1rem;
 }
 
 .c-cl-head {

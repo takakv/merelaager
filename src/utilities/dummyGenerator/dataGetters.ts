@@ -3,12 +3,12 @@ const rand = require("./randGetters");
 
 const separator = "&amp;";
 
-const getFirstName = (firstNames, gender) => {
+const getFirstName = (firstNames: string[], gender: any) => {
   const count = firstNames[gender].length;
   return firstNames[gender][Math.floor(Math.random() * count)];
 };
 
-const getChildData = (name, shiftNr, gender) => {
+const getChildData = (name: string, shiftNr: number, gender: string) => {
   let res = "";
 
   const idCode = rand.getIdCode(gender);
@@ -28,7 +28,7 @@ const getChildData = (name, shiftNr, gender) => {
   return res;
 };
 
-exports.getMeta = (simCount, fNames, lName) => {
+exports.getMeta = (simCount: number, fNames: string[], lName: string) => {
   const gender = Math.round(Math.random()) === 1 ? "M" : "F";
   const fName = getFirstName(fNames, gender);
 
@@ -44,7 +44,13 @@ exports.getMeta = (simCount, fNames, lName) => {
   return res;
 };
 
-exports.getData = (names, simCount, lName, gender, shiftNr) => {
+exports.getData = (
+  names: any,
+  simCount: number,
+  lName: string,
+  gender: string,
+  shiftNr: number
+) => {
   let res = "";
   let name;
 
@@ -58,7 +64,7 @@ exports.getData = (names, simCount, lName, gender, shiftNr) => {
   return res;
 };
 
-exports.getAccurate = (names, lName) => {
+exports.getAccurate = (names: any, lName: string) => {
   const chance = new Chance();
 
   let childCount;

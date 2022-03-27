@@ -1,210 +1,186 @@
+import { Request } from "express";
+import { Registration } from "../db/models/Registration";
+import { Child } from "../db/models/Child";
+import {
+  PrintEntry,
+  RegistrationEntry,
+} from "../routes/Support Files/registrations";
+
 require("dotenv").config();
 
 const { generatePDF } = require("./listGenerator");
-const { approveShift } = require("../routes/Support Files/shiftAuth");
+const {
+  userIsRoot,
+  approveRole,
+  approveShiftRole,
+} = require("../routes/Support Files/shiftAuth");
 
-import {Registration} from "../db/models/registration";
-import {Child} from "../db/models/child";
+import Entity = Express.Entity;
+import { ShiftData } from "../db/models/ShiftData";
 
-const numberOfShifts = 5;
-
-exports.fetch = async (req) => {
-  const children = await Registration.findAll({
+export const fetchRegistrations = async (req: Request) => {
+  const camperRegistrations = await Registration.findAll({
     order: [["regOrder", "ASC"]],
     include: Child,
   });
 
-  if (!children.length) return null;
+  let registrations: RegistrationEntry[] = [];
+
+  if (!camperRegistrations.length) return registrations;
 
   const { role } = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
-  if (!allowedRoles.includes(role)) return null;
+  if (!allowedRoles.includes(role)) return registrations;
 
-  let returnData = {};
-
-  for (let i = 1; i <= numberOfShifts; ++i) {
-    returnData[i] = {
-      campers: {},
-      regBoyCount: 0,
-      regGirlCount: 0,
-      resBoyCount: 0,
-      resGirlCount: 0,
-      totalRegCount: 0,
-    };
-  }
-
-  children.forEach((child) => {
-    const data = {
-      id: child["id"],
-      name: child["child"]["name"],
-      gender: child["child"]["gender"],
-      bDay: child["birthday"],
-      isOld: child["isOld"],
-      shift: child["shiftNr"],
-      tShirtSize: child["tsSize"],
-      regOrder: child.regOrder,
-      registered: child.isRegistered,
-      // city: child["city"],
-      // county: child["county"],
-      billNr: null,
-      contactName: null,
-      contactEmail: null,
-      contactNr: null,
-      pricePaid: null,
-      priceToPay: null,
-      idCode: null,
+  camperRegistrations.forEach((registration) => {
+    const entry: RegistrationEntry = {
+      id: registration.id,
+      name: registration.child.name,
+      gender: registration.child.gender,
+      dob: registration.birthday,
+      old: registration.isOld,
+      shiftNr: registration.shiftNr,
+      shirtSize: registration.tsSize,
+      order: registration.regOrder,
+      registered: registration.isRegistered,
     };
 
     if (role !== "op") {
-      data.billNr = child.billNr;
-      data.contactName = child.contactName.trim();
-      data.contactEmail = child.contactEmail.trim();
-      data.contactNr = child.contactNumber.trim();
-      data.pricePaid = child["pricePaid"];
-      data.priceToPay = child["priceToPay"];
+      entry.billNr = registration.billNr;
+      entry.contactName = registration.contactName;
+      entry.contactEmail = registration.contactEmail;
+      entry.contactPhone = registration.contactNumber;
+      entry.pricePaid = registration.pricePaid;
+      entry.priceToPay = registration.priceToPay;
     }
 
-    if (req.user.role === "root") data.idCode = child.idCode;
+    if (role === "root") entry.idCode = registration.idCode;
 
-    pushData(data, returnData[child.shiftNr]);
+    registrations.push(entry);
   });
 
-  return returnData;
+  return registrations;
 };
 
-const pushData = (camper, target) => {
-  target.campers[camper.id] = camper;
-  if (camper.registered) {
-    if (camper.gender === "M") target.regBoyCount++;
-    else target.regGirlCount++;
-    target.totalRegCount++;
-  } else {
-    if (camper.gender === "M") target.resBoyCount++;
-    else target.resGirlCount++;
-  }
+const verifyPrice = (price: string) => {
+  const amount = parseInt(price, 10);
+  return !isNaN(amount);
 };
 
-exports.update = async (req, res) => {
-  // Entry ID and field to update.
-  if (!req.params.userId || !req.params.field)
-    return res.sendStatus(400) && null;
+const updateData = async (registration: Registration) => {
+  const { shiftNr } = registration;
 
-  const id = req.params.userId;
-  const action = req.params.field;
+  const child = await Child.findOne({
+    where: { id: registration.childId },
+  });
 
-  // Entry value, if needed.
-  if ((action === "total-paid" || action === "total-due") && !req.params.value)
-    return res.sendStatus(400) && null;
-
-  const camper = await getCamper(id, req.user);
-  if (!camper.ok) return res.sendStatus(camper.code) && null;
-
-  switch (action) {
-    // Toggle the camper registration status.
-    case "registration":
-      await Registration.update(
-        { isRegistered: !camper.data.isRegistered },
-        { where: { id } }
-      );
-      return true;
-    // Toggle whether the camper has been to the camp before.
-    case "regular":
-      await Registration.update(
-        { isOld: !camper.data.isOld },
-        { where: { id } }
-      );
-      return true;
-  }
-
-  if (req.user.role !== "root") {
-    console.log("User not authorised for price manipulation.");
-    return res.sendStatus(404) && null;
-  }
-
-  const value = req.params.value;
-
-  switch (action) {
-    // Update the amount that has been paid for the camper.
-    case "total-paid":
-      await Registration.update({ pricePaid: value }, { where: { id } });
-      break;
-    // Update the total amount due fo the camper.
-    case "total-due":
-      await Registration.update({ priceToPay: value }, { where: { id } });
-      break;
-    default:
-      res.sendStatus(400);
-      return null;
-  }
-  return true;
-};
-
-const getCamper = async (id, queryUser) => {
-  const camper = await Registration.findByPk(id);
-  if (!camper)
-    return {
-      code: 404,
-      message: "Camper not found",
-      ok: false,
-    };
-
-  // Evaluate access rights.
-  const shift: number = camper.shiftNr;
-  if (!(await approveShift(queryUser, shift))) {
-    const message = "User not authorised for the shift";
-    console.log(message);
-    return {
-      code: 403,
-      message,
-      ok: false,
-    };
-  }
-
-  return {
-    code: 200,
-    message: "",
-    ok: true,
-    data: camper,
-  };
-};
-
-exports.remove = async (req, res) => {
-  // Entry ID check.
-  if (!req.params.userId) return res.sendStatus(400) && null;
-
-  const id = req.params.userId;
-  const camper = await getCamper(id, req.user);
-  if (!camper.ok) return res.sendStatus(camper.code) && null;
-
-  await Registration.destroy({ where: { id } });
-  return true;
-};
-
-exports.print = async (shiftNr) => {
-  const children = await Registration.findAll({
-    where: { shiftNr, isRegistered: true },
-    include: {
-      model: Child,
-      order: [["name", "ASC"]],
+  const [entry, created] = await ShiftData.findOrCreate({
+    where: { childId: child.id, shiftNr },
+    defaults: {
+      childId: child.id,
+      shiftNr,
+      parentNotes: registration.addendum,
+      isActive: registration.isRegistered,
     },
   });
 
-  if (!children.length) return null;
+  if (!created) {
+    entry.isActive = registration.isRegistered;
+    await entry.save();
+  }
+};
 
-  let childrenInfo = [];
+export const patchRegistration = async (req: Request, regId: number) => {
+  if (isNaN(regId)) return 400;
 
-  children.forEach((child) => {
-    childrenInfo.push({
-      name: child.child.name,
-      gender: child.child.gender,
-      birthday: child.birthday,
-      isOld: child.isOld,
-      tsSize: child.tsSize,
-      contactName: child.contactName.trim(),
-      contactEmail: child.contactEmail.trim(),
-      contactNr: child.contactNumber.trim(),
+  // Fetch first to check for permissions.
+  const registration = await Registration.findByPk(regId);
+  if (!registration) return 404;
+
+  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr)))
+    return 403;
+
+  const keys = Object.keys(req.body);
+
+  let patchError = 0;
+
+  keys.forEach((key) => {
+    switch (key) {
+      case "registered":
+        registration.isRegistered = req.body.registered;
+        updateData(registration);
+        break;
+      case "old":
+        registration.isOld = req.body.old;
+        break;
+      case "pricePaid":
+        if (!userIsRoot(req.user)) patchError = 403;
+        if (!verifyPrice(req.body.pricePaid)) patchError = 400;
+        registration.pricePaid = req.body.pricePaid;
+        break;
+      case "priceToPay":
+        if (!userIsRoot(req.user)) patchError = 403;
+        if (!verifyPrice(req.body.priceToPay)) patchError = 400;
+        registration.priceToPay = req.body.priceToPay;
+        break;
+      default:
+        patchError = 422;
+    }
+  });
+
+  if (patchError !== 0) return patchError;
+
+  try {
+    await registration.save();
+  } catch (e) {
+    console.error(e);
+    return 500;
+  }
+  return 204;
+};
+
+export const deleteRegistration = async (user: Entity, regId: number) => {
+  if (isNaN(regId)) return 400;
+
+  // Fetch first to check for permissions.
+  const registration = await Registration.findByPk(regId);
+  if (!registration) return 404;
+
+  if (!(await approveShiftRole(user, "boss", registration.shiftNr))) return 403;
+
+  try {
+    await registration.destroy();
+  } catch (e) {
+    console.error(e);
+    return 500;
+  }
+  return 204;
+};
+
+export const print = async (user: Entity, shiftNr: number) => {
+  if (!(await approveRole(user, "master"))) return null;
+
+  const registrations = await Registration.findAll({
+    where: { shiftNr, isRegistered: true },
+    include: { model: Child, order: [["name", "ASC"]] },
+  });
+
+  if (!registrations.length) return null;
+
+  const entries: PrintEntry[] = [];
+
+  registrations.forEach((registration) => {
+    entries.push({
+      name: registration.child.name,
+      gender: registration.child.gender,
+      dob: registration.birthday,
+      old: registration.isOld,
+      shirtSize: registration.tsSize,
+      contactName: registration.contactName.trim(),
+      contactEmail: registration.contactEmail.trim(),
+      contactNumber: registration.contactNumber.trim(),
     });
   });
 
-  return generatePDF(shiftNr, childrenInfo);
+  return generatePDF(shiftNr, entries);
 };

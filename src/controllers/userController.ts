@@ -1,11 +1,22 @@
 import { User } from "../db/models/User";
 import { Staff } from "../db/models/Staff";
 import { ShiftInfo } from "../db/models/ShiftInfo";
+import { Request, Response } from "express";
+import { userIsRoot } from "../routes/Support Files/shiftAuth";
+import Entity = Express.Entity;
+import { UserData, UserShift } from "../routes/Support Files/users";
 
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 
-const userExists = async (username) => {
+const getYear = () => {
+  const now = new Date();
+  let year = now.getFullYear();
+  if (now.getMonth() === 11) ++year;
+  return year;
+};
+
+const userExists = async (username: string) => {
   const user = await User.findByPk(username);
   return !!user;
 };
@@ -63,7 +74,7 @@ exports.fetchAll = async () => {
   return response;
 };
 
-exports.swapShift = async (userId, shiftNr, isBoss = false) => {
+exports.swapShift = async (userId: number, shiftNr: number, isBoss = false) => {
   let role = "root";
 
   if (!isBoss) {
@@ -79,9 +90,9 @@ exports.swapShift = async (userId, shiftNr, isBoss = false) => {
   }
 
   try {
-    const res = await User.findByPk(userId);
-    res.shifts = shiftNr;
-    await res.save();
+    const user = await User.findByPk(userId);
+    user.currentShift = shiftNr;
+    await user.save();
     return role;
   } catch (e) {
     console.error(e);
@@ -89,13 +100,13 @@ exports.swapShift = async (userId, shiftNr, isBoss = false) => {
   }
 };
 
-exports.getInfo = async (userId) => {
-  const user: User = await User.findByPk(userId);
+exports.getInfo = async (userId: number) => {
+  const user = await User.findByPk(userId);
   const shiftNr = user.currentShift;
   const name = user.nickname;
 
   let role;
-  const shifts = [];
+  const shifts: number[] = [];
 
   const now = new Date();
   let year = now.getFullYear();
@@ -128,8 +139,8 @@ exports.getInfo = async (userId) => {
 };
 
 exports.validateShift = async (
-  userId,
-  shiftNr,
+  userId: number,
+  shiftNr: number,
   year = new Date().getFullYear()
 ) => {
   const entry = await Staff.findOne({
@@ -141,7 +152,7 @@ exports.validateShift = async (
   else return null;
 };
 
-exports.create = async (req, res) => {
+exports.create = async (req: Request, res: Response) => {
   const { username, password, email, name } = req.body;
 
   const isNew = !(await userExists(username));
@@ -160,11 +171,69 @@ exports.create = async (req, res) => {
   else res.status(201).end();
 };
 
-exports.getShifts = async (userId) => {
+exports.getShifts = async (userId: number) => {
   const now = new Date();
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
   const shiftInfo = await Staff.findAll({ where: { userId, year } });
   console.log(shiftInfo);
+};
+
+export const fetchUser = async (entity: Entity, userId: number) => {
+  if (isNaN(userId)) return { statusCode: 400, data: {} };
+
+  if (entity.id !== userId && !userIsRoot(entity))
+    return { statusCode: 403, data: {} };
+
+  const user = await User.findByPk(userId);
+  if (!user) return { statusCode: 404, data: {} };
+
+  const currentShifts = await Staff.findAll({
+    where: { userId: userId, year: new Date().getUTCFullYear() },
+    attributes: ["shiftNr", "role"],
+  });
+
+  const shifts: UserShift[] = [];
+
+  currentShifts.forEach((shift) =>
+    shifts.push({ id: shift.shiftNr, role: shift.role })
+  );
+
+  const userData: UserData = {
+    name: user.nickname,
+    currentShift: user.currentShift,
+    isRoot: user.role === "root",
+    role: user.role,
+    shifts,
+  };
+
+  return {
+    statusCode: 200,
+    data: userData,
+  };
+};
+
+export const updateCurrentShift = async (req: Request) => {
+  const newShift = parseInt(req.body.newShift);
+  if (isNaN(newShift)) return 400;
+
+  if (!userIsRoot(req.user)) {
+    const userInShift = await Staff.findOne({
+      where: { shiftNr: newShift, userId: req.user.id, year: getYear() },
+    });
+    if (!userInShift) return 403;
+  }
+
+  const user = await User.findByPk(req.user.id);
+  user.currentShift = newShift;
+
+  try {
+    await user.save();
+  } catch (e) {
+    console.error(e);
+    return 500;
+  }
+
+  return 204;
 };

@@ -25,11 +25,11 @@ const populateCard = async (doc, camper) => {
     (now - birthday.getTime()) / (60 * 60 * 24 * 365 * 1000)
   );
 
-  doc.font("Helvetica-Bold").text(camper.name);
+  doc.font("Helvetica-Bold").text(camper.child.name);
   doc
     .font("Helvetica")
     .moveDown()
-    .text("Sugu: " + camper.gender)
+    .text("Sugu: " + camper.child.gender)
     .moveDown()
     .text(
       "Sünnipäev: " +
@@ -112,7 +112,7 @@ exports.generateOneCard = async (shiftNr, camper) => {
   return docName;
 };
 
-exports.generateAllCards = async (shiftNr, campers) => {
+exports.generateAllCards = async (shiftNr: number, campers) => {
   const docName = `andmed_${shiftNr}v.pdf`;
   cardMeta.autoFirstPage = false;
 

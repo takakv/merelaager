@@ -8,7 +8,9 @@
     "outDir": "build",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true
   },
   "include": [
     "src/**/*.ts"
