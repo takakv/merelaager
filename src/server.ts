@@ -13,6 +13,6 @@ import { initialiseRegistration } from "./controllers/registration/registrationC
     return;
   }
 
-  await initialiseRegistration();
+  // await initialiseRegistration();
   runApp();
 })();

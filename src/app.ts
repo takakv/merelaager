@@ -2,22 +2,22 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 
-import express, { Application, Request, Response } from "express";
+import express, { Request, Response } from "express";
+import { create, ExpressHandlebars } from "express-handlebars";
 import bodyParser from "body-parser";
+import slashes from "connect-slashes";
 
-import swaggerJsdoc from "swagger-jsdoc";
+import axios from "axios";
+import cors from "cors";
+
 import swaggerUi from "swagger-ui-express";
 
-import cors from "cors";
-import slashes from "connect-slashes";
-import { create, ExpressHandlebars } from "express-handlebars";
 import { renderPictures } from "./routes/pictures";
 import infoRouter from "./routes/info";
 import registerRouter from "./routes/register";
 import legal from "./routes/legal";
-import api from "./routes/api";
-import axios from "axios";
 import { availableSlots } from "./controllers/registration/registrationController";
+import { RegisterRoutes } from "./routes/routes";
 
 dotenv.config();
 
@@ -35,26 +35,16 @@ app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use("/api", api);
+// app.use("/api", api);
 
 console.log(path.join(__dirname, "/routes/**/*.js"));
 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Merelaagri API",
-      version: "1.0.0",
-    },
-    servers: [
-      { url: "http://localhost:3000/api", description: "Development server" },
-    ],
-  },
-  apis: [path.join(__dirname, "/routes/api/*.js")],
-};
-
-const swaggerSpec = swaggerJsdoc(options);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, async (_req: Request, res: Response) => {
+  return res.send(
+    // @ts-ignore
+    swaggerUi.generateHTML(await import("./swagger.json"))
+  );
+});
 
 const hbs: ExpressHandlebars = create({
   extname: "hbs",
@@ -64,7 +54,7 @@ const hbs: ExpressHandlebars = create({
   helpers: {
     times: (n: number, block: any) => {
       let accum = "";
-      for (let i = 1; i <= 4; ++i) {
+      for (let i = 1; i <= n; ++i) {
         accum += block.fn(i);
       }
       return accum;
@@ -80,21 +70,21 @@ app.use(express.static("public")).use(slashes());
 const metaPath = path.join(__dirname, "../data/metadata.json");
 const meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
 
-app.get("/robots.txt", (req: Request, res: Response) => {
+app.get("/robots.txt", (_req, res) => {
   res.type("text/plain");
   res.sendFile("/robots.txt", {
     root: "./public/",
   });
 });
 
-app.get("/sitemap.txt", (req: Request, res: Response) => {
+app.get("/sitemap.txt", (_req, res) => {
   res.type("text/plain");
   res.sendFile("/sitemap.txt", {
     root: "./public/",
   });
 });
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req, res) => {
   res.render("index", {
     layout: "landing",
     title: meta.homepage.title,
@@ -104,7 +94,7 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.get("/meeskond/", (req: Request, res: Response) => {
+app.get("/meeskond/", (_req, res) => {
   res.render("meeskond", {
     title: meta.meeskond.title,
     description: meta.meeskond.description,
@@ -113,7 +103,7 @@ app.get("/meeskond/", (req: Request, res: Response) => {
   });
 });
 
-app.get("/lastenurk/", (req: Request, res: Response) => {
+app.get("/lastenurk/", (_req, res) => {
   res.render("lastenurk", {
     title: meta.lastenurk.title,
     description: meta.lastenurk.description,
@@ -122,7 +112,7 @@ app.get("/lastenurk/", (req: Request, res: Response) => {
   });
 });
 
-app.get("/pildid/", (req: Request, res: Response) => {
+app.get("/pildid/", (req, res) => {
   const imageList: object[] = [];
   fs.readdirSync("./public/img").forEach((file) => {
     if (file !== ".gitkeep") imageList.push({ src: `../img/${file}` });
@@ -130,7 +120,7 @@ app.get("/pildid/", (req: Request, res: Response) => {
   renderPictures(req, res, meta, imageList);
 });
 
-app.get("/sisukaart/", (req: Request, res: Response) => {
+app.get("/sisukaart/", (_req, res) => {
   res.render("sitemap", {
     title: meta.sitemap.title,
     description: meta.sitemap.description,
@@ -144,11 +134,13 @@ app.use("/registreerimine/", registerRouter);
 
 app.use("/oiguslik/", legal);
 
-app.get("/broneerimine/", (req: Request, res: Response) => {
+app.get("/broneerimine/", (_req, res) => {
   res.redirect("/registreerimine/");
 });
 
-app.use((req: Request, res: Response) => {
+RegisterRoutes(app);
+
+app.use((_req, res) => {
   res.status(404).render("404", {
     layout: "metadata",
     title: "Kaardistamata asukoht",
