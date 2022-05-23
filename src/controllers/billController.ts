@@ -1,17 +1,18 @@
 import path from "path";
 import fs from "fs";
+import {Request, Response} from "express";
 import {Registration} from "../db/models/Registration";
 import {Child} from "../db/models/Child";
 
 const billGenerator = require("./billGenerator");
 
-const bulkQueryByEmail = (contactEmail) => {
-  return Registration.findAll({ where: { contactEmail }, include: Child });
+const bulkQueryByEmail = (contactEmail: string) => {
+  return Registration.findAll({where: {contactEmail}, include: Child});
 };
 
-const queryByEmail = (contactEmail) => {
+const queryByEmail = (contactEmail: string) => {
   return Registration.findOne({
-    where: { contactEmail },
+    where: {contactEmail},
     attributes: ["contactName", "billNr"],
   });
 };
@@ -27,7 +28,7 @@ const getBillNr = async () => {
   return 21001;
 };
 
-export const create = async (req, res) => {
+export const create = async (req: Request, res: Response) => {
   const children = await bulkQueryByEmail(req.params["email"]);
 
   if (!children.length) {
@@ -35,8 +36,8 @@ export const create = async (req, res) => {
     return;
   }
 
-  const campers = [];
-  const names = [];
+  const campers: Registration[] = [];
+  const names: string[] = [];
   let billNr = 0;
 
   children.forEach((child) => {
@@ -50,7 +51,7 @@ export const create = async (req, res) => {
   if (!billNr) {
     billNr = await getBillNr();
     await children.forEach((child) => {
-      child.update({ billNr: billNr });
+      child.update({billNr: billNr});
     });
   }
   if (campers.length) {
@@ -73,16 +74,15 @@ export const create = async (req, res) => {
   } else res.status(404).send("Pole registreeritud lapsi.");
 };
 
-export const fetch = async (req, res) => {
-  const child = await queryByEmail(req.params["email"]);
-
-  if (!child) {
+export const fetch = async (req: Request, res: Response) => {
+  const customer = await queryByEmail(req.params["email"]);
+  if (!customer) {
     res.status(404).send("Pole sellist meiliaadressi");
     return;
   }
 
-  const billName = billGenerator.getName(child);
-  const loc = `${path.join(__dirname, "../")}data/arved/${billName}`;
+  const billName = billGenerator.getName(customer);
+  const loc = `${path.join(__dirname, "../../")}data/arved/${billName}`;
 
   fs.access(loc, fs.constants.F_OK, (err) => {
     if (err) {
