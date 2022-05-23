@@ -1,10 +1,10 @@
-import { User } from "../db/models/User";
-import { Staff } from "../db/models/Staff";
-import { ShiftInfo } from "../db/models/ShiftInfo";
-import { Request, Response } from "express";
-import { userIsRoot } from "../routes/Support Files/shiftAuth";
+import {User} from "../db/models/User";
+import {Staff} from "../db/models/Staff";
+import {ShiftInfo} from "../db/models/ShiftInfo";
+import {Request, Response} from "express";
+import {userIsRoot} from "../routes/Support Files/shiftAuth";
 import Entity = Express.Entity;
-import { UserData, UserShift } from "../routes/Support Files/users";
+import {UserData, UserShift} from "../routes/Support Files/users";
 
 require("dotenv").config();
 const bcrypt = require("bcrypt");
@@ -40,7 +40,7 @@ const createUser = async (data) => {
 // Fetches all users from the database.
 // No filters.
 exports.fetchAll = async () => {
-  const response = { isOk: false, code: 200, users: null };
+  const response = {isOk: false, code: 200, users: null};
   let users;
 
   try {
@@ -114,7 +114,7 @@ exports.getInfo = async (userId: number) => {
 
   if (user.role !== "root") {
     const shiftInfo = await Staff.findAll({
-      where: { userId, year },
+      where: {userId, year},
     });
     if (!shiftInfo) return null;
     shiftInfo.forEach((shift: Staff) => {
@@ -144,16 +144,16 @@ exports.validateShift = async (
   year = new Date().getFullYear()
 ) => {
   const entry = await Staff.findOne({
-    where: { userId, shiftNr, year },
+    where: {userId, shiftNr, year},
     attributes: ["role"],
   });
 
-  if (entry) return { role: entry.role };
+  if (entry) return {role: entry.role};
   else return null;
 };
 
 exports.create = async (req: Request, res: Response) => {
-  const { username, password, email, name } = req.body;
+  const {username, password, email, name} = req.body;
 
   const isNew = !(await userExists(username));
   if (!isNew) {
@@ -176,29 +176,46 @@ exports.getShifts = async (userId: number) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  const shiftInfo = await Staff.findAll({ where: { userId, year } });
+  const shiftInfo = await Staff.findAll({where: {userId, year}});
   console.log(shiftInfo);
 };
 
-export const fetchUser = async (entity: Entity, userId: number) => {
-  if (isNaN(userId)) return { statusCode: 400, data: {} };
-
-  if (entity.id !== userId && !userIsRoot(entity))
-    return { statusCode: 403, data: {} };
-
-  const user = await User.findByPk(userId);
-  if (!user) return { statusCode: 404, data: {} };
+const fetchShifts = async (userId: number, isRoot: boolean = false) => {
+  const shifts: UserShift[] = [];
 
   const currentShifts = await Staff.findAll({
-    where: { userId: userId, year: new Date().getUTCFullYear() },
+    where: {userId: userId, year: new Date().getUTCFullYear()},
     attributes: ["shiftNr", "role"],
   });
 
-  const shifts: UserShift[] = [];
-
   currentShifts.forEach((shift) =>
-    shifts.push({ id: shift.shiftNr, role: shift.role })
+    shifts.push({id: shift.shiftNr, role: shift.role})
   );
+
+  if (!isRoot) return shifts;
+
+  const shiftCount = await ShiftInfo.count();
+  if (shiftCount === shifts.length) return shifts;
+
+  // Populate the shift switcher with least-access.
+  for (let i = 1; i <= shiftCount; ++i) {
+    if (!shifts.find(el => el.id === i))
+      shifts.push({id: i, role: "part"});
+  }
+  return shifts;
+}
+
+export const fetchUser = async (entity: Entity, userId: number) => {
+  if (isNaN(userId)) return {statusCode: 400, data: {}};
+  const isRoot = userIsRoot(entity);
+
+  if (entity.id !== userId && !isRoot)
+    return {statusCode: 403, data: {}};
+
+  const user = await User.findByPk(userId);
+  if (!user) return {statusCode: 404, data: {}};
+
+  const shifts = await fetchShifts(userId, isRoot);
 
   const userData: UserData = {
     name: user.nickname,
@@ -220,7 +237,7 @@ export const updateCurrentShift = async (req: Request) => {
 
   if (!userIsRoot(req.user)) {
     const userInShift = await Staff.findOne({
-      where: { shiftNr: newShift, userId: req.user.id, year: getYear() },
+      where: {shiftNr: newShift, userId: req.user.id, year: getYear()},
     });
     if (!userInShift) return 403;
   }
