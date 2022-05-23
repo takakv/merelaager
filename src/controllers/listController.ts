@@ -43,6 +43,8 @@ export const fetchRegistrations = async (req: Request) => {
       shirtSize: registration.tsSize,
       order: registration.regOrder,
       registered: registration.isRegistered,
+      // UA 2022
+      addendum: registration.addendum
     };
 
     if (role !== "op") {
