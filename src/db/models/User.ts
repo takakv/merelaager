@@ -59,7 +59,12 @@ export class User
 
   @AllowNull(false)
   @Default("std")
-  @Column(DataType.ENUM("root", "boss", "std", "master", "op", "camper"))
+  // Root users have all system permissions.
+  // Master users are bosses of at least one shift.
+  // OP users are instructors.
+  // Campers are campers.
+  // STD is a miscellaneous role.
+  @Column(DataType.ENUM("root", "std", "master", "op", "camper"))
   public role!: string;
 
   @Column(DataType.INTEGER.UNSIGNED)
