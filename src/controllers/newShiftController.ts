@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
 import { ShiftData } from "../db/models/ShiftData";
@@ -56,8 +57,51 @@ export const getInfo = async (shiftNr: number) => {
         parentNotes: entry.parentNotes,
         tentNr: entry.tentNr,
         teamId: entry.teamId,
+        isPresent: entry.isPresent,
       });
   });
 
   return resObj;
+};
+
+export const patchCamper = async (req: Request, childId: number) => {
+  if (isNaN(childId)) return 404;
+
+  const camper = await ShiftData.findOne({ where: { childId } });
+  if (!camper) return 404;
+
+  const keys = Object.keys(req.body);
+
+  let patchError = 0;
+  keys.forEach((key) => {
+    switch (key) {
+      case "tentNr":
+        let tentNr = req.body.tentNr;
+        if (tentNr !== null) {
+          tentNr = parseInt(req.body.tentNr);
+          if (isNaN(tentNr) || tentNr < 1 || tentNr > 10) {
+            patchError = 400;
+            break;
+          }
+        }
+        camper.tentNr = tentNr;
+        break;
+      case "isPresent":
+        camper.isPresent = !!req.body.isPresent;
+        break;
+      default:
+        patchError = 422;
+    }
+  });
+
+  if (patchError !== 0) return patchError;
+
+  try {
+    await camper.save();
+  } catch (e) {
+    console.error(e);
+    return 500;
+  }
+
+  return 204;
 };

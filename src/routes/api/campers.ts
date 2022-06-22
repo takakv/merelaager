@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
-import { getInfo } from "../../controllers/newShiftController";
+import {getInfo, patchCamper} from "../../controllers/newShiftController";
 
 const {
   approveShift,
@@ -28,6 +28,13 @@ router.get("/:shiftNr?/", async (req: Request, res: Response) => {
     console.error(e);
     res.sendStatus(500);
   }
+});
+
+// Update values for a specific camper.
+router.patch("/camper/:childId", async (req: Request, res: Response) => {
+  const childId = parseInt(req.params.childId);
+  const statusCode = await patchCamper(req, childId);
+  res.sendStatus(statusCode);
 });
 
 export default router;

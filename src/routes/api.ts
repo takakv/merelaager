@@ -47,10 +47,6 @@ import notes from "./api/notes";
 
 router.use("/notes", notes);
 
-import tents from "./api/tents";
-
-router.use("/tents", tents);
-
 import teams from "./api/teams";
 
 router.use("/teams", teams);

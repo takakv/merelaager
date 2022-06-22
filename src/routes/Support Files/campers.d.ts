@@ -7,4 +7,5 @@ export interface CamperEntry {
   parentNotes: string;
   tentNr: number;
   teamId: number;
+  isPresent: boolean;
 }
