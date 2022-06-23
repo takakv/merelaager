@@ -1,54 +1,21 @@
 import express, { Request, Response } from "express";
-
-const team = require("../../controllers/teamController");
+import { createTeam, fetchForYear } from "../../controllers/teamController";
 
 const router = express.Router();
 
-router.get("/fetch/:shiftNr/", async (req: Request, res: Response) => {
+// Fetch the team names and IDs for a given year and optionally shift.
+router.get("/bulk/:year/:shiftNr?", async (req: Request, res: Response) => {
+  const year = parseInt(req.params.year);
   const shiftNr = parseInt(req.params.shiftNr);
-  if (Number.isNaN(shiftNr)) return res.sendStatus(400);
-
-  const teams = await team.fetchForShift(shiftNr);
-  return teams ? res.json(teams) : res.sendStatus(500);
+  const data = await fetchForYear(year, shiftNr);
+  return res.status(data.statusCode).json(data.data);
 });
 
-router.post("/create/", async (req: Request, res: Response) => {
-  const shiftNr = parseInt(req.body.shiftNr);
-  const teamName = req.body.name;
-
-  if (!shiftNr || !teamName) return res.sendStatus(400);
-  return (await team.createTeam(teamName, shiftNr))
-    ? res.sendStatus(200)
-    : res.sendStatus(500);
-});
-
-router.post("/member/add/", async (req: Request, res: Response) => {
-  const teamId = parseInt(req.body.teamId);
-  const dataId = parseInt(req.body.dataId);
-
-  if (!teamId || !dataId) return res.sendStatus(400);
-  return (await team.addMember(teamId, dataId))
-    ? res.sendStatus(200)
-    : res.sendStatus(500);
-});
-
-router.post("/member/remove/", async (req: Request, res: Response) => {
-  const dataId = parseInt(req.body.dataId);
-
-  if (!dataId) return res.sendStatus(400);
-  return (await team.removeMember(dataId))
-    ? res.sendStatus(200)
-    : res.sendStatus(500);
-});
-
-router.post("/set/place/", async (req: Request, res: Response) => {
-  const teamId = parseInt(req.body.teamId);
-  const place = parseInt(req.body.place);
-
-  if (!teamId || !place) return res.sendStatus(400);
-  return (await team.setPlace(teamId, place))
-    ? res.sendStatus(200)
-    : res.sendStatus(500);
+// Create a new team.
+router.post("/", async (req: Request, res: Response) => {
+  const { year, shiftNr, name } = req.body;
+  const code = await createTeam(year, shiftNr, name);
+  return res.sendStatus(code);
 });
 
 export default router;

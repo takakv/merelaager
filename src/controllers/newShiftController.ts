@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
+import { Team } from "../db/models/Team";
 import { ShiftData } from "../db/models/ShiftData";
 import { CamperEntry } from "../routes/Support Files/campers";
 
@@ -72,29 +73,30 @@ export const patchCamper = async (req: Request, childId: number) => {
 
   const keys = Object.keys(req.body);
 
-  let patchError = 0;
-  keys.forEach((key) => {
+  for (const key of keys) {
     switch (key) {
       case "tentNr":
         let tentNr = req.body.tentNr;
         if (tentNr !== null) {
           tentNr = parseInt(req.body.tentNr);
-          if (isNaN(tentNr) || tentNr < 1 || tentNr > 10) {
-            patchError = 400;
-            break;
-          }
+          if (isNaN(tentNr) || tentNr < 1 || tentNr > 10) return 400;
         }
         camper.tentNr = tentNr;
         break;
       case "isPresent":
         camper.isPresent = !!req.body.isPresent;
         break;
+      case "teamId":
+        let teamId = parseInt(req.body.teamId);
+        if (isNaN(teamId) || teamId < 1) return 400;
+        const team = await Team.findByPk(teamId);
+        if (!team) return 404;
+        camper.teamId = teamId;
+        break;
       default:
-        patchError = 422;
+        return 422;
     }
-  });
-
-  if (patchError !== 0) return patchError;
+  }
 
   try {
     await camper.save();
