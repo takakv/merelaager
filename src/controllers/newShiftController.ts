@@ -4,6 +4,7 @@ import { Child } from "../db/models/Child";
 import { Team } from "../db/models/Team";
 import { ShiftData } from "../db/models/ShiftData";
 import { CamperEntry } from "../routes/Support Files/campers";
+import { StatusCodes } from "http-status-codes";
 
 exports.populate = async () => {
   // Fetch all registered campers.
@@ -66,10 +67,10 @@ export const getInfo = async (shiftNr: number) => {
 };
 
 export const patchCamper = async (req: Request, childId: number) => {
-  if (isNaN(childId)) return 404;
+  if (isNaN(childId)) return StatusCodes.BAD_REQUEST;
 
   const camper = await ShiftData.findOne({ where: { childId } });
-  if (!camper) return 404;
+  if (!camper) return StatusCodes.NOT_FOUND;
 
   const keys = Object.keys(req.body);
 
@@ -79,7 +80,8 @@ export const patchCamper = async (req: Request, childId: number) => {
         let tentNr = req.body.tentNr;
         if (tentNr !== null) {
           tentNr = parseInt(req.body.tentNr);
-          if (isNaN(tentNr) || tentNr < 1 || tentNr > 10) return 400;
+          if (isNaN(tentNr) || tentNr < 1 || tentNr > 10)
+            return StatusCodes.BAD_REQUEST;
         }
         camper.tentNr = tentNr;
         break;
@@ -87,14 +89,19 @@ export const patchCamper = async (req: Request, childId: number) => {
         camper.isPresent = !!req.body.isPresent;
         break;
       case "teamId":
-        let teamId = parseInt(req.body.teamId);
-        if (isNaN(teamId) || teamId < 1) return 400;
-        const team = await Team.findByPk(teamId);
-        if (!team) return 404;
+        let teamId = req.body.teamId;
+        if (teamId !== null) {
+          teamId = parseInt(teamId);
+          if (Number.isNaN(teamId) || teamId < 1)
+            return StatusCodes.BAD_REQUEST;
+
+          const team = await Team.findByPk(teamId);
+          if (!team) return StatusCodes.NOT_FOUND;
+        }
         camper.teamId = teamId;
         break;
       default:
-        return 422;
+        return StatusCodes.UNPROCESSABLE_ENTITY;
     }
   }
 
@@ -102,8 +109,8 @@ export const patchCamper = async (req: Request, childId: number) => {
     await camper.save();
   } catch (e) {
     console.error(e);
-    return 500;
+    return StatusCodes.INTERNAL_SERVER_ERROR;
   }
 
-  return 204;
+  return StatusCodes.NO_CONTENT;
 };
