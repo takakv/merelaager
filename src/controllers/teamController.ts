@@ -1,5 +1,7 @@
 import { Team } from "../db/models/Team";
 import { getYear } from "../routes/Support Files/functions";
+import { StatusCodes } from "http-status-codes";
+import Entity = Express.Entity;
 
 export const fetchForYear = async (year: number, shiftNr: number) => {
   type teamData = {
@@ -15,11 +17,11 @@ export const fetchForYear = async (year: number, shiftNr: number) => {
 
   const data: responseData = {
     data: [],
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
   };
 
   if (Number.isNaN(year) || year > getYear()) {
-    data.statusCode = 400;
+    data.statusCode = StatusCodes.BAD_REQUEST;
     return data;
   }
 
@@ -28,7 +30,7 @@ export const fetchForYear = async (year: number, shiftNr: number) => {
   );
 
   if (!teams) {
-    data.statusCode = 404;
+    data.statusCode = StatusCodes.NOT_FOUND;
     return data;
   }
 
@@ -43,22 +45,58 @@ export const createTeam = async (
   year: number,
   shiftNr: number,
   name: string
-): Promise<number> => {
-  if (Number.isNaN(year) || Number.isNaN(shiftNr)) return 400;
-  if (year < 1999 || year > new Date().getFullYear() + 1) return 400;
-  if (shiftNr < 1) return 400;
-  if (!name) return 400;
+) => {
+  type responseData = {
+    data: Team | {};
+    statusCode: number;
+  };
+
+  const data: responseData = {
+    data: {},
+    statusCode: StatusCodes.BAD_REQUEST,
+  };
+
+  if (Number.isNaN(year) || Number.isNaN(shiftNr)) return data;
+  if (year < 1999 || year > new Date().getFullYear() + 1) return data;
+  if (shiftNr < 1) return data;
+  if (!name) return data;
+
+  let team: Team;
 
   try {
-    await Team.create({
+    team = await Team.create({
       name,
       shiftNr,
       year,
     });
   } catch (e) {
     console.error(e);
-    return 500;
+    data.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    return data;
   }
 
-  return 201;
+  data.statusCode = StatusCodes.CREATED;
+  data.data = team;
+  return data;
+};
+
+export const deleteTeam = async (teamId: number, user: Entity) => {
+  if (Number.isNaN(teamId)) return StatusCodes.BAD_REQUEST;
+
+  const team = await Team.findByPk(teamId);
+  if (!team) return StatusCodes.NOT_FOUND;
+
+  if (team.shiftNr !== user.shift) return StatusCodes.FORBIDDEN;
+
+  // Only allow deleting teams from this year.
+  if (team.year !== getYear()) return StatusCodes.METHOD_NOT_ALLOWED;
+
+  try {
+    await Team.destroy({ where: { id: teamId } });
+  } catch (e) {
+    console.error(e);
+    return StatusCodes.INTERNAL_SERVER_ERROR;
+  }
+
+  return StatusCodes.NO_CONTENT;
 };

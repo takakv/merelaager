@@ -1,5 +1,9 @@
 import express, { Request, Response } from "express";
-import { createTeam, fetchForYear } from "../../controllers/teamController";
+import {
+  createTeam,
+  deleteTeam,
+  fetchForYear,
+} from "../../controllers/teamController";
 
 const router = express.Router();
 
@@ -14,7 +18,14 @@ router.get("/bulk/:year/:shiftNr?", async (req: Request, res: Response) => {
 // Create a new team.
 router.post("/", async (req: Request, res: Response) => {
   const { year, shiftNr, name } = req.body;
-  const code = await createTeam(year, shiftNr, name);
+  const data = await createTeam(year, shiftNr, name);
+  return res.status(data.statusCode).json(data.data);
+});
+
+// Delete a team.
+router.delete("/:teamId", async (req: Request, res: Response) => {
+  const teamId = parseInt(req.params.teamdId);
+  const code = await deleteTeam(teamId, req.user);
   return res.sendStatus(code);
 });
 
