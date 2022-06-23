@@ -24,7 +24,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 // Delete a team.
 router.delete("/:teamId", async (req: Request, res: Response) => {
-  const teamId = parseInt(req.params.teamdId);
+  const teamId = parseInt(req.params.teamId);
   const code = await deleteTeam(teamId, req.user);
   return res.sendStatus(code);
 });
