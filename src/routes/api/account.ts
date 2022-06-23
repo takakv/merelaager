@@ -1,10 +1,29 @@
 import express, { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import {
+  createAccount,
+  generateAccessDelegationLink,
+  validateSignupToken,
+} from "../../controllers/accountController";
 
 const router = express.Router();
 
 const account = require("../../controllers/accountController");
 const user = require("../../controllers/userController");
 const jwt = require("../Support Files/jwt");
+
+router.get("/create/:token", async (req: Request, res: Response) => {
+  const { token } = req.params;
+  if (!token) return StatusCodes.BAD_REQUEST;
+  const result = validateSignupToken(token);
+  if (!result) return res.sendStatus(StatusCodes.UNAUTHORIZED);
+
+  res.render("accountReg", {
+    title: "Loo kasutaja",
+    layout: "empty",
+    script_path: "/media/scripts/signup.js",
+  });
+});
 
 router.get("/:token/", async (req: Request, res: Response) => {
   const response = await account.validateSuToken(req.params.token);
@@ -25,14 +44,15 @@ router.post("/chkusr/", async (req: Request, res: Response) => {
 });
 
 router.post("/create/", async (req: Request, res: Response) => {
-  const { username, password, token, name } = req.body;
-  if (!username || !password || !token) return res.sendStatus(400);
-  const result = await account.createAccount(username, password, token, name);
+  const { username, password, token, name, nickname } = req.body;
+  if (!username || !password || !token || !name)
+    return res.sendStatus(StatusCodes.BAD_REQUEST);
+  const result = await createAccount(username, password, token, name, nickname);
   if (!result)
     return res
-      .status(200)
+      .status(StatusCodes.OK)
       .send("Konto loodud. Sisse saab logida: https://sild.merelaager.ee");
-  else res.json(result);
+  else res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(result);
 });
 
 router.get("/reset/:token/", async (req: Request, res: Response) => {
@@ -58,10 +78,10 @@ router.post("/cta/:shiftNr/:role?/", async (req: Request, res: Response) => {
 });
 
 router.post("/pwd/reset", async (req: Request, res: Response) => {
-  if (!("email" in req.body)) res.sendStatus(400);
+  if (!("email" in req.body)) res.sendStatus(StatusCodes.BAD_REQUEST);
   const state = await account.resetPwd(req.body.email);
-  if (state) res.sendStatus(200);
-  else res.sendStatus(500);
+  if (state) res.sendStatus(StatusCodes.OK);
+  else res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
 });
 
 router.post("/reset", async (req: Request, res: Response) => {
@@ -76,20 +96,17 @@ router.post("/reset", async (req: Request, res: Response) => {
 // ---------- AUTH ZONE ------------------------------
 router.use(jwt.verifyAccessToken);
 
-router.post("/ct/", async (req: Request, res: Response) => {
+// Permit new account creation, or delegate access to existing account.
+router.post("/allocate/", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.body.shiftNr);
-  const { email } = req.body;
-  if (!shiftNr || !email) return res.sendStatus(400);
-
-  const result = await account.createSuToken(shiftNr);
-  if (!result) res.sendStatus(400);
-
-  const mailStatus = await account.sendEmail(email, result);
-  if (mailStatus) res.sendStatus(200);
-  else {
-    await account.destroyToken(result);
-    res.sendStatus(400);
-  }
+  const { email, role } = req.body;
+  const statusCode = await generateAccessDelegationLink(
+    email,
+    shiftNr,
+    role,
+    req.user
+  );
+  return res.sendStatus(statusCode);
 });
 
 router.post("/password/update", async (req: Request, res: Response) => {

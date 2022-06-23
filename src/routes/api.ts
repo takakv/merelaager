@@ -13,6 +13,7 @@ router.use("/auth", auth);
 import account from "./api/account";
 
 router.use("/su", account);
+router.use("/account", account);
 
 import override from "./api/override";
 
