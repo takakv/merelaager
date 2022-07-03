@@ -12,50 +12,6 @@ const boilerplate = require("./mailService/boilerplate");
 const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
 const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
-const generateInfoHTML = (campers, price, billNr, regCount) => {
-  let response = "<ul>";
-  for (let i = 0; i < campers.length; ++i) {
-    if (!campers[i].isRegistered) continue;
-    response += `<li>${campers[i].name} (${shiftData[campers[i].shift].id}), `;
-    response += `sugu: ${campers[i].gender}, `;
-    response += `sünnipäev: ${campers[i].birthday}, `;
-    response += `t-särgi suurus: ${campers[i].tsSize}, `;
-    response += `uus: ${campers[i].isOld ? "ei" : "jah"}, `;
-    response += `EMSA toetus: ${campers[i].isEmsa ? "jah" : "ei"}, `;
-    response += `aadress: ${campers[i].road}, ${campers[i].city}, ${campers[i].county}, ${campers[i].country}, `;
-    response += `muu info: ${campers[i].addendum}`;
-    response += "</li>";
-  }
-  response += "</ul>";
-  response += "<p>on registreeritud.</p>";
-  if (regCount !== campers.length) {
-    response += "<ul>";
-    for (let i = 0; i < campers.length; ++i) {
-      if (campers[i].isRegistered) continue;
-      response += `<li>${campers[i].name} (${
-        shiftData[campers[i].shift].id
-      }), `;
-      response += `sugu: ${campers[i].gender}, `;
-      response += `sünnipäev: ${campers[i].birthday}, `;
-      response += `t-särgi suurus: ${campers[i].tsSize}, `;
-      response += `uus: ${campers[i].isOld ? "ei" : "jah"}, `;
-      response += `EMSA toetus: ${campers[i].isEmsa ? "jah" : "ei"}, `;
-      response += `aadress: ${campers[i].road}, ${campers[i].city}, ${campers[i].county}, ${campers[i].country}, `;
-      response += `muu info: ${campers[i].addendum}`;
-      response += "</li>";
-    }
-    response += "</ul>";
-    response += "<p>on lisatud reservnimekirja.</p>";
-  }
-  response += "<p>Kontaktandmed:</p>";
-  response += "<p>";
-  response +=
-    `${campers[0].contactName}, ${campers[0].contactEmail}, tel: ${campers[0].contactNumber}` +
-    `${campers[0].backupTel ? " (" + campers[0].backupTel + "), " : ", "}` +
-    `Arve nr ${billNr}, hind: ${price}, bronnitasu: ${regCount * 100}.`;
-  return response;
-};
-
 class MailService {
   private _transporter: Transporter;
 
@@ -113,12 +69,13 @@ class MailService {
     });
   }
 
-  sendPwdResetMail(email, token) {
+  sendPwdResetMail(email: string, token: string) {
     const link = `https://merelaager.ee/api/su/reset/${token}`;
     return this._transporter.sendMail({
       from: {
         name: "Merelaager - süsteem",
-        address: "no-reply@merelaager.ee",
+        // address: "no-reply@sild.merelaager.ee",
+        address: "no-reply@info.merelaager.ee",
       },
       to: email,
       subject: "Salasõna lähtestamine",
@@ -126,45 +83,17 @@ class MailService {
     });
   }
 
-  sendAccountCreationMail(email, token) {
-    const link = `https://merelaager.ee/api/su/${token}/`;
+  sendAccountCreationMail(email: string, token: string) {
+    const link = `https://merelaager.ee/api/account/create/${token}`;
     return this._transporter.sendMail({
       from: {
         name: "Merelaager - süsteem",
-        address: "no-reply@merelaager.ee",
+        // address: "no-reply@sild.merelaager.ee",
+        address: "no-reply@info.merelaager.ee",
       },
       to: email,
       subject: "e-Kambüüsi konto loomine",
       html: `<p>Konto loomise link: <a href="${link}">${link}</a>. Link toimib 24 tundi.</p><br />`,
-    });
-  }
-
-  sendCampMasterEmail(campers, price, billNr, regCount) {
-    return this._transporter.sendMail({
-      from: {
-        name: "Broneerimine - merelaager",
-        address: "bronn@merelaager.ee",
-      },
-      to: "kati@merelaager.ee",
-      subject: `Registreerimine - ${campers[0].contactName}`,
-      html: generateInfoHTML(campers, price, billNr, regCount),
-    });
-  }
-
-  sendCheckMail(source, dest, content) {
-    console.log("Sending email");
-    console.log(source);
-    console.log(dest);
-    console.log(typeof source);
-    console.log(typeof dest);
-    return this._transporter.sendMail({
-      from: {
-        name: "Test",
-        address: source,
-      },
-      to: dest,
-      subject: "Süsteemi katse",
-      html: content,
     });
   }
 }

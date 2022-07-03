@@ -51,4 +51,7 @@ export class Team
 
   @HasMany(() => ShiftData)
   public members?: ShiftData[];
+
+  // @BelongsToMany(() => EventInfo, () => TeamEvent, "teamId")
+  // public events?: Array<EventInfo & { TeamEvent: TeamEvent }>;
 }

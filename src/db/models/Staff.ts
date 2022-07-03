@@ -13,7 +13,7 @@ import {
 } from "sequelize-typescript";
 import { User } from "./User";
 
-const roles = {
+export const roles = {
   boss: "boss",
   full: "full",
   part: "part",
@@ -55,7 +55,7 @@ export class Staff
   public name: string;
 
   @AllowNull(false)
-  @Default(roles.full)
+  @Default(roles.part)
   @Column(DataType.ENUM(roles.boss, roles.full, roles.part, roles.guest))
   public role!: string;
 

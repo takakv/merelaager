@@ -8,10 +8,12 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+import { roles } from "./Staff";
 
 interface SignUpTokenAttributes {
   token: string;
   isExpired: boolean;
+  email: string;
   shiftNr: number;
   role: string;
   usedDate: Date;
@@ -26,8 +28,12 @@ export class SignUpToken
   implements SignUpTokenAttributes
 {
   @PrimaryKey
-  @Column(DataType.STRING)
+  @Column(DataType.UUID)
   public token!: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  public email!: string;
 
   @AllowNull(false)
   @Default(false)
@@ -39,8 +45,8 @@ export class SignUpToken
   public shiftNr!: number;
 
   @AllowNull(false)
-  @Default("std")
-  @Column(DataType.ENUM("boss", "master", "op", "std", "camper"))
+  @Default(roles.part)
+  @Column(DataType.ENUM(roles.boss, roles.full, roles.part, roles.guest))
   public role!: string;
 
   @Column(DataType.DATE)

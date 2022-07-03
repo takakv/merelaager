@@ -6,7 +6,7 @@ import { initialiseRegistration } from "./controllers/registration/registrationC
   try {
     await sequelize.authenticate();
     console.log("Database connection successful");
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     console.log("Models synchronised");
   } catch (e) {
     console.error(e);

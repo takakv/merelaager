@@ -13,6 +13,7 @@ router.use("/auth", auth);
 import account from "./api/account";
 
 router.use("/su", account);
+router.use("/account", account);
 
 import override from "./api/override";
 
@@ -46,10 +47,6 @@ router.use("/campers", campers);
 import notes from "./api/notes";
 
 router.use("/notes", notes);
-
-import tents from "./api/tents";
-
-router.use("/tents", tents);
 
 import teams from "./api/teams";
 

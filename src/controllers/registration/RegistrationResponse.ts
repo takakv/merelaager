@@ -1,7 +1,7 @@
 class RegistrationResponse {
   protected statusCode: number;
 
-  constructor(code) {
+  constructor(code: number) {
     this.statusCode = code;
   }
 }
@@ -16,7 +16,7 @@ export class RegistrationErrorResponse extends RegistrationResponse {
   private readonly timestamp: string;
   private readonly error_message: string;
 
-  constructor(code, message) {
+  constructor(code: number, message: string) {
     super(code);
     this.error_message = message;
     this.timestamp = new Date().toISOString();

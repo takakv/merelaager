@@ -1,86 +1,102 @@
 import { Team } from "../db/models/Team";
-import { ShiftData } from "../db/models/ShiftData";
-import { Child } from "../db/models/Child";
 import { getYear } from "../routes/Support Files/functions";
+import { StatusCodes } from "http-status-codes";
+import Entity = Express.Entity;
 
-const createChildObject = (data) => {
-  return { id: data.id, name: data.child.name };
-};
-
-exports.fetchForShift = async (shiftNr: number) => {
-  const teams = await Team.findAll({ where: { shiftNr, year: getYear() } });
-  if (!teams) return null;
-
-  const children = await ShiftData.findAll({
-    where: { shiftNr },
-    order: [["childId", "ASC"]],
-    include: {
-      model: Child,
-      attributes: ["name"],
-    },
-    attributes: ["id", "teamId"],
-  });
-  if (!children) return null;
-
-  const resObj = {
-    teams: {},
-    teamless: children.filter((child) => !child.teamId).map(createChildObject),
+export const fetchForYear = async (year: number, shiftNr: number) => {
+  type teamData = {
+    id: number;
+    shiftNr: number;
+    name: string;
   };
-  teams.forEach((team) => {
-    const members = children
-      .filter((child) => child.teamId === team.id)
-      .map(createChildObject);
-    resObj.teams[team.id] = {
-      id: team.id,
-      name: team.name,
-      place: team.place,
-      members,
-    };
-  });
-  return resObj;
+
+  type responseData = {
+    data: teamData[];
+    statusCode: number;
+  };
+
+  const data: responseData = {
+    data: [],
+    statusCode: StatusCodes.OK,
+  };
+
+  if (Number.isNaN(year) || year > getYear()) {
+    data.statusCode = StatusCodes.BAD_REQUEST;
+    return data;
+  }
+
+  const teams = await Team.findAll(
+    Number.isNaN(shiftNr) ? { where: { year } } : { where: { year, shiftNr } }
+  );
+
+  if (!teams) {
+    data.statusCode = StatusCodes.NOT_FOUND;
+    return data;
+  }
+
+  teams.forEach((team) =>
+    data.data.push({ name: team.name, id: team.id, shiftNr: team.shiftNr })
+  );
+
+  return data;
 };
 
-exports.createTeam = async (teamName: string, shiftNr: number) => {
+export const createTeam = async (
+  year: number,
+  shiftNr: number,
+  name: string
+) => {
+  type responseData = {
+    data: Team | {};
+    statusCode: number;
+  };
+
+  const data: responseData = {
+    data: {},
+    statusCode: StatusCodes.BAD_REQUEST,
+  };
+
+  if (Number.isNaN(year) || Number.isNaN(shiftNr)) return data;
+  if (year < 1999 || year > new Date().getFullYear() + 1) return data;
+  if (shiftNr < 1) return data;
+  if (!name) return data;
+
+  let team: Team;
+
   try {
-    await Team.create({
-      name: teamName,
-      shiftNr: shiftNr,
+    team = await Team.create({
+      name,
+      shiftNr,
+      year,
     });
   } catch (e) {
     console.error(e);
-    return false;
+    data.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    return data;
   }
-  return true;
+
+  data.statusCode = StatusCodes.CREATED;
+  data.data = team;
+  return data;
 };
 
-const addMember = async (teamId: number, dataId: number) => {
+export const deleteTeam = async (teamId: number, user: Entity) => {
+  if (Number.isNaN(teamId)) return StatusCodes.BAD_REQUEST;
+
+  const team = await Team.findByPk(teamId);
+  if (!team) return StatusCodes.NOT_FOUND;
+
+  if (team.shiftNr !== user.shift) return StatusCodes.FORBIDDEN;
+
+  // Only allow deleting teams from this year.
+  if (team.year !== getYear()) return StatusCodes.METHOD_NOT_ALLOWED;
+
   try {
-    const entry = await ShiftData.findByPk(dataId);
-    if (!entry) return false;
-    entry.teamId = teamId;
-    await entry.save();
+    await Team.destroy({ where: { id: teamId } });
   } catch (e) {
     console.error(e);
-    return false;
+    return StatusCodes.INTERNAL_SERVER_ERROR;
   }
-  return true;
-};
 
-exports.addMember = addMember;
-
-exports.removeMember = async (dataId: number) => {
-  return addMember(null, dataId);
-};
-
-exports.setPlace = async (teamId: number, place: number) => {
-  try {
-    const team = await Team.findByPk(teamId);
-    if (!team) return false;
-    team.place = place;
-    await team.save();
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-  return true;
+  return StatusCodes.NO_CONTENT;
 };
