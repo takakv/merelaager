@@ -44,12 +44,12 @@ export class User
   @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
 
-  @Unique
+  @Unique({ name: "username", msg: "username_should_be_unique" })
   @AllowNull(false)
   @Column(DataType.STRING)
   public username!: string;
 
-  @Unique
+  @Unique({ name: "email", msg: "email_should_be_unique" })
   @Column(DataType.STRING)
   public email: string;
 
