@@ -30,3 +30,4 @@ data/files/*.txt
 public/img/*.JPG
 public/img/*.webp
 *.sqlite
+logs/*.log
