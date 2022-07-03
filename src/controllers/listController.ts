@@ -17,6 +17,9 @@ const {
 
 import Entity = Express.Entity;
 import { ShiftData } from "../db/models/ShiftData";
+import { logger } from "../logging/logger";
+import { loggingActions, loggingModules } from "../logging/loggingModules";
+import { UserLogEntry } from "../logging/UserLogEntry";
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -44,7 +47,7 @@ export const fetchRegistrations = async (req: Request) => {
       order: registration.regOrder,
       registered: registration.isRegistered,
       // UA 2022
-      addendum: registration.addendum
+      addendum: registration.addendum,
     };
 
     if (role !== "op") {
@@ -104,6 +107,13 @@ export const patchRegistration = async (req: Request, regId: number) => {
 
   const keys = Object.keys(req.body);
 
+  const logObj = new UserLogEntry(
+    req.user.id,
+    loggingModules.registrations,
+    loggingActions.update
+  );
+  logObj.setAndCommit({ registrationId: regId, field: keys[0] });
+
   let patchError = 0;
 
   keys.forEach((key) => {
@@ -134,6 +144,8 @@ export const patchRegistration = async (req: Request, regId: number) => {
 
   try {
     await registration.save();
+    logObj.success = true;
+    logger.info(logObj.getObj());
   } catch (e) {
     console.error(e);
     return 500;
@@ -150,8 +162,16 @@ export const deleteRegistration = async (user: Entity, regId: number) => {
 
   if (!(await approveShiftRole(user, "boss", registration.shiftNr))) return 403;
 
+  const logObj = new UserLogEntry(
+    user.id,
+    loggingModules.registrations,
+    loggingActions.delete
+  );
+  logObj.setAndCommit({ registrationId: regId });
+
   try {
     await registration.destroy();
+    logger.info(logObj.getObj());
   } catch (e) {
     console.error(e);
     return 500;
