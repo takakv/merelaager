@@ -52,11 +52,13 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/connect-slashes": "^0.0.33",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/express-pino-logger": "^4.0.3",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.6",
     "@types/nodemailer": "^6.4.4",
     "@types/pdfkit": "^0.12.3",

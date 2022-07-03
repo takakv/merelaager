@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 export class UserLogEntry {
   userId;
   module;
@@ -39,5 +41,12 @@ export class UserLogEntry {
       reason: this.reason,
       data: this.data,
     };
+  };
+
+  log = (level = "info") => {
+    switch (level) {
+      default:
+        logger.info(this.getObj());
+    }
   };
 }

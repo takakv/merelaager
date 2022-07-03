@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Staff } from "../../db/models/Staff";
 import { User } from "../../db/models/User";
 import Entity = Express.Entity;
+import { UserLogEntry } from "../../logging/UserLogEntry";
 
 // TODO: Implement integer-based role system for easier hierarchy management.
 
@@ -64,20 +65,34 @@ export const userIsRoot = (user: Entity) => {
   return user.isRoot;
 };
 
-const approveShiftRole = async (
+export const approveShiftRole = async (
   user: Entity,
   role: string,
-  shiftNr: number
+  shiftNr: number,
+  logObj: UserLogEntry
 ) => {
   if (user.isRoot) return true;
 
   const userId = user.id;
+  const year = new Date().getUTCFullYear();
   const staffEntry = await Staff.findOne({
-    where: { userId, shiftNr, year: new Date().getUTCFullYear() },
+    where: { userId, shiftNr, year },
   });
 
-  if (!staffEntry) return false;
-  return staffEntry.role === role;
+  if (!staffEntry) {
+    logObj.commit(false, `User not a member of shift: ${year}-${shiftNr}`);
+    logObj.log();
+    return false;
+  }
+
+  if (staffEntry.role === role) return true;
+
+  logObj.commit(
+    false,
+    `User has role ${staffEntry.role}, but at least ${role} is required`
+  );
+  logObj.log();
+  return false;
 };
 
 const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
@@ -95,7 +110,6 @@ const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
 module.exports = {
   approveRole,
   userIsRoot,
-  approveShiftRole,
   approveShiftAndGetRole,
   requireShiftBoss,
   approveShift,
