@@ -6,7 +6,7 @@ import { UserLogEntry } from "../../logging/UserLogEntry";
 
 // TODO: Implement integer-based role system for easier hierarchy management.
 
-const requireShiftBoss = async (
+export const requireShiftBoss = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -40,12 +40,12 @@ const requireShiftBoss = async (
   next();
 };
 
-const approveShift = async (user: Entity, shiftNr: number) => {
+export const approveShift = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return true;
   return user.shift === shiftNr;
 };
 
-const approveShiftFull = async (user: Entity, shiftNr: number) => {
+export const approveShiftFull = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return true;
 
   const userId = (await User.findOne({ where: { username: user.username } }))
@@ -56,7 +56,7 @@ const approveShiftFull = async (user: Entity, shiftNr: number) => {
   return !!accessEntry;
 };
 
-const approveRole = (user: Entity, role: string) => {
+export const approveRole = (user: Entity, role: string) => {
   if (user.isRoot) return true;
   return user.role === role;
 };
@@ -95,7 +95,7 @@ export const approveShiftRole = async (
   return false;
 };
 
-const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
+export const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return "root";
 
   const userId = user.id;
@@ -105,13 +105,4 @@ const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
 
   if (!staffEntry) return null;
   return staffEntry.role;
-};
-
-module.exports = {
-  approveRole,
-  userIsRoot,
-  approveShiftAndGetRole,
-  requireShiftBoss,
-  approveShift,
-  approveShiftFull,
 };

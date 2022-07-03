@@ -5,6 +5,8 @@ import { Team } from "../db/models/Team";
 import { ShiftData } from "../db/models/ShiftData";
 import { CamperEntry } from "../routes/Support Files/campers";
 import { StatusCodes } from "http-status-codes";
+import { UserLogEntry } from "../logging/UserLogEntry";
+import { loggingActions, loggingModules } from "../logging/loggingModules";
 
 exports.populate = async () => {
   // Fetch all registered campers.
@@ -73,6 +75,11 @@ export const patchCamper = async (req: Request, childId: number) => {
   if (!camper) return StatusCodes.NOT_FOUND;
 
   const keys = Object.keys(req.body);
+  const logObj = new UserLogEntry(
+    req.user.id,
+    loggingModules.campers,
+    loggingActions.update
+  );
 
   for (const key of keys) {
     switch (key) {
@@ -103,10 +110,12 @@ export const patchCamper = async (req: Request, childId: number) => {
       default:
         return StatusCodes.UNPROCESSABLE_ENTITY;
     }
+    logObj.setAndCommit({ camperId: camper.id, field: key });
   }
 
   try {
     await camper.save();
+    logObj.log();
   } catch (e) {
     console.error(e);
     return StatusCodes.INTERNAL_SERVER_ERROR;
