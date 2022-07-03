@@ -9,6 +9,8 @@ import { SignUpToken } from "./models/SignUpToken";
 import { Staff } from "./models/Staff";
 import { Team } from "./models/Team";
 import { User } from "./models/User";
+import { EventInfo } from "./models/EventInfo";
+import { TeamEvent } from "./models/TeamEvent";
 
 require("dotenv").config();
 
@@ -32,6 +34,7 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     Staff,
     Team,
     User,
+    EventInfo,
   ],
   logging: false,
   // models: [__dirname + "/models"],
