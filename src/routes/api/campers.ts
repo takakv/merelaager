@@ -2,14 +2,9 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
-import {getInfo, patchCamper} from "../../controllers/newShiftController";
+import { getInfo, patchCamper } from "../../controllers/newShiftController";
 
-const {
-  approveShift,
-  requireShiftBoss,
-} = require("../Support Files/shiftAuth");
-
-router.use(requireShiftBoss);
+const { approveShift } = require("../Support Files/shiftAuth");
 
 router.get("/:shiftNr?/", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
@@ -22,7 +17,7 @@ router.get("/:shiftNr?/", async (req: Request, res: Response) => {
   }
 
   try {
-    const data = await getInfo(shiftNr);
+    const data = await getInfo(req.user, shiftNr);
     res.json({ value: data });
   } catch (e) {
     console.error(e);
