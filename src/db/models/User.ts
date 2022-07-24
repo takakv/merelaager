@@ -15,6 +15,7 @@ import {
 import { ShiftInfo } from "./ShiftInfo";
 import { ResetToken } from "./ResetToken";
 import { Staff } from "./Staff";
+import { Document } from "./Document";
 
 interface UserAttributes {
   id: number;
@@ -88,4 +89,7 @@ export class User
 
   @HasMany(() => Staff)
   public shifts?: Staff[];
+
+  @HasMany(() => Document)
+  public documents?: Document[];
 }
