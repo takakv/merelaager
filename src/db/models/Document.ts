@@ -13,23 +13,16 @@ import {
 } from "sequelize-typescript";
 import { User } from "./User";
 
-export const roles = {
-  boss: "boss",
-  full: "full",
-  part: "part",
-  guest: "guest",
-};
-
 interface DocumentAttributes {
   id: number;
-  shiftNr: number;
-  year: number;
+  filename: string;
+  accessLevel: string;
   name: string;
-  role: string;
+  ownerId: number;
 }
 
 interface DocumentCreationAttributes
-  extends Optional<DocumentAttributes, "id" | "year"> {}
+  extends Optional<DocumentAttributes, "id"> {}
 
 @Table({ tableName: "documents" })
 export class Document
@@ -41,20 +34,21 @@ export class Document
   @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
 
-  @AllowNull(false)
-  @Column(DataType.INTEGER.UNSIGNED)
-  public shiftNr!: number;
-
-  @AllowNull(false)
-  @Default(new Date().getFullYear())
-  @Column(DataType.INTEGER.UNSIGNED)
-  public year!: number;
-
   @Column(DataType.STRING)
+  public filename: string;
+
+  @Column(DataType.TEXT)
+  public accessLevel: string;
+
+  @Column(DataType.TEXT)
   public name: string;
 
-  @AllowNull(false)
-  @Default(roles.part)
-  @Column(DataType.ENUM(roles.boss, roles.full, roles.part, roles.guest))
-  public role!: string;
+  /*
+  @ForeignKey(() => User)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public ownerId: number;
+
+  @BelongsTo(() => User)
+  public owner: User;
+  */
 }
