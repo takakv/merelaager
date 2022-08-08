@@ -90,11 +90,9 @@ export class User
   @HasMany(() => Staff)
   public shifts?: Staff[];
 
-  /*
   @HasMany(() => Document, {
     onUpdate: "CASCADE",
     onDelete: "SET NULL",
   })
   public documents?: Document[];
-  */
 }

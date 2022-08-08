@@ -43,12 +43,10 @@ export class Document
   @Column(DataType.TEXT)
   public name: string;
 
-  /*
   @ForeignKey(() => User)
   @Column(DataType.INTEGER.UNSIGNED)
   public ownerId: number;
 
   @BelongsTo(() => User)
   public owner: User;
-  */
 }
