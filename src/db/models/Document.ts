@@ -1,3 +1,4 @@
+import { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
@@ -5,23 +6,34 @@ import {
   Column,
   DataType,
   Default,
+  ForeignKey,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { ShiftInfo } from "./ShiftInfo";
 import { User } from "./User";
+
+export const roles = {
+  boss: "boss",
+  full: "full",
+  part: "part",
+  guest: "guest",
+};
 
 interface DocumentAttributes {
   id: number;
-  filename: string;
-  location: string;
-  owner?: User;
+  shiftNr: number;
+  year: number;
+  name: string;
+  role: string;
 }
+
+interface DocumentCreationAttributes
+  extends Optional<DocumentAttributes, "id" | "year"> {}
 
 @Table({ tableName: "documents" })
 export class Document
-  extends Model<DocumentAttributes>
+  extends Model<DocumentAttributes, DocumentCreationAttributes>
   implements DocumentAttributes
 {
   @PrimaryKey
@@ -30,13 +42,19 @@ export class Document
   public id!: number;
 
   @AllowNull(false)
-  @Column(DataType.STRING)
-  public filename!: string;
+  @Column(DataType.INTEGER.UNSIGNED)
+  public shiftNr!: number;
 
   @AllowNull(false)
-  @Column(DataType.STRING)
-  public location!: string;
+  @Default(new Date().getFullYear())
+  @Column(DataType.INTEGER.UNSIGNED)
+  public year!: number;
 
-  @BelongsTo(() => User)
-  public owner?: User;
+  @Column(DataType.STRING)
+  public name: string;
+
+  @AllowNull(false)
+  @Default(roles.part)
+  @Column(DataType.ENUM(roles.boss, roles.full, roles.part, roles.guest))
+  public role!: string;
 }

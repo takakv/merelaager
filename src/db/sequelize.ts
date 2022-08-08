@@ -11,6 +11,7 @@ import { Team } from "./models/Team";
 import { User } from "./models/User";
 import { EventInfo } from "./models/EventInfo";
 import { TeamEvent } from "./models/TeamEvent";
+import { Document } from "./models/Document";
 
 require("dotenv").config();
 
@@ -25,6 +26,7 @@ export const sequelize = new Sequelize(dbname, user, pass, {
   port: 3306,
   models: [
     Registration,
+    Team,
     Child,
     Record,
     ResetToken,
@@ -32,7 +34,6 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     ShiftInfo,
     SignUpToken,
     Staff,
-    Team,
     User,
     EventInfo,
   ],
