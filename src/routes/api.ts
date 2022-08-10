@@ -60,26 +60,9 @@ router.use("/staff", staff);
 // const users = require("./api/users");
 // router.use("/users", users);
 
-import {
-  fetch as fetchBill,
-  create as createBill,
-} from "../controllers/billController";
+import bills from "./api/bills";
 
-router.post("/bills/:action/:email", async (req: Request, res: Response) => {
-  if (!req.params["action"] || !req.params["email"]) {
-    return res.sendStatus(400);
-  }
-  switch (req.params["action"]) {
-    case "fetch":
-      await fetchBill(req, res);
-      break;
-    case "create":
-      await createBill(req, res);
-      break;
-    default:
-      return res.sendStatus(404);
-  }
-});
+router.use("/bills", bills);
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
 
