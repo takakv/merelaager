@@ -4,7 +4,7 @@ import path from "path";
 const shiftDataPath = path.join(__dirname, "../../../data/shiftdata.json");
 const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
-const getRegistered = (campers, shifts, regCount) => {
+const getRegistered = (campers, shifts: number[], regCount: number) => {
   if (regCount === 0) return "";
 
   let response = "<ul>";
@@ -44,7 +44,7 @@ const nonRegistered = (campers) => {
   return response;
 };
 
-const getStaffContacts = (shifts) => {
+const getStaffContacts = (shifts: number[]) => {
   let response = "";
   for (let i = 0; i < shifts.length; ++i) {
     response += `${shiftData[shifts[i]].name} (${
@@ -55,8 +55,13 @@ const getStaffContacts = (shifts) => {
   return response;
 };
 
-const getBoilerplate = (campers, names, price, regCount) => {
-  const shifts = [];
+const getBoilerplate = (
+  campers,
+  names: string[],
+  price: number,
+  regCount: number
+) => {
+  const shifts: number[] = [];
   for (let i = 0; i < campers.length; ++i) {
     campers[i].name = names[i];
   }
@@ -242,7 +247,7 @@ const getBoilerplate = (campers, names, price, regCount) => {
 };
 
 const getFailed = (campers) => {
-  const shifts = [];
+  const shifts: number[] = [];
 
   for (let i = 0; i < campers.length; ++i) {
     if (!shifts.includes(campers[i].shiftNr)) shifts.push(campers[i].shiftNr);

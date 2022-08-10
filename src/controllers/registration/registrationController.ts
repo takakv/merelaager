@@ -3,7 +3,7 @@ import sequelize from "sequelize";
 import axios from "axios";
 import dotenv from "dotenv";
 
-import MailService from "../MailService";
+import MailService, { contact } from "../MailService";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { RegistrationErrorResponse } from "./RegistrationResponse";
@@ -162,12 +162,12 @@ const postChildren = async (names: string[], genders: string[]) => {
 
 const getChildData = (
   rawData,
-  childIds,
+  childIds: number[],
   registrations,
   shiftNrs,
-  i,
-  billNr,
-  regOrder
+  i: number,
+  billNr: number,
+  regOrder: number
 ) => {
   let birthday;
   const idCode = rawData.idCode[i];
@@ -219,13 +219,13 @@ const prepRawData = (rawData) => {
 };
 
 const getChildrenData = (
-  childCount,
+  childCount: number,
   rawData,
-  childIds,
+  childIds: number[],
   registrations,
-  shiftNrs,
-  billNr,
-  regOrder
+  shiftNrs: number[],
+  billNr: number,
+  regOrder: number
 ) => {
   if (childCount === 1 && !Array.isArray(rawData.tsSize))
     rawData = prepRawData(rawData);
@@ -427,7 +427,14 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
+const mailer = async (
+  campers,
+  names: string[],
+  contact: contact,
+  pdfName: string,
+  regCount: number,
+  billNr: number
+) => {
   return mailService.sendConfirmationMail(
     campers,
     names,

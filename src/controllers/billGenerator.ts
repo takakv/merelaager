@@ -1,8 +1,9 @@
 import path from "path";
 import fs from "fs";
 import { Registration } from "../db/models/Registration";
+import PDFDocument = PDFKit.PDFDocument;
 
-const PDFDoc = require("pdfkit");
+const PDFDoc: PDFDocument = require("pdfkit");
 
 const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
 const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
@@ -246,7 +247,7 @@ exports.generatePDF = async (
     doc.moveDown();
 
     const discountText = `Soodustus: ${discount} €`;
-    doc.text(discountText, {align: "right"});
+    doc.text(discountText, { align: "right" });
   }
 
   doc.text("", sideMargin);
@@ -283,7 +284,7 @@ exports.generatePDF = async (
   return billName;
 };
 
-const generateFooter = (doc, oneThird) => {
+const generateFooter = (doc: PDFDocument, oneThird: number) => {
   doc
     .moveTo(sideMargin, doc.page.height - 110)
     .lineTo(doc.page.width - sideMargin, doc.page.height - 110)

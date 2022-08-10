@@ -259,7 +259,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/pdfkit@^0.12.3":
+"@types/pdfkit@^0.12.6":
   version "0.12.6"
   resolved "https://registry.yarnpkg.com/@types/pdfkit/-/pdfkit-0.12.6.tgz#9da2c5e71e3b2f0e3e186e29bc1ce497ba995bdd"
   integrity sha512-G7X9Q5sJ2cwOBOR3NcfsjdS+rvYsv3xjiccLTvQ9jZ2A2yaC3jfMd1AfXALetR+QSjogRLurSUEn3TyVWCDvIw==
@@ -297,6 +297,13 @@
     "@types/pino-pretty" "*"
     "@types/pino-std-serializers" "*"
     sonic-boom "^2.1.0"
+
+"@types/qrcode@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@types/qrcode/-/qrcode-1.4.2.tgz#7d7142d6fa9921f195db342ed08b539181546c74"
+  integrity sha512-7uNT9L4WQTNJejHTSTdaJhfBSCN73xtXaHFyBJ8TSwiLhe4PRuTue7Iph0s2nG9R/ifUaSnGhLUOZavlBEqDWQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/qs@*":
   version "6.9.7"

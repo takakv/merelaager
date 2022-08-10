@@ -62,19 +62,28 @@ let spots = {
 //   });
 // }
 
-let clients = [];
+type client = {
+  id: number;
+  res: Response;
+};
+
+let clients: client[] = [];
 
 const sendEventsToAll = () => {
   clients.forEach((c) => c.res.write(`data: ${JSON.stringify(spots)}\n\n`));
 };
 
-router.post("/events/", [urlEncParser, bodyParser.json()], (req, res) => {
-  spots = req.body;
-  sendEventsToAll();
-  res.sendStatus(200);
-});
+router.post(
+  "/events/",
+  [urlEncParser, bodyParser.json()],
+  (req: Request, res: Response) => {
+    spots = req.body;
+    sendEventsToAll();
+    res.sendStatus(200);
+  }
+);
 
-router.get("/events/", async (req, res) => {
+router.get("/events/", async (req: Request, res: Response) => {
   // Headers
   const headers = {
     "Content-Type": "text/event-stream",
@@ -85,7 +94,7 @@ router.get("/events/", async (req, res) => {
 
   const clientId = Date.now();
   console.log(`${clientId} Connection opened`);
-  const newClient = {
+  const newClient: client = {
     id: clientId,
     res,
   };
