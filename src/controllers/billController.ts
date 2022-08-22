@@ -1,18 +1,19 @@
 import path from "path";
 import fs from "fs";
-import {Request, Response} from "express";
-import {Registration} from "../db/models/Registration";
-import {Child} from "../db/models/Child";
+import { Request, Response } from "express";
+import { Registration } from "../db/models/Registration";
+import { Child } from "../db/models/Child";
+import { StatusCodes } from "http-status-codes";
 
 const billGenerator = require("./billGenerator");
 
 const bulkQueryByEmail = (contactEmail: string) => {
-  return Registration.findAll({where: {contactEmail}, include: Child});
+  return Registration.findAll({ where: { contactEmail }, include: Child });
 };
 
 const queryByEmail = (contactEmail: string) => {
   return Registration.findOne({
-    where: {contactEmail},
+    where: { contactEmail },
     attributes: ["contactName", "billNr"],
   });
 };
@@ -32,7 +33,7 @@ export const create = async (req: Request, res: Response) => {
   const children = await bulkQueryByEmail(req.params["email"]);
 
   if (!children.length) {
-    res.status(404).send("Pole sellist meiliaadressi.");
+    res.status(StatusCodes.NOT_FOUND).send("Pole sellist meiliaadressi.");
     return;
   }
 
@@ -51,7 +52,7 @@ export const create = async (req: Request, res: Response) => {
   if (!billNr) {
     billNr = await getBillNr();
     await children.forEach((child) => {
-      child.update({billNr: billNr});
+      child.update({ billNr: billNr });
     });
   }
   if (campers.length) {
@@ -71,13 +72,13 @@ export const create = async (req: Request, res: Response) => {
     res.sendFile(`${billName}`, {
       root: "./data/arved",
     });
-  } else res.status(404).send("Pole registreeritud lapsi.");
+  } else res.status(StatusCodes.NOT_FOUND).send("Pole registreeritud lapsi.");
 };
 
 export const fetch = async (req: Request, res: Response) => {
   const customer = await queryByEmail(req.params["email"]);
   if (!customer) {
-    res.status(404).send("Pole sellist meiliaadressi");
+    res.status(StatusCodes.NOT_FOUND).send("Pole sellist meiliaadressi");
     return;
   }
 
@@ -86,7 +87,7 @@ export const fetch = async (req: Request, res: Response) => {
 
   fs.access(loc, fs.constants.F_OK, (err) => {
     if (err) {
-      res.status(404).send("Puudub olemasolev arve");
+      res.status(StatusCodes.NOT_FOUND).send("Puudub olemasolev arve");
     } else {
       res.sendFile(`${billName}`, {
         root: "./data/arved",

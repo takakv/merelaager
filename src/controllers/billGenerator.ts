@@ -1,7 +1,9 @@
 import path from "path";
 import fs from "fs";
+import { Registration } from "../db/models/Registration";
+import PDFDocument = PDFKit.PDFDocument;
 
-const PDFDoc = require("pdfkit");
+const PDFDoc: PDFDocument = require("pdfkit");
 
 const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
 const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
@@ -23,12 +25,23 @@ const billMeta = {
 const sideMargin = 60;
 const contentTop = 60;
 
-exports.getName = (child) => {
+exports.getName = (child: Registration) => {
   const name = child.contactName.replace(/ /g, "_").toLowerCase();
   return `${child.billNr}.pdf`;
 };
 
-exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
+type contact = {
+  name: string;
+  email: string;
+};
+
+exports.generatePDF = async (
+  campers: Registration[],
+  names: string[],
+  contact: contact,
+  billNr: number,
+  regCount: number
+) => {
   const name = contact.name.replace(/ /g, "_").toLowerCase();
   let doc = new PDFDoc(billMeta);
 
@@ -208,6 +221,18 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
       doc.moveDown();
     }
   }
+
+  // Calculate price in db
+  let realPrice = 0;
+  campers.forEach((camper) => {
+    realPrice += camper.priceToPay;
+  });
+
+  // Calculate discount
+  let discount = 0;
+  if (realPrice !== prePrice + brPrice)
+    discount = prePrice + brPrice - realPrice;
+
   doc.moveDown();
   doc.fontSize(11);
   doc.text("", sideMargin);
@@ -218,10 +243,17 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
   const sumText = `Kogusumma: ${prePrice + brPrice} €`;
   doc.text(sumText, { align: "right" });
 
+  if (discount) {
+    doc.moveDown();
+
+    const discountText = `Soodustus: ${discount} €`;
+    doc.text(discountText, { align: "right" });
+  }
+
   doc.text("", sideMargin);
   doc.moveDown();
   doc.fontSize(12).font("Helvetica-Bold");
-  doc.text(`Tasumisele kuulub: ${prePrice + brPrice} €`, { align: "right" });
+  doc.text(`Tasumisele kuulub: ${realPrice} €`, { align: "right" });
 
   // Camper names
   doc.moveDown(4).fontSize(11);
@@ -252,7 +284,7 @@ exports.generatePDF = async (campers, names, contact, billNr, regCount) => {
   return billName;
 };
 
-const generateFooter = (doc, oneThird) => {
+const generateFooter = (doc: PDFDocument, oneThird: number) => {
   doc
     .moveTo(sideMargin, doc.page.height - 110)
     .lineTo(doc.page.width - sideMargin, doc.page.height - 110)

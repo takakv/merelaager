@@ -3,10 +3,11 @@ import sequelize from "sequelize";
 import axios from "axios";
 import dotenv from "dotenv";
 
-import MailService from "../MailService";
+import MailService, { contact } from "../MailService";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { RegistrationErrorResponse } from "./RegistrationResponse";
+import { StatusCodes } from "http-status-codes";
 
 dotenv.config();
 
@@ -38,6 +39,41 @@ export const availableSlots = {
 
 let billNumber = 0;
 let registrationOrder = 1;
+
+type registrationRequest = {
+  name: string[];
+  idCode: string[];
+  bDay: string[];
+  shiftNr: string[];
+  tsSize: string[];
+  road: string[];
+  city: string[];
+  county: string[];
+  country: string[];
+  addendum: string[];
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel: string;
+  childCount: string;
+  "newAtCamp-1": boolean;
+  "newAtCamp-2": boolean;
+  "newAtCamp-3": boolean;
+  "newAtCamp-4": boolean;
+};
+
+export const registerChildren = async (req: registrationRequest) => {
+  const childCount = parseInt(req.childCount, 10);
+  if (isNaN(childCount)) return StatusCodes.UNPROCESSABLE_ENTITY;
+
+  for (let i = 0; i < childCount; ++i)
+  {
+
+  }
+
+  console.log(req);
+  return StatusCodes.CREATED;
+};
 
 const fetchPromises = () => {
   const promises = [];
@@ -162,12 +198,12 @@ const postChildren = async (names: string[], genders: string[]) => {
 
 const getChildData = (
   rawData,
-  childIds,
+  childIds: number[],
   registrations,
   shiftNrs,
-  i,
-  billNr,
-  regOrder
+  i: number,
+  billNr: number,
+  regOrder: number
 ) => {
   let birthday;
   const idCode = rawData.idCode[i];
@@ -219,13 +255,13 @@ const prepRawData = (rawData) => {
 };
 
 const getChildrenData = (
-  childCount,
+  childCount: number,
   rawData,
-  childIds,
+  childIds: number[],
   registrations,
-  shiftNrs,
-  billNr,
-  regOrder
+  shiftNrs: number[],
+  billNr: number,
+  regOrder: number
 ) => {
   if (childCount === 1 && !Array.isArray(rawData.tsSize))
     rawData = prepRawData(rawData);
@@ -427,7 +463,14 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
+const mailer = async (
+  campers,
+  names: string[],
+  contact: contact,
+  pdfName: string,
+  regCount: number,
+  billNr: number
+) => {
   return mailService.sendConfirmationMail(
     campers,
     names,

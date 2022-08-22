@@ -5,6 +5,7 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -12,6 +13,7 @@ import {
 import { Registration } from "./Registration";
 import { Record } from "./Record";
 import { ShiftData } from "./ShiftData";
+import { Team } from "./Team";
 
 interface ChildAttributes {
   id: number;
@@ -56,4 +58,7 @@ export class Child
 
   @HasMany(() => ShiftData)
   public shiftData?: ShiftData[];
+
+  @HasOne(() => Team)
+  public team: Team;
 }

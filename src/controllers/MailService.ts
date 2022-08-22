@@ -12,6 +12,11 @@ const boilerplate = require("./mailService/boilerplate");
 const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
 const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
+export type contact = {
+  name: string;
+  email: string;
+};
+
 class MailService {
   private _transporter: Transporter;
 
@@ -29,12 +34,12 @@ class MailService {
 
   sendConfirmationMail(
     campers,
-    names,
-    contact,
-    price,
-    pdfName,
-    regCount,
-    billNr
+    names: string[],
+    contact: contact,
+    price: number,
+    pdfName: string,
+    regCount: number,
+    billNr: number
   ) {
     const pdfPath = path.resolve(
       path.join(__dirname, "../../data/arved", pdfName)
@@ -57,7 +62,7 @@ class MailService {
     });
   }
 
-  sendFailureMail(campers, contact) {
+  sendFailureMail(campers, contact: contact) {
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",

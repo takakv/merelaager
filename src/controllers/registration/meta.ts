@@ -11,11 +11,11 @@ export const prices = {
 };
 
 const openSlots = {
-  1: { M: 20, F: 20 },
-  2: { M: 20, F: 20 },
-  3: { M: 24, F: 16 },
-  4: { M: 20, F: 20 },
-  5: { M: 20, F: 20 },
+  1: { M: 0, F: 0 },
+  2: { M: 0, F: 0 },
+  3: { M: 0, F: 0 },
+  4: { M: 0, F: 0 },
+  5: { M: 0, F: 0 },
 };
 
 module.exports = {

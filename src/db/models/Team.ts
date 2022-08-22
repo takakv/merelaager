@@ -4,13 +4,15 @@ import {
   AutoIncrement,
   Column,
   DataType,
-  Default,
+  ForeignKey,
   HasMany,
+  BelongsTo,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
 import { ShiftData } from "./ShiftData";
+import { Child } from "./Child";
 
 interface TeamAttributes {
   id: number;
@@ -18,10 +20,11 @@ interface TeamAttributes {
   name: string;
   year: number;
   place: number;
+  captainId: number;
 }
 
 interface TeamCreationAttributes
-  extends Optional<TeamAttributes, "id" | "year" | "place"> {}
+  extends Optional<TeamAttributes, "id" | "year" | "place" | "captainId"> {}
 
 @Table({ tableName: "teams" })
 export class Team
@@ -42,7 +45,6 @@ export class Team
   public name!: string;
 
   @AllowNull(false)
-  @Default(new Date().getFullYear())
   @Column(DataType.INTEGER.UNSIGNED)
   public year!: number;
 
@@ -52,6 +54,13 @@ export class Team
   @HasMany(() => ShiftData)
   public members?: ShiftData[];
 
-  // @BelongsToMany(() => EventInfo, () => TeamEvent, "teamId")
-  // public events?: Array<EventInfo & { TeamEvent: TeamEvent }>;
+  @ForeignKey(() => Child)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public captainId: number;
+
+  @BelongsTo(() => Child, {
+    onUpdate: "CASCADE",
+    onDelete: "SET NULL",
+  })
+  public captain: Child;
 }
