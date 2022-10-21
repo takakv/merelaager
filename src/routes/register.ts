@@ -24,7 +24,9 @@ router.get("/", (req: Request, res: Response) => {
 
 const urlEncParser = bodyParser.urlencoded({ extended: false });
 
-router.post("/register/", urlEncParser, create);
+router.post("/register/", urlEncParser, async (req: Request, res: Response) => {
+  await create(req, res);
+});
 
 router.get("/edu/", (req: Request, res: Response) => {
   res.render("success", {

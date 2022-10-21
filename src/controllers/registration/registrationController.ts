@@ -7,6 +7,7 @@ import MailService from "../MailService";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { RegistrationErrorResponse } from "./RegistrationResponse";
+import { StatusCodes } from "http-status-codes";
 
 dotenv.config();
 
@@ -419,12 +420,220 @@ const registerAll = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const parseIdCode = (code: string) => {
+  if (code.length !== 11) return null;
+  if (code[0] !== "5" && code[0] !== "6") return null;
+
+  const gender = code[0] === "5" ? "M" : "F";
+
+  const year = parseInt(`20${code[1]}${code[2]}`);
+  const month = parseInt(`${code[3]}${code[4]}`);
+  const day = parseInt(`${code[5]}${code[6]}`);
+
+  if (year < 0) return null;
+  const fullYear = parseInt(`20${code[1]}${code[2]}`);
+
+  if (day < 1) return null;
+  switch (month) {
+    case 1:
+    case 3:
+    case 5:
+    case 7:
+    case 8:
+    case 10:
+    case 12:
+      if (day > 31) return null;
+      break;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+      if (day > 30) return null;
+      break;
+    case 2:
+      if (day > 28) return null;
+      break;
+    default:
+      return null;
+  }
+
+  const birthday = new Date(Date.UTC(fullYear, month - 1, day));
+
+  return { gender, birthday };
+};
+
 export const create = async (req: Request, res: Response) => {
   try {
-    await registerAll(req, res);
+    console.log(req.body);
+    const response = await newRegister(req.body);
+    return res.status(response.code).json(response);
   } catch (e) {
     console.error(e);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      ok: false,
+      code: StatusCodes.INTERNAL_SERVER_ERROR,
+      message: "Unhandled server-side exception",
+    });
   }
+};
+
+interface payload {
+  name: string[];
+  idCode?: string[];
+  gender?: string[];
+  bDay?: string[];
+  useIdCode?: string[];
+  shiftNr: string[];
+  tsSize: string[];
+  newcomer?: string | string[];
+  road: string[];
+  city: string[];
+  county: string[];
+  country: string[];
+  addendum: string[];
+  childCount: string;
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel?: string;
+}
+
+interface regEntry {
+  regOrder: number;
+  childId: number;
+  idCode: string;
+  shiftNr: number;
+  isOld: boolean;
+  birthday: Date;
+  tsSize: string;
+  addendum: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel: string;
+  priceToPay: number;
+}
+
+const newRegister = async (payload: payload) => {
+  const response = {
+    ok: true,
+    code: StatusCodes.CREATED,
+    message: "",
+  };
+
+  if (!unlocked) {
+    response.ok = false;
+    response.code = StatusCodes.FORBIDDEN;
+    response.message = "Registration not open";
+    return response;
+  }
+
+  const childCount = parseInt(payload.childCount);
+  if (isNaN(childCount)) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Could not parse the number of children";
+    return response;
+  }
+  if (childCount < 1 || childCount > 4) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Illegal number of children";
+    return response;
+  }
+
+  const requiredKeys = [
+    "name",
+    "shiftNr",
+    "tsSize",
+    "road",
+    "city",
+    "county",
+    "country",
+    "addendum",
+    "contactName",
+    "contactNumber",
+    "contactEmail",
+  ];
+
+  const registrationEntries: regEntry[] = [];
+
+  for (let i = 0; i < childCount; ++i) {
+    let childId: number;
+
+    // TODO: implement registration without ID code
+    const parsedId = parseIdCode(payload.idCode[i]);
+    if (!parsedId) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = "ID code not properly formatted";
+      return response;
+    }
+
+    const childName = payload.name[i].trim();
+    if (!childName) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = "Child name is missing or empty";
+      return response;
+    }
+    const childInstance = await Child.findOrCreate({
+      where: sequelize.where(
+        sequelize.fn("LOWER", sequelize.col("name")),
+        "LIKE",
+        "%" + childName.toLowerCase() + "%"
+      ),
+      attributes: ["id"],
+      defaults: {
+        name: childName,
+        gender: parsedId.gender,
+      },
+    });
+
+    childId = childInstance[0].id;
+    // TODO: implement seniority check
+    const isOld = false;
+
+    const shiftNr = parseInt(payload.shiftNr[i], 10);
+    if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 5) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = "Illegal shift number";
+      return response;
+    }
+
+    // TODO: implement price calculation
+    // TODO: implement checking of all entries
+
+    const registrationEntry: regEntry = {
+      regOrder: 0,
+      childId: childId,
+      idCode: payload.idCode[i],
+      shiftNr: parseInt(payload.shiftNr[i]),
+      isOld: isOld,
+      birthday: parsedId.birthday,
+      tsSize: payload.tsSize[i],
+      addendum: payload.addendum[i],
+      road: payload.road[i],
+      city: payload.city[i],
+      county: payload.county[i],
+      country: payload.country[i],
+      contactName: payload.contactName,
+      contactNumber: payload.contactNumber,
+      contactEmail: payload.contactEmail,
+      backupTel: payload.backupTel,
+      priceToPay: 0,
+    };
+
+    registrationEntries.push(registrationEntry);
+  }
+
+  await Registration.bulkCreate(registrationEntries);
+  return response;
 };
 
 const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
