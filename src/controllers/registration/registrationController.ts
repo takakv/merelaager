@@ -30,7 +30,6 @@ export const availableSlots = {
   5: { M: 0, F: 0 },
 };
 
-let billNumber = 0;
 let registrationOrder = 1;
 
 const fetchPromises = () => {
@@ -64,15 +63,6 @@ const initializeAvailableSlots = async () => {
   }
 };
 
-const initializeBillNr = async () => {
-  const previousBill = await Registration.findOne({
-    order: [["billNr", "DESC"]],
-  });
-  if (previousBill) {
-    billNumber = previousBill.billNr + 1;
-  } else billNumber = 21001;
-};
-
 const initializeRegistrationOrder = async () => {
   const prevReg = await Registration.findOne({
     order: [["regOrder", "DESC"]],
@@ -85,9 +75,6 @@ export const initialiseRegistration = async () => {
   await initializeAvailableSlots();
   console.log("Available slots:");
   console.log(availableSlots);
-
-  await initializeBillNr();
-  console.log(`First bill: ${billNumber}`);
 
   await initializeRegistrationOrder();
   console.log(`Reg order: ${registrationOrder}`);
@@ -200,6 +187,9 @@ interface regEntry {
 }
 
 const newRegister = async (payload: payload) => {
+  const currentOrder = registrationOrder;
+  ++registrationOrder;
+
   const response = {
     ok: true,
     code: StatusCodes.CREATED,
@@ -324,13 +314,11 @@ const newRegister = async (payload: payload) => {
       return response;
     }
 
-    // TODO: implement price calculation
-
     const registrationEntry: regEntry = {
-      regOrder: 0,
+      regOrder: currentOrder,
       childId: childId,
       idCode: payload.idCode[i],
-      shiftNr: parseInt(payload.shiftNr[i]),
+      shiftNr: shiftNr,
       isOld: isOld,
       birthday: parsedId.birthday,
       tsSize: payload.tsSize[i],
@@ -343,7 +331,9 @@ const newRegister = async (payload: payload) => {
       contactNumber: payload.contactNumber,
       contactEmail: payload.contactEmail,
       backupTel: payload.backupTel ?? null,
-      priceToPay: 0,
+      priceToPay: isOld
+        ? meta.prices[shiftNr] - meta.priceDiff
+        : meta.prices[shiftNr],
     };
 
     registrationEntries.push(registrationEntry);
