@@ -1,23 +1,16 @@
 import { Request, Response } from "express";
 import sequelize from "sequelize";
-import axios from "axios";
 import dotenv from "dotenv";
 
-import MailService from "../MailService";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
-import { RegistrationErrorResponse } from "./RegistrationResponse";
 import { StatusCodes } from "http-status-codes";
 
 dotenv.config();
 
-const billGenerator = require("../billGenerator");
-
 const meta = require("./meta");
 
-const mailService: MailService = new MailService();
-
-const DEBUG: boolean = false;
+const maxSimulatenousRegistrations = 4;
 
 let unlocked: boolean = process.env.NODE_ENV === "dev";
 
@@ -64,7 +57,9 @@ const fetchPromises = () => {
 const initializeAvailableSlots = async () => {
   const regCounts = await Promise.all(fetchPromises());
   for (let i = 1, j = 0; i <= 5; ++i) {
+    // @ts-ignore
     availableSlots[i].M = meta.openSlots[i].M - regCounts[j++];
+    // @ts-ignore
     availableSlots[i].F = meta.openSlots[i].F - regCounts[j++];
   }
 };
@@ -104,320 +99,6 @@ export const initialiseRegistration = async () => {
     })} (Estonian time)`
   );
   console.log(`Unlock delta: ${meta.eta}`);
-};
-
-const parser = require("./parser");
-
-const fetchChild = async (name: string) => {
-  // Case-insensitive name search.
-  const child: Child = await Child.findOne({
-    where: {
-      name: sequelize.where(
-        sequelize.fn("LOWER", sequelize.col("name")),
-        "LIKE",
-        `%${name.toLowerCase()}%`
-      ),
-    },
-  });
-
-  return child ? child.id : null;
-};
-
-const addChild = async (name: string, gender: string) => {
-  const child: Child = await Child.create({ name, gender });
-  if (!child) {
-    console.log(child);
-    console.log("Error creating child");
-    return null;
-  }
-  const res: Child = await Child.findOne({ where: { name } });
-  if (!res) {
-    console.log(res);
-    console.log("Sanity check failed");
-    return null;
-  }
-  return res.id;
-};
-
-const getGenders = (idCodeArray: string[]) => {
-  const genders: string[] = [];
-  idCodeArray.forEach((idCode) => {
-    genders.push(idCode[0] === "5" ? "M" : "F");
-  });
-  return genders;
-};
-
-const postChildren = async (names: string[], genders: string[]) => {
-  const childIds: number[] = [];
-
-  for (let i = 0; i < names.length; ++i) {
-    let childId = await fetchChild(names[i].trim());
-    if (!childId) {
-      childId = await addChild(names[i].trim(), genders[i]);
-      if (!childId) return null;
-    }
-    childIds.push(childId);
-  }
-  return childIds;
-};
-
-const getChildData = (
-  rawData,
-  childIds,
-  registrations,
-  shiftNrs,
-  i,
-  billNr,
-  regOrder
-) => {
-  let birthday;
-  const idCode = rawData.idCode[i];
-
-  if (idCode) {
-    birthday = parser.validateIdCode(idCode).birthday;
-  } else {
-    birthday = rawData.bDay[i];
-  }
-
-  const isOld = rawData[`newAtCamp-${i + 1}`] !== "true";
-
-  const isRegistered = registrations[i];
-  const shiftNr = parseInt(shiftNrs[i].trim());
-
-  return new Registration({
-    childId: childIds[i],
-    idCode,
-    shiftNr,
-    isRegistered,
-    regOrder,
-    isOld,
-    birthday,
-    tsSize: rawData.tsSize[i],
-    addendum: rawData.addendum ? rawData.addendum[i] : null,
-    road: rawData.road[i].trim(),
-    city: rawData.city[i].trim(),
-    county: rawData.county[i].trim(),
-    country: rawData.country ? rawData.country[i].trim() : "Eesti",
-    billNr: isRegistered ? billNr : null,
-    contactName: rawData.contactName.trim(),
-    contactEmail: rawData.contactEmail.trim(),
-    contactNumber: rawData.contactNumber.trim(),
-    backupTel: rawData.backupTel.trim(),
-    priceToPay: getPrice(shiftNr, isOld),
-  });
-};
-
-const prepRawData = (rawData) => {
-  rawData.idCode = [rawData.idCode];
-  rawData.isNew = [rawData.isNew];
-  rawData.tsSize = [rawData.tsSize];
-  rawData.addendum = [rawData.addendum];
-  rawData.road = [rawData.road];
-  rawData.city = [rawData.city];
-  rawData.county = [rawData.county];
-  rawData.country = [rawData.country];
-  return rawData;
-};
-
-const getChildrenData = (
-  childCount,
-  rawData,
-  childIds,
-  registrations,
-  shiftNrs,
-  billNr,
-  regOrder
-) => {
-  if (childCount === 1 && !Array.isArray(rawData.tsSize))
-    rawData = prepRawData(rawData);
-
-  const childrenData: Registration[] = [];
-
-  for (let i = 0; i < childCount; ++i) {
-    childrenData.push(
-      getChildData(
-        rawData,
-        childIds,
-        registrations,
-        shiftNrs,
-        i,
-        billNr,
-        regOrder
-      )
-    );
-  }
-  return childrenData;
-};
-
-const validateChildCount = (childCount: number, res: Response): boolean => {
-  if (isNaN(childCount)) {
-    const statusCode = 400;
-    const error = new RegistrationErrorResponse(
-      statusCode,
-      "Could not parse the number of children"
-    );
-    res.status(statusCode).json(error.toJson());
-    return false;
-  }
-
-  if (childCount < 1 || childCount > 4) {
-    const statusCode = 400;
-    const error = new RegistrationErrorResponse(
-      statusCode,
-      "Invalid number of children"
-    );
-    res.status(statusCode).json(error.toJson());
-    return false;
-  }
-
-  return true;
-};
-
-const validateUnlock = (res: Response): boolean => {
-  if (unlocked) return true;
-
-  const statusCode = 403;
-  const error = new RegistrationErrorResponse(statusCode, "Too early");
-  res.json(error.toJson());
-
-  return false;
-};
-
-const getContentArrays = (req: Request) => {
-  let shiftNrs: number[];
-  let genders: string[];
-  let names: string[];
-
-  if (Array.isArray(req.body.shiftNr)) {
-    shiftNrs = req.body.shiftNr;
-    genders = getGenders(req.body.idCode);
-    names = req.body.name;
-  } else {
-    shiftNrs = [req.body.shiftNr];
-    genders = getGenders([req.body.idCode]);
-    names = [req.body.name];
-  }
-
-  return { shiftNrs, genders, names };
-};
-
-const registerAll = async (req: Request, res: Response): Promise<void> => {
-  if (!validateUnlock(res)) return;
-
-  const childCount = parseInt(req.body.childCount);
-  if (!validateChildCount(childCount, res)) return;
-
-  const order = registrationOrder++;
-  console.log(`Registration: ${order} at ${Date.now()}`);
-
-  // Determine how many children need to be registered,
-  // their gender and desired shift to lock the slots.
-
-  // First determine genders, shifts, and names.
-  // Names will be needed later.
-  let { shiftNrs, genders, names } = getContentArrays(req);
-
-  if (DEBUG) {
-    console.log(`Shifts: ${shiftNrs}`);
-    console.log(`Genders: ${genders}`);
-  }
-
-  // Sanity check.
-  if (shiftNrs.length !== genders.length || shiftNrs.length !== names.length) {
-    const statusCode = 400;
-    const error = new RegistrationErrorResponse(
-      statusCode,
-      "Uneven parameter lengths"
-    );
-    res.status(statusCode).json(error.toJson());
-    return;
-  }
-
-  // Immediately lock the available slots,
-  // store whether there was room or not.
-  const isRegistered: boolean[] = [];
-
-  let regCount = 0;
-  for (let i = 0; i < childCount; ++i) {
-    if (availableSlots[shiftNrs[i]][genders[i]] > 0) {
-      isRegistered.push(true);
-      ++regCount;
-      --availableSlots[shiftNrs[i]][genders[i]];
-    } else isRegistered.push(false);
-  }
-
-  axios.post(process.env.URL, availableSlots).catch((e) => console.error(e));
-
-  // Keep track of registration bill order.
-  const billNr = regCount ? billNumber++ : null;
-
-  if (DEBUG) console.log(`RegStatus: ${isRegistered}`);
-
-  // Commit children into the database.
-  const childIds = await postChildren(names, genders);
-
-  if (DEBUG) console.log(`ChildIds: ${childIds}`);
-
-  // Fetch data regarding the children.
-  const childrenData = getChildrenData(
-    childCount,
-    req.body,
-    childIds,
-    isRegistered,
-    shiftNrs,
-    billNr,
-    order
-  );
-
-  if (!childrenData.length) {
-    res.sendStatus(400);
-    return;
-  }
-
-  if (DEBUG) {
-    console.log("ChildrenData:");
-    console.log(childrenData);
-  }
-
-  const bulkValues = childrenData.map((child) =>
-    child.getRegistrationProperties()
-  );
-  await Registration.bulkCreate(bulkValues);
-
-  const contact = {
-    name: childrenData[0].contactName,
-    email: childrenData[0].contactEmail,
-  };
-
-  if (regCount) {
-    // res.sendStatus(200);
-    res.redirect("../edu/");
-    const billName = await billGenerator.generatePDF(
-      childrenData,
-      names,
-      contact,
-      billNr,
-      regCount
-    );
-
-    // console.log("PDF generated");
-    if (req.body.noEmail) return;
-
-    try {
-      await mailer(childrenData, names, contact, billName, regCount, billNr);
-    } catch (e) {
-      console.error(e);
-    }
-  } else {
-    // res.sendStatus(200);
-    res.redirect("../reserv/");
-    if (req.body.noEmail) return;
-    try {
-      await mailService.sendFailureMail(childrenData, contact);
-    } catch (e) {
-      console.error(e);
-    }
-  }
 };
 
 const parseIdCode = (code: string) => {
@@ -464,8 +145,8 @@ const parseIdCode = (code: string) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
     const response = await newRegister(req.body);
+    if (response.ok) return res.redirect("../reserv/");
     return res.status(response.code).json(response);
   } catch (e) {
     console.error(e);
@@ -485,7 +166,7 @@ interface payload {
   useIdCode?: string[];
   shiftNr: string[];
   tsSize: string[];
-  newcomer?: string | string[];
+  newcomer?: string[];
   road: string[];
   city: string[];
   county: string[];
@@ -539,14 +220,16 @@ const newRegister = async (payload: payload) => {
     response.message = "Could not parse the number of children";
     return response;
   }
-  if (childCount < 1 || childCount > 4) {
+  if (childCount < 1 || childCount > maxSimulatenousRegistrations) {
     response.ok = false;
     response.code = StatusCodes.BAD_REQUEST;
     response.message = "Illegal number of children";
     return response;
   }
 
-  const requiredKeys = [
+  type ObjectKey = keyof typeof payload;
+
+  const arrayKeys: ObjectKey[] = [
     "name",
     "shiftNr",
     "tsSize",
@@ -555,10 +238,35 @@ const newRegister = async (payload: payload) => {
     "county",
     "country",
     "addendum",
+  ];
+
+  for (const key of arrayKeys) {
+    if (
+      !payload.hasOwnProperty(key) ||
+      !Array.isArray(payload[key]) ||
+      payload[key].length != maxSimulatenousRegistrations
+    ) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = `Property '${key}' is malformed or missing`;
+      return response;
+    }
+  }
+
+  const stringKeys: ObjectKey[] = [
     "contactName",
     "contactNumber",
     "contactEmail",
   ];
+
+  for (const key of stringKeys) {
+    if (!payload.hasOwnProperty(key) || typeof payload[key] !== "string") {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = `Property '${key}' is malformed or missing`;
+      return response;
+    }
+  }
 
   const registrationEntries: regEntry[] = [];
 
@@ -595,8 +303,18 @@ const newRegister = async (payload: payload) => {
     });
 
     childId = childInstance[0].id;
-    // TODO: implement seniority check
-    const isOld = false;
+    let isOld = !payload.newcomer;
+    if (!Array.isArray(payload.newcomer)) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = "Malformed newcomer data";
+      return response;
+    }
+    if (
+      !isOld &&
+      payload.newcomer.find((el: string) => el === `${i + 1}`) === undefined
+    )
+      isOld = true;
 
     const shiftNr = parseInt(payload.shiftNr[i], 10);
     if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 5) {
@@ -607,7 +325,6 @@ const newRegister = async (payload: payload) => {
     }
 
     // TODO: implement price calculation
-    // TODO: implement checking of all entries
 
     const registrationEntry: regEntry = {
       regOrder: 0,
@@ -617,7 +334,7 @@ const newRegister = async (payload: payload) => {
       isOld: isOld,
       birthday: parsedId.birthday,
       tsSize: payload.tsSize[i],
-      addendum: payload.addendum[i],
+      addendum: payload.addendum[i] === "" ? null : payload.addendum[i],
       road: payload.road[i],
       city: payload.city[i],
       county: payload.county[i],
@@ -625,7 +342,7 @@ const newRegister = async (payload: payload) => {
       contactName: payload.contactName,
       contactNumber: payload.contactNumber,
       contactEmail: payload.contactEmail,
-      backupTel: payload.backupTel,
+      backupTel: payload.backupTel ?? null,
       priceToPay: 0,
     };
 
@@ -634,31 +351,4 @@ const newRegister = async (payload: payload) => {
 
   await Registration.bulkCreate(registrationEntries);
   return response;
-};
-
-const mailer = async (campers, names, contact, pdfName, regCount, billNr) => {
-  return mailService.sendConfirmationMail(
-    campers,
-    names,
-    contact,
-    calculatePrice(campers),
-    pdfName,
-    regCount,
-    billNr
-  );
-};
-
-const getPrice = (shiftNr: number, isOld: boolean) => {
-  let price: number = meta.prices[shiftNr];
-  if (isOld) price -= 20;
-  return price;
-};
-
-const calculatePrice = (regList) => {
-  let price = 0;
-  regList.forEach((camper) => {
-    if (!camper.isRegistered) return;
-    price += getPrice(camper.shiftNr, camper.isOld);
-  });
-  return price;
 };

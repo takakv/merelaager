@@ -4,7 +4,7 @@
     <div class="registration-form__row has-after">
       <div class="registration-form__field">
         <label for="name-{{this}}" class="u-required">Nimi</label>
-        <input type="text" name="name" id="name-{{this}}" class="nameField" />
+        <input type="text" name="name" id="name-{{this}}" class="nameField"/>
       </div>
       <div class="registration-form__field">
         <label for="idCode-{{this}}" class="u-required">Isikukood</label>
@@ -27,7 +27,7 @@
           class="genderField"
         />
         <label for="gender-f-{{this}}">Tüdruk</label>
-        <input type="radio" name="gender" id="gender-f-{{this}}" value="F" />
+        <input type="radio" name="gender" id="gender-f-{{this}}" value="F"/>
       </div>
       <div class="registration-form__field is-hidden">
         <label for="bDay-{{this}}" class="u-required">Sünnipäev</label>
@@ -80,7 +80,7 @@
         <label for="newcomer-{{this}}">Esimest korda merelaagris?</label>
         <input
           type="checkbox"
-          name="newcomer"
+          name="newcomer[]"
           id="newcomer-{{this}}"
           class="newField"
           value="{{this}}"
@@ -92,11 +92,11 @@
     <div class="registration-form__row">
       <div class="registration-form__field">
         <label for="road-{{this}}" class="u-required">Tänav</label>
-        <input type="text" name="road" id="road-{{this}}" class="roadField" />
+        <input type="text" name="road" id="road-{{this}}" class="roadField"/>
       </div>
       <div class="registration-form__field">
         <label for="city-{{this}}" class="u-required">Linn / Küla / Vald</label>
-        <input type="text" name="city" id="city-{{this}}" class="cityField" />
+        <input type="text" name="city" id="city-{{this}}" class="cityField"/>
       </div>
       <div class="registration-form__field">
         <label for="county-{{this}}" class="u-required">Maakond</label>

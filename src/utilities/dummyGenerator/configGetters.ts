@@ -131,7 +131,7 @@ const getRequestSampler = (data) => {
           </hashTree>`;
 };
 
-const getThreadGroup = (shift, gender) => {
+const getThreadGroup = (shift: number, gender: string) => {
   return `
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group ${shift}-${gender}" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
