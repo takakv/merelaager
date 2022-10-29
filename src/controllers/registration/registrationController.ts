@@ -366,7 +366,6 @@ const sendEventsToAll = async (registrations: Registration[]) => {
       shirtSize: registration.tsSize,
       order: registration.regOrder,
       registered: registration.isRegistered,
-      addendum: registration.addendum,
       billNr: registration.billNr,
       contactName: registration.contactName,
       contactEmail: registration.contactEmail,

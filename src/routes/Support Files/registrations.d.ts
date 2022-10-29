@@ -15,8 +15,6 @@ export interface RegistrationEntry {
   pricePaid?: number,
   priceToPay?: number,
   idCode?: string,
-  // UA 2022
-  addendum: string
 }
 
 export interface PrintEntry {

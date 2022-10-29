@@ -106,6 +106,7 @@ export class Registration
   @Column(DataType.STRING)
   public country: string;
 
+  @Default(null)
   @Column(DataType.INTEGER.UNSIGNED)
   public billNr: number;
 
