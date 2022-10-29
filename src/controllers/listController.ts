@@ -24,7 +24,7 @@ export const fetchRegistrations = async (req: Request) => {
     include: Child,
   });
 
-  let registrations: RegistrationEntry[] = [];
+  const registrations: RegistrationEntry[] = [];
 
   if (!camperRegistrations.length) return registrations;
 

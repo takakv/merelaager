@@ -5,6 +5,8 @@ import {
   patchRegistration,
   print,
 } from "../../controllers/listController";
+import { StatusCodes } from "http-status-codes";
+import { emitRegistration } from "../../controllers/eventController";
 
 const router = express.Router();
 
@@ -17,6 +19,27 @@ router.get("/", async (req: Request, res: Response) => {
     console.error(e);
     res.sendStatus(500);
   }
+});
+
+router.get("/events", async (req: Request, res: Response) => {
+  console.log("Requested url: " + req.url);
+
+  res.writeHead(StatusCodes.OK, {
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+  });
+
+  if (!res.writableEnded) {
+    emitRegistration(res);
+  }
+
+  req.on("close", () => {
+    if (!res.writableEnded) {
+      res.end();
+      console.log("Stopped sending events");
+    }
+  });
 });
 
 // TODO: Implement shift boss checking middleware, if convenient.

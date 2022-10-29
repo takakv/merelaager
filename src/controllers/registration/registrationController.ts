@@ -5,12 +5,13 @@ import dotenv from "dotenv";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { StatusCodes } from "http-status-codes";
+import { registrationManager } from "../../utilities/eventEmitter";
 
 dotenv.config();
 
 const meta = require("./meta");
 
-const maxSimulatenousRegistrations = 4;
+const maxBatchRegistrations = 4;
 
 let unlocked: boolean = process.env.NODE_ENV === "dev";
 
@@ -210,7 +211,7 @@ const newRegister = async (payload: payload) => {
     response.message = "Could not parse the number of children";
     return response;
   }
-  if (childCount < 1 || childCount > maxSimulatenousRegistrations) {
+  if (childCount < 1 || childCount > maxBatchRegistrations) {
     response.ok = false;
     response.code = StatusCodes.BAD_REQUEST;
     response.message = "Illegal number of children";
@@ -234,7 +235,7 @@ const newRegister = async (payload: payload) => {
     if (
       !payload.hasOwnProperty(key) ||
       !Array.isArray(payload[key]) ||
-      payload[key].length != maxSimulatenousRegistrations
+      payload[key].length != maxBatchRegistrations
     ) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
@@ -339,6 +340,7 @@ const newRegister = async (payload: payload) => {
     registrationEntries.push(registrationEntry);
   }
 
-  await Registration.bulkCreate(registrationEntries);
+  const createdData = await Registration.bulkCreate(registrationEntries);
+  registrationManager.register(createdData);
   return response;
 };
