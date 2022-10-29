@@ -115,7 +115,11 @@ if (window.location.hostname === "merelaager.ee") {
   );
 }
 
-const source = new EventSource("/registreerimine/events/");
+const mailhrefs = [...document.getElementsByClassName("obf-mail")];
+mailhrefs.forEach((el) => {
+  el.href = el.href.replace("ignoreme-", "");
+});
+/*const source = new EventSource("/registreerimine/events/");
 const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
 source.onmessage = (event) => {
   const parsedData = JSON.parse(event.data);
@@ -127,7 +131,7 @@ source.onmessage = (event) => {
     shiftSpots[i].children[1].children[0].innerText = `Poisid: ${boysCount}`;
     shiftSpots[i].children[1].children[1].innerText = `Tüdrukud: ${girlsCount}`;
   }
-};
+};*/
 
 const loadClock = async () => {
   const svClock = document.getElementById("serverClock");
