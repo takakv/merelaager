@@ -2,11 +2,8 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 
-import express, { Application, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
 
 import cors from "cors";
 import slashes from "connect-slashes";
@@ -52,9 +49,6 @@ const options = {
   },
   apis: [path.join(__dirname, "/routes/api/*.js")],
 };
-
-const swaggerSpec = swaggerJsdoc(options);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const hbs: ExpressHandlebars = create({
   extname: "hbs",

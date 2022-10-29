@@ -21,7 +21,15 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/events", async (req: Request, res: Response) => {
+interface sseClient {
+  id: number;
+  role: string;
+  res: Response;
+}
+
+export let clients: sseClient[] = [];
+
+router.post("/events", async (req: Request, res: Response) => {
   console.log("Requested url: " + req.url);
 
   res.writeHead(StatusCodes.OK, {
@@ -30,15 +38,25 @@ router.get("/events", async (req: Request, res: Response) => {
     "Cache-Control": "no-cache",
   });
 
-  if (!res.writableEnded) {
-    emitRegistration(res);
-  }
+  const clientId = Date.now();
+
+  clients.push({
+    id: clientId,
+    role: req.user.role,
+    res,
+  });
+
+  // if (!res.writableEnded) {
+  //  emitRegistration(res, req.user.role);
+  // }
 
   req.on("close", () => {
-    if (!res.writableEnded) {
-      res.end();
-      console.log("Stopped sending events");
-    }
+    console.log(`${clientId} Connection closed`);
+    clients = clients.filter((client) => client.id !== clientId);
+    //if (!res.writableEnded) {
+    res.end();
+    console.log("Stopped sending events");
+    //}
   });
 });
 

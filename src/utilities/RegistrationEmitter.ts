@@ -2,11 +2,11 @@ import EventEmitter from "events";
 import { Registration } from "../db/models/Registration";
 import { RegistrationEntry } from "../routes/Support Files/registrations";
 
-class RegistrationManager extends EventEmitter {
-  register(registrations: Registration[]) {
+class RegistrationEmitter extends EventEmitter {
+  async register(registrations: Registration[]) {
     const entries: RegistrationEntry[] = [];
 
-    registrations.forEach(async (registration: Registration) => {
+    for (const registration of registrations) {
       const child = await registration.$get("child", {
         attributes: ["name", "gender"],
       });
@@ -21,14 +21,20 @@ class RegistrationManager extends EventEmitter {
         shirtSize: registration.tsSize,
         order: registration.regOrder,
         registered: registration.isRegistered,
-        // UA 2022
         addendum: registration.addendum,
+        billNr: registration.billNr,
+        contactName: registration.contactName,
+        contactEmail: registration.contactEmail,
+        contactPhone: registration.contactNumber,
+        pricePaid: registration.pricePaid,
+        priceToPay: registration.priceToPay,
+        idCode: registration.idCode,
       };
       entries.push(entry);
-      console.log(entry);
-    });
-    this.emit("create");
+    }
+
+    this.emit("create", entries);
   }
 }
 
-export const registrationManager = new RegistrationManager();
+export const registrationEmitter = new RegistrationEmitter();

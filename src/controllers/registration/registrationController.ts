@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { StatusCodes } from "http-status-codes";
-import { registrationManager } from "../../utilities/eventEmitter";
+import { registrationEmitter } from "../../utilities/RegistrationEmitter";
+import { RegistrationEntry } from "../../routes/Support Files/registrations";
+import { clients } from "../../routes/api/registrations";
 
 dotenv.config();
 
@@ -341,6 +343,59 @@ const newRegister = async (payload: payload) => {
   }
 
   const createdData = await Registration.bulkCreate(registrationEntries);
-  registrationManager.register(createdData);
+  // registrationEmitter.register(createdData).catch(console.error);
+  sendEventsToAll(createdData).catch((e) => console.error(e));
   return response;
+};
+
+const sendEventsToAll = async (registrations: Registration[]) => {
+  const entries: RegistrationEntry[] = [];
+
+  for (const registration of registrations) {
+    const child = await registration.$get("child", {
+      attributes: ["name", "gender"],
+    });
+
+    const entry: RegistrationEntry = {
+      id: registration.id,
+      name: child.name,
+      gender: child.gender,
+      dob: registration.birthday,
+      old: registration.isOld,
+      shiftNr: registration.shiftNr,
+      shirtSize: registration.tsSize,
+      order: registration.regOrder,
+      registered: registration.isRegistered,
+      addendum: registration.addendum,
+      billNr: registration.billNr,
+      contactName: registration.contactName,
+      contactEmail: registration.contactEmail,
+      contactPhone: registration.contactNumber,
+      pricePaid: registration.pricePaid,
+      priceToPay: registration.priceToPay,
+      idCode: registration.idCode,
+    };
+
+    entries.push(entry);
+  }
+
+  entries.forEach((entry) => {
+    clients.forEach((client) => {
+      const clientEntry = { ...entry };
+
+      if (client.role === "op") {
+        delete clientEntry.billNr;
+        delete clientEntry.contactName;
+        delete clientEntry.contactEmail;
+        delete clientEntry.contactPhone;
+        delete clientEntry.pricePaid;
+        delete clientEntry.priceToPay;
+        delete clientEntry.idCode;
+      } else if (client.role !== "root") {
+        delete clientEntry.idCode;
+      }
+
+      client.res.write(`data: ${JSON.stringify(clientEntry)}\n\n`);
+    });
+  });
 };
