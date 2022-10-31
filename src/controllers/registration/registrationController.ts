@@ -1,17 +1,15 @@
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 import sequelize from "sequelize";
 import dotenv from "dotenv";
 
-import { Registration } from "../../db/models/Registration";
-import { Child } from "../../db/models/Child";
-import { StatusCodes } from "http-status-codes";
-import { registrationEmitter } from "../../utilities/RegistrationEmitter";
-import { RegistrationEntry } from "../../routes/Support Files/registrations";
-import { clients } from "../../routes/api/registrations";
+import {Registration} from "../../db/models/Registration";
+import {Child} from "../../db/models/Child";
+import {StatusCodes} from "http-status-codes";
+import {registrationTracker} from "../../channels/registrationTracker";
 
 dotenv.config();
 
-const meta = require("./meta");
+import {eta, openSlots, registrationPriceDiff, registrationPrices, unlockTime} from "./meta";
 
 const maxBatchRegistrations = 4;
 
@@ -22,15 +20,15 @@ if (process.env.UNLOCK === "true") {
 } else if (process.env.NODE_ENV === "prod") {
   setTimeout(() => {
     unlocked = true;
-  }, meta.eta);
+  }, eta);
 }
 
 export const availableSlots = {
-  1: { M: 0, F: 0 },
-  2: { M: 0, F: 0 },
-  3: { M: 0, F: 0 },
-  4: { M: 0, F: 0 },
-  5: { M: 0, F: 0 },
+  1: {M: 0, F: 0},
+  2: {M: 0, F: 0},
+  3: {M: 0, F: 0},
+  4: {M: 0, F: 0},
+  5: {M: 0, F: 0},
 };
 
 let registrationOrder = 1;
@@ -41,14 +39,14 @@ const fetchPromises = () => {
   for (let i = 1; i <= 5; ++i) {
     promises.push(
       Registration.count({
-        where: { isRegistered: true, shiftNr: i },
-        include: { model: Child, as: "child", where: { gender: "M" } },
+        where: {isRegistered: true, shiftNr: i},
+        include: {model: Child, as: "child", where: {gender: "M"}},
       })
     );
     promises.push(
       Registration.count({
-        where: { isRegistered: true, shiftNr: i },
-        include: { model: Child, as: "child", where: { gender: "F" } },
+        where: {isRegistered: true, shiftNr: i},
+        include: {model: Child, as: "child", where: {gender: "F"}},
       })
     );
   }
@@ -58,11 +56,16 @@ const fetchPromises = () => {
 
 const initializeAvailableSlots = async () => {
   const regCounts = await Promise.all(fetchPromises());
+
   for (let i = 1, j = 0; i <= 5; ++i) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    availableSlots[i].M = meta.openSlots[i].M - regCounts[j++];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    availableSlots[i].M = openSlots[i].M - regCounts[j++];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    availableSlots[i].F = meta.openSlots[i].F - regCounts[j++];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    availableSlots[i].F = openSlots[i].F - regCounts[j++];
   }
 };
 
@@ -84,11 +87,11 @@ export const initialiseRegistration = async () => {
 
   console.log(`Registration is unlocked? ${unlocked}`);
   console.log(
-    `Unlock date: ${meta.unlockTime.toLocaleString("en-GB", {
+    `Unlock date: ${unlockTime.toLocaleString("en-GB", {
       timeZone: "Europe/Tallinn",
     })} (Estonian time)`
   );
-  console.log(`Unlock delta: ${meta.eta}`);
+  console.log(`Unlock delta: ${eta}`);
 };
 
 const parseIdCode = (code: string) => {
@@ -130,13 +133,13 @@ const parseIdCode = (code: string) => {
 
   const birthday = new Date(Date.UTC(fullYear, month - 1, day));
 
-  return { gender, birthday };
+  return {gender, birthday};
 };
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const response = await newRegister(req.body);
-    if (response.ok) return res.redirect("../reserv/");
+    const response = await registerCampers(req.body);
+    // if (response.ok) return res.redirect("../reserv/");
     return res.status(response.code).json(response);
   } catch (e) {
     console.error(e);
@@ -189,9 +192,11 @@ interface regEntry {
   priceToPay: number;
 }
 
-const newRegister = async (payload: payload) => {
+const registerCampers = async (payloadData: unknown) => {
   const currentOrder = registrationOrder;
   ++registrationOrder;
+
+  const payload = payloadData as payload;
 
   const response = {
     ok: true,
@@ -264,7 +269,6 @@ const newRegister = async (payload: payload) => {
   const registrationEntries: regEntry[] = [];
 
   for (let i = 0; i < childCount; ++i) {
-    let childId: number;
 
     // TODO: implement registration without ID code
     const parsedId = parseIdCode(payload.idCode[i]);
@@ -295,7 +299,7 @@ const newRegister = async (payload: payload) => {
       },
     });
 
-    childId = childInstance[0].id;
+    const childId = childInstance[0].id;
     let isOld = !payload.newcomer;
     if (!Array.isArray(payload.newcomer)) {
       response.ok = false;
@@ -334,67 +338,23 @@ const newRegister = async (payload: payload) => {
       contactNumber: payload.contactNumber,
       contactEmail: payload.contactEmail,
       backupTel: payload.backupTel ?? null,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       priceToPay: isOld
-        ? meta.prices[shiftNr] - meta.priceDiff
-        : meta.prices[shiftNr],
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        ? registrationPrices[shiftNr] - registrationPriceDiff
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        : registrationPrices[shiftNr],
     };
 
     registrationEntries.push(registrationEntry);
   }
 
   const createdData = await Registration.bulkCreate(registrationEntries);
-  // registrationEmitter.register(createdData).catch(console.error);
-  sendEventsToAll(createdData).catch((e) => console.error(e));
+  const registrationIds = createdData.map(data => {
+    return {id: data.id}
+  })
+  registrationTracker.broadcast(JSON.stringify(registrationIds), "registration-created");
   return response;
-};
-
-const sendEventsToAll = async (registrations: Registration[]) => {
-  const entries: RegistrationEntry[] = [];
-
-  for (const registration of registrations) {
-    const child = await registration.$get("child", {
-      attributes: ["name", "gender"],
-    });
-
-    const entry: RegistrationEntry = {
-      id: registration.id,
-      name: child.name,
-      gender: child.gender,
-      dob: registration.birthday,
-      old: registration.isOld,
-      shiftNr: registration.shiftNr,
-      shirtSize: registration.tsSize,
-      order: registration.regOrder,
-      registered: registration.isRegistered,
-      billNr: registration.billNr,
-      contactName: registration.contactName,
-      contactEmail: registration.contactEmail,
-      contactPhone: registration.contactNumber,
-      pricePaid: registration.pricePaid,
-      priceToPay: registration.priceToPay,
-      idCode: registration.idCode,
-    };
-
-    entries.push(entry);
-  }
-
-  entries.forEach((entry) => {
-    clients.forEach((client) => {
-      const clientEntry = { ...entry };
-
-      if (client.role === "op") {
-        delete clientEntry.billNr;
-        delete clientEntry.contactName;
-        delete clientEntry.contactEmail;
-        delete clientEntry.contactPhone;
-        delete clientEntry.pricePaid;
-        delete clientEntry.priceToPay;
-        delete clientEntry.idCode;
-      } else if (client.role !== "root") {
-        delete clientEntry.idCode;
-      }
-
-      client.res.write(`data: ${JSON.stringify(clientEntry)}\n\n`);
-    });
-  });
 };

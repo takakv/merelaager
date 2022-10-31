@@ -1,4 +1,4 @@
-import { PrintEntry } from "../routes/Support Files/registrations";
+import {PrintEntry} from "../routes/Support Files/registrations";
 
 const fonts = {
   Helvetica: {
@@ -36,7 +36,7 @@ const createDoc = (shiftNr: number, entries: PrintEntry[]) => {
 
   return {
     content: [
-      { text: `${shiftNr}v ${new Date().getFullYear()}`, style: "header" },
+      {text: `${shiftNr}v ${new Date().getFullYear()}`, style: "header"},
       {
         table: {
           body: tableContent,
@@ -66,6 +66,6 @@ exports.generatePDF = async (shiftNr: number, entries: PrintEntry[]) => {
     return filename;
   } catch (e) {
     console.error(e);
-    return false;
+    return "";
   }
 };

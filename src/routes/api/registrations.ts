@@ -1,12 +1,14 @@
-import express, { Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import express, {Request, Response} from "express";
 import {
   deleteRegistration,
   fetchRegistrations,
   patchRegistration,
   print,
 } from "../../controllers/listController";
-import { StatusCodes } from "http-status-codes";
-import { emitRegistration } from "../../controllers/eventController";
+import {StatusCodes} from "http-status-codes";
+import {createSession} from "better-sse";
+import {registrationTracker} from "../../channels/registrationTracker";
 
 const router = express.Router();
 
@@ -14,50 +16,17 @@ const router = express.Router();
 router.get("/", async (req: Request, res: Response) => {
   try {
     const registrations = await fetchRegistrations(req);
-    res.json({ value: registrations });
+    res.json({value: registrations});
   } catch (e) {
     console.error(e);
-    res.sendStatus(500);
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 });
 
-interface sseClient {
-  id: number;
-  role: string;
-  res: Response;
-}
-
-export let clients: sseClient[] = [];
-
 router.post("/events", async (req: Request, res: Response) => {
-  console.log("Requested url: " + req.url);
-
-  res.writeHead(StatusCodes.OK, {
-    Connection: "keep-alive",
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-  });
-
-  const clientId = Date.now();
-
-  clients.push({
-    id: clientId,
-    role: req.user.role,
-    res,
-  });
-
-  // if (!res.writableEnded) {
-  //  emitRegistration(res, req.user.role);
-  // }
-
-  req.on("close", () => {
-    console.log(`${clientId} Connection closed`);
-    clients = clients.filter((client) => client.id !== clientId);
-    //if (!res.writableEnded) {
-    res.end();
-    console.log("Stopped sending events");
-    //}
-  });
+  const session = await createSession(req, res);
+  session.state.role = req.user.role;
+  registrationTracker.register(session);
 });
 
 // TODO: Implement shift boss checking middleware, if convenient.
@@ -68,7 +37,7 @@ router.get("/pdf/:shiftNr", async (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
   const fileName = await print(req.user, shiftNr);
   if (!fileName) return res.sendStatus(500);
-  return res.sendFile(fileName, { root: "./data/files" });
+  return res.sendFile(fileName, {root: "./data/files"});
 });
 
 // Update values for a specific registration.
