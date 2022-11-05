@@ -160,14 +160,34 @@ const updateData = async (registration: Registration) => {
 };
 
 export const patchRegistration = async (req: Request, regId: number) => {
-  if (isNaN(regId)) return 400;
+  const response = {
+    ok: true,
+    code: StatusCodes.OK,
+    message: "",
+  };
+
+  if (isNaN(regId)) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Registration identifier malformed or missing";
+    return response;
+  }
 
   // Fetch first to check for permissions.
   const registration = await Registration.findByPk(regId);
-  if (!registration) return 404;
+  if (!registration) {
+    response.ok = false;
+    response.code = StatusCodes.NOT_FOUND;
+    response.message = "Unknown registration identifier";
+    return response;
+  }
 
-  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr)))
-    return 403;
+  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr))) {
+    response.ok = false;
+    response.code = StatusCodes.FORBIDDEN;
+    response.message = "Insufficient rights to access content"
+    return response;
+  }
 
   const keys = Object.keys(req.body);
 
