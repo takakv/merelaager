@@ -15,6 +15,7 @@ import {
 import { ShiftInfo } from "./ShiftInfo";
 import { ResetToken } from "./ResetToken";
 import { Staff } from "./Staff";
+import { Document } from "./Document";
 
 interface UserAttributes {
   id: number;
@@ -44,12 +45,12 @@ export class User
   @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;
 
-  @Unique
+  @Unique({ name: "username", msg: "username_should_be_unique" })
   @AllowNull(false)
   @Column(DataType.STRING)
   public username!: string;
 
-  @Unique
+  @Unique({ name: "email", msg: "email_should_be_unique" })
   @Column(DataType.STRING)
   public email: string;
 
@@ -88,4 +89,10 @@ export class User
 
   @HasMany(() => Staff)
   public shifts?: Staff[];
+
+  @HasMany(() => Document, {
+    onUpdate: "CASCADE",
+    onDelete: "SET NULL",
+  })
+  public documents?: Document[];
 }

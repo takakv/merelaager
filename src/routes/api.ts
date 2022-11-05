@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
+import { StatusCodes } from "http-status-codes";
 
 const router = express.Router();
 
@@ -22,6 +23,13 @@ router.use("/override", override);
 import pub from "./api/public";
 
 router.use("/pb", pub);
+
+router.post("/registrations", async (req: Request, res: Response) => {
+  console.log(req.body);
+  if (!req.body) return res.sendStatus(StatusCodes.BAD_REQUEST);
+  const result = await registerChildren(req.body);
+  res.sendStatus(result);
+});
 
 // ---------- AUTH ZONE ------------------------------
 import { verifyAccessToken } from "./Support Files/jwt";
@@ -60,28 +68,13 @@ router.use("/staff", staff);
 // const users = require("./api/users");
 // router.use("/users", users);
 
-import {
-  fetch as fetchBill,
-  create as createBill,
-} from "../controllers/billController";
+import bills from "./api/bills";
 
-router.post("/bills/:action/:email", async (req: Request, res: Response) => {
-  if (!req.params["action"] || !req.params["email"]) {
-    return res.sendStatus(400);
-  }
-  switch (req.params["action"]) {
-    case "fetch":
-      await fetchBill(req, res);
-      break;
-    case "create":
-      await createBill(req, res);
-      break;
-    default:
-      return res.sendStatus(404);
-  }
-});
+router.use("/bills", bills);
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
+import register from "./register";
+import {registerChildren} from "../controllers/registration/registrationController";
 
 router.get("/shirts/fetch/", async (req: Request, res: Response) => {
   const data = await fetchShirts();

@@ -5,6 +5,13 @@ import { Team } from "../db/models/Team";
 import { ShiftData } from "../db/models/ShiftData";
 import { CamperEntry } from "../routes/Support Files/campers";
 import { StatusCodes } from "http-status-codes";
+import { UserLogEntry } from "../logging/UserLogEntry";
+import { loggingActions, loggingModules } from "../logging/loggingModules";
+import Entity = Express.Entity;
+import {
+  approveRole,
+  requireShiftBoss,
+} from "../routes/Support Files/shiftAuth";
 
 exports.populate = async () => {
   // Fetch all registered campers.
@@ -31,7 +38,7 @@ exports.populate = async () => {
   }
 };
 
-export const getInfo = async (shiftNr: number) => {
+export const getInfo = async (user: Entity, shiftNr: number) => {
   let entries: ShiftData[];
   try {
     entries = await ShiftData.findAll({
@@ -48,19 +55,23 @@ export const getInfo = async (shiftNr: number) => {
   const resObj: CamperEntry[] = [];
 
   entries.forEach((entry: ShiftData) => {
+    const entryObj: CamperEntry = {
+      childId: entry.child.id, // Child data entry id
+      entryRef: entry.id, // Shift data entry id
+      name: entry.child.name,
+      gender: entry.child.gender,
+      tentNr: entry.tentNr,
+      teamId: entry.teamId,
+      isPresent: entry.isPresent,
+    };
+
+    if (approveRole(user, "boss")) {
+      entryObj.notes = entry.child.notes;
+      entryObj.parentNotes = entry.parentNotes;
+    }
+
     // Don't expose sensitive data unnecessarily.
-    if (entry.isActive)
-      resObj.push({
-        childId: entry.child.id, // Child data entry id
-        entryRef: entry.id, // Shift data entry id
-        name: entry.child.name,
-        gender: entry.child.gender,
-        notes: entry.child.notes,
-        parentNotes: entry.parentNotes,
-        tentNr: entry.tentNr,
-        teamId: entry.teamId,
-        isPresent: entry.isPresent,
-      });
+    if (entry.isActive) resObj.push(entryObj);
   });
 
   return resObj;
@@ -73,6 +84,11 @@ export const patchCamper = async (req: Request, childId: number) => {
   if (!camper) return StatusCodes.NOT_FOUND;
 
   const keys = Object.keys(req.body);
+  const logObj = new UserLogEntry(
+    req.user.id,
+    loggingModules.campers,
+    loggingActions.update
+  );
 
   for (const key of keys) {
     switch (key) {
@@ -103,10 +119,12 @@ export const patchCamper = async (req: Request, childId: number) => {
       default:
         return StatusCodes.UNPROCESSABLE_ENTITY;
     }
+    logObj.setAndCommit({ camperId: camper.id, field: key });
   }
 
   try {
     await camper.save();
+    logObj.log();
   } catch (e) {
     console.error(e);
     return StatusCodes.INTERNAL_SERVER_ERROR;

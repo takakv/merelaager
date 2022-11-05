@@ -11,7 +11,6 @@ const {generatePDF} = require("./listGenerator");
 const {
   userIsRoot,
   approveRole,
-  approveShiftRole,
 } = require("../routes/Support Files/shiftAuth");
 
 import Entity = Express.Entity;
@@ -168,6 +167,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
   }
 
   const keys = Object.keys(req.body);
+  logObj.setAndCommit({ registrationId: regId, field: keys[0] });
 
   let patchError = 0;
 
@@ -199,6 +199,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
 
   try {
     await registration.save();
+    logObj.log();
   } catch (e) {
     console.error(e);
     return 500;
@@ -213,10 +214,20 @@ export const deleteRegistration = async (user: Entity, regId: number) => {
   const registration = await Registration.findByPk(regId);
   if (!registration) return 404;
 
-  if (!(await approveShiftRole(user, "boss", registration.shiftNr))) return 403;
+  const logObj = new UserLogEntry(
+    user.id,
+    loggingModules.registrations,
+    loggingActions.delete
+  );
+
+  if (!(await approveShiftRole(user, "boss", registration.shiftNr, logObj)))
+    return 403;
+
+  logObj.setAndCommit({ registrationId: regId });
 
   try {
     await registration.destroy();
+    logObj.log();
   } catch (e) {
     console.error(e);
     return 500;

@@ -302,7 +302,6 @@ const registerCampers = async (payloadData: unknown) => {
 
     registrationEntries.push(registrationEntry);
   }
-
   const createdData = await Registration.bulkCreate(registrationEntries);
   // Broadcast separately to ease parsing on client side.
   createdData.forEach(entry => {

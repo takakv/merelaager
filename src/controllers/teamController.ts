@@ -8,6 +8,7 @@ export const fetchForYear = async (year: number, shiftNr: number) => {
     id: number;
     shiftNr: number;
     name: string;
+    captainId: number;
   };
 
   type responseData = {
@@ -35,7 +36,12 @@ export const fetchForYear = async (year: number, shiftNr: number) => {
   }
 
   teams.forEach((team) =>
-    data.data.push({ name: team.name, id: team.id, shiftNr: team.shiftNr })
+    data.data.push({
+      name: team.name,
+      id: team.id,
+      shiftNr: team.shiftNr,
+      captainId: team.captainId,
+    })
   );
 
   return data;

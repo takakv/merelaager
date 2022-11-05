@@ -1,4 +1,4 @@
-const daysInMonth = (m, y) => {
+const daysInMonth = (m: number, y: number) => {
   switch (m) {
     case 1:
       return y % 400 === 0 || (y % 4 === 0 && y % 100 !== 0) ? 29 : 28;
@@ -12,13 +12,13 @@ const daysInMonth = (m, y) => {
   }
 };
 
-const validateDate = (d, m, y) => {
-  m = parseInt(m, 10) - 1;
+const validateDate = (d: number, m: number, y: number) => {
+  m -= 1;
   if (m < 0 || m > 11) return false;
   return d > 0 && d <= daysInMonth(m, y);
 };
 
-exports.validateIdCode = (code) => {
+exports.validateIdCode = (code: string) => {
   // The Estonian ID code consists of 11 characters.
   if (code.length !== 11) {
     console.log(code);
