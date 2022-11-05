@@ -1,10 +1,9 @@
 import {Request} from "express";
 import {Registration} from "../db/models/Registration";
 import {Child} from "../db/models/Child";
-import {
-  PrintEntry,
-  RegistrationEntry,
-} from "../routes/Support Files/registrations";
+import {PrintEntry, RegistrationEntry,} from "../routes/Support Files/registrations";
+import {ShiftData} from "../db/models/ShiftData";
+import {StatusCodes} from "http-status-codes";
 
 require("dotenv").config();
 
@@ -16,8 +15,6 @@ const {
 } = require("../routes/Support Files/shiftAuth");
 
 import Entity = Express.Entity;
-import {ShiftData} from "../db/models/ShiftData";
-import {StatusCodes} from "http-status-codes";
 
 type registrationResponse = {
   ok: boolean,
@@ -26,6 +23,31 @@ type registrationResponse = {
   payload?: RegistrationEntry
 }
 
+const prepareRegistrationEntry = (data: Registration, role: string) => {
+  const entry: RegistrationEntry = {
+    id: data.id,
+    name: data.child.name,
+    gender: data.child.gender,
+    dob: data.birthday,
+    old: data.isOld,
+    shiftNr: data.shiftNr,
+    shirtSize: data.tsSize,
+    order: data.regOrder,
+    registered: data.isRegistered,
+  }
+
+  if (role !== "op") {
+    entry.billNr = data.billNr;
+    entry.contactName = data.contactName;
+    entry.contactEmail = data.contactEmail;
+    entry.contactPhone = data.contactNumber;
+    entry.pricePaid = data.pricePaid;
+    entry.priceToPay = data.priceToPay;
+  }
+
+  if (role === "root") entry.idCode = data.idCode;
+  return entry;
+}
 
 export const fetchRegistration = async (req: Request, regId: number) => {
   const response: registrationResponse = {
@@ -60,29 +82,7 @@ export const fetchRegistration = async (req: Request, regId: number) => {
     return response;
   }
 
-  const entry: RegistrationEntry = {
-    id: registration.id,
-    name: registration.child.name,
-    gender: registration.child.gender,
-    dob: registration.birthday,
-    old: registration.isOld,
-    shiftNr: registration.shiftNr,
-    shirtSize: registration.tsSize,
-    order: registration.regOrder,
-    registered: registration.isRegistered,
-  }
-
-  if (role !== "op") {
-    entry.billNr = registration.billNr;
-    entry.contactName = registration.contactName;
-    entry.contactEmail = registration.contactEmail;
-    entry.pricePaid = registration.pricePaid;
-    entry.priceToPay = registration.priceToPay;
-  }
-
-  if (role === "root") entry.idCode = registration.idCode;
-
-  response.payload = entry;
+  response.payload = prepareRegistrationEntry(registration, role);
   return response;
 }
 
@@ -102,29 +102,7 @@ export const fetchRegistrations = async (req: Request) => {
   if (!allowedRoles.includes(role)) return registrations;
 
   camperRegistrations.forEach((registration) => {
-    const entry: RegistrationEntry = {
-      id: registration.id,
-      name: registration.child.name,
-      gender: registration.child.gender,
-      dob: registration.birthday,
-      old: registration.isOld,
-      shiftNr: registration.shiftNr,
-      shirtSize: registration.tsSize,
-      order: registration.regOrder,
-      registered: registration.isRegistered,
-    };
-
-    if (role !== "op") {
-      entry.billNr = registration.billNr;
-      entry.contactName = registration.contactName;
-      entry.contactEmail = registration.contactEmail;
-      entry.contactPhone = registration.contactNumber;
-      entry.pricePaid = registration.pricePaid;
-      entry.priceToPay = registration.priceToPay;
-    }
-
-    if (role === "root") entry.idCode = registration.idCode;
-
+    const entry = prepareRegistrationEntry(registration, role);
     registrations.push(entry);
   });
 
