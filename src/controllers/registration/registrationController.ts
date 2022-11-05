@@ -9,7 +9,7 @@ import {registrationTracker} from "../../channels/registrationTracker";
 
 dotenv.config();
 
-import {eta, openSlots, registrationPriceDiff, registrationPrices, unlockTime} from "./meta";
+import {eta, registrationPriceDiff, registrationPrices, unlockTime} from "./meta";
 
 const maxBatchRegistrations = 4;
 
@@ -23,51 +23,7 @@ if (process.env.UNLOCK === "true") {
   }, eta);
 }
 
-export const availableSlots = {
-  1: {M: 0, F: 0},
-  2: {M: 0, F: 0},
-  3: {M: 0, F: 0},
-  4: {M: 0, F: 0},
-  5: {M: 0, F: 0},
-};
-
 let registrationOrder = 1;
-
-const fetchPromises = () => {
-  const promises = [];
-
-  for (let i = 1; i <= 5; ++i) {
-    promises.push(
-      Registration.count({
-        where: {isRegistered: true, shiftNr: i},
-        include: {model: Child, as: "child", where: {gender: "M"}},
-      })
-    );
-    promises.push(
-      Registration.count({
-        where: {isRegistered: true, shiftNr: i},
-        include: {model: Child, as: "child", where: {gender: "F"}},
-      })
-    );
-  }
-
-  return promises;
-};
-
-const initializeAvailableSlots = async () => {
-  const regCounts = await Promise.all(fetchPromises());
-
-  for (let i = 1, j = 0; i <= 5; ++i) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    availableSlots[i].M = openSlots[i].M - regCounts[j++];
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    availableSlots[i].F = openSlots[i].F - regCounts[j++];
-  }
-};
 
 const initializeRegistrationOrder = async () => {
   const prevReg = await Registration.findOne({
@@ -78,10 +34,6 @@ const initializeRegistrationOrder = async () => {
 };
 
 export const initialiseRegistration = async () => {
-  await initializeAvailableSlots();
-  console.log("Available slots:");
-  console.log(availableSlots);
-
   await initializeRegistrationOrder();
   console.log(`Reg order: ${registrationOrder}`);
 
@@ -352,9 +304,9 @@ const registerCampers = async (payloadData: unknown) => {
   }
 
   const createdData = await Registration.bulkCreate(registrationEntries);
-  const registrationIds = createdData.map(data => {
-    return {id: data.id}
+  // Broadcast separately to ease parsing on client side.
+  createdData.forEach(entry => {
+    registrationTracker.broadcast(JSON.stringify({id: entry.id}), "registration-created");
   })
-  registrationTracker.broadcast(JSON.stringify(registrationIds), "registration-created");
   return response;
 };
