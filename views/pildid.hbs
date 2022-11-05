@@ -2,14 +2,19 @@
   <p>Hetki laagrielust.</p>
   <div class="o-masonry">
     {{#each imageList}}
-      <img src="{{this.src}}" />
+      <img src="{{this.src}}"/>
     {{/each}}
   </div>
   <div class="u-banner u-banner--info">
     <p>
       Kui otsite kindla aasta/vahetuse pilte, saatke oma küsimus julgelt
       aadressile
-      <a href="mailto:taaniel@merelaager.ee">taaniel@merelaager.ee</a>.
+      <a href="mailto:taaniel@ignoreme-merelaager.ee" class="obf-mail">taaniel@<span
+        style="display:none;">ignoreme-</span>merelaager.ee</a>.
+      <script>
+        const mail = [...document.getElementsByClassName("obf-mail")][0];
+        mail.href = mail.href.replace("ignoreme-", "");
+      </script>
     </p>
   </div>
   <!--

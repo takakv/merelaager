@@ -115,24 +115,13 @@ if (window.location.hostname === "merelaager.ee") {
   );
 }
 
-const source = new EventSource("/registreerimine/events/");
-const shiftSpots = [...document.getElementsByClassName("vahetuste-kohad")];
-source.onmessage = (event) => {
-  const parsedData = JSON.parse(event.data);
-  for (let i = 0; i < 5; ++i) {
-    const boysCount = parsedData[i + 1].M > 0 ? parsedData[i + 1].M : 0;
-    const girlsCount = parsedData[i + 1].F > 0 ? parsedData[i + 1].F : 0;
-    //shiftSpots[i].children[1].innerText = `Poisid: 20`;
-    //shiftSpots[i].children[2].innerText = `Tüdrukud: 20`;
-    shiftSpots[i].children[1].children[0].innerText = `Poisid: ${boysCount}`;
-    shiftSpots[i].children[1].children[1].innerText = `Tüdrukud: ${girlsCount}`;
-  }
-};
+const mailhrefs = [...document.getElementsByClassName("obf-mail")];
+mailhrefs.forEach((el) => {
+  el.href = el.href.replace("ignoreme-", "");
+});
 
 const loadClock = async () => {
   const svClock = document.getElementById("serverClock");
-  // const lcClock = document.getElementById("localClock");
-  // lcClock.innerHTML = new Date().toLocaleTimeString();
 
   const locale = "et-EE";
   const tz = { timeZone: "Europe/Tallinn" };
@@ -143,9 +132,7 @@ const loadClock = async () => {
 
   setInterval(() => {
     current.setUTCSeconds(current.getUTCSeconds() + 1);
-    const tmp = current;
     svClock.innerHTML = current.toLocaleTimeString(locale, tz);
-    // lcClock.innerHTML = new Date().toLocaleTimeString();
   }, 1000);
 
   return syncTime;

@@ -2,11 +2,8 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 
-import express, { Application, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
 
 import cors from "cors";
 import slashes from "connect-slashes";
@@ -16,8 +13,6 @@ import infoRouter from "./routes/info";
 import registerRouter from "./routes/register";
 import legal from "./routes/legal";
 import api from "./routes/api";
-import axios from "axios";
-import { availableSlots } from "./controllers/registration/registrationController";
 
 dotenv.config();
 
@@ -52,9 +47,6 @@ const options = {
   },
   apis: [path.join(__dirname, "/routes/api/*.js")],
 };
-
-const swaggerSpec = swaggerJsdoc(options);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const hbs: ExpressHandlebars = create({
   extname: "hbs",
@@ -161,5 +153,4 @@ app.use((req: Request, res: Response) => {
 export const runApp = () => {
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log(`App listening on port ${port}`));
-  axios.post(process.env.URL, availableSlots);
 };

@@ -4,12 +4,7 @@
     <div class="registration-form__row has-after">
       <div class="registration-form__field">
         <label for="name-{{this}}" class="u-required">Nimi</label>
-        <input
-          type="text"
-          name="name"
-          id="name-{{this}}"
-          class="nameField"
-        />
+        <input type="text" name="name" id="name-{{this}}" class="nameField"/>
       </div>
       <div class="registration-form__field">
         <label for="idCode-{{this}}" class="u-required">Isikukood</label>
@@ -32,12 +27,7 @@
           class="genderField"
         />
         <label for="gender-f-{{this}}">Tüdruk</label>
-        <input
-          type="radio"
-          name="gender"
-          id="gender-f-{{this}}"
-          value="F"
-        />
+        <input type="radio" name="gender" id="gender-f-{{this}}" value="F"/>
       </div>
       <div class="registration-form__field is-hidden">
         <label for="bDay-{{this}}" class="u-required">Sünnipäev</label>
@@ -57,18 +47,14 @@
           name="useIdCode"
           id="useIdCode-{{this}}"
           class="useIdCode"
-          value="false"
+          value="{{this}}"
         />
       </div>
     </div>
     <div class="registration-form__row has-after">
       <div class="registration-form__field">
         <label for="vahetus-{{this}}" class="u-required">Laagrivahetus</label>
-        <select
-          id="vahetus-{{this}}"
-          class="shiftField"
-          name="shiftNr"
-        >
+        <select id="vahetus-{{this}}" class="shiftField" name="shiftNr">
           <option value="">--Valige vahetus--</option>
           <option value="1">1. vahetus (25.06–02.07)</option>
           <option value="2">2. vahetus (04.07–15.07)</option>
@@ -79,11 +65,7 @@
       </div>
       <div class="registration-form__field">
         <label for="shirtsize-{{this}}" class="u-required">T-särgi suurus</label>
-        <select
-          id="shirtsize-{{this}}"
-          class="shirtSizeField"
-          name="tsSize"
-        >
+        <select id="shirtsize-{{this}}" class="shirtSizeField" name="tsSize">
           <option value="">--Valige suurus--</option>
           <option value="118/128">118/128</option>
           <option value="130/140">130/140</option>
@@ -95,13 +77,13 @@
         </select>
       </div>
       <div class="registration-form__field registration-form__field--row">
-        <label for="newAtCamp-{{this}}">Esimest korda merelaagris?</label>
+        <label for="newcomer-{{this}}">Esimest korda merelaagris?</label>
         <input
           type="checkbox"
-          name="newAtCamp-{{this}}"
-          id="newAtCamp-{{this}}"
+          name="newcomer[]"
+          id="newcomer-{{this}}"
           class="newField"
-          value="true"
+          value="{{this}}"
           checked
         />
       </div>
@@ -110,21 +92,11 @@
     <div class="registration-form__row">
       <div class="registration-form__field">
         <label for="road-{{this}}" class="u-required">Tänav</label>
-        <input
-          type="text"
-          name="road"
-          id="road-{{this}}"
-          class="roadField"
-        />
+        <input type="text" name="road" id="road-{{this}}" class="roadField"/>
       </div>
       <div class="registration-form__field">
         <label for="city-{{this}}" class="u-required">Linn / Küla / Vald</label>
-        <input
-          type="text"
-          name="city"
-          id="city-{{this}}"
-          class="cityField"
-        />
+        <input type="text" name="city" id="city-{{this}}" class="cityField"/>
       </div>
       <div class="registration-form__field">
         <label for="county-{{this}}" class="u-required">Maakond</label>

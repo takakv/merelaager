@@ -1,24 +1,90 @@
-import { Request } from "express";
-import { Registration } from "../db/models/Registration";
-import { Child } from "../db/models/Child";
-import {
-  PrintEntry,
-  RegistrationEntry,
-} from "../routes/Support Files/registrations";
+import {Request} from "express";
+import {Registration} from "../db/models/Registration";
+import {Child} from "../db/models/Child";
+import {PrintEntry, RegistrationEntry,} from "../routes/Support Files/registrations";
+import {ShiftData} from "../db/models/ShiftData";
+import {StatusCodes} from "http-status-codes";
 
 require("dotenv").config();
 
-const { generatePDF } = require("./listGenerator");
+const {generatePDF} = require("./listGenerator");
 const {
   userIsRoot,
   approveRole,
 } = require("../routes/Support Files/shiftAuth");
 
 import Entity = Express.Entity;
-import { ShiftData } from "../db/models/ShiftData";
-import { loggingActions, loggingModules } from "../logging/loggingModules";
-import { UserLogEntry } from "../logging/UserLogEntry";
-import { approveShiftRole } from "../routes/Support Files/shiftAuth";
+
+type registrationResponse = {
+  ok: boolean,
+  code: number,
+  message: string,
+  payload?: RegistrationEntry
+}
+
+const prepareRegistrationEntry = (data: Registration, role: string) => {
+  const entry: RegistrationEntry = {
+    id: data.id,
+    name: data.child.name,
+    gender: data.child.gender,
+    dob: data.birthday,
+    old: data.isOld,
+    shiftNr: data.shiftNr,
+    shirtSize: data.tsSize,
+    order: data.regOrder,
+    registered: data.isRegistered,
+  }
+
+  if (role !== "op") {
+    entry.billNr = data.billNr;
+    entry.contactName = data.contactName;
+    entry.contactEmail = data.contactEmail;
+    entry.contactPhone = data.contactNumber;
+    entry.pricePaid = data.pricePaid;
+    entry.priceToPay = data.priceToPay;
+  }
+
+  if (role === "root") entry.idCode = data.idCode;
+  return entry;
+}
+
+export const fetchRegistration = async (req: Request, regId: number) => {
+  const response: registrationResponse = {
+    ok: true,
+    code: StatusCodes.OK,
+    message: "",
+  };
+
+  if (isNaN(regId)) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Registration identifier malformed or missing";
+    return response;
+  }
+
+  const registration = await Registration.findByPk(regId, {
+    include: Child
+  });
+  if (!registration) {
+    response.ok = false;
+    response.code = StatusCodes.NOT_FOUND;
+    response.message = "Unknown registration identifier";
+    return response;
+  }
+
+  const {role} = req.user;
+  const allowedRoles = ["op", "master", "boss", "root"];
+  if (!allowedRoles.includes(role)) {
+    response.ok = false;
+    response.code = StatusCodes.FORBIDDEN;
+    response.message = "Insufficient rights to access content"
+    return response;
+  }
+
+  response.payload = prepareRegistrationEntry(registration, role);
+  return response;
+}
+
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -26,40 +92,16 @@ export const fetchRegistrations = async (req: Request) => {
     include: Child,
   });
 
-  let registrations: RegistrationEntry[] = [];
+  const registrations: RegistrationEntry[] = [];
 
   if (!camperRegistrations.length) return registrations;
 
-  const { role } = req.user;
+  const {role} = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
   if (!allowedRoles.includes(role)) return registrations;
 
   camperRegistrations.forEach((registration) => {
-    const entry: RegistrationEntry = {
-      id: registration.id,
-      name: registration.child.name,
-      gender: registration.child.gender,
-      dob: registration.birthday,
-      old: registration.isOld,
-      shiftNr: registration.shiftNr,
-      shirtSize: registration.tsSize,
-      order: registration.regOrder,
-      registered: registration.isRegistered,
-      // UA 2022
-      addendum: registration.addendum,
-    };
-
-    if (role !== "op") {
-      entry.billNr = registration.billNr;
-      entry.contactName = registration.contactName;
-      entry.contactEmail = registration.contactEmail;
-      entry.contactPhone = registration.contactNumber;
-      entry.pricePaid = registration.pricePaid;
-      entry.priceToPay = registration.priceToPay;
-    }
-
-    if (role === "root") entry.idCode = registration.idCode;
-
+    const entry = prepareRegistrationEntry(registration, role);
     registrations.push(entry);
   });
 
@@ -72,14 +114,14 @@ const verifyPrice = (price: string) => {
 };
 
 const updateData = async (registration: Registration) => {
-  const { shiftNr } = registration;
+  const {shiftNr} = registration;
 
   const child = await Child.findOne({
-    where: { id: registration.childId },
+    where: {id: registration.childId},
   });
 
   const [entry, created] = await ShiftData.findOrCreate({
-    where: { childId: child.id, shiftNr },
+    where: {childId: child.id, shiftNr},
     defaults: {
       childId: child.id,
       shiftNr,
@@ -95,20 +137,34 @@ const updateData = async (registration: Registration) => {
 };
 
 export const patchRegistration = async (req: Request, regId: number) => {
-  if (isNaN(regId)) return 400;
+  const response = {
+    ok: true,
+    code: StatusCodes.OK,
+    message: "",
+  };
+
+  if (isNaN(regId)) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Registration identifier malformed or missing";
+    return response;
+  }
 
   // Fetch first to check for permissions.
   const registration = await Registration.findByPk(regId);
-  if (!registration) return 404;
+  if (!registration) {
+    response.ok = false;
+    response.code = StatusCodes.NOT_FOUND;
+    response.message = "Unknown registration identifier";
+    return response;
+  }
 
-  const logObj = new UserLogEntry(
-    req.user.id,
-    loggingModules.registrations,
-    loggingActions.update
-  );
-
-  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr, logObj)))
-    return 403;
+  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr))) {
+    response.ok = false;
+    response.code = StatusCodes.FORBIDDEN;
+    response.message = "Insufficient rights to access content"
+    return response;
+  }
 
   const keys = Object.keys(req.body);
   logObj.setAndCommit({ registrationId: regId, field: keys[0] });
@@ -183,8 +239,8 @@ export const print = async (user: Entity, shiftNr: number) => {
   if (!(await approveRole(user, "master"))) return null;
 
   const registrations = await Registration.findAll({
-    where: { shiftNr, isRegistered: true },
-    include: { model: Child, order: [["name", "ASC"]] },
+    where: {shiftNr, isRegistered: true},
+    include: {model: Child, order: [["name", "ASC"]]},
   });
 
   if (!registrations.length) return null;
