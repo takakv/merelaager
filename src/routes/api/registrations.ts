@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import express, {Request, Response} from "express";
 import {
-  deleteRegistration,
+  deleteRegistration, fetchRegistration,
   fetchRegistrations,
   patchRegistration,
   print,
@@ -21,6 +21,12 @@ router.get("/", async (req: Request, res: Response) => {
     console.error(e);
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
+});
+
+router.get("/:regId", async (req: Request, res: Response) => {
+  const regId = parseInt(req.params.regId);
+  const response = await fetchRegistration(req, regId);
+  res.status(response.code).json(response);
 });
 
 router.post("/events", async (req: Request, res: Response) => {

@@ -1,6 +1,6 @@
-import { Request } from "express";
-import { Registration } from "../db/models/Registration";
-import { Child } from "../db/models/Child";
+import {Request} from "express";
+import {Registration} from "../db/models/Registration";
+import {Child} from "../db/models/Child";
 import {
   PrintEntry,
   RegistrationEntry,
@@ -8,7 +8,7 @@ import {
 
 require("dotenv").config();
 
-const { generatePDF } = require("./listGenerator");
+const {generatePDF} = require("./listGenerator");
 const {
   userIsRoot,
   approveRole,
@@ -16,7 +16,76 @@ const {
 } = require("../routes/Support Files/shiftAuth");
 
 import Entity = Express.Entity;
-import { ShiftData } from "../db/models/ShiftData";
+import {ShiftData} from "../db/models/ShiftData";
+import {StatusCodes} from "http-status-codes";
+
+type registrationResponse = {
+  ok: boolean,
+  code: number,
+  message: string,
+  payload?: RegistrationEntry
+}
+
+
+export const fetchRegistration = async (req: Request, regId: number) => {
+  const response: registrationResponse = {
+    ok: true,
+    code: StatusCodes.OK,
+    message: "",
+  };
+
+  if (isNaN(regId)) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Registration identifier malformed or missing";
+    return response;
+  }
+
+  const registration = await Registration.findByPk(regId, {
+    include: Child
+  });
+  if (!registration) {
+    response.ok = false;
+    response.code = StatusCodes.NOT_FOUND;
+    response.message = "Unknown registration identifier";
+    return response;
+  }
+
+  const {role} = req.user;
+  const allowedRoles = ["op", "master", "boss", "root"];
+  if (!allowedRoles.includes(role)) {
+    response.ok = false;
+    response.code = StatusCodes.FORBIDDEN;
+    response.message = "Insufficient rights to access content"
+    return response;
+  }
+
+  const entry: RegistrationEntry = {
+    id: registration.id,
+    name: registration.child.name,
+    gender: registration.child.gender,
+    dob: registration.birthday,
+    old: registration.isOld,
+    shiftNr: registration.shiftNr,
+    shirtSize: registration.tsSize,
+    order: registration.regOrder,
+    registered: registration.isRegistered,
+  }
+
+  if (role !== "op") {
+    entry.billNr = registration.billNr;
+    entry.contactName = registration.contactName;
+    entry.contactEmail = registration.contactEmail;
+    entry.pricePaid = registration.pricePaid;
+    entry.priceToPay = registration.priceToPay;
+  }
+
+  if (role === "root") entry.idCode = registration.idCode;
+
+  response.payload = entry;
+  return response;
+}
+
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -28,7 +97,7 @@ export const fetchRegistrations = async (req: Request) => {
 
   if (!camperRegistrations.length) return registrations;
 
-  const { role } = req.user;
+  const {role} = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
   if (!allowedRoles.includes(role)) return registrations;
 
@@ -43,8 +112,6 @@ export const fetchRegistrations = async (req: Request) => {
       shirtSize: registration.tsSize,
       order: registration.regOrder,
       registered: registration.isRegistered,
-      // UA 2022
-      addendum: registration.addendum
     };
 
     if (role !== "op") {
@@ -70,14 +137,14 @@ const verifyPrice = (price: string) => {
 };
 
 const updateData = async (registration: Registration) => {
-  const { shiftNr } = registration;
+  const {shiftNr} = registration;
 
   const child = await Child.findOne({
-    where: { id: registration.childId },
+    where: {id: registration.childId},
   });
 
   const [entry, created] = await ShiftData.findOrCreate({
-    where: { childId: child.id, shiftNr },
+    where: {childId: child.id, shiftNr},
     defaults: {
       childId: child.id,
       shiftNr,
@@ -163,8 +230,8 @@ export const print = async (user: Entity, shiftNr: number) => {
   if (!(await approveRole(user, "master"))) return null;
 
   const registrations = await Registration.findAll({
-    where: { shiftNr, isRegistered: true },
-    include: { model: Child, order: [["name", "ASC"]] },
+    where: {shiftNr, isRegistered: true},
+    include: {model: Child, order: [["name", "ASC"]]},
   });
 
   if (!registrations.length) return null;
