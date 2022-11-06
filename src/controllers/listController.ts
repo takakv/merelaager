@@ -11,13 +11,11 @@ import { StatusCodes } from "http-status-codes";
 
 import { generatePDF } from "./listGenerator";
 import { approveRole, userIsRoot } from "../routes/Support Files/shiftAuth";
-import { User } from "../db/models/User";
-import { ShiftGroup } from "../db/models/ShiftGroup";
-import { ACGroup } from "../db/models/ACGroup";
 import { Permission } from "../db/models/Permission";
 import Entity = Express.Entity;
 import { Op } from "sequelize";
 import { permissionsList } from "../utilities/permissionsList";
+import AccessController from "./AccessController";
 
 dotenv.config();
 
@@ -27,14 +25,6 @@ type registrationResponse = {
   message: string;
   payload?: RegistrationEntry;
 };
-
-type shiftViewPermission = {
-  shiftNr: number;
-  permissions: Permission[];
-};
-
-const sortPermissionsDescending = (a: Permission, b: Permission) =>
-  b.extent - a.extent;
 
 /**
  * Selects the registration information fields according to the viewing permissions of the requesting user.
@@ -117,62 +107,16 @@ export const fetchRegistration = async (req: Request, regId: number) => {
 };
 
 /**
- * Selects all view permissions of a user for all shifts. Permissions for each shift
- * are sorted in descending order, starting with the most "powerful" permission. Shifts
- * themselves are sorted in ascending order.
- * @param userId - The user identifier
- * @returns {Promise<shiftViewPermission[]>} The sorted list of sorted permissions
- */
-const getViewPermissionsForAllShifts = async (userId: number) => {
-  const userData = await User.findByPk(userId, {
-    attributes: [],
-    include: [
-      {
-        model: ShiftGroup,
-        required: true,
-        attributes: ["shiftNr"],
-        order: ["shiftNr", "ASC"],
-        include: [
-          {
-            model: ACGroup,
-            attributes: ["id"],
-            required: true,
-            include: [
-              {
-                model: Permission,
-                attributes: ["name", "extent"],
-                where: {
-                  name: "reg:view",
-                },
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
-
-  if (!userData) return [] as shiftViewPermission[];
-
-  const permissions: shiftViewPermission[] = userData.shiftGroups.map(
-    (shift) => ({
-      shiftNr: shift.shiftNr,
-      permissions: shift.acGroup.permissions.sort(sortPermissionsDescending),
-    })
-  );
-
-  return permissions;
-};
-
-/**
  * Fetches all registrations the user has view access to.
  * @param {Request} req - The HTTP request object
  * @returns {RegistrationEntry[]} A list of all viewable registration entries
  */
 export const fetchRegistrations = async (req: Request) => {
-  const userShiftPermissions = await getViewPermissionsForAllShifts(
-    req.user.id
-  );
+  const userShiftPermissions =
+    await AccessController.getViewPermissionsForAllShifts(
+      req.user.id,
+      permissionsList.reg.view.permissionName
+    );
 
   const registrations: RegistrationEntry[] = [];
 
