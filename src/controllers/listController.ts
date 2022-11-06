@@ -1,26 +1,27 @@
-import {Request} from "express";
-import {Registration} from "../db/models/Registration";
-import {Child} from "../db/models/Child";
-import {PrintEntry, RegistrationEntry,} from "../routes/Support Files/registrations";
-import {ShiftData} from "../db/models/ShiftData";
-import {StatusCodes} from "http-status-codes";
+import dotenv from "dotenv";
+import { Request } from "express";
+import { Registration } from "../db/models/Registration";
+import { Child } from "../db/models/Child";
+import {
+  PrintEntry,
+  RegistrationEntry,
+} from "../routes/Support Files/registrations";
+import { ShiftData } from "../db/models/ShiftData";
+import { StatusCodes } from "http-status-codes";
 
-require("dotenv").config();
+dotenv.config();
 
-const {generatePDF} = require("./listGenerator");
-const {
-  userIsRoot,
-  approveRole,
-} = require("../routes/Support Files/shiftAuth");
+import { generatePDF } from "./listGenerator";
+import { userIsRoot, approveRole } from "../routes/Support Files/shiftAuth";
 
 import Entity = Express.Entity;
 
 type registrationResponse = {
-  ok: boolean,
-  code: number,
-  message: string,
-  payload?: RegistrationEntry
-}
+  ok: boolean;
+  code: number;
+  message: string;
+  payload?: RegistrationEntry;
+};
 
 const prepareRegistrationEntry = (data: Registration, role: string) => {
   const entry: RegistrationEntry = {
@@ -33,7 +34,7 @@ const prepareRegistrationEntry = (data: Registration, role: string) => {
     shirtSize: data.tsSize,
     order: data.regOrder,
     registered: data.isRegistered,
-  }
+  };
 
   if (role !== "op") {
     entry.billNr = data.billNr;
@@ -46,7 +47,7 @@ const prepareRegistrationEntry = (data: Registration, role: string) => {
 
   if (role === "root") entry.idCode = data.idCode;
   return entry;
-}
+};
 
 export const fetchRegistration = async (req: Request, regId: number) => {
   const response: registrationResponse = {
@@ -63,7 +64,7 @@ export const fetchRegistration = async (req: Request, regId: number) => {
   }
 
   const registration = await Registration.findByPk(regId, {
-    include: Child
+    include: Child,
   });
   if (!registration) {
     response.ok = false;
@@ -72,19 +73,18 @@ export const fetchRegistration = async (req: Request, regId: number) => {
     return response;
   }
 
-  const {role} = req.user;
+  const { role } = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
   if (!allowedRoles.includes(role)) {
     response.ok = false;
     response.code = StatusCodes.FORBIDDEN;
-    response.message = "Insufficient rights to access content"
+    response.message = "Insufficient rights to access content";
     return response;
   }
 
   response.payload = prepareRegistrationEntry(registration, role);
   return response;
-}
-
+};
 
 export const fetchRegistrations = async (req: Request) => {
   const camperRegistrations = await Registration.findAll({
@@ -96,7 +96,7 @@ export const fetchRegistrations = async (req: Request) => {
 
   if (!camperRegistrations.length) return registrations;
 
-  const {role} = req.user;
+  const { role } = req.user;
   const allowedRoles = ["op", "master", "boss", "root"];
   if (!allowedRoles.includes(role)) return registrations;
 
@@ -114,14 +114,14 @@ const verifyPrice = (price: string) => {
 };
 
 const updateData = async (registration: Registration) => {
-  const {shiftNr} = registration;
+  const { shiftNr } = registration;
 
   const child = await Child.findOne({
-    where: {id: registration.childId},
+    where: { id: registration.childId },
   });
 
   const [entry, created] = await ShiftData.findOrCreate({
-    where: {childId: child.id, shiftNr},
+    where: { childId: child.id, shiftNr },
     defaults: {
       childId: child.id,
       shiftNr,
@@ -162,7 +162,7 @@ export const patchRegistration = async (req: Request, regId: number) => {
   if (!(await approveShiftRole(req.user, "boss", registration.shiftNr))) {
     response.ok = false;
     response.code = StatusCodes.FORBIDDEN;
-    response.message = "Insufficient rights to access content"
+    response.message = "Insufficient rights to access content";
     return response;
   }
 
@@ -239,8 +239,8 @@ export const print = async (user: Entity, shiftNr: number) => {
   if (!(await approveRole(user, "master"))) return null;
 
   const registrations = await Registration.findAll({
-    where: {shiftNr, isRegistered: true},
-    include: {model: Child, order: [["name", "ASC"]]},
+    where: { shiftNr, isRegistered: true },
+    include: { model: Child, order: [["name", "ASC"]] },
   });
 
   if (!registrations.length) return null;

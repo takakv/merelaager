@@ -1,4 +1,4 @@
-import {PrintEntry} from "../routes/Support Files/registrations";
+import { PrintEntry } from "../routes/Support Files/registrations";
 
 const fonts = {
   Helvetica: {
@@ -36,7 +36,7 @@ const createDoc = (shiftNr: number, entries: PrintEntry[]) => {
 
   return {
     content: [
-      {text: `${shiftNr}v ${new Date().getFullYear()}`, style: "header"},
+      { text: `${shiftNr}v ${new Date().getFullYear()}`, style: "header" },
       {
         table: {
           body: tableContent,
@@ -52,7 +52,7 @@ const createDoc = (shiftNr: number, entries: PrintEntry[]) => {
 
 const options = {};
 
-exports.generatePDF = async (shiftNr: number, entries: PrintEntry[]) => {
+export const generatePDF = async (shiftNr: number, entries: PrintEntry[]) => {
   const filename = shiftNr + "v_nimekiri.pdf";
   try {
     const pdfDoc = printer.createPdfKitDocument(
