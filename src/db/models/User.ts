@@ -2,7 +2,6 @@ import { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
-  BelongsToMany,
   Column,
   DataType,
   Default,
@@ -17,7 +16,6 @@ import { ShiftInfo } from "./ShiftInfo";
 import { ResetToken } from "./ResetToken";
 import { Staff } from "./Staff";
 import { Document } from "./Document";
-import { ACGroup } from "./ACGroup";
 import { ShiftGroup } from "./ShiftGroup";
 
 interface UserAttributes {
