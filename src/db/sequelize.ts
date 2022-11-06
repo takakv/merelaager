@@ -1,4 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
+import dotenv from "dotenv";
+
 import { Child } from "./models/Child";
 import { Record } from "./models/Record";
 import { Registration } from "./models/Registration";
@@ -11,8 +13,11 @@ import { Team } from "./models/Team";
 import { User } from "./models/User";
 import { EventInfo } from "./models/EventInfo";
 import { Document } from "./models/Document";
+import { Permission } from "./models/Permission";
+import { ACGroup } from "./models/ACGroup";
+import { GroupPermission } from "./models/GroupPermission";
 
-require("dotenv").config();
+dotenv.config();
 
 const host = process.env.MYSQL_HOST;
 const user = process.env.MYSQL_USER;
@@ -36,6 +41,9 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     User,
     EventInfo,
     Document,
+    Permission,
+    ACGroup,
+    GroupPermission,
   ],
   logging: false,
   // models: [__dirname + "/models"],

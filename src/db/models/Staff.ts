@@ -12,6 +12,7 @@ import {
   Table,
 } from "sequelize-typescript";
 import { User } from "./User";
+import { ACGroup } from "./ACGroup";
 
 export const roles = {
   boss: "boss",
@@ -29,8 +30,10 @@ interface StaffAttributes {
   userId: number;
 }
 
-interface StaffCreationAttributes
-  extends Optional<StaffAttributes, "id" | "year" | "userId"> {}
+type StaffCreationAttributes = Optional<
+  StaffAttributes,
+  "id" | "year" | "userId"
+>;
 
 @Table({ tableName: "staff" })
 export class Staff
@@ -64,4 +67,10 @@ export class Staff
 
   @BelongsTo(() => User)
   public user?: User;
+
+  @ForeignKey(() => ACGroup)
+  acGroupId: number;
+
+  @BelongsTo(() => ACGroup)
+  acGroup: ACGroup;
 }
