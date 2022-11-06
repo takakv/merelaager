@@ -26,7 +26,7 @@ export class ACGroup extends Model<
   name: string;
 
   @BelongsToMany(() => Permission, () => GroupPermission)
-  permissions: Array<Permission & { GroupPermission: GroupPermission }>;
+  permissions: Permission[];
 
   @HasMany(() => ShiftGroup)
   shiftGroups: ShiftGroup[];

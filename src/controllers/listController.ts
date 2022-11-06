@@ -9,12 +9,17 @@ import {
 import { ShiftData } from "../db/models/ShiftData";
 import { StatusCodes } from "http-status-codes";
 
-dotenv.config();
-
 import { generatePDF } from "./listGenerator";
-import { userIsRoot, approveRole } from "../routes/Support Files/shiftAuth";
-
+import { approveRole, userIsRoot } from "../routes/Support Files/shiftAuth";
+import { User } from "../db/models/User";
+import { ShiftGroup } from "../db/models/ShiftGroup";
+import { ACGroup } from "../db/models/ACGroup";
+import { Permission } from "../db/models/Permission";
 import Entity = Express.Entity;
+import { Op } from "sequelize";
+import { permissionsList } from "../utilities/permissionsList";
+
+dotenv.config();
 
 type registrationResponse = {
   ok: boolean;
@@ -23,7 +28,26 @@ type registrationResponse = {
   payload?: RegistrationEntry;
 };
 
-const prepareRegistrationEntry = (data: Registration, role: string) => {
+type shiftViewPermission = {
+  shiftNr: number;
+  permissions: Permission[];
+};
+
+const sortPermissionsDescending = (a: Permission, b: Permission) =>
+  b.extent - a.extent;
+
+/**
+ * Selects the registration information fields according to the viewing permissions of the requesting user.
+ * @param {Registration} data - The registration entry
+ * @param {Permission[]} permissions - The sorted list of view permissions
+ * @returns {RegistrationEntry} The prepared entry
+ */
+const prepareRegistrationEntry = (
+  data: Registration,
+  permissions: Permission[]
+) => {
+  const accessExtent = permissions[0].extent;
+
   const entry: RegistrationEntry = {
     id: data.id,
     name: data.child.name,
@@ -36,7 +60,7 @@ const prepareRegistrationEntry = (data: Registration, role: string) => {
     registered: data.isRegistered,
   };
 
-  if (role !== "op") {
+  if (accessExtent >= permissionsList.reg.view.contact) {
     entry.billNr = data.billNr;
     entry.contactName = data.contactName;
     entry.contactEmail = data.contactEmail;
@@ -45,10 +69,16 @@ const prepareRegistrationEntry = (data: Registration, role: string) => {
     entry.priceToPay = data.priceToPay;
   }
 
-  if (role === "root") entry.idCode = data.idCode;
+  if (accessExtent >= permissionsList.reg.view.full) entry.idCode = data.idCode;
   return entry;
 };
 
+/**
+ * Fetches a particular registration using the registration identifier.
+ * @param {Request} req - The HTTP request object
+ * @param {number} regId - The registration identifier
+ * @returns {RegistrationEntry} The registration entry
+ */
 export const fetchRegistration = async (req: Request, regId: number) => {
   const response: registrationResponse = {
     ok: true,
@@ -86,22 +116,87 @@ export const fetchRegistration = async (req: Request, regId: number) => {
   return response;
 };
 
-export const fetchRegistrations = async (req: Request) => {
-  const camperRegistrations = await Registration.findAll({
-    order: [["regOrder", "ASC"]],
-    include: Child,
+/**
+ * Selects all view permissions of a user for all shifts. Permissions for each shift
+ * are sorted in descending order, starting with the most "powerful" permission. Shifts
+ * themselves are sorted in ascending order.
+ * @param userId - The user identifier
+ * @returns {Promise<shiftViewPermission[]>} The sorted list of sorted permissions
+ */
+const getViewPermissionsForAllShifts = async (userId: number) => {
+  const userData = await User.findByPk(userId, {
+    attributes: [],
+    include: [
+      {
+        model: ShiftGroup,
+        required: true,
+        attributes: ["shiftNr"],
+        order: ["shiftNr", "ASC"],
+        include: [
+          {
+            model: ACGroup,
+            attributes: ["id"],
+            required: true,
+            include: [
+              {
+                model: Permission,
+                attributes: ["name", "extent"],
+                where: {
+                  name: "reg:view",
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
+
+  if (!userData) return [] as shiftViewPermission[];
+
+  const permissions: shiftViewPermission[] = userData.shiftGroups.map(
+    (shift) => ({
+      shiftNr: shift.shiftNr,
+      permissions: shift.acGroup.permissions.sort(sortPermissionsDescending),
+    })
+  );
+
+  return permissions;
+};
+
+/**
+ * Fetches all registrations the user has view access to.
+ * @param {Request} req - The HTTP request object
+ * @returns {RegistrationEntry[]} A list of all viewable registration entries
+ */
+export const fetchRegistrations = async (req: Request) => {
+  const userShiftPermissions = await getViewPermissionsForAllShifts(
+    req.user.id
+  );
 
   const registrations: RegistrationEntry[] = [];
 
+  if (!userShiftPermissions.length) return registrations;
+
+  const camperRegistrations = await Registration.findAll({
+    order: [["regOrder", "ASC"]],
+    include: Child,
+    where: {
+      [Op.or]: userShiftPermissions.map((entry) => ({
+        ["shiftNr"]: entry.shiftNr,
+      })),
+    },
+  });
+
   if (!camperRegistrations.length) return registrations;
 
-  const { role } = req.user;
-  const allowedRoles = ["op", "master", "boss", "root"];
-  if (!allowedRoles.includes(role)) return registrations;
-
   camperRegistrations.forEach((registration) => {
-    const entry = prepareRegistrationEntry(registration, role);
+    const entry = prepareRegistrationEntry(
+      registration,
+      userShiftPermissions.find(
+        (entry) => registration.shiftNr === entry.shiftNr
+      ).permissions
+    );
     registrations.push(entry);
   });
 

@@ -1,8 +1,9 @@
 export const permissionsList = {
   reg: {
     view: {
-      basic: "reg:view:basic",
-      contact: "reg:view:contact",
+      basic: 1,
+      contact: 2,
+      full: 3,
     },
   },
   child: {},
