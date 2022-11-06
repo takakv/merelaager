@@ -2,6 +2,7 @@ import { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsToMany,
   Column,
   DataType,
   Default,
@@ -16,6 +17,8 @@ import { ShiftInfo } from "./ShiftInfo";
 import { ResetToken } from "./ResetToken";
 import { Staff } from "./Staff";
 import { Document } from "./Document";
+import { ACGroup } from "./ACGroup";
+import { ShiftGroup } from "./ShiftGroup";
 
 interface UserAttributes {
   id: number;
@@ -29,11 +32,10 @@ interface UserAttributes {
   refreshToken: string;
 }
 
-interface UserCreationAttributes
-  extends Optional<
-    UserAttributes,
-    "id" | "role" | "currentShift" | "nickname" | "refreshToken"
-  > {}
+type UserCreationAttributes = Optional<
+  UserAttributes,
+  "id" | "role" | "currentShift" | "nickname" | "refreshToken"
+>;
 
 @Table({ tableName: "users" })
 export class User
@@ -95,4 +97,10 @@ export class User
     onDelete: "SET NULL",
   })
   public documents?: Document[];
+
+  @HasMany(() => ShiftGroup)
+  shiftGroups: ShiftGroup[];
+
+  // @BelongsToMany(() => ACGroup, () => ShiftGroup)
+  // acGroups: Array<ACGroup & { ShiftPermission: ShiftGroup }>;
 }

@@ -12,7 +12,6 @@ import {
   Table,
 } from "sequelize-typescript";
 import { User } from "./User";
-import { ACGroup } from "./ACGroup";
 
 export const roles = {
   boss: "boss",
@@ -67,10 +66,4 @@ export class Staff
 
   @BelongsTo(() => User)
   public user?: User;
-
-  @ForeignKey(() => ACGroup)
-  acGroupId: number;
-
-  @BelongsTo(() => ACGroup)
-  acGroup: ACGroup;
 }

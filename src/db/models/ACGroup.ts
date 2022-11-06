@@ -8,7 +8,7 @@ import {
 } from "sequelize-typescript";
 import { Permission } from "./Permission";
 import { GroupPermission } from "./GroupPermission";
-import { Staff } from "./Staff";
+import { ShiftGroup } from "./ShiftGroup";
 
 interface ACGroupAttributes {
   id: number;
@@ -28,6 +28,9 @@ export class ACGroup extends Model<
   @BelongsToMany(() => Permission, () => GroupPermission)
   permissions: Array<Permission & { GroupPermission: GroupPermission }>;
 
-  @HasMany(() => Staff)
-  staff: Staff[];
+  @HasMany(() => ShiftGroup)
+  shiftGroups: ShiftGroup[];
+
+  // @BelongsToMany(() => User, () => ShiftGroup)
+  // users: Array<User & { ShiftPermission: ShiftGroup }>;
 }

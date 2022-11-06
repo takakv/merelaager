@@ -16,6 +16,7 @@ import { Document } from "./models/Document";
 import { Permission } from "./models/Permission";
 import { ACGroup } from "./models/ACGroup";
 import { GroupPermission } from "./models/GroupPermission";
+import { ShiftGroup } from "./models/ShiftGroup";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     Permission,
     ACGroup,
     GroupPermission,
+    ShiftGroup,
   ],
   logging: false,
   // models: [__dirname + "/models"],
