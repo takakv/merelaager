@@ -11,7 +11,7 @@ const router = express.Router();
 
 // Fetch the whole list of children and their registration status.
 router.get("/", (req: Request, res: Response) => {
-  RegistrationController.fetchRegistrations(req)
+  RegistrationController.fetchRegistrations(req.user)
     .then((registrations) => res.json({ value: registrations }))
     .catch((e) => {
       console.error(e);
@@ -21,7 +21,7 @@ router.get("/", (req: Request, res: Response) => {
 
 router.get("/:regId", (req: Request, res: Response) => {
   const regId = parseInt(req.params.regId);
-  RegistrationController.fetchRegistration(req, regId)
+  RegistrationController.fetchRegistration(req.user, regId)
     .then((response) => {
       if (response instanceof HttpError)
         res.status(response.httpCode).json(response.json());

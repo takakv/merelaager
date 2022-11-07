@@ -24,13 +24,13 @@ dotenv.config();
 class RegistrationController {
   /**
    * Fetches all registrations the user has view access to.
-   * @param {Request} req - The HTTP request object
+   * @param {Entity} user - The requesting user
    * @returns {RegistrationEntry[]} A list of all viewable registration entries
    */
-  static fetchRegistrations = async (req: Request) => {
+  static fetchRegistrations = async (user: Entity) => {
     const userShiftPermissions =
       await AccessController.getViewPermissionsForAllShifts(
-        req.user.id,
+        user.id,
         permissionsList.reg.view.permissionName
       );
 
@@ -65,12 +65,12 @@ class RegistrationController {
 
   /**
    * Fetches a registration based on its identifier.
-   * @param {Request} req - The HTTP request object
+   * @param {Entity} user - The requesting user
    * @param {number} regId - The registration identifier
    * @returns The registration entries
    */
   static fetchRegistration = async (
-    req: Request,
+    user: Entity,
     regId: number
   ): Promise<RegistrationEntry | HttpError> => {
     if (isNaN(regId)) return new RegIdError(StatusCodes.BAD_REQUEST);
@@ -81,7 +81,7 @@ class RegistrationController {
     if (!registration) return new RegIdError(StatusCodes.NOT_FOUND);
 
     const userPermissions = await AccessController.getViewPermissionsForShift(
-      req.user.id,
+      user.id,
       registration.shiftNr,
       permissionsList.reg.view.permissionName
     );
