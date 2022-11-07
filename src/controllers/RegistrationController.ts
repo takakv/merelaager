@@ -10,7 +10,7 @@ import { ShiftData } from "../db/models/ShiftData";
 import { StatusCodes } from "http-status-codes";
 
 import { generatePDF } from "./listGenerator";
-import { approveRole, userIsRoot } from "../routes/Support Files/shiftAuth";
+import { userIsRoot } from "../routes/Support Files/shiftAuth";
 import { Permission } from "../db/models/Permission";
 import Entity = Express.Entity;
 import { Op } from "sequelize";
@@ -24,6 +24,13 @@ type registrationResponse = {
   code: number;
   message: string;
   payload?: RegistrationEntry;
+};
+
+type pdfResponse = {
+  ok: boolean;
+  code: number;
+  message?: string;
+  filename?: string;
 };
 
 class RegistrationController {
@@ -72,7 +79,8 @@ class RegistrationController {
    * Fetches a particular registration using the registration identifier.
    * @param {Request} req - The HTTP request object
    * @param {number} regId - The registration identifier
-   * @returns {RegistrationEntry} The registration entry
+   * @returns {registrationResponse} The response object containing the registration entry on success,
+   * or an error message on failure
    */
   static fetchRegistration = async (req: Request, regId: number) => {
     const response: registrationResponse = {
@@ -115,6 +123,69 @@ class RegistrationController {
       registration,
       userPermissions
     );
+    return response;
+  };
+
+  /**
+   * Generates a PDF list of registrations for a shift.
+   * @param {Entity} user - The requesting user
+   * @param {number} shiftNr - The identifier of the requested shift
+   * @returns {pdfResponse} The response object containing either the generated PDF file name,
+   * or error information on failure
+   */
+  static printShiftRegistrationsList = async (
+    user: Entity,
+    shiftNr: number
+  ) => {
+    const response: pdfResponse = {
+      ok: true,
+      code: StatusCodes.OK,
+      message: "",
+    };
+
+    const userPermissions = await AccessController.getViewPermissionsForShift(
+      user.id,
+      shiftNr,
+      permissionsList.reg.view.permissionName
+    );
+
+    if (
+      userPermissions === null ||
+      userPermissions[0].extent < permissionsList.reg.view.contact
+    ) {
+      response.ok = false;
+      response.code = StatusCodes.FORBIDDEN;
+      response.message = "Insufficient rights to access content";
+      return response;
+    }
+
+    const registrations = await Registration.findAll({
+      where: { shiftNr, isRegistered: true },
+      include: { model: Child, order: [["name", "ASC"]] },
+    });
+
+    if (!registrations) {
+      response.ok = false;
+      response.code = StatusCodes.NO_CONTENT;
+      return response;
+    }
+
+    const entries: PrintEntry[] = [];
+
+    registrations.forEach((registration) => {
+      entries.push({
+        name: registration.child.name,
+        gender: registration.child.gender,
+        dob: registration.birthday,
+        old: registration.isOld,
+        shirtSize: registration.tsSize,
+        contactName: registration.contactName.trim(),
+        contactEmail: registration.contactEmail.trim(),
+        contactNumber: registration.contactNumber.trim(),
+      });
+    });
+
+    response.filename = await generatePDF(shiftNr, entries);
     return response;
   };
 
@@ -284,32 +355,4 @@ export const deleteRegistration = async (user: Entity, regId: number) => {
     return 500;
   }
   return 204;
-};
-
-export const print = async (user: Entity, shiftNr: number) => {
-  if (!(await approveRole(user, "master"))) return null;
-
-  const registrations = await Registration.findAll({
-    where: { shiftNr, isRegistered: true },
-    include: { model: Child, order: [["name", "ASC"]] },
-  });
-
-  if (!registrations.length) return null;
-
-  const entries: PrintEntry[] = [];
-
-  registrations.forEach((registration) => {
-    entries.push({
-      name: registration.child.name,
-      gender: registration.child.gender,
-      dob: registration.birthday,
-      old: registration.isOld,
-      shirtSize: registration.tsSize,
-      contactName: registration.contactName.trim(),
-      contactEmail: registration.contactEmail.trim(),
-      contactNumber: registration.contactNumber.trim(),
-    });
-  });
-
-  return generatePDF(shiftNr, entries);
 };

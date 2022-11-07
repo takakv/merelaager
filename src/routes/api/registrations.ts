@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import RegistrationController, {
   deleteRegistration,
   patchRegistration,
-  print,
 } from "../../controllers/RegistrationController";
 import { StatusCodes } from "http-status-codes";
 import { createSession } from "better-sse";
@@ -14,7 +13,10 @@ const router = express.Router();
 router.get("/", (req: Request, res: Response) => {
   RegistrationController.fetchRegistrations(req)
     .then((registrations) => res.json({ value: registrations }))
-    .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 router.get("/:regId", (req: Request, res: Response) => {
@@ -24,7 +26,10 @@ router.get("/:regId", (req: Request, res: Response) => {
       if (response.ok) return res.status(response.code).json(response.payload);
       else res.status(response.code).json(response);
     })
-    .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 router.post("/events", (req: Request, res: Response) => {
@@ -33,18 +38,32 @@ router.post("/events", (req: Request, res: Response) => {
       session.state.role = req.user.role;
       registrationTracker.register(session);
     })
-    .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 // TODO: Implement shift boss checking middleware, if convenient.
 // All of the below require shift boss permissions.
 
 // Fetch the PDF list of registrations for a single shift.
-router.get("/pdf/:shiftNr", async (req: Request, res: Response) => {
+router.get("/pdf/:shiftNr", (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
-  const fileName = await print(req.user, shiftNr);
-  if (!fileName) return res.sendStatus(500);
-  return res.sendFile(fileName, { root: "./data/files" });
+  RegistrationController.printShiftRegistrationsList(req.user, shiftNr)
+    .then((response) => {
+      if (response.ok)
+        res.sendFile(response.filename, { root: "./data/files" });
+      else {
+        if (response.code === StatusCodes.NO_CONTENT)
+          res.sendStatus(StatusCodes.NO_CONTENT);
+        else res.status(response.code).json(response);
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 // Update values for a specific registration.

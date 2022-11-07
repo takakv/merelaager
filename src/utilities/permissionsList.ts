@@ -6,6 +6,11 @@ export const permissionsList = {
       contact: 2,
       full: 3,
     },
+    edit: {
+      permissionName: "reg:edit",
+      basic: 1,
+      full: 3,
+    },
   },
   child: {},
 };
