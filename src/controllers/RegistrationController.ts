@@ -26,126 +26,138 @@ type registrationResponse = {
   payload?: RegistrationEntry;
 };
 
-/**
- * Selects the registration information fields according to the viewing permissions of the requesting user.
- * @param {Registration} data - The registration entry
- * @param {Permission[]} permissions - The sorted list of view permissions
- * @returns {RegistrationEntry} The prepared entry
- */
-const prepareRegistrationEntry = (
-  data: Registration,
-  permissions: Permission[]
-) => {
-  const accessExtent = permissions[0].extent;
+class RegistrationController {
+  /**
+   * Fetches all registrations the user has view access to.
+   * @param {Request} req - The HTTP request object
+   * @returns {RegistrationEntry[]} A list of all viewable registration entries
+   */
+  static fetchRegistrations = async (req: Request) => {
+    const userShiftPermissions =
+      await AccessController.getViewPermissionsForAllShifts(
+        req.user.id,
+        permissionsList.reg.view.permissionName
+      );
 
-  const entry: RegistrationEntry = {
-    id: data.id,
-    name: data.child.name,
-    gender: data.child.gender,
-    dob: data.birthday,
-    old: data.isOld,
-    shiftNr: data.shiftNr,
-    shirtSize: data.tsSize,
-    order: data.regOrder,
-    registered: data.isRegistered,
+    const registrations: RegistrationEntry[] = [];
+
+    if (!userShiftPermissions.length) return registrations;
+
+    const camperRegistrations = await Registration.findAll({
+      order: [["regOrder", "ASC"]],
+      include: Child,
+      where: {
+        [Op.or]: userShiftPermissions.map((entry) => ({
+          ["shiftNr"]: entry.shiftNr,
+        })),
+      },
+    });
+
+    if (!camperRegistrations.length) return registrations;
+
+    camperRegistrations.forEach((registration) => {
+      const entry = this.#prepareRegistrationEntry(
+        registration,
+        userShiftPermissions.find(
+          (entry) => registration.shiftNr === entry.shiftNr
+        ).permissions
+      );
+      registrations.push(entry);
+    });
+
+    return registrations;
   };
 
-  if (accessExtent >= permissionsList.reg.view.contact) {
-    entry.billNr = data.billNr;
-    entry.contactName = data.contactName;
-    entry.contactEmail = data.contactEmail;
-    entry.contactPhone = data.contactNumber;
-    entry.pricePaid = data.pricePaid;
-    entry.priceToPay = data.priceToPay;
-  }
+  /**
+   * Fetches a particular registration using the registration identifier.
+   * @param {Request} req - The HTTP request object
+   * @param {number} regId - The registration identifier
+   * @returns {RegistrationEntry} The registration entry
+   */
+  static fetchRegistration = async (req: Request, regId: number) => {
+    const response: registrationResponse = {
+      ok: true,
+      code: StatusCodes.OK,
+      message: "",
+    };
 
-  if (accessExtent >= permissionsList.reg.view.full) entry.idCode = data.idCode;
-  return entry;
-};
+    if (isNaN(regId)) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = "Registration identifier malformed or missing";
+      return response;
+    }
 
-/**
- * Fetches a particular registration using the registration identifier.
- * @param {Request} req - The HTTP request object
- * @param {number} regId - The registration identifier
- * @returns {RegistrationEntry} The registration entry
- */
-export const fetchRegistration = async (req: Request, regId: number) => {
-  const response: registrationResponse = {
-    ok: true,
-    code: StatusCodes.OK,
-    message: "",
-  };
+    const registration = await Registration.findByPk(regId, {
+      include: Child,
+    });
+    if (!registration) {
+      response.ok = false;
+      response.code = StatusCodes.NOT_FOUND;
+      response.message = "Unknown registration identifier";
+      return response;
+    }
 
-  if (isNaN(regId)) {
-    response.ok = false;
-    response.code = StatusCodes.BAD_REQUEST;
-    response.message = "Registration identifier malformed or missing";
-    return response;
-  }
-
-  const registration = await Registration.findByPk(regId, {
-    include: Child,
-  });
-  if (!registration) {
-    response.ok = false;
-    response.code = StatusCodes.NOT_FOUND;
-    response.message = "Unknown registration identifier";
-    return response;
-  }
-
-  const { role } = req.user;
-  const allowedRoles = ["op", "master", "boss", "root"];
-  if (!allowedRoles.includes(role)) {
-    response.ok = false;
-    response.code = StatusCodes.FORBIDDEN;
-    response.message = "Insufficient rights to access content";
-    return response;
-  }
-
-  response.payload = prepareRegistrationEntry(registration, role);
-  return response;
-};
-
-/**
- * Fetches all registrations the user has view access to.
- * @param {Request} req - The HTTP request object
- * @returns {RegistrationEntry[]} A list of all viewable registration entries
- */
-export const fetchRegistrations = async (req: Request) => {
-  const userShiftPermissions =
-    await AccessController.getViewPermissionsForAllShifts(
+    const userPermissions = await AccessController.getViewPermissionsForShift(
       req.user.id,
+      registration.shiftNr,
       permissionsList.reg.view.permissionName
     );
 
-  const registrations: RegistrationEntry[] = [];
+    if (userPermissions === null) {
+      response.ok = false;
+      response.code = StatusCodes.FORBIDDEN;
+      response.message = "Insufficient rights to access content";
+      return response;
+    }
 
-  if (!userShiftPermissions.length) return registrations;
-
-  const camperRegistrations = await Registration.findAll({
-    order: [["regOrder", "ASC"]],
-    include: Child,
-    where: {
-      [Op.or]: userShiftPermissions.map((entry) => ({
-        ["shiftNr"]: entry.shiftNr,
-      })),
-    },
-  });
-
-  if (!camperRegistrations.length) return registrations;
-
-  camperRegistrations.forEach((registration) => {
-    const entry = prepareRegistrationEntry(
+    response.payload = this.#prepareRegistrationEntry(
       registration,
-      userShiftPermissions.find(
-        (entry) => registration.shiftNr === entry.shiftNr
-      ).permissions
+      userPermissions
     );
-    registrations.push(entry);
-  });
+    return response;
+  };
 
-  return registrations;
-};
+  /**
+   * Selects the registration information fields according to the viewing permissions of the requesting user.
+   * @param {Registration} data - The registration entry
+   * @param {Permission[]} permissions - The sorted list of view permissions
+   * @returns {RegistrationEntry} The prepared entry
+   */
+  static #prepareRegistrationEntry = (
+    data: Registration,
+    permissions: Permission[]
+  ) => {
+    const accessExtent = permissions[0].extent;
+
+    const entry: RegistrationEntry = {
+      id: data.id,
+      name: data.child.name,
+      gender: data.child.gender,
+      dob: data.birthday,
+      old: data.isOld,
+      shiftNr: data.shiftNr,
+      shirtSize: data.tsSize,
+      order: data.regOrder,
+      registered: data.isRegistered,
+    };
+
+    if (accessExtent >= permissionsList.reg.view.contact) {
+      entry.billNr = data.billNr;
+      entry.contactName = data.contactName;
+      entry.contactEmail = data.contactEmail;
+      entry.contactPhone = data.contactNumber;
+      entry.pricePaid = data.pricePaid;
+      entry.priceToPay = data.priceToPay;
+    }
+
+    if (accessExtent >= permissionsList.reg.view.full)
+      entry.idCode = data.idCode;
+    return entry;
+  };
+}
+
+export default RegistrationController;
 
 const verifyPrice = (price: string) => {
   const amount = parseInt(price, 10);

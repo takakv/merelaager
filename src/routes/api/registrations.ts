@@ -1,11 +1,9 @@
 import express, { Request, Response } from "express";
-import {
+import RegistrationController, {
   deleteRegistration,
-  fetchRegistration,
-  fetchRegistrations,
   patchRegistration,
   print,
-} from "../../controllers/listController";
+} from "../../controllers/RegistrationController";
 import { StatusCodes } from "http-status-codes";
 import { createSession } from "better-sse";
 import { registrationTracker } from "../../channels/registrationTracker";
@@ -14,15 +12,18 @@ const router = express.Router();
 
 // Fetch the whole list of children and their registration status.
 router.get("/", (req: Request, res: Response) => {
-  fetchRegistrations(req)
+  RegistrationController.fetchRegistrations(req)
     .then((registrations) => res.json({ value: registrations }))
     .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
 });
 
 router.get("/:regId", (req: Request, res: Response) => {
   const regId = parseInt(req.params.regId);
-  fetchRegistration(req, regId)
-    .then((response) => res.status(response.code).json(response))
+  RegistrationController.fetchRegistration(req, regId)
+    .then((response) => {
+      if (response.ok) return res.status(response.code).json(response.payload);
+      else res.status(response.code).json(response);
+    })
     .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
 });
 
