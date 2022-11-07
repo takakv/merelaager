@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import RegistrationController, {
-  deleteRegistration,
   patchRegistration,
 } from "../../controllers/RegistrationController";
 import { StatusCodes } from "http-status-codes";
 import { createSession } from "better-sse";
 import { registrationTracker } from "../../channels/registrationTracker";
+import HttpError from "../Support Files/Errors/HttpError";
 
 const router = express.Router();
 
@@ -23,8 +23,9 @@ router.get("/:regId", (req: Request, res: Response) => {
   const regId = parseInt(req.params.regId);
   RegistrationController.fetchRegistration(req, regId)
     .then((response) => {
-      if (response.ok) return res.status(response.code).json(response.payload);
-      else res.status(response.code).json(response);
+      if (response instanceof HttpError)
+        res.status(response.httpCode).json(response.json());
+      else res.json(response);
     })
     .catch((e) => {
       console.error(e);
@@ -44,21 +45,14 @@ router.post("/events", (req: Request, res: Response) => {
     });
 });
 
-// TODO: Implement shift boss checking middleware, if convenient.
-// All of the below require shift boss permissions.
-
 // Fetch the PDF list of registrations for a single shift.
 router.get("/pdf/:shiftNr", (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
   RegistrationController.printShiftRegistrationsList(req.user, shiftNr)
     .then((response) => {
-      if (response.ok)
-        res.sendFile(response.filename, { root: "./data/files" });
-      else {
-        if (response.code === StatusCodes.NO_CONTENT)
-          res.sendStatus(StatusCodes.NO_CONTENT);
-        else res.status(response.code).json(response);
-      }
+      if (response instanceof HttpError)
+        res.status(response.httpCode).json(response.json());
+      else res.sendFile(response, { root: "./data/files" });
     })
     .catch((e) => {
       console.error(e);
@@ -74,10 +68,17 @@ router.patch("/:regId", async (req: Request, res: Response) => {
 });
 
 // Delete a registration permanently.
-router.delete("/:regId", async (req: Request, res: Response) => {
+router.delete("/:regId", (req: Request, res: Response) => {
   const regId = parseInt(req.params.regId);
-  const statusCode = await deleteRegistration(req.user, regId);
-  res.sendStatus(statusCode);
+  RegistrationController.deleteRegistration(req.user, regId)
+    .then((response) => {
+      if (response === null) res.sendStatus(StatusCodes.NO_CONTENT);
+      else res.status(response.httpCode).json(response.json());
+    })
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 export default router;

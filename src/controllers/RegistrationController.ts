@@ -16,22 +16,10 @@ import Entity = Express.Entity;
 import { Op } from "sequelize";
 import { permissionsList } from "../utilities/permissionsList";
 import AccessController from "./AccessController";
+import { RegIdError } from "../routes/Support Files/Errors/errors";
+import HttpError from "../routes/Support Files/Errors/HttpError";
 
 dotenv.config();
-
-type registrationResponse = {
-  ok: boolean;
-  code: number;
-  message: string;
-  payload?: RegistrationEntry;
-};
-
-type pdfResponse = {
-  ok: boolean;
-  code: number;
-  message?: string;
-  filename?: string;
-};
 
 class RegistrationController {
   /**
@@ -63,7 +51,7 @@ class RegistrationController {
     if (!camperRegistrations.length) return registrations;
 
     camperRegistrations.forEach((registration) => {
-      const entry = this.#prepareRegistrationEntry(
+      const entry = this.prepareRegistrationEntry(
         registration,
         userShiftPermissions.find(
           (entry) => registration.shiftNr === entry.shiftNr
@@ -76,35 +64,21 @@ class RegistrationController {
   };
 
   /**
-   * Fetches a particular registration using the registration identifier.
+   * Fetches a registration based on its identifier.
    * @param {Request} req - The HTTP request object
    * @param {number} regId - The registration identifier
-   * @returns {registrationResponse} The response object containing the registration entry on success,
-   * or an error message on failure
+   * @returns The registration entries
    */
-  static fetchRegistration = async (req: Request, regId: number) => {
-    const response: registrationResponse = {
-      ok: true,
-      code: StatusCodes.OK,
-      message: "",
-    };
-
-    if (isNaN(regId)) {
-      response.ok = false;
-      response.code = StatusCodes.BAD_REQUEST;
-      response.message = "Registration identifier malformed or missing";
-      return response;
-    }
+  static fetchRegistration = async (
+    req: Request,
+    regId: number
+  ): Promise<RegistrationEntry | HttpError> => {
+    if (isNaN(regId)) return new RegIdError(StatusCodes.BAD_REQUEST);
 
     const registration = await Registration.findByPk(regId, {
       include: Child,
     });
-    if (!registration) {
-      response.ok = false;
-      response.code = StatusCodes.NOT_FOUND;
-      response.message = "Unknown registration identifier";
-      return response;
-    }
+    if (!registration) return new RegIdError(StatusCodes.NOT_FOUND);
 
     const userPermissions = await AccessController.getViewPermissionsForShift(
       req.user.id,
@@ -113,35 +87,70 @@ class RegistrationController {
     );
 
     if (userPermissions === null) {
-      response.ok = false;
-      response.code = StatusCodes.FORBIDDEN;
-      response.message = "Insufficient rights to access content";
-      return response;
+      return new HttpError(
+        StatusCodes.FORBIDDEN,
+        "Insufficient rights to view registration"
+      );
     }
 
-    response.payload = this.#prepareRegistrationEntry(
-      registration,
-      userPermissions
+    return this.prepareRegistrationEntry(registration, userPermissions);
+  };
+
+  /**
+   * Deletes a registration based on its identifier.
+   * @param {Entity} user - The requesting user
+   * @param {number} regId - The registration identifier
+   * @returns `null` in case of a successful deletion
+   */
+  static deleteRegistration = async (
+    user: Entity,
+    regId: number
+  ): Promise<null | HttpError> => {
+    if (isNaN(regId)) return new RegIdError(StatusCodes.BAD_REQUEST);
+
+    // Fetch first to check for permissions.
+    const registration = await Registration.findByPk(regId);
+    if (!registration) return new RegIdError(StatusCodes.NOT_FOUND);
+
+    const deletionAllowed = await AccessController.approvePermission(
+      user.id,
+      registration.shiftNr,
+      permissionsList.reg.edit.permissionName,
+      permissionsList.reg.edit.delete
     );
-    return response;
+
+    if (!deletionAllowed)
+      return new HttpError(
+        StatusCodes.FORBIDDEN,
+        "Insufficient rights to delete registration"
+      );
+
+    try {
+      await registration.destroy();
+    } catch (e) {
+      console.error(e);
+      return new HttpError(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+
+    return null;
   };
 
   /**
    * Generates a PDF list of registrations for a shift.
    * @param {Entity} user - The requesting user
    * @param {number} shiftNr - The identifier of the requested shift
-   * @returns {pdfResponse} The response object containing either the generated PDF file name,
-   * or error information on failure
+   * @returns The name of the PDF file on the filesystem
    */
   static printShiftRegistrationsList = async (
     user: Entity,
     shiftNr: number
-  ) => {
-    const response: pdfResponse = {
-      ok: true,
-      code: StatusCodes.OK,
-      message: "",
-    };
+  ): Promise<string | HttpError> => {
+    if (isNaN(shiftNr)) {
+      return new HttpError(
+        StatusCodes.BAD_REQUEST,
+        "Shift number malformed or missing"
+      );
+    }
 
     const userPermissions = await AccessController.getViewPermissionsForShift(
       user.id,
@@ -153,10 +162,10 @@ class RegistrationController {
       userPermissions === null ||
       userPermissions[0].extent < permissionsList.reg.view.contact
     ) {
-      response.ok = false;
-      response.code = StatusCodes.FORBIDDEN;
-      response.message = "Insufficient rights to access content";
-      return response;
+      return new HttpError(
+        StatusCodes.FORBIDDEN,
+        "Insufficient rights to view registrations"
+      );
     }
 
     const registrations = await Registration.findAll({
@@ -165,9 +174,7 @@ class RegistrationController {
     });
 
     if (!registrations) {
-      response.ok = false;
-      response.code = StatusCodes.NO_CONTENT;
-      return response;
+      return new HttpError(StatusCodes.NOT_FOUND, "No registrations found");
     }
 
     const entries: PrintEntry[] = [];
@@ -185,20 +192,19 @@ class RegistrationController {
       });
     });
 
-    response.filename = await generatePDF(shiftNr, entries);
-    return response;
+    return generatePDF(shiftNr, entries);
   };
 
   /**
    * Selects the registration information fields according to the viewing permissions of the requesting user.
    * @param {Registration} data - The registration entry
    * @param {Permission[]} permissions - The sorted list of view permissions
-   * @returns {RegistrationEntry} The prepared entry
+   * @returns The prepared entry
    */
-  static #prepareRegistrationEntry = (
+  private static prepareRegistrationEntry = (
     data: Registration,
     permissions: Permission[]
-  ) => {
+  ): RegistrationEntry => {
     const accessExtent = permissions[0].extent;
 
     const entry: RegistrationEntry = {
@@ -321,34 +327,6 @@ export const patchRegistration = async (req: Request, regId: number) => {
 
   try {
     await registration.save();
-    logObj.log();
-  } catch (e) {
-    console.error(e);
-    return 500;
-  }
-  return 204;
-};
-
-export const deleteRegistration = async (user: Entity, regId: number) => {
-  if (isNaN(regId)) return 400;
-
-  // Fetch first to check for permissions.
-  const registration = await Registration.findByPk(regId);
-  if (!registration) return 404;
-
-  const logObj = new UserLogEntry(
-    user.id,
-    loggingModules.registrations,
-    loggingActions.delete
-  );
-
-  if (!(await approveShiftRole(user, "boss", registration.shiftNr, logObj)))
-    return 403;
-
-  logObj.setAndCommit({ registrationId: regId });
-
-  try {
-    await registration.destroy();
     logObj.log();
   } catch (e) {
     console.error(e);

@@ -29,7 +29,7 @@ class AccessController {
           required: true,
           attributes: ["shiftNr"],
           order: ["shiftNr", "ASC"],
-          include: [this.#getACGroup(permissionType)],
+          include: [this.getACGroup(permissionType)],
         },
       ],
     });
@@ -40,7 +40,7 @@ class AccessController {
       (shift) => ({
         shiftNr: shift.shiftNr,
         permissions: shift.acGroup.permissions.sort(
-          this.#sortPermissionsDescending
+          this.sortPermissionsDescending
         ),
       })
     );
@@ -69,7 +69,7 @@ class AccessController {
           required: true,
           attributes: ["shiftNr"],
           where: { shiftNr },
-          include: [this.#getACGroup(permissionType)],
+          include: [this.getACGroup(permissionType)],
         },
       ],
     });
@@ -82,11 +82,59 @@ class AccessController {
     }
 
     return userData.shiftGroups[0].acGroup.permissions.sort(
-      this.#sortPermissionsDescending
+      this.sortPermissionsDescending
     );
   };
 
-  static #getACGroup = (permissionName: string) => {
+  /**
+   * Approves or denies the requested permission for a given user and a given shift.
+   * @param userId - The user identifier
+   * @param shiftNr - The shift's identifier
+   * @param permissionType - The name/type of the permission
+   * @param permissionExtent - The extent of the permission
+   * @returns {boolean} `true` if approved, else `false`
+   */
+  static approvePermission = async (
+    userId: number,
+    shiftNr: number,
+    permissionType: string,
+    permissionExtent: number
+  ) => {
+    const userData = await User.findByPk(userId, {
+      attributes: [],
+      include: [
+        {
+          model: ShiftGroup,
+          required: true,
+          attributes: ["shiftNr"],
+          where: { shiftNr },
+          include: [this.getPermission(permissionType, permissionExtent)],
+        },
+      ],
+    });
+
+    return !!userData;
+  };
+
+  private static getPermission = (type: string, extent: number) => {
+    return {
+      model: ACGroup,
+      attributes: ["id"],
+      required: true,
+      include: [
+        {
+          model: Permission,
+          attributes: ["name", "extent"],
+          where: {
+            name: type,
+            extent: extent,
+          },
+        },
+      ],
+    };
+  };
+
+  private static getACGroup = (permissionName: string) => {
     return {
       model: ACGroup,
       attributes: ["id"],
@@ -103,7 +151,7 @@ class AccessController {
     };
   };
 
-  static #sortPermissionsDescending = (a: Permission, b: Permission) =>
+  private static sortPermissionsDescending = (a: Permission, b: Permission) =>
     b.extent - a.extent;
 }
 

@@ -10,6 +10,7 @@ export const permissionsList = {
       permissionName: "reg:edit",
       basic: 1,
       full: 3,
+      delete: 5,
     },
   },
   child: {},
