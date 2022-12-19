@@ -2,11 +2,10 @@ import { priceAffectingFields, priceDisplay } from "./htmlElements.js";
 import { ChildPrice } from "../classes/ChildPrice.js";
 
 const shiftPrices = {
-  1: 240,
-  2: 320,
-  3: 200,
-  4: 320,
-  5: 320,
+  1: 340,
+  2: 340,
+  3: 340,
+  4: 340,
 };
 
 const childPrices = [
