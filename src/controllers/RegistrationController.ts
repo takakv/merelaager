@@ -18,6 +18,7 @@ import { permissionsList } from "../utilities/permissionsList";
 import AccessController from "./AccessController";
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
+import PermReg from "../utilities/acl/PermReg";
 
 dotenv.config();
 
@@ -83,7 +84,7 @@ class RegistrationController {
     const userPermissions = await AccessController.getViewPermissionsForShift(
       user.id,
       registration.shiftNr,
-      permissionsList.reg.view.permissionName
+      PermReg.getView()
     );
 
     if (userPermissions === null) {
@@ -265,26 +266,17 @@ const updateData = async (registration: Registration) => {
 };
 
 export const patchRegistration = async (req: Request, regId: number) => {
-  const response = {
-    ok: true,
-    code: StatusCodes.OK,
-    message: "",
-  };
-
   if (isNaN(regId)) {
-    response.ok = false;
-    response.code = StatusCodes.BAD_REQUEST;
-    response.message = "Registration identifier malformed or missing";
-    return response;
+    return new HttpError(
+      StatusCodes.BAD_REQUEST,
+      "Registration identifier malformed or missing"
+    );
   }
 
   // Fetch first to check for permissions.
   const registration = await Registration.findByPk(regId);
   if (!registration) {
-    response.ok = false;
-    response.code = StatusCodes.NOT_FOUND;
-    response.message = "Unknown registration identifier";
-    return response;
+    return new HttpError(StatusCodes.NOT_FOUND, "No registration found");
   }
 
   if (!(await approveShiftRole(req.user, "boss", registration.shiftNr))) {
