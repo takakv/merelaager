@@ -1,4 +1,4 @@
-export const unlockTime = new Date(Date.parse("01 Jan 2022 11:59:50 UTC"));
+export const unlockTime = new Date(Date.parse("01 Jan 2023 11:59:50 UTC"));
 const now = Date.now();
 export const eta = unlockTime.getTime() - now;
 
