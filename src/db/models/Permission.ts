@@ -18,7 +18,7 @@ interface PermissionAttributes {
 
 type PermissionCreationAttributes = Optional<PermissionAttributes, "id">;
 
-@Table
+@Table({ tableName: "permissions" })
 export class Permission extends Model<
   PermissionAttributes,
   PermissionCreationAttributes
