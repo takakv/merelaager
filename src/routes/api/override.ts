@@ -59,7 +59,6 @@ router.post("/acgroup", (req: TypedRequestBody<acRequest>, res: Response) => {
 });
 
 router.post("/permissions/init", (req: Request, res: Response) => {
-  console.log("I am here");
   PermissionController.initDB()
     .then((code) => res.sendStatus(code))
     .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));

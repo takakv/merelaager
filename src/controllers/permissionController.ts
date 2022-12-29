@@ -2,7 +2,10 @@ import { StatusCodes } from "http-status-codes";
 import { Permission } from "../db/models/Permission";
 import { ACGroup } from "../db/models/ACGroup";
 import PermGroups from "../utilities/acl/PermGroups";
-import PermReg from "../utilities/acl/PermReg";
+import PermReg, { PermView } from "../utilities/acl/PermReg";
+import permGroups from "../utilities/acl/PermGroups";
+import permReg from "../utilities/acl/PermReg";
+import { GroupPermission } from "../db/models/GroupPermission";
 
 export type acRequest = {
   name: string;
@@ -21,8 +24,9 @@ type PermEntry = {
 
 class PermissionController {
   public static initDB = async () => {
-    await this.initGroups();
-    await this.initPermissions();
+    const groups = await this.initGroups();
+    const perms = await this.initPermissions();
+    await this.tiePermissions(groups, perms);
     return StatusCodes.CREATED;
   };
 
@@ -70,6 +74,44 @@ class PermissionController {
     }
 
     return perms;
+  };
+
+  private static findPermId = (
+    perms: PermEntry[],
+    permName: string,
+    permExtent: number
+  ): number => {
+    const entry = perms.find(
+      (perm) => perm.name === permName && perm.extent == permExtent
+    );
+    if (entry === undefined) return -1;
+    return entry.id;
+  };
+
+  private static tiePermissions = async (
+    groups: GroupEntry[],
+    perms: PermEntry[]
+  ) => {
+    for (const group of groups) {
+      switch (group.name) {
+        case PermGroups.BOSS:
+          await GroupPermission.findOrCreate({
+            where: {
+              groupId: group.id,
+              permissionId: this.findPermId(
+                perms,
+                PermReg.getView(),
+                PermView.FULL
+              ),
+            },
+          });
+          break;
+        case PermGroups.COACH:
+          break;
+        case PermGroups.HELPER:
+          break;
+      }
+    }
   };
 }
 
