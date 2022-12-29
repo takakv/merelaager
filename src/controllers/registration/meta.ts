@@ -4,10 +4,9 @@ export const eta = unlockTime.getTime() - now;
 
 export const registrationPrices = {
   1: 240,
-  2: 320,
-  3: 200,
-  4: 320,
-  5: 320,
+  2: 340,
+  3: 340,
+  4: 340,
 };
 
 export const registrationPriceDiff = 20;
