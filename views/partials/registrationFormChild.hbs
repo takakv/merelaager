@@ -76,15 +76,15 @@
         </select>
       </div>
       <div class="registration-form__field registration-form__field--row">
-        <label for="newcomer-{{this}}">Esimest korda merelaagris?</label>
-        <input
-          type="checkbox"
-          name="newcomer[]"
-          id="newcomer-{{this}}"
-          class="newField"
-          value="{{this}}"
-          checked
-        />
+        <p class="u-required">Esimest korda merelaagris?</p>
+        <div class="group">
+          <label for="newcomer-{{this}}-y">Jah</label>
+          <input type="radio" id="newcomer-{{this}}-y" name="newcomer[]" value="yes" class="newField-y" required>
+        </div>
+        <div class="group">
+          <label for="newcomer-{{this}}-n">Ei</label>
+          <input type="radio" id="newcomer-{{this}}-n" name="newcomer[]" value="no" class="newField-n" required>
+        </div>
       </div>
     </div>
     <p>Elukoht:</p>
