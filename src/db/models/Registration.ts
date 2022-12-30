@@ -36,10 +36,13 @@ interface RegistrationAttributes {
   backupTel: string;
   pricePaid: number;
   priceToPay: number;
+  notifSent: boolean;
 }
 
-interface RegistrationCreationAttributes
-  extends Optional<RegistrationAttributes, "id" | "pricePaid"> {}
+type RegistrationCreationAttributes = Optional<
+  RegistrationAttributes,
+  "id" | "pricePaid"
+>;
 
 @Table({ tableName: "registrations" })
 export class Registration
@@ -134,27 +137,7 @@ export class Registration
   @Column(DataType.INTEGER.UNSIGNED)
   public priceToPay: number;
 
-  getRegistrationProperties() {
-    return {
-      childId: this.childId,
-      idCode: this.idCode,
-      shiftNr: this.shiftNr,
-      isRegistered: this.isRegistered,
-      regOrder: this.regOrder,
-      isOld: this.isOld,
-      birthday: this.birthday,
-      tsSize: this.tsSize,
-      addendum: this.addendum,
-      road: this.road,
-      city: this.city,
-      county: this.county,
-      country: this.country,
-      billNr: this.billNr,
-      contactName: this.contactName,
-      contactNumber: this.contactNumber,
-      contactEmail: this.contactEmail,
-      backupTel: this.backupTel,
-      priceToPay: this.priceToPay,
-    };
-  }
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  public notifSent: boolean;
 }
