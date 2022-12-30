@@ -1,5 +1,6 @@
-const getConfigHeader = () => {
-  return `<?xml version="1.0" encoding="UTF-8"?>
+class DummyConf {
+  public static getHeader = () => {
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Merelaager RegTest" enabled="true">
@@ -13,10 +14,10 @@ const getConfigHeader = () => {
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>`;
-};
+  };
 
-const getConfigFooter = () => {
-  return `
+  public static getFooter = () => {
+    return `
       <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
           <collectionProp name="Arguments.arguments"/>
@@ -72,10 +73,10 @@ const getConfigFooter = () => {
   </hashTree>
 </jmeterTestPlan>
 `;
-};
+  };
 
-const getParallelHeader = () => {
-  return `
+  public static getParallelHeader = () => {
+    return `
       <hashTree>
         <com.blazemeter.jmeter.controller.ParallelSampler guiclass="com.blazemeter.jmeter.controller.ParallelControllerGui" testclass="com.blazemeter.jmeter.controller.ParallelSampler" testname="bzm - Parallel Controller" enabled="true">
           <intProp name="MAX_THREAD_NUMBER">6</intProp>
@@ -83,16 +84,16 @@ const getParallelHeader = () => {
           <boolProp name="LIMIT_MAX_THREAD_NUMBER">false</boolProp>
         </com.blazemeter.jmeter.controller.ParallelSampler>
         <hashTree>`;
-};
+  };
 
-const getParallelFooter = () => {
-  return `
+  public static getParallelFooter = () => {
+    return `
         </hashTree>
       </hashTree>`;
-};
+  };
 
-const getRequestSampler = (data) => {
-  return `
+  public static getRequestSampler = (data: string) => {
+    return `
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -129,10 +130,10 @@ const getRequestSampler = (data) => {
             </HeaderManager>
             <hashTree/>
           </hashTree>`;
-};
+  };
 
-const getThreadGroup = (shift: number, gender: string) => {
-  return `
+  public static getThreadGroup = (shift: number, gender: string) => {
+    return `
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group ${shift}-${gender}" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -146,13 +147,7 @@ const getThreadGroup = (shift: number, gender: string) => {
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>`;
-};
+  };
+}
 
-module.exports = {
-  getConfigHeader,
-  getConfigFooter,
-  getParallelHeader,
-  getParallelFooter,
-  getRequestSampler,
-  getThreadGroup,
-};
+export default DummyConf;

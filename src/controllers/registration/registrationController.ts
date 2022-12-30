@@ -96,6 +96,10 @@ const parseIdCode = (code: string) => {
 export const create = async (req: Request, res: Response) => {
   try {
     const response = await registerCampers(req.body);
+    if (!response.ok) {
+      console.log(req.body);
+      console.log(response)
+    }
     // if (response.ok) return res.redirect("../reserv/");
     return res.status(response.code).json(response);
   } catch (e) {
@@ -199,7 +203,7 @@ const registerCampers = async (payloadData: unknown) => {
     if (
       !payload.hasOwnProperty(key) ||
       !Array.isArray(payload[key]) ||
-      payload[key].length != maxBatchRegistrations
+      payload[key].length > maxBatchRegistrations
     ) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
