@@ -1,15 +1,20 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import sequelize from "sequelize";
 import dotenv from "dotenv";
 
-import {Registration} from "../../db/models/Registration";
-import {Child} from "../../db/models/Child";
-import {StatusCodes} from "http-status-codes";
-import {registrationTracker} from "../../channels/registrationTracker";
+import { Registration } from "../../db/models/Registration";
+import { Child } from "../../db/models/Child";
+import { StatusCodes } from "http-status-codes";
+import { registrationTracker } from "../../channels/registrationTracker";
 
 dotenv.config();
 
-import {eta, registrationPriceDiff, registrationPrices, unlockTime} from "./meta";
+import {
+  eta,
+  registrationPriceDiff,
+  registrationPrices,
+  unlockTime,
+} from "./meta";
 
 const maxBatchRegistrations = 4;
 
@@ -85,7 +90,7 @@ const parseIdCode = (code: string) => {
 
   const birthday = new Date(Date.UTC(fullYear, month - 1, day));
 
-  return {gender, birthday};
+  return { gender, birthday };
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -111,7 +116,7 @@ interface payload {
   useIdCode?: string[];
   shiftNr: string[];
   tsSize: string[];
-  newcomer?: string[];
+  newcomer: string[];
   road: string[];
   city: string[];
   county: string[];
@@ -203,6 +208,13 @@ const registerCampers = async (payloadData: unknown) => {
     }
   }
 
+  if (!Array.isArray(payload.newcomer)) {
+    response.ok = false;
+    response.code = StatusCodes.BAD_REQUEST;
+    response.message = "Newcomer data malformed or missing";
+    return response;
+  }
+
   const stringKeys: ObjectKey[] = [
     "contactName",
     "contactNumber",
@@ -221,7 +233,6 @@ const registerCampers = async (payloadData: unknown) => {
   const registrationEntries: regEntry[] = [];
 
   for (let i = 0; i < childCount; ++i) {
-
     // TODO: implement registration without ID code
     const parsedId = parseIdCode(payload.idCode[i]);
     if (!parsedId) {
@@ -238,7 +249,7 @@ const registerCampers = async (payloadData: unknown) => {
       response.message = "Child name is missing or empty";
       return response;
     }
-    const childInstance = await Child.findOrCreate({
+    const [childInstance, created] = await Child.findOrCreate({
       where: sequelize.where(
         sequelize.fn("LOWER", sequelize.col("name")),
         "LIKE",
@@ -251,22 +262,12 @@ const registerCampers = async (payloadData: unknown) => {
       },
     });
 
-    const childId = childInstance[0].id;
-    let isOld = !payload.newcomer;
-    if (!Array.isArray(payload.newcomer)) {
-      response.ok = false;
-      response.code = StatusCodes.BAD_REQUEST;
-      response.message = "Malformed newcomer data";
-      return response;
-    }
-    if (
-      !isOld &&
-      payload.newcomer.find((el: string) => el === `${i + 1}`) === undefined
-    )
-      isOld = true;
+    const childId = childInstance.id;
+    let isOld = !created;
+    if (!isOld && payload.newcomer[i] !== "yes") isOld = true;
 
     const shiftNr = parseInt(payload.shiftNr[i], 10);
-    if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 5) {
+    if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 4) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
       response.message = "Illegal shift number";
@@ -292,20 +293,23 @@ const registerCampers = async (payloadData: unknown) => {
       backupTel: payload.backupTel ?? null,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       priceToPay: isOld
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        ? registrationPrices[shiftNr] - registrationPriceDiff
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        : registrationPrices[shiftNr],
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          registrationPrices[shiftNr] - registrationPriceDiff
+        : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          registrationPrices[shiftNr],
     };
 
     registrationEntries.push(registrationEntry);
   }
   const createdData = await Registration.bulkCreate(registrationEntries);
   // Broadcast separately to ease parsing on client side.
-  createdData.forEach(entry => {
-    registrationTracker.broadcast(JSON.stringify({id: entry.id}), "registration-created");
-  })
+  createdData.forEach((entry) => {
+    registrationTracker.broadcast(
+      JSON.stringify({ id: entry.id }),
+      "registration-created"
+    );
+  });
   return response;
 };

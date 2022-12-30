@@ -27,8 +27,7 @@ router.use("/pb", pub);
 router.post("/registrations", async (req: Request, res: Response) => {
   console.log(req.body);
   if (!req.body) return res.sendStatus(StatusCodes.BAD_REQUEST);
-  const result = await registerChildren(req.body);
-  res.sendStatus(result);
+  await create(req, res);
 });
 
 // ---------- AUTH ZONE ------------------------------
@@ -74,7 +73,7 @@ router.use("/bills", bills);
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
 import register from "./register";
-import {registerChildren} from "../controllers/registration/registrationController";
+import {create, registerChildren} from "../controllers/registration/registrationController";
 
 router.get("/shirts/fetch/", async (req: Request, res: Response) => {
   const data = await fetchShirts();
