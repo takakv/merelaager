@@ -98,9 +98,9 @@ export const create = async (req: Request, res: Response) => {
     const response = await registerCampers(req.body);
     if (!response.ok) {
       console.log(req.body);
-      console.log(response)
+      console.log(response);
     }
-    // if (response.ok) return res.redirect("../reserv/");
+    if (response.ok) return res.redirect("../registreerimine/reserv/");
     return res.status(response.code).json(response);
   } catch (e) {
     console.error(e);
@@ -120,7 +120,10 @@ interface payload {
   useIdCode?: string[];
   shiftNr: string[];
   tsSize: string[];
-  newcomer: string[];
+  "newcomer-1": string;
+  "newcomer-2": string;
+  "newcomer-3": string;
+  "newcomer-4": string;
   road: string[];
   city: string[];
   county: string[];
@@ -212,12 +215,12 @@ const registerCampers = async (payloadData: unknown) => {
     }
   }
 
-  if (!Array.isArray(payload.newcomer)) {
+  /*if (!Array.isArray(payload.newcomer)) {
     response.ok = false;
     response.code = StatusCodes.BAD_REQUEST;
     response.message = "Newcomer data malformed or missing";
     return response;
-  }
+  }*/
 
   const stringKeys: ObjectKey[] = [
     "contactName",
@@ -268,7 +271,15 @@ const registerCampers = async (payloadData: unknown) => {
 
     const childId = childInstance.id;
     let isOld = !created;
-    if (!isOld && payload.newcomer[i] !== "yes") isOld = true;
+    if (!payload.hasOwnProperty(`newcomer-${i + 1}`)) {
+      response.ok = false;
+      response.code = StatusCodes.BAD_REQUEST;
+      response.message = "Newcomer data malformed or missing";
+      return response;
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    isOld = payload[`newcomer-${i + 1}`] !== "yes";
 
     const shiftNr = parseInt(payload.shiftNr[i], 10);
     if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 4) {
