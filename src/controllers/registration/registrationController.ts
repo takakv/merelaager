@@ -328,9 +328,13 @@ const registerCampers = async (payloadData: unknown) => {
       "registration-created"
     );
   });
-  await mailService.sendFailureMail(registrationEntries, {
-    name: payload.contactName,
-    email: payload.contactEmail,
-  });
+  try {
+    await mailService.sendFailureMail(registrationEntries, {
+      name: payload.contactName,
+      email: payload.contactEmail,
+    });
+  } catch (e) {
+    console.error(e);
+  }
   return response;
 };
