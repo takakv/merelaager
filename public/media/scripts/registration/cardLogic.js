@@ -26,6 +26,7 @@ const requiredFields = [
   fields.city,
   fields.country,
   fields.county,
+  fields.seniority
 ];
 
 // Display first card

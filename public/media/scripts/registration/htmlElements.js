@@ -23,6 +23,7 @@ export const fields = {
   city: document.getElementsByClassName("cityField"),
   country: document.getElementsByClassName("countryField"),
   county: document.getElementsByClassName("countyField"),
+  seniority: document.getElementsByClassName("nf")
 };
 
 export const priceDisplay = document.getElementById("payment-total");
