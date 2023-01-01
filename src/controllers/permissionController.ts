@@ -115,6 +115,16 @@ class PermissionController {
               ),
             },
           });
+          await GroupPermission.findOrCreate({
+            where: {
+              groupId: group.id,
+              permissionId: this.findPermId(
+                perms,
+                PermReg.getEdit(),
+                PermEdit.DELETE
+              ),
+            },
+          });
           break;
         case PermGroups.COACH:
           break;
