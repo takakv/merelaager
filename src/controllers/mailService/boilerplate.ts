@@ -420,6 +420,7 @@ const getFailed = (campers: regEntry[]) => {
                                   <p>Oleme ${
                                     campers.length > 1 ? "lapsed" : "lapse"
                                   } registreerinud reservnimekirja. Kui juhtaja koha kinnitab või põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
+                                  <p>Juhataja kinnitab kohad hiljemalt 02.01.</p>
                                   <p>Parimate soovidega</p>
                                   <p>${getStaffContacts(shifts)}</p>
                                   <p style="font-size: 11px">Tegu on automaatvastusega, palume sellele meilile mitte vastata. Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</p>
