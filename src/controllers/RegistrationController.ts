@@ -234,6 +234,19 @@ class RegistrationController {
           if (!(await approvePermission(PermEdit.FULL)))
             return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
 
+          if (
+            (await Registration.count({
+              where: {
+                shiftNr: registration.shiftNr,
+                isRegistered: true,
+              },
+            })) >= 18
+          )
+            return new HttpError(
+              StatusCodes.FORBIDDEN,
+              "Registration count exceeds open slots"
+            );
+
           registration.isRegistered = body.registered;
           await this.updateData(registration);
           break;
