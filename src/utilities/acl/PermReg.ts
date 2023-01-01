@@ -8,6 +8,7 @@ export enum PermEdit {
   BASIC = 1,
   FULL = 3,
   DELETE = 5,
+  PRICE = 7,
 }
 
 class PermReg {

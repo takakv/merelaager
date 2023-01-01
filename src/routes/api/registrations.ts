@@ -1,7 +1,5 @@
 import express, { Request, Response } from "express";
-import RegistrationController, {
-  patchRegistration,
-} from "../../controllers/RegistrationController";
+import RegistrationController from "../../controllers/RegistrationController";
 import { StatusCodes } from "http-status-codes";
 import { createSession } from "better-sse";
 import { registrationTracker } from "../../channels/registrationTracker";
@@ -65,7 +63,7 @@ router.post("/notify", (req: Request, res: Response) => {
 router.get("/pdf/:shiftNr", (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
   RegistrationController.printShiftRegistrationsList(req.user, shiftNr)
-    .then((response) => {
+    .then((response: string | HttpError) => {
       if (response instanceof HttpError)
         res.status(response.httpCode).json(response.json());
       else res.sendFile(response, { root: "./data/files" });
@@ -77,10 +75,18 @@ router.get("/pdf/:shiftNr", (req: Request, res: Response) => {
 });
 
 // Update values for a specific registration.
-router.patch("/:regId", async (req: Request, res: Response) => {
+router.patch("/:regId", (req: Request, res: Response) => {
   const regId = parseInt(req.params.regId);
-  const statusCode = await patchRegistration(req, regId);
-  res.sendStatus(statusCode);
+  RegistrationController.patchRegistration(req, regId)
+    .then((response: number | HttpError) => {
+      if (response instanceof HttpError)
+        res.status(response.httpCode).json(response.json());
+      else res.sendStatus(response);
+    })
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 // Delete a registration permanently.

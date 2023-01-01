@@ -10,7 +10,6 @@ import { ShiftData } from "../db/models/ShiftData";
 import { StatusCodes } from "http-status-codes";
 
 import { generatePDF } from "./listGenerator";
-import { userIsRoot } from "../routes/Support Files/shiftAuth";
 import { Permission } from "../db/models/Permission";
 import Entity = Express.Entity;
 import { Op } from "sequelize";
@@ -18,7 +17,7 @@ import { permissionsList } from "../utilities/permissionsList";
 import AccessController from "./AccessController";
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
-import PermReg from "../utilities/acl/PermReg";
+import PermReg, { PermEdit } from "../utilities/acl/PermReg";
 
 dotenv.config();
 
@@ -196,6 +195,98 @@ class RegistrationController {
     return generatePDF(shiftNr, entries);
   };
 
+  public static patchRegistration = async (
+    req: Request,
+    regId: number
+  ): Promise<number | HttpError> => {
+    if (isNaN(regId)) {
+      return new HttpError(
+        StatusCodes.BAD_REQUEST,
+        "Registration identifier malformed or missing"
+      );
+    }
+
+    // Fetch first to check for permissions.
+    const registration = await Registration.findByPk(regId);
+    if (!registration) {
+      return new HttpError(StatusCodes.NOT_FOUND, "No registration found");
+    }
+
+    const body = req.body as {
+      registered?: boolean;
+      old?: boolean;
+      pricePaid?: number;
+      priceToPay?: number;
+    };
+
+    const approvePermission = async (extent: number) => {
+      return AccessController.approvePermission(
+        req.user.id,
+        registration.shiftNr,
+        PermReg.getEdit(),
+        extent
+      );
+    };
+
+    for (const key of Object.keys(body)) {
+      switch (key) {
+        case "registered":
+          if (!(await approvePermission(PermEdit.FULL)))
+            return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
+
+          registration.isRegistered = body.registered;
+          await this.updateData(registration);
+          break;
+        case "old":
+          if (!(await approvePermission(PermEdit.FULL)))
+            return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
+
+          registration.isOld = body.old;
+          break;
+        case "pricePaid":
+          if (!(await approvePermission(PermEdit.PRICE)))
+            return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
+
+          if (isNaN(body.pricePaid))
+            return new HttpError(
+              StatusCodes.BAD_REQUEST,
+              "Price is not a number"
+            );
+
+          registration.pricePaid = body.pricePaid;
+          break;
+        case "priceToPay":
+          if (!(await approvePermission(PermEdit.PRICE)))
+            return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
+
+          if (isNaN(body.priceToPay))
+            return new HttpError(
+              StatusCodes.BAD_REQUEST,
+              "Price is not a number"
+            );
+
+          registration.priceToPay = body.priceToPay;
+          break;
+        default:
+          return new HttpError(
+            StatusCodes.UNPROCESSABLE_ENTITY,
+            `Unknown field '${key}'`
+          );
+      }
+    }
+
+    try {
+      await registration.save();
+    } catch (e) {
+      console.error(e);
+      return new HttpError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "Unexpected error"
+      );
+    }
+    return StatusCodes.NO_CONTENT;
+  };
+
   public static sendConfirmationEmail = async (
     user: Entity,
     shiftNr: number
@@ -210,6 +301,29 @@ class RegistrationController {
     });
 
     console.log(tmp);
+  };
+
+  private static updateData = async (registration: Registration) => {
+    const { shiftNr } = registration;
+
+    const child = await Child.findOne({
+      where: { id: registration.childId },
+    });
+
+    const [entry, created] = await ShiftData.findOrCreate({
+      where: { childId: child.id, shiftNr },
+      defaults: {
+        childId: child.id,
+        shiftNr,
+        parentNotes: registration.addendum,
+        isActive: registration.isRegistered,
+      },
+    });
+
+    if (!created) {
+      entry.isActive = registration.isRegistered;
+      await entry.save();
+    }
   };
 
   /**
@@ -252,93 +366,3 @@ class RegistrationController {
 }
 
 export default RegistrationController;
-
-const verifyPrice = (price: string) => {
-  const amount = parseInt(price, 10);
-  return !isNaN(amount);
-};
-
-const updateData = async (registration: Registration) => {
-  const { shiftNr } = registration;
-
-  const child = await Child.findOne({
-    where: { id: registration.childId },
-  });
-
-  const [entry, created] = await ShiftData.findOrCreate({
-    where: { childId: child.id, shiftNr },
-    defaults: {
-      childId: child.id,
-      shiftNr,
-      parentNotes: registration.addendum,
-      isActive: registration.isRegistered,
-    },
-  });
-
-  if (!created) {
-    entry.isActive = registration.isRegistered;
-    await entry.save();
-  }
-};
-
-export const patchRegistration = async (req: Request, regId: number) => {
-  if (isNaN(regId)) {
-    return new HttpError(
-      StatusCodes.BAD_REQUEST,
-      "Registration identifier malformed or missing"
-    );
-  }
-
-  // Fetch first to check for permissions.
-  const registration = await Registration.findByPk(regId);
-  if (!registration) {
-    return new HttpError(StatusCodes.NOT_FOUND, "No registration found");
-  }
-
-  if (!(await approveShiftRole(req.user, "boss", registration.shiftNr))) {
-    response.ok = false;
-    response.code = StatusCodes.FORBIDDEN;
-    response.message = "Insufficient rights to access content";
-    return response;
-  }
-
-  const keys = Object.keys(req.body);
-  logObj.setAndCommit({ registrationId: regId, field: keys[0] });
-
-  let patchError = 0;
-
-  keys.forEach((key) => {
-    switch (key) {
-      case "registered":
-        registration.isRegistered = req.body.registered;
-        updateData(registration);
-        break;
-      case "old":
-        registration.isOld = req.body.old;
-        break;
-      case "pricePaid":
-        if (!userIsRoot(req.user)) patchError = 403;
-        if (!verifyPrice(req.body.pricePaid)) patchError = 400;
-        registration.pricePaid = req.body.pricePaid;
-        break;
-      case "priceToPay":
-        if (!userIsRoot(req.user)) patchError = 403;
-        if (!verifyPrice(req.body.priceToPay)) patchError = 400;
-        registration.priceToPay = req.body.priceToPay;
-        break;
-      default:
-        patchError = 422;
-    }
-  });
-
-  if (patchError !== 0) return patchError;
-
-  try {
-    await registration.save();
-    logObj.log();
-  } catch (e) {
-    console.error(e);
-    return 500;
-  }
-  return 204;
-};

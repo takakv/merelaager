@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { Permission } from "../db/models/Permission";
 import { ACGroup } from "../db/models/ACGroup";
 import PermGroups from "../utilities/acl/PermGroups";
-import PermReg, { PermView } from "../utilities/acl/PermReg";
+import PermReg, { PermEdit, PermView } from "../utilities/acl/PermReg";
 import permGroups from "../utilities/acl/PermGroups";
 import permReg from "../utilities/acl/PermReg";
 import { GroupPermission } from "../db/models/GroupPermission";
@@ -102,6 +102,16 @@ class PermissionController {
                 perms,
                 PermReg.getView(),
                 PermView.FULL
+              ),
+            },
+          });
+          await GroupPermission.findOrCreate({
+            where: {
+              groupId: group.id,
+              permissionId: this.findPermId(
+                perms,
+                PermReg.getEdit(),
+                PermEdit.FULL
               ),
             },
           });
