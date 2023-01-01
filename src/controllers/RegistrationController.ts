@@ -196,6 +196,22 @@ class RegistrationController {
     return generatePDF(shiftNr, entries);
   };
 
+  public static sendConfirmationEmail = async (
+    user: Entity,
+    shiftNr: number
+  ) => {
+    const tmp = await Registration.findAll({
+      where: {
+        shiftNr,
+        isRegistered: true,
+        notifSent: false,
+      },
+      attributes: ["contactEmail"],
+    });
+
+    console.log(tmp);
+  };
+
   /**
    * Selects the registration information fields according to the viewing permissions of the requesting user.
    * @param {Registration} data - The registration entry

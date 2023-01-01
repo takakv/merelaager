@@ -45,6 +45,22 @@ router.post("/events", (req: Request, res: Response) => {
     });
 });
 
+// Send registration confirmation to parents.
+router.post("/notify", (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  let { shiftNr } = req.body;
+  if (!shiftNr) return res.sendStatus(StatusCodes.BAD_REQUEST);
+  shiftNr = parseInt(shiftNr as string);
+  RegistrationController.sendConfirmationEmail(req.user, shiftNr as number)
+    .then(() => {
+      res.sendStatus(StatusCodes.OK);
+    })
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
+});
+
 // Fetch the PDF list of registrations for a single shift.
 router.get("/pdf/:shiftNr", (req: Request, res: Response) => {
   const shiftNr = parseInt(req.params.shiftNr);
