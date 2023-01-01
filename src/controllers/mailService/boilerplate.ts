@@ -4,6 +4,26 @@ import path from "path";
 const shiftDataPath = path.join(__dirname, "../../../data/shiftdata.json");
 const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
+interface regEntry {
+  regOrder: number;
+  childId: number;
+  idCode: string;
+  shiftNr: number;
+  isOld: boolean;
+  birthday: Date;
+  tsSize: string;
+  addendum: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel: string;
+  priceToPay: number;
+}
+
 const getRegistered = (campers, shifts: number[], regCount: number) => {
   if (regCount === 0) return "";
 
@@ -246,7 +266,7 @@ const getBoilerplate = (
   return content;
 };
 
-const getFailed = (campers) => {
+const getFailed = (campers: regEntry[]) => {
   const shifts: number[] = [];
 
   for (let i = 0; i < campers.length; ++i) {
@@ -396,10 +416,10 @@ const getFailed = (campers) => {
                             <tr>
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                                 <div style="font-family:Helvetica, Arial, sans-serif;font-size:15px;font-weight:300;line-height:24px;text-align:left;color:#000000;">
-                                  <p>Kahjuks on vahetuse kohad juba täis.</p>
+                                  <p>Sellest aastast alates ei ole registreerimiskinnitus enam automaatne.</p>
                                   <p>Oleme ${
                                     campers.length > 1 ? "lapsed" : "lapse"
-                                  } registreerinud reservnimekirja. Kui põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
+                                  } registreerinud reservnimekirja. Kui juhtaja koha kinnitab või põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
                                   <p>Parimate soovidega</p>
                                   <p>${getStaffContacts(shifts)}</p>
                                   <p style="font-size: 11px">Tegu on automaatvastusega, palume sellele meilile mitte vastata. Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</p>

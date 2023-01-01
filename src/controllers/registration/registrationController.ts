@@ -6,6 +6,7 @@ import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { StatusCodes } from "http-status-codes";
 import { registrationTracker } from "../../channels/registrationTracker";
+import MailService from "../MailService";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ if (process.env.UNLOCK === "true") {
 }
 
 let registrationOrder = 1;
+const mailService = new MailService();
 
 const initializeRegistrationOrder = async () => {
   const prevReg = await Registration.findOne({
@@ -325,6 +327,10 @@ const registerCampers = async (payloadData: unknown) => {
       JSON.stringify({ id: entry.id }),
       "registration-created"
     );
+  });
+  await mailService.sendFailureMail(registrationEntries, {
+    name: payload.contactName,
+    email: payload.contactEmail,
   });
   return response;
 };

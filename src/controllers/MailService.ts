@@ -17,6 +17,26 @@ export type contact = {
   email: string;
 };
 
+interface regEntry {
+  regOrder: number;
+  childId: number;
+  idCode: string;
+  shiftNr: number;
+  isOld: boolean;
+  birthday: Date;
+  tsSize: string;
+  addendum: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel: string;
+  priceToPay: number;
+}
+
 class MailService {
   private _transporter: Transporter;
 
@@ -62,7 +82,7 @@ class MailService {
     });
   }
 
-  sendFailureMail(campers, contact: contact) {
+  sendFailureMail(campers: regEntry[], contact: contact) {
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",
