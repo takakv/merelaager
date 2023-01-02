@@ -138,9 +138,11 @@ const loadClock = async () => {
   return syncTime;
 };
 
+/*
 loadClock().then((time) => {
   console.log(`Server time: ${new Date(time).toISOString()}`);
   console.log(`Local time: ${new Date().toISOString()}`);
 });
+*/
 
 window.onunload = () => {};
