@@ -2,15 +2,12 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 import nodemailer, { Transporter } from "nodemailer";
+import EmailBuilder from "./mailService/boilerplate";
+import { Registration } from "../db/models/Registration";
 
 dotenv.config();
 
 const mg = require("nodemailer-mailgun-transport");
-
-const boilerplate = require("./mailService/boilerplate");
-
-const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
-const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
 
 export type contact = {
   name: string;
@@ -52,7 +49,7 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendConfirmationMail(
+  sendConfirmationMailOld(
     campers,
     names: string[],
     contact: contact,
@@ -71,7 +68,42 @@ class MailService {
       },
       to: contact.email,
       subject: "Broneeringu kinnitus",
-      html: boilerplate.getBoilerplate(campers, names, price, regCount), //generateHTML(campers, names, price, regCount),
+      // html: boilerplate.getBoilerplate(campers, names, price, regCount), //generateHTML(campers, names, price, regCount),
+      attachments: [
+        {
+          filename: `arve_${billNr}.pdf`,
+          contentType: "application/pdf",
+          content: fs.createReadStream(pdfPath),
+        },
+      ],
+    });
+  }
+
+  public sendConfirmationMail(
+    contact: contact,
+    regCampers: Registration[],
+    resCampers: Registration[],
+    shifts: number[],
+    totalPrice: number,
+    billName: string,
+    billNr: number
+  ) {
+    const pdfPath = path.resolve(
+      path.join(__dirname, "../../data/arved", billName)
+    );
+    return this._transporter.sendMail({
+      from: {
+        name: "Merelaager",
+        address: "no-reply@info.merelaager.ee",
+      },
+      to: contact.email,
+      subject: "Broneeringu kinnitus",
+      html: EmailBuilder.getBoilerplate(
+        regCampers,
+        resCampers,
+        shifts,
+        totalPrice
+      ),
       attachments: [
         {
           filename: `arve_${billNr}.pdf`,
@@ -90,7 +122,7 @@ class MailService {
       },
       to: contact.email,
       subject: "Reservnimekirja kandmise teade",
-      html: boilerplate.getFailed(campers),
+      html: EmailBuilder.getFailed(campers),
     });
   }
 

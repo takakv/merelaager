@@ -16,6 +16,7 @@ import {
   registrationPrices,
   unlockTime,
 } from "./meta";
+import Counters from "../../utilities/Counters";
 
 const maxBatchRegistrations = 4;
 
@@ -30,7 +31,8 @@ if (process.env.UNLOCK === "true") {
 }
 
 let registrationOrder = 1;
-const mailService = new MailService();
+
+export const mailService = new MailService();
 
 const initializeRegistrationOrder = async () => {
   const prevReg = await Registration.findOne({
@@ -40,9 +42,20 @@ const initializeRegistrationOrder = async () => {
   if (prevReg) registrationOrder = prevReg.regOrder + 1;
 };
 
+const initializeBillNumber = async () => {
+  const prevBill = await Registration.findOne({
+    order: [["billNr", "DESC"]],
+    attributes: ["billNr"],
+  });
+  const prevNr = prevBill.billNr ?? new Date().getUTCFullYear() * 1000;
+  Counters.billNumber = prevNr + 1;
+};
+
 export const initialiseRegistration = async () => {
   await initializeRegistrationOrder();
   console.log(`Reg order: ${registrationOrder}`);
+  await initializeBillNumber();
+  console.log(`Bill number: ${Counters.billNumber}`);
 
   console.log(`Registration is unlocked? ${unlocked}`);
   console.log(

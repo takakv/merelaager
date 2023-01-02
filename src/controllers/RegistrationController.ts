@@ -9,7 +9,6 @@ import {
 import { ShiftData } from "../db/models/ShiftData";
 import { StatusCodes } from "http-status-codes";
 
-import { generatePDF } from "./listGenerator";
 import { Permission } from "../db/models/Permission";
 import Entity = Express.Entity;
 import { Op } from "sequelize";
@@ -18,6 +17,10 @@ import AccessController from "./AccessController";
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
 import PermReg, { PermEdit } from "../utilities/acl/PermReg";
+import { mailService } from "./registration/registrationController";
+import BillBuilder from "./billGenerator";
+import { generatePDF } from "./listGenerator";
+import Counters from "../utilities/Counters";
 
 dotenv.config();
 
@@ -312,6 +315,7 @@ class RegistrationController {
     user: Entity,
     shiftNr: number
   ) => {
+    // Fetch all registered campers.
     const tmp = await Registration.findAll({
       where: {
         shiftNr,
@@ -321,7 +325,76 @@ class RegistrationController {
       attributes: ["contactEmail"],
     });
 
-    console.log(tmp);
+    const emails: string[] = [];
+    for (const t of tmp) {
+      if (emails.includes(t.contactEmail)) continue;
+      emails.push(t.contactEmail);
+    }
+
+    for (const email of emails) {
+      const campers = await Registration.findAll({
+        where: { contactEmail: email },
+        include: Child,
+      });
+
+      const regCampers: Registration[] = [];
+      const resCampers: Registration[] = [];
+
+      const shifts: number[] = [];
+      let totalPrice = 0;
+
+      const tmpBillNr = Counters.billNumber;
+      ++Counters.billNumber;
+
+      let skipLoop = false;
+
+      for (const camper of campers) {
+        if (camper.isRegistered) {
+          regCampers.push(camper);
+          totalPrice += camper.priceToPay;
+
+          // Only mark registered campers as notified.
+          // As such, if another household member is subsequently registered
+          // a new bill can be sent for them.
+          camper.notifSent = true;
+        } else resCampers.push(camper);
+
+        if (!shifts.includes(camper.shiftNr)) shifts.push(camper.shiftNr);
+
+        camper.billNr = tmpBillNr;
+        try {
+          await camper.save();
+        } catch (e) {
+          console.log(e);
+          skipLoop = true;
+          break;
+        }
+      }
+
+      if (skipLoop) continue;
+
+      const contact = {
+        name: campers[0].contactName,
+        email: campers[0].contactEmail,
+      };
+
+      const billName = await BillBuilder.generatePdf(
+        regCampers,
+        contact,
+        tmpBillNr,
+        regCampers.length
+      );
+
+      await mailService.sendConfirmationMail(
+        contact,
+        regCampers,
+        resCampers,
+        shifts,
+        totalPrice,
+        billName,
+        tmpBillNr
+      );
+    }
   };
 
   private static updateData = async (registration: Registration) => {
