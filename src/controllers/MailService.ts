@@ -49,36 +49,6 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendConfirmationMailOld(
-    campers,
-    names: string[],
-    contact: contact,
-    price: number,
-    pdfName: string,
-    regCount: number,
-    billNr: number
-  ) {
-    const pdfPath = path.resolve(
-      path.join(__dirname, "../../data/arved", pdfName)
-    );
-    return this._transporter.sendMail({
-      from: {
-        name: "Merelaager",
-        address: "no-reply@info.merelaager.ee",
-      },
-      to: contact.email,
-      subject: "Broneeringu kinnitus",
-      // html: boilerplate.getBoilerplate(campers, names, price, regCount), //generateHTML(campers, names, price, regCount),
-      attachments: [
-        {
-          filename: `arve_${billNr}.pdf`,
-          contentType: "application/pdf",
-          content: fs.createReadStream(pdfPath),
-        },
-      ],
-    });
-  }
-
   public sendConfirmationMail(
     contact: contact,
     regCampers: Registration[],

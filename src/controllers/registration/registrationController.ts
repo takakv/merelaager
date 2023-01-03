@@ -6,65 +6,13 @@ import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { StatusCodes } from "http-status-codes";
 import { registrationTracker } from "../../channels/registrationTracker";
-import MailService from "../MailService";
 
 dotenv.config();
 
-import {
-  eta,
-  registrationPriceDiff,
-  registrationPrices,
-  unlockTime,
-} from "./meta";
+import { registrationPriceDiff, registrationPrices } from "./meta";
 import Counters from "../../utilities/Counters";
 
 const maxBatchRegistrations = 4;
-
-let unlocked: boolean = process.env.NODE_ENV === "dev";
-
-if (process.env.UNLOCK === "true") {
-  unlocked = true;
-} else if (process.env.NODE_ENV === "prod") {
-  setTimeout(() => {
-    unlocked = true;
-  }, eta);
-}
-
-let registrationOrder = 1;
-
-export const mailService = new MailService();
-
-const initializeRegistrationOrder = async () => {
-  const prevReg = await Registration.findOne({
-    order: [["regOrder", "DESC"]],
-    attributes: ["regOrder"],
-  });
-  if (prevReg) registrationOrder = prevReg.regOrder + 1;
-};
-
-const initializeBillNumber = async () => {
-  const prevBill = await Registration.findOne({
-    order: [["billNr", "DESC"]],
-    attributes: ["billNr"],
-  });
-  const prevNr = prevBill.billNr ?? new Date().getUTCFullYear() * 1000;
-  Counters.billNumber = prevNr + 1;
-};
-
-export const initialiseRegistration = async () => {
-  await initializeRegistrationOrder();
-  console.log(`Reg order: ${registrationOrder}`);
-  await initializeBillNumber();
-  console.log(`Bill number: ${Counters.billNumber}`);
-
-  console.log(`Registration is unlocked? ${unlocked}`);
-  console.log(
-    `Unlock date: ${unlockTime.toLocaleString("en-GB", {
-      timeZone: "Europe/Tallinn",
-    })} (Estonian time)`
-  );
-  console.log(`Unlock delta: ${eta}`);
-};
 
 const parseIdCode = (code: string) => {
   if (code.length !== 11) return null;
@@ -172,8 +120,8 @@ interface regEntry {
 }
 
 const registerCampers = async (payloadData: unknown) => {
-  const currentOrder = registrationOrder;
-  ++registrationOrder;
+  const currentOrder = Counters.registrationOrder;
+  ++Counters.registrationOrder;
 
   const payload = payloadData as payload;
 
@@ -183,7 +131,7 @@ const registerCampers = async (payloadData: unknown) => {
     message: "",
   };
 
-  if (!unlocked) {
+  if (!Counters.registrationUnlocked) {
     response.ok = false;
     response.code = StatusCodes.FORBIDDEN;
     response.message = "Registration not open";
@@ -229,13 +177,6 @@ const registerCampers = async (payloadData: unknown) => {
       return response;
     }
   }
-
-  /*if (!Array.isArray(payload.newcomer)) {
-    response.ok = false;
-    response.code = StatusCodes.BAD_REQUEST;
-    response.message = "Newcomer data malformed or missing";
-    return response;
-  }*/
 
   const stringKeys: ObjectKey[] = [
     "contactName",
@@ -342,7 +283,7 @@ const registerCampers = async (payloadData: unknown) => {
     );
   });
   try {
-    await mailService.sendFailureMail(registrationEntries, {
+    await Counters.mailService.sendFailureMail(registrationEntries, {
       name: payload.contactName,
       email: payload.contactEmail,
     });
