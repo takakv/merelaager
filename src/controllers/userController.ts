@@ -1,10 +1,11 @@
-import {User} from "../db/models/User";
-import {Staff} from "../db/models/Staff";
-import {ShiftInfo} from "../db/models/ShiftInfo";
-import {Request, Response} from "express";
-import {userIsRoot} from "../routes/Support Files/shiftAuth";
+import { User } from "../db/models/User";
+import { Staff } from "../db/models/Staff";
+import { ShiftInfo } from "../db/models/ShiftInfo";
+import { Request, Response } from "express";
+import { userIsRoot } from "../routes/Support Files/shiftAuth";
 import Entity = Express.Entity;
-import {UserData, UserShift} from "../routes/Support Files/users";
+import { UserData, UserShift } from "../routes/Support Files/users";
+import { StatusCodes } from "http-status-codes";
 
 require("dotenv").config();
 const bcrypt = require("bcrypt");
@@ -40,7 +41,7 @@ const createUser = async (data) => {
 // Fetches all users from the database.
 // No filters.
 exports.fetchAll = async () => {
-  const response = {isOk: false, code: 200, users: null};
+  const response = { isOk: false, code: 200, users: null };
   let users;
 
   try {
@@ -114,7 +115,7 @@ exports.getInfo = async (userId: number) => {
 
   if (user.role !== "root") {
     const shiftInfo = await Staff.findAll({
-      where: {userId, year},
+      where: { userId, year },
     });
     if (!shiftInfo) return null;
     shiftInfo.forEach((shift: Staff) => {
@@ -144,16 +145,16 @@ exports.validateShift = async (
   year = new Date().getFullYear()
 ) => {
   const entry = await Staff.findOne({
-    where: {userId, shiftNr, year},
+    where: { userId, shiftNr, year },
     attributes: ["role"],
   });
 
-  if (entry) return {role: entry.role};
+  if (entry) return { role: entry.role };
   else return null;
 };
 
 exports.create = async (req: Request, res: Response) => {
-  const {username, password, email, name} = req.body;
+  const { username, password, email, name } = req.body;
 
   const isNew = !(await userExists(username));
   if (!isNew) {
@@ -176,7 +177,7 @@ exports.getShifts = async (userId: number) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  const shiftInfo = await Staff.findAll({where: {userId, year}});
+  const shiftInfo = await Staff.findAll({ where: { userId, year } });
   console.log(shiftInfo);
 };
 
@@ -184,12 +185,12 @@ const fetchShifts = async (userId: number, isRoot: boolean = false) => {
   const shifts: UserShift[] = [];
 
   const currentShifts = await Staff.findAll({
-    where: {userId: userId, year: new Date().getUTCFullYear()},
+    where: { userId: userId, year: new Date().getUTCFullYear() },
     attributes: ["shiftNr", "role"],
   });
 
   currentShifts.forEach((shift) =>
-    shifts.push({id: shift.shiftNr, role: shift.role})
+    shifts.push({ id: shift.shiftNr, role: shift.role })
   );
 
   if (!isRoot) return shifts;
@@ -199,21 +200,19 @@ const fetchShifts = async (userId: number, isRoot: boolean = false) => {
 
   // Populate the shift switcher with least-access.
   for (let i = 1; i <= shiftCount; ++i) {
-    if (!shifts.find(el => el.id === i))
-      shifts.push({id: i, role: "part"});
+    if (!shifts.find((el) => el.id === i)) shifts.push({ id: i, role: "part" });
   }
   return shifts;
-}
+};
 
 export const fetchUser = async (entity: Entity, userId: number) => {
-  if (isNaN(userId)) return {statusCode: 400, data: {}};
+  if (isNaN(userId)) return { statusCode: 400, data: {} };
   const isRoot = userIsRoot(entity);
 
-  if (entity.id !== userId && !isRoot)
-    return {statusCode: 403, data: {}};
+  if (entity.id !== userId && !isRoot) return { statusCode: 403, data: {} };
 
   const user = await User.findByPk(userId);
-  if (!user) return {statusCode: 404, data: {}};
+  if (!user) return { statusCode: 404, data: {} };
 
   const shifts = await fetchShifts(userId, isRoot);
 
@@ -231,26 +230,30 @@ export const fetchUser = async (entity: Entity, userId: number) => {
   };
 };
 
-export const updateCurrentShift = async (req: Request) => {
-  const newShift = parseInt(req.body.newShift);
-  if (isNaN(newShift)) return 400;
+class UserController {
+  public static updateSelectedShift = async (
+    newShift: number,
+    entity: Entity
+  ) => {
+    if (!userIsRoot(entity)) {
+      const userInShift = await Staff.findOne({
+        where: { shiftNr: newShift, userId: entity.id, year: getYear() },
+      });
+      if (!userInShift) return StatusCodes.FORBIDDEN;
+    }
 
-  if (!userIsRoot(req.user)) {
-    const userInShift = await Staff.findOne({
-      where: {shiftNr: newShift, userId: req.user.id, year: getYear()},
-    });
-    if (!userInShift) return 403;
-  }
+    const user = await User.findByPk(entity.id);
+    user.currentShift = newShift;
 
-  const user = await User.findByPk(req.user.id);
-  user.currentShift = newShift;
+    try {
+      await user.save();
+    } catch (e) {
+      console.error();
+      return StatusCodes.INTERNAL_SERVER_ERROR;
+    }
 
-  try {
-    await user.save();
-  } catch (e) {
-    console.error(e);
-    return 500;
-  }
+    return StatusCodes.NO_CONTENT;
+  };
+}
 
-  return 204;
-};
+export default UserController;
