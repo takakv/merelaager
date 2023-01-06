@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+
 import { User } from "../db/models/User";
 import { Staff } from "../db/models/Staff";
 import { ShiftInfo } from "../db/models/ShiftInfo";
@@ -7,8 +10,7 @@ import Entity = Express.Entity;
 import { UserData, UserShift } from "../routes/Support Files/users";
 import { StatusCodes } from "http-status-codes";
 
-require("dotenv").config();
-const bcrypt = require("bcrypt");
+dotenv.config();
 
 const getYear = () => {
   const now = new Date();
@@ -36,43 +38,6 @@ const createUser = async (data) => {
   } catch {
     return false;
   }
-};
-
-// Fetches all users from the database.
-// No filters.
-exports.fetchAll = async () => {
-  const response = { isOk: false, code: 200, users: null };
-  let users;
-
-  try {
-    users = await User.findAll({
-      attributes: ["username", "name", "nickname", "role", "email"],
-    });
-  } catch (e) {
-    console.error(e);
-    response.code = 500;
-    return response;
-  }
-
-  if (!users) {
-    response.code = 404;
-    return response;
-  }
-
-  response.isOk = true;
-  response.users = [];
-
-  users.forEach((user) => {
-    response.users.push({
-      username: user.username,
-      name: user.name,
-      nickname: user.nickname,
-      role: user.role,
-      email: user.email,
-    });
-  });
-
-  return response;
 };
 
 exports.swapShift = async (userId: number, shiftNr: number, isBoss = false) => {
@@ -181,7 +146,7 @@ exports.getShifts = async (userId: number) => {
   console.log(shiftInfo);
 };
 
-const fetchShifts = async (userId: number, isRoot: boolean = false) => {
+const fetchShifts = async (userId: number, isRoot = false) => {
   const shifts: UserShift[] = [];
 
   const currentShifts = await Staff.findAll({
@@ -205,32 +170,81 @@ const fetchShifts = async (userId: number, isRoot: boolean = false) => {
   return shifts;
 };
 
-export const fetchUser = async (entity: Entity, userId: number) => {
-  if (isNaN(userId)) return { statusCode: 400, data: {} };
-  const isRoot = userIsRoot(entity);
-
-  if (entity.id !== userId && !isRoot) return { statusCode: 403, data: {} };
-
-  const user = await User.findByPk(userId);
-  if (!user) return { statusCode: 404, data: {} };
-
-  const shifts = await fetchShifts(userId, isRoot);
-
-  const userData: UserData = {
-    name: user.nickname,
-    currentShift: user.currentShift,
-    isRoot: user.role === "root",
-    role: user.role,
-    shifts,
-  };
-
-  return {
-    statusCode: 200,
-    data: userData,
-  };
+type systemUser = {
+  username: string;
+  name: string;
+  nickname: string;
+  role: string;
+  email: string;
 };
 
 class UserController {
+  public static fetchAll = async () => {
+    const response: {
+      isOk: boolean;
+      code: number;
+      users: systemUser[];
+    } = { isOk: false, code: StatusCodes.OK, users: [] };
+
+    let users: User[];
+
+    try {
+      users = await User.findAll({
+        attributes: ["username", "name", "nickname", "role", "email"],
+      });
+    } catch (e) {
+      console.error(e);
+      response.code = StatusCodes.INTERNAL_SERVER_ERROR;
+      return response;
+    }
+
+    if (!users) {
+      response.code = StatusCodes.NOT_FOUND;
+      return response;
+    }
+
+    response.isOk = true;
+    response.users = [];
+
+    users.forEach((user) => {
+      response.users.push({
+        username: user.username,
+        name: user.name,
+        nickname: user.nickname,
+        role: user.role,
+        email: user.email,
+      });
+    });
+
+    return response;
+  };
+
+  public static fetchUser = async (entity: Entity, userId: number) => {
+    if (isNaN(userId)) return { statusCode: StatusCodes.BAD_REQUEST, data: {} };
+    const isRoot = userIsRoot(entity);
+
+    if (entity.id !== userId && !isRoot)
+      return { statusCode: StatusCodes.FORBIDDEN, data: {} };
+
+    const user = await User.findByPk(userId);
+    if (!user) return { statusCode: StatusCodes.NOT_FOUND, data: {} };
+
+    const shifts = await fetchShifts(userId, isRoot);
+
+    const userData: UserData = {
+      name: user.nickname,
+      currentShift: user.currentShift,
+      isRoot: user.role === "root",
+      role: user.role,
+      shifts,
+    };
+
+    return {
+      statusCode: StatusCodes.OK,
+      data: userData,
+    };
+  };
+
   public static updateSelectedShift = async (
     newShift: number,
     entity: Entity

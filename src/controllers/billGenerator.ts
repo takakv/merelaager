@@ -255,6 +255,11 @@ class BillBuilder {
 
     return billName;
   };
+
+  public static getName = (child: Registration) => {
+    const name = child.contactName.replace(/ /g, "_").toLowerCase();
+    return `${child.billNr}.pdf`;
+  };
 }
 
 export default BillBuilder;

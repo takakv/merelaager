@@ -4,8 +4,7 @@ import { Request, Response } from "express";
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
 import { StatusCodes } from "http-status-codes";
-
-const billGenerator = require("./billGenerator");
+import BillBuilder from "./billGenerator";
 
 const bulkQueryByEmail = (contactEmail: string) => {
   return Registration.findAll({ where: { contactEmail }, include: Child });
@@ -26,7 +25,7 @@ const getBillNr = async () => {
   if (previousBill) {
     return previousBill.billNr + 1;
   }
-  return 21001;
+  return 2023001;
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -38,22 +37,18 @@ export const create = async (req: Request, res: Response) => {
   }
 
   const campers: Registration[] = [];
-  const names: string[] = [];
-  let billNr = 0;
+  let billNr: number;
 
-  children.forEach((child) => {
-    if (billNr === 0 && child["billNr"]) billNr = child["billNr"];
-    if (child["isRegistered"]) {
-      campers.push(child);
-      names.push(child.child.name);
-    }
+  children.forEach((child: Registration) => {
+    if (billNr === 0 && child.billNr) billNr = child.billNr;
+    if (child.isRegistered) campers.push(child);
   });
 
   if (!billNr) {
     billNr = await getBillNr();
-    await children.forEach((child) => {
-      child.update({ billNr: billNr });
-    });
+    for (const child of children) {
+      await child.update({ billNr });
+    }
   }
   if (campers.length) {
     const contact = {
@@ -61,9 +56,8 @@ export const create = async (req: Request, res: Response) => {
       email: campers[0].contactEmail,
     };
 
-    const billName = await billGenerator.generatePDF(
+    const billName = await BillBuilder.generatePdf(
       campers,
-      names,
       contact,
       billNr,
       campers.length
@@ -82,7 +76,7 @@ export const fetch = async (req: Request, res: Response) => {
     return;
   }
 
-  const billName = billGenerator.getName(customer);
+  const billName = BillBuilder.getName(customer);
   const loc = `${path.join(__dirname, "../../")}data/arved/${billName}`;
 
   fs.access(loc, fs.constants.F_OK, (err) => {
