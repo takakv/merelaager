@@ -2,23 +2,15 @@ import { StatusCodes } from "http-status-codes";
 import { Permission } from "../db/models/Permission";
 import { ACGroup } from "../db/models/ACGroup";
 import PermGroups from "../utilities/acl/PermGroups";
-import PermReg, { PermEdit, PermView } from "../utilities/acl/PermReg";
-import permGroups from "../utilities/acl/PermGroups";
-import permReg from "../utilities/acl/PermReg";
 import { GroupPermission } from "../db/models/GroupPermission";
+import { tempPermissionsList } from "../utilities/permissionsList";
 
-export type acRequest = {
+export type ACRequest = {
   name: string;
 };
 
-type GroupEntry = {
+type DBEntry = {
   name: string;
-  id: number;
-};
-
-type PermEntry = {
-  name: string;
-  extent: number;
   id: number;
 };
 
@@ -31,7 +23,8 @@ class PermissionController {
   };
 
   private static initGroups = async () => {
-    const groups: GroupEntry[] = [
+    const groups: DBEntry[] = [
+      { name: PermGroups.ROOT, id: 0 },
       { name: PermGroups.BOSS, id: 0 },
       { name: PermGroups.COACH, id: 0 },
       { name: PermGroups.HELPER, id: 0 },
@@ -48,27 +41,35 @@ class PermissionController {
   };
 
   private static initPermissions = async () => {
-    const perms: PermEntry[] = [];
+    const perms: DBEntry[] = [];
 
-    for (const perm of PermReg.view) {
-      perms.push({
-        name: PermReg.getView(),
-        extent: perm,
-        id: 0,
-      });
-    }
+    const traverseAndAdd = (obj: object | string) => {
+      if (obj === null) return;
 
-    for (const perm of PermReg.edit) {
-      perms.push({
-        name: PermReg.getEdit(),
-        extent: perm,
-        id: 0,
-      });
-    }
+      if (typeof obj === "string") {
+        // We don't want topmost nodes (i.e., nodes without a dot).
+        if ((obj.match(/\./g) || []).length < 1) return;
 
+        perms.push({
+          name: obj,
+          id: 0,
+        });
+
+        return;
+      }
+
+      for (const [, value] of Object.entries(obj)) {
+        traverseAndAdd(value as object | string);
+      }
+    };
+
+    // Identify permissions for creation.
+    traverseAndAdd(tempPermissionsList);
+
+    // Create the permissions in DB.
     for (const [idx, perm] of perms.entries()) {
       const [tmp] = await Permission.findOrCreate({
-        where: { name: perm.name, extent: perm.extent },
+        where: { name: perm.name },
       });
       perms[idx].id = tmp.getDataValue("id");
     }
@@ -76,59 +77,67 @@ class PermissionController {
     return perms;
   };
 
-  private static findPermId = (
-    perms: PermEntry[],
-    permName: string,
-    permExtent: number
-  ): number => {
-    const entry = perms.find(
-      (perm) => perm.name === permName && perm.extent == permExtent
-    );
+  private static findPermId = (perms: DBEntry[], permName: string): number => {
+    const entry = perms.find((perm) => perm.name === permName);
     if (entry === undefined) return -1;
     return entry.id;
   };
 
   private static tiePermissions = async (
-    groups: GroupEntry[],
-    perms: PermEntry[]
+    groups: DBEntry[],
+    perms: DBEntry[]
   ) => {
+    const setInDB = async (groupId: number, permissionName: string) => {
+      await GroupPermission.findOrCreate({
+        where: {
+          groupId,
+          permissionId: this.findPermId(perms, permissionName),
+        },
+      });
+    };
+
     for (const group of groups) {
+      // More powerful roles inherit permissions from lower roles.
       switch (group.name) {
+        case PermGroups.ROOT:
+          // View permissions
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.view.idCode.PN
+          );
+          // Edit permissions
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.edit.price.PN
+          );
+        // falls through
         case PermGroups.BOSS:
-          await GroupPermission.findOrCreate({
-            where: {
-              groupId: group.id,
-              permissionId: this.findPermId(
-                perms,
-                PermReg.getView(),
-                PermView.FULL
-              ),
-            },
-          });
-          await GroupPermission.findOrCreate({
-            where: {
-              groupId: group.id,
-              permissionId: this.findPermId(
-                perms,
-                PermReg.getEdit(),
-                PermEdit.FULL
-              ),
-            },
-          });
-          await GroupPermission.findOrCreate({
-            where: {
-              groupId: group.id,
-              permissionId: this.findPermId(
-                perms,
-                PermReg.getEdit(),
-                PermEdit.DELETE
-              ),
-            },
-          });
-          break;
+          // View permissions
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.view.address.PN
+          );
+          // Edit permissions
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.edit.isRegistered.PN
+          );
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.edit.isOld.PN
+          );
+        // falls through
         case PermGroups.COACH:
-          break;
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.view.contact.PN
+          );
+        // falls through
         case PermGroups.HELPER:
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.view.basic.PN
+          );
           break;
       }
     }
@@ -137,7 +146,7 @@ class PermissionController {
 
 export default PermissionController;
 
-export const createPermission = async (data: acRequest) => {
+export const createPermission = async (data: ACRequest) => {
   const { name } = data;
 
   try {
@@ -152,7 +161,7 @@ export const createPermission = async (data: acRequest) => {
   }
 };
 
-export const createACGroup = async (data: acRequest) => {
+export const createACGroup = async (data: ACRequest) => {
   const { name } = data;
 
   try {

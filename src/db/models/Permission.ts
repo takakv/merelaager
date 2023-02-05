@@ -4,8 +4,7 @@ import {
   Column,
   Model,
   BelongsToMany,
-  DataType,
-  AllowNull,
+  DataType, AllowNull,
 } from "sequelize-typescript";
 import { ACGroup } from "./ACGroup";
 import { GroupPermission } from "./GroupPermission";
@@ -13,7 +12,6 @@ import { GroupPermission } from "./GroupPermission";
 interface PermissionAttributes {
   id: number;
   name: string;
-  extent: string;
 }
 
 type PermissionCreationAttributes = Optional<PermissionAttributes, "id">;
@@ -23,12 +21,9 @@ export class Permission extends Model<
   PermissionAttributes,
   PermissionCreationAttributes
 > {
-  @Column
-  name: string;
-
   @AllowNull(false)
-  @Column(DataType.INTEGER.UNSIGNED)
-  extent: number;
+  @Column(DataType.TEXT)
+  name!: string;
 
   @BelongsToMany(() => ACGroup, () => GroupPermission)
   groups: Array<ACGroup & { GroupPermission: GroupPermission }>;

@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import PermissionController, {
   createPermission,
-  acRequest,
+  ACRequest,
   createACGroup,
 } from "../../controllers/permissionController";
 import { StatusCodes } from "http-status-codes";
@@ -45,14 +45,14 @@ interface TypedRequestBody<T> extends Request {
 
 router.post(
   "/permission",
-  (req: TypedRequestBody<acRequest>, res: Response) => {
+  (req: TypedRequestBody<ACRequest>, res: Response) => {
     createPermission(req.body)
       .then((code) => res.sendStatus(code))
       .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
   }
 );
 
-router.post("/acgroup", (req: TypedRequestBody<acRequest>, res: Response) => {
+router.post("/acgroup", (req: TypedRequestBody<ACRequest>, res: Response) => {
   createACGroup(req.body)
     .then((code) => res.sendStatus(code))
     .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
