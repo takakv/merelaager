@@ -12,8 +12,11 @@ import { StatusCodes } from "http-status-codes";
 import { Permission } from "../db/models/Permission";
 import Entity = Express.Entity;
 import { Op } from "sequelize";
-import { permissionsList } from "../utilities/permissionsList";
-import AccessController from "./AccessController";
+import {
+  permissionsList,
+  tempPermissionsList,
+} from "../utilities/permissionsList";
+import AccessController, { shiftPermission } from "./AccessController";
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
 import PermReg, { PermEdit } from "../utilities/acl/PermReg";
@@ -32,9 +35,9 @@ class RegistrationController {
    */
   static fetchRegistrations = async (user: Entity) => {
     const userShiftPermissions =
-      await AccessController.getViewPermissionsForAllShifts(
+      await AccessController.getPrefixedPermissionsForAllShifts(
         user.id,
-        permissionsList.reg.view.permissionName
+        tempPermissionsList.registration.view.PN
       );
 
     const registrations: RegistrationEntry[] = [];
@@ -57,7 +60,7 @@ class RegistrationController {
       const entry = this.prepareRegistrationEntry(
         registration,
         userShiftPermissions.find(
-          (entry) => registration.shiftNr === entry.shiftNr
+          (entry: shiftPermission) => registration.shiftNr === entry.shiftNr
         ).permissions
       );
       registrations.push(entry);
@@ -424,14 +427,12 @@ class RegistrationController {
    * Selects the registration information fields according to the viewing permissions of the requesting user.
    * @param {Registration} data - The registration entry
    * @param {Permission[]} permissions - The sorted list of view permissions
-   * @returns The prepared entry
+   * @returns {RegistrationEntry} The prepared entry
    */
   private static prepareRegistrationEntry = (
     data: Registration,
     permissions: Permission[]
   ): RegistrationEntry => {
-    const accessExtent = permissions[0].extent;
-
     const entry: RegistrationEntry = {
       id: data.id,
       name: data.child.name,
@@ -444,18 +445,45 @@ class RegistrationController {
       registered: data.isRegistered,
     };
 
-    if (accessExtent >= permissionsList.reg.view.contact) {
-      entry.billNr = data.billNr;
+    if (
+      this.findPermission(
+        permissions,
+        tempPermissionsList.registration.view.contact.PN
+      )
+    ) {
       entry.contactName = data.contactName;
       entry.contactEmail = data.contactEmail;
       entry.contactPhone = data.contactNumber;
+    }
+
+    if (
+      this.findPermission(
+        permissions,
+        tempPermissionsList.registration.view.price.PN
+      )
+    ) {
+      entry.billNr = data.billNr;
       entry.pricePaid = data.pricePaid;
       entry.priceToPay = data.priceToPay;
     }
-
-    if (accessExtent >= permissionsList.reg.view.full)
-      entry.idCode = data.idCode;
     return entry;
+  };
+
+  /**
+   * Finds a permission in a list of permissions.
+   * @param {Permission[]} permissions - The array of permissions
+   * @param {string} permissionName - The prefixed name of the permission to find
+   * @returns {boolean} `true` if found, `false` otherwise
+   */
+  private static findPermission = (
+    permissions: Permission[],
+    permissionName: string
+  ): boolean => {
+    return (
+      permissions.find(
+        (permission: Permission) => permission.name === permissionName
+      ) !== undefined
+    );
   };
 }
 

@@ -2,24 +2,24 @@ import { User } from "../db/models/User";
 import { ShiftGroup } from "../db/models/ShiftGroup";
 import { ACGroup } from "../db/models/ACGroup";
 import { Permission } from "../db/models/Permission";
+import { Op } from "sequelize";
 
-type shiftViewPermission = {
+export type shiftPermission = {
   shiftNr: number;
   permissions: Permission[];
 };
 
 class AccessController {
   /**
-   * Selects all view permissions of a user for all shifts. Permissions for each shift
-   * are sorted in descending order, starting with the most "powerful" permission. Shifts
+   * Selects all permissions with a certain prefix of a user for all shifts. Shifts
    * themselves are sorted in ascending order.
    * @param userId - The user identifier
-   * @param permissionType - The type of the view permission
-   * @returns {Promise<shiftViewPermission[]>} The sorted list of sorted permissions
+   * @param permissionPrefix - The prefix of the permission (e.g., registration.view)
+   * @returns {Promise<shiftPermission[]>} The sorted list of sorted permissions
    */
-  static getViewPermissionsForAllShifts = async (
+  static getPrefixedPermissionsForAllShifts = async (
     userId: number,
-    permissionType: string
+    permissionPrefix: string
   ) => {
     const userData = await User.findByPk(userId, {
       attributes: [],
@@ -29,19 +29,17 @@ class AccessController {
           required: true,
           attributes: ["shiftNr"],
           order: ["shiftNr", "ASC"],
-          include: [this.getACGroup(permissionType)],
+          include: [this.getACGroup(permissionPrefix)],
         },
       ],
     });
 
-    if (!userData) return [] as shiftViewPermission[];
+    if (!userData) return [] as shiftPermission[];
 
-    const permissions: shiftViewPermission[] = userData.shiftGroups.map(
-      (shift) => ({
+    const permissions: shiftPermission[] = userData.shiftGroups.map(
+      (shift: ShiftGroup) => ({
         shiftNr: shift.shiftNr,
-        permissions: shift.acGroup.permissions.sort(
-          this.sortPermissionsDescending
-        ),
+        permissions: shift.acGroup.permissions,
       })
     );
 
@@ -134,7 +132,7 @@ class AccessController {
     };
   };
 
-  private static getACGroup = (permissionName: string) => {
+  private static getACGroup = (permissionPrefix: string) => {
     return {
       model: ACGroup,
       attributes: ["id"],
@@ -142,9 +140,11 @@ class AccessController {
       include: [
         {
           model: Permission,
-          attributes: ["name", "extent"],
+          attributes: ["name"],
           where: {
-            name: permissionName,
+            name: {
+              [Op.startsWith]: permissionPrefix,
+            },
           },
         },
       ],

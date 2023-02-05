@@ -117,6 +117,10 @@ class PermissionController {
             group.id,
             tempPermissionsList.registration.view.address.PN
           );
+          await setInDB(
+            group.id,
+            tempPermissionsList.registration.view.price.PN
+          );
           // Edit permissions
           await setInDB(
             group.id,

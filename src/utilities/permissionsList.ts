@@ -28,6 +28,9 @@ const registrationView = {
   contact: {
     PN: registrationPN + viewPN + ".contact",
   },
+  price: {
+    PN: registrationPN + viewPN + ".price",
+  },
   address: {
     PN: registrationPN + viewPN + ".address",
   },
