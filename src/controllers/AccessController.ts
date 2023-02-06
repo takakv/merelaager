@@ -86,15 +86,13 @@ class AccessController {
    * Approves or denies the requested permission for a given user and a given shift.
    * @param userId - The user identifier
    * @param shiftNr - The shift's identifier
-   * @param permissionType - The name/type of the permission
-   * @param permissionExtent - The extent of the permission
+   * @param permissionName - The full, prefixed name of the permission
    * @returns {boolean} `true` if approved, else `false`
    */
   public static approvePermission = async (
     userId: number,
     shiftNr: number,
-    permissionType: string,
-    permissionExtent: number
+    permissionName: string
   ) => {
     const userData = await User.findByPk(userId, {
       attributes: [],
@@ -104,7 +102,7 @@ class AccessController {
           required: true,
           attributes: ["shiftNr"],
           where: { shiftNr },
-          include: [this.getPermission(permissionType, permissionExtent)],
+          include: [this.getPermission(permissionName)],
         },
       ],
     });
@@ -112,7 +110,7 @@ class AccessController {
     return !!userData;
   };
 
-  private static getPermission = (type: string, extent: number) => {
+  private static getPermission = (permissionName: string) => {
     return {
       model: ACGroup,
       attributes: ["id"],
@@ -120,11 +118,8 @@ class AccessController {
       include: [
         {
           model: Permission,
-          attributes: ["name", "extent"],
-          where: {
-            name: type,
-            extent: extent,
-          },
+          attributes: ["name"],
+          where: { name: permissionName },
         },
       ],
     };
@@ -140,9 +135,7 @@ class AccessController {
           model: Permission,
           attributes: ["name"],
           where: {
-            name: {
-              [Op.startsWith]: permissionPrefix,
-            },
+            name: { [Op.startsWith]: permissionPrefix },
           },
         },
       ],

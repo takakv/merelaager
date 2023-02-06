@@ -21,7 +21,7 @@ import {
   permissionsList,
   tempPermissionsList,
 } from "../utilities/permissionsList";
-import PermReg, { PermEdit } from "../utilities/acl/PermReg";
+import PermReg from "../utilities/acl/PermReg";
 import GlobalStore from "../utilities/GlobalStore";
 
 import AccessController, { shiftPermissions } from "./AccessController";
@@ -225,6 +225,14 @@ class RegistrationController {
       return new HttpError(StatusCodes.NOT_FOUND, "No registration found");
     }
 
+    const approvePermission = async (permissionName: string) => {
+      return AccessController.approvePermission(
+        req.user.id,
+        registration.shiftNr,
+        permissionName
+      );
+    };
+
     const body = req.body as {
       registered?: boolean;
       old?: boolean;
@@ -232,19 +240,14 @@ class RegistrationController {
       priceToPay?: number;
     };
 
-    const approvePermission = async (extent: number) => {
-      return AccessController.approvePermission(
-        req.user.id,
-        registration.shiftNr,
-        PermReg.getEdit(),
-        extent
-      );
-    };
-
     for (const key of Object.keys(body)) {
       switch (key) {
         case "registered":
-          if (!(await approvePermission(PermEdit.FULL)))
+          if (
+            !(await approvePermission(
+              tempPermissionsList.registration.edit.isRegistered.PN
+            ))
+          )
             return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
 
           if (body.registered) {
@@ -272,13 +275,21 @@ class RegistrationController {
           await this.updateData(registration);
           break;
         case "old":
-          if (!(await approvePermission(PermEdit.FULL)))
+          if (
+            !(await approvePermission(
+              tempPermissionsList.registration.edit.isOld.PN
+            ))
+          )
             return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
 
           registration.isOld = body.old;
           break;
         case "pricePaid":
-          if (!(await approvePermission(PermEdit.PRICE)))
+          if (
+            !(await approvePermission(
+              tempPermissionsList.registration.edit.price.PN
+            ))
+          )
             return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
 
           if (isNaN(body.pricePaid))
@@ -290,7 +301,11 @@ class RegistrationController {
           registration.pricePaid = body.pricePaid;
           break;
         case "priceToPay":
-          if (!(await approvePermission(PermEdit.PRICE)))
+          if (
+            !(await approvePermission(
+              tempPermissionsList.registration.edit.price.PN
+            ))
+          )
             return new HttpError(StatusCodes.FORBIDDEN, "Insufficient rights");
 
           if (isNaN(body.priceToPay))
