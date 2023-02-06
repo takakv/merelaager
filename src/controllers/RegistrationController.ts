@@ -20,10 +20,9 @@ import AccessController, { shiftPermissions } from "./AccessController";
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
 import PermReg, { PermEdit } from "../utilities/acl/PermReg";
-import { mailService } from "./registration/registrationController";
 import BillBuilder from "./billGenerator";
 import { generatePDF } from "./listGenerator";
-import Counters from "../utilities/Counters";
+import GlobalStore from "../utilities/GlobalStore";
 
 dotenv.config();
 
@@ -345,12 +344,13 @@ class RegistrationController {
       });
 
       const regCampers: Registration[] = [];
+      const resCampers: Registration[] = [];
 
       const shifts: number[] = [];
       let totalPrice = 0;
 
-      const tmpBillNr = Counters.billNumber;
-      ++Counters.billNumber;
+      const tmpBillNr = GlobalStore.billNumber;
+      ++GlobalStore.billNumber;
 
       let skipLoop = false;
 
@@ -391,7 +391,7 @@ class RegistrationController {
         regCampers.length
       );
 
-      await mailService.sendConfirmationMail(
+      await GlobalStore.mailService.sendConfirmationMail(
         contact,
         regCampers,
         resCampers,

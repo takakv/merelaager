@@ -10,7 +10,7 @@ import { registrationTracker } from "../../channels/registrationTracker";
 dotenv.config();
 
 import { registrationPriceDiff, registrationPrices } from "./meta";
-import Counters from "../../utilities/Counters";
+import GlobalStore from "../../utilities/GlobalStore";
 
 const maxBatchRegistrations = 4;
 
@@ -120,8 +120,8 @@ interface regEntry {
 }
 
 const registerCampers = async (payloadData: unknown) => {
-  const currentOrder = Counters.registrationOrder;
-  ++Counters.registrationOrder;
+  const currentOrder = GlobalStore.registrationOrder;
+  ++GlobalStore.registrationOrder;
 
   const payload = payloadData as payload;
 
@@ -131,7 +131,7 @@ const registerCampers = async (payloadData: unknown) => {
     message: "",
   };
 
-  if (!Counters.registrationUnlocked) {
+  if (!GlobalStore.registrationUnlocked) {
     response.ok = false;
     response.code = StatusCodes.FORBIDDEN;
     response.message = "Registration not open";
@@ -283,7 +283,7 @@ const registerCampers = async (payloadData: unknown) => {
     );
   });
   try {
-    await Counters.mailService.sendFailureMail(registrationEntries, {
+    await GlobalStore.mailService.sendFailureMail(registrationEntries, {
       name: payload.contactName,
       email: payload.contactEmail,
     });

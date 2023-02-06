@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
 import { Registration } from "../db/models/Registration";
-import Counters from "./Counters";
+import GlobalStore from "./GlobalStore";
 import MailService from "../controllers/MailService";
 
 dotenv.config();
@@ -13,7 +13,7 @@ class Initialiser {
       attributes: ["regOrder"],
     });
     if (previousRegistration)
-      Counters.registrationOrder = previousRegistration.regOrder + 1;
+      GlobalStore.registrationOrder = previousRegistration.regOrder + 1;
   };
 
   public static initBillNumber = async () => {
@@ -22,46 +22,46 @@ class Initialiser {
       attributes: ["billNr"],
     });
     const prevNr = previousBill.billNr ?? new Date().getUTCFullYear() * 1000;
-    Counters.billNumber = prevNr + 1;
+    GlobalStore.billNumber = prevNr + 1;
   };
 
   public static setUnlocked = () => {
     if (process.env.NODE_ENV === "dev" || process.env.UNLOCK) {
-      Counters.registrationUnlocked = true;
+      GlobalStore.registrationUnlocked = true;
       return;
     }
 
     const now = Date.now();
-    const unlockTime = Counters.registrationUnlockTime.getTime();
+    const unlockTime = GlobalStore.registrationUnlockTime.getTime();
 
     if (now > unlockTime) {
-      Counters.registrationUnlocked = true;
+      GlobalStore.registrationUnlocked = true;
       return;
     }
 
-    const eta = Counters.registrationUnlockTime.getTime() - now;
+    const eta = GlobalStore.registrationUnlockTime.getTime() - now;
     setTimeout(() => {
-      Counters.registrationUnlocked = true;
+      GlobalStore.registrationUnlocked = true;
     }, eta);
   };
 
   public static initMailService = () => {
-    Counters.mailService = new MailService();
+    GlobalStore.mailService = new MailService();
   };
 
   public static initAll = async () => {
     await this.initRegistrationOrder();
-    console.log(`Reg order: ${Counters.registrationOrder}`);
+    console.log(`Reg order: ${GlobalStore.registrationOrder}`);
 
     await this.initBillNumber();
-    console.log(`Bill number: ${Counters.billNumber}`);
+    console.log(`Bill number: ${GlobalStore.billNumber}`);
 
     this.initMailService();
 
     this.setUnlocked();
-    console.log(`Registration is unlocked? ${Counters.registrationUnlocked}`);
+    console.log(`Registration is unlocked? ${GlobalStore.registrationUnlocked}`);
     console.log(
-      `Unlocks at: ${Counters.registrationUnlockTime.toLocaleString("en-GB", {
+      `Unlocks at: ${GlobalStore.registrationUnlockTime.toLocaleString("en-GB", {
         timeZone: "Europe/Tallinn",
       })} (Estonian time)`
     );

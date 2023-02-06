@@ -1,6 +1,6 @@
 import MailService from "../controllers/MailService";
 
-class Counters {
+class GlobalStore {
   /**
    * Time at which registration unlocks, if not already unlocked.
    */
@@ -25,4 +25,4 @@ class Counters {
   static mailService: MailService;
 }
 
-export default Counters;
+export default GlobalStore;
