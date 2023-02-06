@@ -22,11 +22,11 @@ import {
   tempPermissionsList,
 } from "../utilities/permissionsList";
 import PermReg, { PermEdit } from "../utilities/acl/PermReg";
+import GlobalStore from "../utilities/GlobalStore";
 
 import AccessController, { shiftPermissions } from "./AccessController";
 import BillBuilder from "./billGenerator";
 import { generatePDF } from "./listGenerator";
-import GlobalStore from "../utilities/GlobalStore";
 
 dotenv.config();
 
