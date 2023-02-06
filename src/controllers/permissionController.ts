@@ -130,6 +130,8 @@ class PermissionController {
             group.id,
             tempPermissionsList.registration.edit.isOld.PN
           );
+          // Delete permissions
+          await setInDB(group.id, tempPermissionsList.registration.delete.PN);
         // falls through
         case PermGroups.COACH:
           await setInDB(

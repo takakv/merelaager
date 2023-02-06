@@ -17,10 +17,7 @@ import {
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
 
-import {
-  permissionsList,
-  tempPermissionsList,
-} from "../utilities/permissionsList";
+import { tempPermissionsList } from "../utilities/permissionsList";
 import PermReg from "../utilities/acl/PermReg";
 import GlobalStore from "../utilities/GlobalStore";
 
@@ -125,8 +122,7 @@ class RegistrationController {
     const deletionAllowed = await AccessController.approvePermission(
       user.id,
       registration.shiftNr,
-      permissionsList.reg.edit.permissionName,
-      permissionsList.reg.edit.delete
+      tempPermissionsList.registration.delete.PN
     );
 
     if (!deletionAllowed)

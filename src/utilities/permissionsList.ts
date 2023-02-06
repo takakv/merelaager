@@ -1,24 +1,7 @@
-export const permissionsList = {
-  reg: {
-    view: {
-      permissionName: "reg:view",
-      basic: 1,
-      contact: 2,
-      full: 3,
-    },
-    edit: {
-      permissionName: "reg:edit",
-      basic: 1,
-      full: 3,
-      delete: 5,
-    },
-  },
-  child: {},
-};
-
 const registrationPN = "registration";
 const viewPN = ".view";
 const editPN = ".edit";
+const deletePN = ".delete";
 
 const registrationView = {
   PN: registrationPN + viewPN,
@@ -58,10 +41,15 @@ const registrationEdit = {
   },
 };
 
+const registrationDelete = {
+  PN: registrationPN + deletePN,
+};
+
 export const tempPermissionsList = {
   registration: {
     PN: registrationPN,
     view: registrationView,
     edit: registrationEdit,
+    delete: registrationDelete,
   },
 };
