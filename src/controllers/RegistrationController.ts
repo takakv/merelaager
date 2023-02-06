@@ -1,25 +1,29 @@
 import dotenv from "dotenv";
 import { Request } from "express";
+import { StatusCodes } from "http-status-codes";
+import { Op } from "sequelize";
+
+import Entity = Express.Entity;
+
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
+import { ShiftData } from "../db/models/ShiftData";
+import { Permission } from "../db/models/Permission";
+
 import {
   PrintEntry,
   RegistrationEntry,
 } from "../routes/Support Files/registrations";
-import { ShiftData } from "../db/models/ShiftData";
-import { StatusCodes } from "http-status-codes";
+import { RegIdError } from "../routes/Support Files/Errors/errors";
+import HttpError from "../routes/Support Files/Errors/HttpError";
 
-import { Permission } from "../db/models/Permission";
-import Entity = Express.Entity;
-import { Op } from "sequelize";
 import {
   permissionsList,
   tempPermissionsList,
 } from "../utilities/permissionsList";
-import AccessController, { shiftPermissions } from "./AccessController";
-import { RegIdError } from "../routes/Support Files/Errors/errors";
-import HttpError from "../routes/Support Files/Errors/HttpError";
 import PermReg, { PermEdit } from "../utilities/acl/PermReg";
+
+import AccessController, { shiftPermissions } from "./AccessController";
 import BillBuilder from "./billGenerator";
 import { generatePDF } from "./listGenerator";
 import GlobalStore from "../utilities/GlobalStore";
