@@ -16,7 +16,7 @@ import {
   permissionsList,
   tempPermissionsList,
 } from "../utilities/permissionsList";
-import AccessController, { shiftPermission } from "./AccessController";
+import AccessController, { shiftPermissions } from "./AccessController";
 import { RegIdError } from "../routes/Support Files/Errors/errors";
 import HttpError from "../routes/Support Files/Errors/HttpError";
 import PermReg, { PermEdit } from "../utilities/acl/PermReg";
@@ -60,7 +60,7 @@ class RegistrationController {
       const entry = this.prepareRegistrationEntry(
         registration,
         userShiftPermissions.find(
-          (entry: shiftPermission) => registration.shiftNr === entry.shiftNr
+          (entry: shiftPermissions) => registration.shiftNr === entry.shiftNr
         ).permissions
       );
       registrations.push(entry);
@@ -86,11 +86,12 @@ class RegistrationController {
     });
     if (!registration) return new RegIdError(StatusCodes.NOT_FOUND);
 
-    const userPermissions = await AccessController.getViewPermissionsForShift(
-      user.id,
-      registration.shiftNr,
-      PermReg.getView()
-    );
+    const userPermissions =
+      await AccessController.getPrefixedPermissionsForShift(
+        user.id,
+        registration.shiftNr,
+        PermReg.getView()
+      );
 
     if (userPermissions === null) {
       return new HttpError(
@@ -158,15 +159,18 @@ class RegistrationController {
       );
     }
 
-    const userPermissions = await AccessController.getViewPermissionsForShift(
-      user.id,
-      shiftNr,
-      permissionsList.reg.view.permissionName
-    );
+    const userPermissions =
+      await AccessController.getPrefixedPermissionsForShift(
+        user.id,
+        shiftNr,
+        tempPermissionsList.registration.view.PN
+      );
 
     if (
-      userPermissions === null ||
-      userPermissions[0].extent < permissionsList.reg.view.contact
+      !this.findPermission(
+        userPermissions,
+        tempPermissionsList.registration.view.contact.PN
+      )
     ) {
       return new HttpError(
         StatusCodes.FORBIDDEN,
@@ -341,7 +345,6 @@ class RegistrationController {
       });
 
       const regCampers: Registration[] = [];
-      const resCampers: Registration[] = [];
 
       const shifts: number[] = [];
       let totalPrice = 0;
@@ -479,6 +482,7 @@ class RegistrationController {
     permissions: Permission[],
     permissionName: string
   ): boolean => {
+    if (!Array.isArray(permissions)) return false;
     return (
       permissions.find(
         (permission: Permission) => permission.name === permissionName

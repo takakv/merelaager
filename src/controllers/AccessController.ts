@@ -4,20 +4,20 @@ import { ACGroup } from "../db/models/ACGroup";
 import { Permission } from "../db/models/Permission";
 import { Op } from "sequelize";
 
-export type shiftPermission = {
+export type shiftPermissions = {
   shiftNr: number;
   permissions: Permission[];
 };
 
 class AccessController {
   /**
-   * Selects all permissions with a certain prefix of a user for all shifts. Shifts
+   * Selects all permissions (with a certain prefix) of a user for all shifts. Shifts
    * themselves are sorted in ascending order.
    * @param userId - The user identifier
    * @param permissionPrefix - The prefix of the permission (e.g., registration.view)
-   * @returns {Promise<shiftPermission[]>} The sorted list of sorted permissions
+   * @returns {Promise<shiftPermissions[]>} The list of permissions
    */
-  static getPrefixedPermissionsForAllShifts = async (
+  public static getPrefixedPermissionsForAllShifts = async (
     userId: number,
     permissionPrefix: string
   ) => {
@@ -34,9 +34,9 @@ class AccessController {
       ],
     });
 
-    if (!userData) return [] as shiftPermission[];
+    if (!userData) return [] as shiftPermissions[];
 
-    const permissions: shiftPermission[] = userData.shiftGroups.map(
+    const permissions: shiftPermissions[] = userData.shiftGroups.map(
       (shift: ShiftGroup) => ({
         shiftNr: shift.shiftNr,
         permissions: shift.acGroup.permissions,
@@ -47,18 +47,17 @@ class AccessController {
   };
 
   /**
-   * Selects all view permissions of a user for a specific shift. Permissions
-   * are sorted in descending order, starting with the most "powerful" permission.
+   * Selects all permissions (with a certain prefix) of a user for a specific shift.
    * @param userId - The user identifier
    * @param shiftNr - The shift's identifier
-   * @param permissionType - The type of the view permission
-   * @returns {Promise<Permissions[] | null>} The sorted permissions
+   * @param permissionPrefix - The prefix of the permission (e.g., registration.view)
+   * @returns {Promise<Permissions[]} The list of permissions
    */
-  static getViewPermissionsForShift = async (
+  public static getPrefixedPermissionsForShift = async (
     userId: number,
     shiftNr: number,
-    permissionType: string
-  ) => {
+    permissionPrefix: string
+  ): Promise<Permission[]> => {
     const userData = await User.findByPk(userId, {
       attributes: [],
       include: [
@@ -67,21 +66,20 @@ class AccessController {
           required: true,
           attributes: ["shiftNr"],
           where: { shiftNr },
-          include: [this.getACGroup(permissionType)],
+          include: [this.getACGroup(permissionPrefix)],
         },
       ],
     });
 
-    if (!userData) return null;
+    if (!userData) return [] as Permission[];
 
     if (userData.shiftGroups.length !== 1) {
       console.log("Malformed shift groups");
-      return null;
+      console.log(userData.shiftGroups);
+      return [] as Permission[];
     }
 
-    return userData.shiftGroups[0].acGroup.permissions.sort(
-      this.sortPermissionsDescending
-    );
+    return userData.shiftGroups[0].acGroup.permissions;
   };
 
   /**
@@ -92,7 +90,7 @@ class AccessController {
    * @param permissionExtent - The extent of the permission
    * @returns {boolean} `true` if approved, else `false`
    */
-  static approvePermission = async (
+  public static approvePermission = async (
     userId: number,
     shiftNr: number,
     permissionType: string,
@@ -150,9 +148,6 @@ class AccessController {
       ],
     };
   };
-
-  private static sortPermissionsDescending = (a: Permission, b: Permission) =>
-    b.extent - a.extent;
 }
 
 export default AccessController;
