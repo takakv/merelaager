@@ -60,7 +60,9 @@ class Parser {
       // not by 400, then it is not a leap year.
       // In the timeframe 2000-2099, only 2000 is exactly divisible by 100,
       // but it is a leap year, so we do not have to patch our checking logic.
-      if (day == 29 && !Number.isInteger(year / 4)) return null;
+      // A positive integer is exactly divisible by 4 only if its last two bits
+      // are 0.
+      if (day == 29 && (year & 0x03) !== 0) return null;
     }
 
     // Date takes in the month index, not the month number in common language.
