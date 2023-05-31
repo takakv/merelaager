@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
-import auth from "./api/auth";
+import auth from "./auth.routes";
 
 router.use("/auth", auth);
 
@@ -30,9 +30,10 @@ router.post("/registrations", async (req: Request, res: Response) => {
 });
 
 // ---------- AUTH ZONE ------------------------------
-import { verifyAccessToken } from "./Support Files/jwt";
+import authMiddleware from "../middleware/auth.middleware";
 
-router.use(verifyAccessToken);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+router.use(authMiddleware);
 
 import me from "./api/me";
 
