@@ -2,6 +2,7 @@ import { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
+  BelongsToMany,
   Column,
   DataType,
   Default,
@@ -12,11 +13,13 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
+
 import { ShiftInfo } from "./ShiftInfo";
 import { ResetToken } from "./ResetToken";
 import { Staff } from "./Staff";
 import { Document } from "./Document";
-import { ShiftGroup } from "./ShiftGroup";
+import { UserRole } from "./UserRole";
+import { Role } from "./Role";
 
 interface UserAttributes {
   id: number;
@@ -96,9 +99,6 @@ export class User
   })
   public documents?: Document[];
 
-  @HasMany(() => ShiftGroup)
-  shiftGroups: ShiftGroup[];
-
-  // @BelongsToMany(() => ACGroup, () => ShiftGroup)
-  // acGroups: Array<ACGroup & { ShiftPermission: ShiftGroup }>;
+  @BelongsToMany(() => Role, () => UserRole, "roleId")
+  roles: UserRole[];
 }

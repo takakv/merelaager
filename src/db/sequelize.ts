@@ -14,9 +14,9 @@ import { User } from "./models/User";
 import { EventInfo } from "./models/EventInfo";
 import { Document } from "./models/Document";
 import { Permission } from "./models/Permission";
-import { ACGroup } from "./models/ACGroup";
-import { GroupPermission } from "./models/GroupPermission";
-import { ShiftGroup } from "./models/ShiftGroup";
+import { Role } from "./models/Role";
+import { RolePermission } from "./models/RolePermission";
+import { UserRole } from "./models/UserRole";
 
 dotenv.config();
 
@@ -43,9 +43,9 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     EventInfo,
     Document,
     Permission,
-    ACGroup,
-    GroupPermission,
-    ShiftGroup,
+    Role,
+    RolePermission,
+    UserRole,
   ],
   logging: false,
   // models: [__dirname + "/models"],

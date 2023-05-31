@@ -1,30 +1,25 @@
-import { Optional } from "sequelize";
 import {
   Table,
   Column,
   Model,
   BelongsToMany,
-  DataType, AllowNull,
+  PrimaryKey,
+  AutoIncrement, DataType,
 } from "sequelize-typescript";
-import { ACGroup } from "./ACGroup";
-import { GroupPermission } from "./GroupPermission";
 
-interface PermissionAttributes {
-  id: number;
-  name: string;
-}
-
-type PermissionCreationAttributes = Optional<PermissionAttributes, "id">;
+import { Role } from "./Role";
+import { RolePermission } from "./RolePermission";
 
 @Table({ tableName: "permissions" })
-export class Permission extends Model<
-  PermissionAttributes,
-  PermissionCreationAttributes
-> {
-  @AllowNull(false)
-  @Column(DataType.TEXT)
-  name!: string;
+export class Permission extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER.UNSIGNED)
+  id!: number;
 
-  @BelongsToMany(() => ACGroup, () => GroupPermission)
-  groups: Array<ACGroup & { GroupPermission: GroupPermission }>;
+  @Column
+  permissionName!: string;
+
+  @BelongsToMany(() => Role, () => RolePermission, "roleId")
+  roles: Role[];
 }

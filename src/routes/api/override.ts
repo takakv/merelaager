@@ -5,6 +5,7 @@ import PermissionController, {
   createACGroup,
 } from "../../controllers/permissionController";
 import { StatusCodes } from "http-status-codes";
+import { matchPermissionsToRoles } from "../../db/db.seeder";
 
 const router = express.Router();
 
@@ -42,6 +43,15 @@ router.post("/records/", async (req, res) => {
 interface TypedRequestBody<T> extends Request {
   body: T;
 }
+
+router.post("/seed-permissions", (req: Request, res: Response) => {
+  matchPermissionsToRoles()
+    .then(() => res.sendStatus(StatusCodes.OK))
+    .catch((e) => {
+      console.log(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
+});
 
 router.post(
   "/permission",
