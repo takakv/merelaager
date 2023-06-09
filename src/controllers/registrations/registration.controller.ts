@@ -4,7 +4,8 @@ import {
   fetchRegistrationsFunc,
   fetchShiftRegistrationsFunc,
 } from "./fetch.registration";
-import {fetchShiftRegistrationsPdfFunc} from "./pdf.registration";
+import { fetchShiftRegistrationsPdfFunc } from "./pdf.registration";
+import { patchRegistrationFunc } from "./patch.registration";
 
 export const fetchRegistrations = fetchRegistrationsFunc;
 
@@ -14,4 +15,6 @@ export const fetchShiftRegistrations = fetchShiftRegistrationsFunc;
 
 export const deleteShiftRegistration = deleteShiftRegistrationFunc;
 
-export const fetchShiftRegistrationPdf = fetchShiftRegistrationsPdfFunc
+export const patchRegistration = patchRegistrationFunc;
+
+export const fetchShiftRegistrationPdf = fetchShiftRegistrationsPdfFunc;

@@ -3,7 +3,6 @@ import { createValidator } from "express-joi-validation";
 
 const validator = createValidator();
 
-const validateRequest = (schema: Schema) => validator.query(schema);
 /*
 const validateRequest =
   (schema: Schema) =>
@@ -18,6 +17,5 @@ const validateRequest =
   };
 */
 
+export const validateBody = (schema: Schema) => validator.body(schema);
 export const validateParams = (schema: Schema) => validator.params(schema);
-
-export default validateRequest;

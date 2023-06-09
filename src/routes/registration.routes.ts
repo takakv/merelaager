@@ -1,17 +1,26 @@
 import express from "express";
+
+import {
+  validateBody,
+  validateParams,
+} from "../middleware/reqvalidate.middleware";
+
+import {
+  deleteRegistrationParamsSchema,
+  fetchRegistrationParamsSchema,
+  patchRegistrationBodySchema,
+  patchRegistrationParamsSchema,
+  shiftRegistrationParamsSchema,
+} from "../controllers/registrations/registration.types";
+
 import {
   deleteShiftRegistration,
   fetchRegistration,
   fetchRegistrations,
   fetchShiftRegistrationPdf,
   fetchShiftRegistrations,
+  patchRegistration,
 } from "../controllers/registrations/registration.controller";
-import { validateParams } from "../middleware/reqvalidate.middleware";
-import {
-  deleteRegistrationParamsSchema,
-  fetchRegistrationParamsSchema,
-  shiftRegistrationParamsSchema,
-} from "../controllers/registrations/registration.types";
 
 const router = express.Router();
 
@@ -44,6 +53,14 @@ router.delete(
   validateParams(deleteRegistrationParamsSchema),
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   deleteShiftRegistration
+);
+
+router.patch(
+  "/:regId",
+  validateParams(patchRegistrationParamsSchema),
+  validateBody(patchRegistrationBodySchema),
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  patchRegistration
 );
 
 export default router;

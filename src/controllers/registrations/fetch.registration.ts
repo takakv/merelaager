@@ -9,6 +9,7 @@ import {
   ShiftRegistrationRequestSchema,
 } from "./registration.types";
 import Constants from "../../utils/constants";
+import { approvePm } from "../../utils/permissionValidator";
 
 import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
@@ -32,12 +33,7 @@ const prepareRegistrationEntry = (
     registered: data.isRegistered,
   };
 
-  if (
-    permissions.find(
-      (permission: Permission) =>
-        permission.permissionName === Constants.PERMISSION_VIEW_REG_FULL
-    )
-  ) {
+  if (approvePm(permissions, Constants.PERMISSION_VIEW_REG_FULL)) {
     entry.contactName = data.contactName;
     entry.contactEmail = data.contactEmail;
     entry.contactPhone = data.contactNumber;
@@ -47,23 +43,13 @@ const prepareRegistrationEntry = (
     return entry;
   }
 
-  if (
-    permissions.find(
-      (permission: Permission) =>
-        permission.permissionName === Constants.PERMISSION_VIEW_REG_CONTACT
-    )
-  ) {
+  if (approvePm(permissions, Constants.PERMISSION_VIEW_REG_CONTACT)) {
     entry.contactName = data.contactName;
     entry.contactEmail = data.contactEmail;
     entry.contactPhone = data.contactNumber;
   }
 
-  if (
-    permissions.find(
-      (permission: Permission) =>
-        permission.permissionName === Constants.PERMISSION_VIEW_REG_PRICE
-    )
-  ) {
+  if (approvePm(permissions, Constants.PERMISSION_VIEW_REG_PRICE)) {
     entry.billNr = data.billNr;
     entry.pricePaid = data.pricePaid;
     entry.priceToPay = data.priceToPay;

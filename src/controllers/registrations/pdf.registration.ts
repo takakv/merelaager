@@ -6,6 +6,7 @@ import { ShiftRegistrationRequestSchema } from "./registration.types";
 import Constants from "../../utils/constants";
 import { PrintEntry } from "../../routes/Support Files/registrations";
 import { generatePDF } from "../listGenerator";
+import { approvePm } from "../../utils/permissionValidator";
 
 import { Permission } from "../../db/models/Permission";
 import { Role } from "../../db/models/Role";
@@ -39,22 +40,13 @@ export const fetchShiftRegistrationsPdfFunc = async (
     },
   });
 
-  const hasViewPerms =
-    permissions.find(
-      (permission: Permission) =>
-        permission.permissionName === Constants.PERMISSION_VIEW_REG_BASIC
-    ) !== undefined &&
-    permissions.find(
-      (permission: Permission) =>
-        permission.permissionName === Constants.PERMISSION_VIEW_REG_CONTACT
-    ) !== undefined;
+  const hasViewPerms: boolean =
+    approvePm(permissions, Constants.PERMISSION_VIEW_REG_BASIC) &&
+    approvePm(permissions, Constants.PERMISSION_VIEW_REG_CONTACT);
 
   if (
     !hasViewPerms &&
-    !permissions.find(
-      (permission: Permission) =>
-        permission.permissionName === Constants.PERMISSION_VIEW_REG_FULL
-    )
+    !approvePm(permissions, Constants.PERMISSION_VIEW_REG_FULL)
   ) {
     res.sendStatus(StatusCodes.FORBIDDEN);
     return;

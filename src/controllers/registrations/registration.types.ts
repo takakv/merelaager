@@ -31,3 +31,26 @@ export interface DeleteRegistrationRequestSchema
     regId: number;
   };
 }
+
+export const patchRegistrationParamsSchema: ObjectSchema = joi.object({
+  regId: joi.number().required(),
+});
+
+export const patchRegistrationBodySchema: ObjectSchema = joi.object({
+  registered: joi.boolean(),
+  old: joi.boolean(),
+  pricePaid: joi.number(),
+  priceToPay: joi.number(),
+});
+
+export interface PatchRegistrationRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Params]: {
+    regId: number;
+  };
+  [ContainerTypes.Body]: {
+    registered?: boolean;
+    old?: boolean;
+    pricePaid?: number;
+    priceToPay?: number;
+  };
+}
