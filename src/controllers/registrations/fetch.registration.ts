@@ -4,7 +4,10 @@ import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
 
 import { RegistrationEntry } from "../../routes/Support Files/registrations";
-import { ShiftRegistrationRequestSchema } from "./registration.types";
+import {
+  FetchRegistrationRequestSchema,
+  ShiftRegistrationRequestSchema,
+} from "./registration.types";
 import Constants from "../../utils/constants";
 
 import { Registration } from "../../db/models/Registration";
@@ -70,6 +73,54 @@ const prepareRegistrationEntry = (
 };
 
 /**
+ * Fetch authorised registration information for a specific registration.
+ * @param req
+ * @param res
+ */
+export const fetchRegistrationFunc = async (
+  req: ValidatedRequest<FetchRegistrationRequestSchema>,
+  res: Response
+): Promise<void> => {
+  const user: Entity = req.user;
+
+  const { regId } = req.params;
+
+  const dbRegistration = await Registration.findByPk(regId, {
+    include: {
+      model: Child,
+      attributes: ["name"],
+    },
+  });
+
+  // Do not leak whether a registration entry with this ID exists.
+  if (!dbRegistration) {
+    res.sendStatus(StatusCodes.FORBIDDEN);
+    return;
+  }
+
+  // User has no role for this shift.
+  if (!user.shiftRoles.hasOwnProperty(dbRegistration.shiftNr)) {
+    res.sendStatus(StatusCodes.FORBIDDEN);
+    return;
+  }
+
+  const permissions = await Permission.findAll({
+    attributes: ["permissionName"],
+    include: {
+      model: Role,
+      where: { id: user.shiftRoles[dbRegistration.shiftNr] },
+    },
+  });
+
+  const registration: RegistrationEntry = prepareRegistrationEntry(
+    dbRegistration,
+    permissions
+  );
+
+  res.json(registration);
+};
+
+/**
  * Fetch authorised registration information for all authorised shifts.
  * @param req
  * @param res
@@ -100,12 +151,10 @@ export const fetchRegistrationsFunc = async (
     // TODO: preload for efficiency
     const permissions = await Permission.findAll({
       attributes: ["permissionName"],
-      include: [
-        {
-          model: Role,
-          where: { id: user.shiftRoles[registration.shiftNr] },
-        },
-      ],
+      include: {
+        model: Role,
+        where: { id: user.shiftRoles[registration.shiftNr] },
+      },
     });
 
     const entry: RegistrationEntry = prepareRegistrationEntry(
@@ -140,12 +189,10 @@ export const fetchShiftRegistrationsFunc = async (
 
   const permissions = await Permission.findAll({
     attributes: ["permissionName"],
-    include: [
-      {
-        model: Role,
-        where: { id: user.shiftRoles[shiftNr] },
-      },
-    ],
+    include: {
+      model: Role,
+      where: { id: user.shiftRoles[shiftNr] },
+    },
   });
 
   const dbRegistrations = await Registration.findAll({
