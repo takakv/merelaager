@@ -3,6 +3,7 @@ import {
   deleteShiftRegistration,
   fetchRegistration,
   fetchRegistrations,
+  fetchShiftRegistrationPdf,
   fetchShiftRegistrations,
 } from "../controllers/registrations/registration.controller";
 import { validateParams } from "../middleware/reqvalidate.middleware";
@@ -29,6 +30,13 @@ router.get(
   validateParams(shiftRegistrationParamsSchema),
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   fetchShiftRegistrations
+);
+
+router.get(
+  "/pdf/:shiftNr",
+  validateParams(shiftRegistrationParamsSchema),
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  fetchShiftRegistrationPdf
 );
 
 router.delete(
