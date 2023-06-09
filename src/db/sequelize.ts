@@ -6,9 +6,9 @@ import { Record } from "./models/Record";
 import { Registration } from "./models/Registration";
 import { ResetToken } from "./models/ResetToken";
 import { ShiftData } from "./models/ShiftData";
-import { ShiftInfo } from "./models/ShiftInfo";
+import { Shift } from "./models/Shift";
 import { SignUpToken } from "./models/SignUpToken";
-import { Staff } from "./models/Staff";
+import { ShiftStaff } from "./models/ShiftStaff";
 import { Team } from "./models/Team";
 import { User } from "./models/User";
 import { EventInfo } from "./models/EventInfo";
@@ -16,7 +16,7 @@ import { Document } from "./models/Document";
 import { Permission } from "./models/Permission";
 import { Role } from "./models/Role";
 import { RolePermission } from "./models/RolePermission";
-import { UserRole } from "./models/UserRole";
+import { UserShiftRole } from "./models/UserShiftRole";
 
 dotenv.config();
 
@@ -36,16 +36,16 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     Record,
     ResetToken,
     ShiftData,
-    ShiftInfo,
+    Shift,
     SignUpToken,
-    Staff,
+    ShiftStaff,
     User,
     EventInfo,
     Document,
     Permission,
     Role,
     RolePermission,
-    UserRole,
+    UserShiftRole,
   ],
   logging: false,
   // models: [__dirname + "/models"],

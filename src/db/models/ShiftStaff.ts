@@ -1,4 +1,3 @@
-import { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
@@ -11,6 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+
 import { User } from "./User";
 
 export const roles = {
@@ -20,25 +20,8 @@ export const roles = {
   guest: "guest",
 };
 
-interface StaffAttributes {
-  id: number;
-  shiftNr: number;
-  year: number;
-  name: string;
-  role: string;
-  userId: number;
-}
-
-type StaffCreationAttributes = Optional<
-  StaffAttributes,
-  "id" | "year" | "userId"
->;
-
-@Table({ tableName: "staff" })
-export class Staff
-  extends Model<StaffAttributes, StaffCreationAttributes>
-  implements StaffAttributes
-{
+@Table({ tableName: "shift_staff" })
+export class ShiftStaff extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER.UNSIGNED)

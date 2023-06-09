@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Staff } from "../../db/models/Staff";
+import { ShiftStaff } from "../../db/models/ShiftStaff";
 import { User } from "../../db/models/User";
 import Entity = Express.Entity;
 import { UserLogEntry } from "../../logging/UserLogEntry";
@@ -20,7 +20,7 @@ export const requireShiftBoss = async (
   // Access updates happen in december.
   if (now.getMonth() === 11) ++year;
 
-  const result = await Staff.findOne({
+  const result = await ShiftStaff.findOne({
     where: { userId: user.id, shiftNr: user.shift, year },
   });
   if (!result) {
@@ -50,7 +50,7 @@ export const approveShiftFull = async (user: Entity, shiftNr: number) => {
 
   const userId = (await User.findOne({ where: { username: user.username } }))
     .id;
-  const accessEntry = await Staff.findOne({
+  const accessEntry = await ShiftStaff.findOne({
     where: { userId, shiftNr, year: new Date().getUTCFullYear() },
   });
   return !!accessEntry;
@@ -75,7 +75,7 @@ export const approveShiftRole = async (
 
   const userId = user.id;
   const year = new Date().getUTCFullYear();
-  const staffEntry = await Staff.findOne({
+  const staffEntry = await ShiftStaff.findOne({
     where: { userId, shiftNr, year },
   });
 
@@ -99,7 +99,7 @@ export const approveShiftAndGetRole = async (user: Entity, shiftNr: number) => {
   if (user.isRoot) return "root";
 
   const userId = user.id;
-  const staffEntry = await Staff.findOne({
+  const staffEntry = await ShiftStaff.findOne({
     where: { userId, shiftNr, year: new Date().getUTCFullYear() },
   });
 

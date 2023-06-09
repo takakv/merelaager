@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 
 import { User } from "../db/models/User";
-import { Staff } from "../db/models/Staff";
-import { ShiftInfo } from "../db/models/ShiftInfo";
+import { ShiftStaff } from "../db/models/ShiftStaff";
+import { Shift } from "../db/models/Shift";
 import { Request, Response } from "express";
 import { userIsRoot } from "../routes/Support Files/shiftAuth";
 import Entity = Express.Entity;
@@ -44,7 +44,7 @@ exports.swapShift = async (userId: number, shiftNr: number, isBoss = false) => {
   let role = "root";
 
   if (!isBoss) {
-    const shiftInfo = await Staff.findOne({
+    const shiftInfo = await ShiftStaff.findOne({
       where: {
         userId,
         shiftNr,
@@ -79,17 +79,17 @@ exports.getInfo = async (userId: number) => {
   if (now.getMonth() === 11) ++year;
 
   if (user.role !== "root") {
-    const shiftInfo = await Staff.findAll({
+    const shiftInfo = await ShiftStaff.findAll({
       where: { userId, year },
     });
     if (!shiftInfo) return null;
-    shiftInfo.forEach((shift: Staff) => {
+    shiftInfo.forEach((shift: ShiftStaff) => {
       shifts.push(shift.shiftNr);
       if (shift.shiftNr === shiftNr) role = shift.role;
     });
     if (!shifts.includes(shiftNr)) return null;
   } else {
-    const allShifts = await ShiftInfo.findAll();
+    const allShifts = await Shift.findAll();
     allShifts.forEach((shift) => {
       shifts.push(shift.id);
     });
@@ -109,7 +109,7 @@ exports.validateShift = async (
   shiftNr: number,
   year = new Date().getFullYear()
 ) => {
-  const entry = await Staff.findOne({
+  const entry = await ShiftStaff.findOne({
     where: { userId, shiftNr, year },
     attributes: ["role"],
   });
@@ -142,14 +142,14 @@ exports.getShifts = async (userId: number) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  const shiftInfo = await Staff.findAll({ where: { userId, year } });
+  const shiftInfo = await ShiftStaff.findAll({ where: { userId, year } });
   console.log(shiftInfo);
 };
 
 const fetchShifts = async (userId: number, isRoot = false) => {
   const shifts: UserShift[] = [];
 
-  const currentShifts = await Staff.findAll({
+  const currentShifts = await ShiftStaff.findAll({
     where: { userId: userId, year: new Date().getUTCFullYear() },
     attributes: ["shiftNr", "role"],
   });
@@ -160,7 +160,7 @@ const fetchShifts = async (userId: number, isRoot = false) => {
 
   if (!isRoot) return shifts;
 
-  const shiftCount = await ShiftInfo.count();
+  const shiftCount = await Shift.count();
   if (shiftCount === shifts.length) return shifts;
 
   // Populate the shift switcher with least-access.
@@ -250,7 +250,7 @@ class UserController {
     entity: Entity
   ) => {
     if (!userIsRoot(entity)) {
-      const userInShift = await Staff.findOne({
+      const userInShift = await ShiftStaff.findOne({
         where: { shiftNr: newShift, userId: entity.id, year: getYear() },
       });
       if (!userInShift) return StatusCodes.FORBIDDEN;

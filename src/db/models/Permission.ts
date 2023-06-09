@@ -1,10 +1,11 @@
 import {
-  Table,
-  Column,
-  Model,
+  AutoIncrement,
   BelongsToMany,
+  Column,
+  DataType,
+  Model,
   PrimaryKey,
-  AutoIncrement, DataType,
+  Table,
 } from "sequelize-typescript";
 
 import { Role } from "./Role";
@@ -20,6 +21,6 @@ export class Permission extends Model {
   @Column
   permissionName!: string;
 
-  @BelongsToMany(() => Role, () => RolePermission, "roleId")
+  @BelongsToMany(() => Role, () => RolePermission)
   roles: Role[];
 }

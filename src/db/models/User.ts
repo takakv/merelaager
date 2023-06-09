@@ -1,8 +1,6 @@
-import { Optional } from "sequelize";
 import {
   AllowNull,
   AutoIncrement,
-  BelongsToMany,
   Column,
   DataType,
   Default,
@@ -14,35 +12,14 @@ import {
   Unique,
 } from "sequelize-typescript";
 
-import { ShiftInfo } from "./ShiftInfo";
+import { Shift } from "./Shift";
 import { ResetToken } from "./ResetToken";
-import { Staff } from "./Staff";
+import { ShiftStaff } from "./ShiftStaff";
 import { Document } from "./Document";
-import { UserRole } from "./UserRole";
-import { Role } from "./Role";
-
-interface UserAttributes {
-  id: number;
-  username: string;
-  email: string;
-  name: string;
-  role: string;
-  currentShift: number;
-  nickname: string;
-  password: string;
-  refreshToken: string;
-}
-
-type UserCreationAttributes = Optional<
-  UserAttributes,
-  "id" | "role" | "currentShift" | "nickname" | "refreshToken"
->;
+import { UserShiftRole } from "./UserShiftRole";
 
 @Table({ tableName: "users" })
-export class User
-  extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
+export class User extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER.UNSIGNED)
@@ -64,9 +41,6 @@ export class User
   @AllowNull(false)
   @Default("std")
   // Root users have all system permissions.
-  // Master users are bosses of at least one shift.
-  // OP users are instructors.
-  // Campers are campers.
   // STD is a miscellaneous role.
   @Column(DataType.ENUM("root", "std", "master", "op", "camper"))
   public role!: string;
@@ -84,14 +58,14 @@ export class User
   @Column(DataType.STRING)
   public refreshToken: string;
 
-  @HasOne(() => ShiftInfo)
-  public shiftInfo?: ShiftInfo;
+  @HasOne(() => Shift)
+  public shiftInfo?: Shift;
 
   @HasOne(() => ResetToken)
   public resetToken?: ResetToken;
 
-  @HasMany(() => Staff)
-  public shifts?: Staff[];
+  @HasMany(() => ShiftStaff)
+  public shifts?: ShiftStaff[];
 
   @HasMany(() => Document, {
     onUpdate: "CASCADE",
@@ -99,6 +73,6 @@ export class User
   })
   public documents?: Document[];
 
-  @BelongsToMany(() => Role, () => UserRole, "roleId")
-  roles: UserRole[];
+  @HasMany(() => UserShiftRole)
+  shiftRoles: UserShiftRole[];
 }

@@ -1,4 +1,3 @@
-import { Optional } from "sequelize";
 import {
   AllowNull,
   BelongsTo,
@@ -11,22 +10,11 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
+
 import { User } from "./User";
 
-interface ResetTokenAttributes {
-  token: string;
-  userId: number;
-  isExpired: boolean;
-}
-
-interface ResetTokenCreationAttributes
-  extends Optional<ResetTokenAttributes, "isExpired"> {}
-
 @Table({ tableName: "reset_tokens" })
-export class ResetToken
-  extends Model<ResetTokenAttributes, ResetTokenCreationAttributes>
-  implements ResetTokenAttributes
-{
+export class ResetToken extends Model {
   @PrimaryKey
   @Column(DataType.STRING)
   public token!: string;

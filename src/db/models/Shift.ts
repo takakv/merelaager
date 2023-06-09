@@ -1,5 +1,5 @@
 import {
-  BelongsTo,
+  BelongsTo, BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -8,24 +8,12 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+
 import { User } from "./User";
 import { Registration } from "./Registration";
 
-interface ShiftInfoAttributes {
-  id: number;
-  bossId: number;
-  bossName: string;
-  bossEmail: string;
-  bossPhone: string;
-  startDate: Date;
-  length: number;
-}
-
-@Table({ tableName: "shift_info" })
-export class ShiftInfo
-  extends Model<ShiftInfoAttributes>
-  implements ShiftInfoAttributes
-{
+@Table({ tableName: "shifts" })
+export class Shift extends Model {
   @PrimaryKey
   @Column(DataType.INTEGER.UNSIGNED)
   public id!: number;

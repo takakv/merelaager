@@ -1,6 +1,6 @@
 import { User } from "../db/models/User";
-import { ShiftGroup } from "../db/models/ShiftGroup";
-import { ACGroup } from "../db/models/ACGroup";
+import { UserShiftRole } from "../db/models/UserShiftRole";
+import { Role } from "../db/models/Role";
 import { Permission } from "../db/models/Permission";
 import { Op } from "sequelize";
 
@@ -25,7 +25,7 @@ class AccessController {
       attributes: [],
       include: [
         {
-          model: ShiftGroup,
+          model: UserShiftRole,
           required: true,
           attributes: ["shiftNr"],
           order: ["shiftNr", "ASC"],
@@ -37,7 +37,7 @@ class AccessController {
     if (!userData) return [] as shiftPermissions[];
 
     const permissions: shiftPermissions[] = userData.shiftGroups.map(
-      (shift: ShiftGroup) => ({
+      (shift: UserShiftRole) => ({
         shiftNr: shift.shiftNr,
         permissions: shift.acGroup.permissions,
       })
@@ -62,7 +62,7 @@ class AccessController {
       attributes: [],
       include: [
         {
-          model: ShiftGroup,
+          model: UserShiftRole,
           required: true,
           attributes: ["shiftNr"],
           where: { shiftNr },
@@ -98,7 +98,7 @@ class AccessController {
       attributes: [],
       include: [
         {
-          model: ShiftGroup,
+          model: UserShiftRole,
           required: true,
           attributes: ["shiftNr"],
           where: { shiftNr },
@@ -112,7 +112,7 @@ class AccessController {
 
   private static getPermission = (permissionName: string) => {
     return {
-      model: ACGroup,
+      model: Role,
       attributes: ["id"],
       required: true,
       include: [
@@ -127,7 +127,7 @@ class AccessController {
 
   private static getACGroup = (permissionPrefix: string) => {
     return {
-      model: ACGroup,
+      model: Role,
       attributes: ["id"],
       required: true,
       include: [

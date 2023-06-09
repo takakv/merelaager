@@ -12,7 +12,7 @@ import {
   Table,
 } from "sequelize-typescript";
 import { Child } from "./Child";
-import { ShiftInfo } from "./ShiftInfo";
+import { Shift } from "./Shift";
 
 interface RegistrationAttributes {
   id: number;
@@ -65,13 +65,13 @@ export class Registration
   @Column(DataType.STRING)
   public idCode: string;
 
-  @ForeignKey(() => ShiftInfo)
+  @ForeignKey(() => Shift)
   @AllowNull(false)
   @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
 
-  @BelongsTo(() => ShiftInfo)
-  public shift?: ShiftInfo;
+  @BelongsTo(() => Shift)
+  public shift?: Shift;
 
   @AllowNull(false)
   @Default(false)

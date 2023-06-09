@@ -1,17 +1,18 @@
 import {
-  Table,
-  Column,
-  Model,
-  BelongsToMany,
-  PrimaryKey,
   AutoIncrement,
+  BelongsToMany,
+  Column,
   DataType,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
 } from "sequelize-typescript";
 
 import { Permission } from "./Permission";
 import { RolePermission } from "./RolePermission";
 import { User } from "./User";
-import { UserRole } from "./UserRole";
+import { UserShiftRole } from "./UserShiftRole";
 
 @Table({ tableName: "roles" })
 export class Role extends Model {
@@ -23,9 +24,9 @@ export class Role extends Model {
   @Column
   roleName: string;
 
-  @BelongsToMany(() => Permission, () => RolePermission, "permissionId")
+  @BelongsToMany(() => Permission, () => RolePermission)
   permissions: Permission[];
 
-  @BelongsToMany(() => User, () => UserRole, "userId")
-  users: User[];
+  @HasMany(() => UserShiftRole)
+  shiftRoles: UserShiftRole[];
 }

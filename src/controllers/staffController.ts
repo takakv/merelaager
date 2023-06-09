@@ -1,4 +1,4 @@
-import {Staff} from "../db/models/Staff";
+import {ShiftStaff} from "../db/models/ShiftStaff";
 
 const roles = {
   boss: "boss",
@@ -10,7 +10,7 @@ exports.fetch = async (shiftNr) => {
   const currentDate = new Date();
   let year = currentDate.getUTCFullYear();
   if (currentDate.getMonth() === 11) ++year;
-  const staff = await Staff.findAll({ where: { shiftNr, year } });
+  const staff = await ShiftStaff.findAll({ where: { shiftNr, year } });
 
   if (!staff) return false;
   const resObj = {};
@@ -29,7 +29,7 @@ exports.fetch = async (shiftNr) => {
 exports.create = async (shiftNr, name, role) => {
   if (!roles[role]) return false;
   try {
-    await Staff.create({
+    await ShiftStaff.create({
       shiftNr,
       name,
       role,

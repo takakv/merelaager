@@ -1,10 +1,12 @@
 declare namespace Express {
+  export interface ShiftPermissionRoles {
+    [key: number]: number;
+  }
+
   export interface Entity {
-    id: number;
-    username: string;
+    userId: number;
+    shiftRoles: ShiftPermissionRoles;
     isRoot: boolean;
-    shift: number;
-    role: string;
   }
 
   export interface Request {

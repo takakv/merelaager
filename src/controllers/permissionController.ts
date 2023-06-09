@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { Permission } from "../db/models/Permission";
-import { ACGroup } from "../db/models/ACGroup";
+import { Role } from "../db/models/Role";
 import PermGroups from "../utilities/acl/PermGroups";
-import { GroupPermission } from "../db/models/GroupPermission";
+import { RolePermission } from "../db/models/RolePermission";
 import { tempPermissionsList } from "../utilities/permissionsList";
 
 export type ACRequest = {
@@ -31,7 +31,7 @@ class PermissionController {
     ];
 
     for (const [idx, group] of groups.entries()) {
-      const [tmp] = await ACGroup.findOrCreate({
+      const [tmp] = await Role.findOrCreate({
         where: { name: group.name },
       });
       groups[idx].id = tmp.getDataValue("id");
@@ -88,7 +88,7 @@ class PermissionController {
     perms: DBEntry[]
   ) => {
     const setInDB = async (groupId: number, permissionName: string) => {
-      await GroupPermission.findOrCreate({
+      await RolePermission.findOrCreate({
         where: {
           groupId,
           permissionId: this.findPermId(perms, permissionName),
@@ -171,7 +171,7 @@ export const createACGroup = async (data: ACRequest) => {
   const { name } = data;
 
   try {
-    const [, created] = await ACGroup.findOrCreate({
+    const [, created] = await Role.findOrCreate({
       where: { name },
     });
     if (created) return StatusCodes.CREATED;

@@ -43,9 +43,9 @@ import users from "./api/users";
 
 router.use("/users", users);
 
-import registrations from "./api/registrations";
+import registrationRoutes from "./registration.routes";
 
-router.use("/registrations", registrations);
+router.use("/registrations", registrationRoutes);
 
 import campers from "./api/campers";
 

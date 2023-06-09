@@ -8,7 +8,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import { roles } from "./Staff";
+import { roles } from "./ShiftStaff";
 
 interface SignUpTokenAttributes {
   token: string;
