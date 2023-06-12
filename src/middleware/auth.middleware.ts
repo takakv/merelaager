@@ -16,7 +16,7 @@ export const populateRequestingUser = async (
 ): Promise<boolean> => {
   // Fetch the user along with their permission group for each shift.
   const dbUser = await User.findByPk(data.userId, {
-    attributes: ["id"],
+    attributes: ["id", "role"],
     include: { model: UserShiftRole },
   });
 
