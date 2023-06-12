@@ -35,7 +35,7 @@ import authMiddleware from "../middleware/auth.middleware";
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.use(authMiddleware);
 
-import me from "./api/me";
+import me from "./me.routes";
 
 router.use("/me", me);
 

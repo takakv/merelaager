@@ -6,9 +6,9 @@ import { ShiftStaff } from "../db/models/ShiftStaff";
 import { Shift } from "../db/models/Shift";
 import { Request, Response } from "express";
 import { userIsRoot } from "../routes/Support Files/shiftAuth";
-import Entity = Express.Entity;
-import { UserData, UserShift } from "../routes/Support Files/users";
+import { FrontEndUserData, UserShift } from "../routes/Support Files/users";
 import { StatusCodes } from "http-status-codes";
+import Entity = Express.Entity;
 
 dotenv.config();
 
@@ -231,7 +231,7 @@ class UserController {
 
     const shifts = await fetchShifts(userId, isRoot);
 
-    const userData: UserData = {
+    const userData: FrontEndUserData = {
       name: user.nickname,
       currentShift: user.currentShift,
       isRoot: user.role === "root",
@@ -243,30 +243,6 @@ class UserController {
       statusCode: StatusCodes.OK,
       data: userData,
     };
-  };
-
-  public static updateSelectedShift = async (
-    newShift: number,
-    entity: Entity
-  ) => {
-    if (!userIsRoot(entity)) {
-      const userInShift = await ShiftStaff.findOne({
-        where: { shiftNr: newShift, userId: entity.id, year: getYear() },
-      });
-      if (!userInShift) return StatusCodes.FORBIDDEN;
-    }
-
-    const user = await User.findByPk(entity.id);
-    user.currentShift = newShift;
-
-    try {
-      await user.save();
-    } catch (e) {
-      console.error();
-      return StatusCodes.INTERNAL_SERVER_ERROR;
-    }
-
-    return StatusCodes.NO_CONTENT;
   };
 }
 
