@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import express from "express";
 
 import {
@@ -30,6 +31,7 @@ router.get("/", fetchRegistrations);
 router.get(
   "/:regId",
   validateParams(fetchRegistrationParamsSchema),
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   fetchRegistration
 );
@@ -37,6 +39,7 @@ router.get(
 router.get(
   "/shifts/:shiftNr",
   validateParams(shiftRegistrationParamsSchema),
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   fetchShiftRegistrations
 );
@@ -44,6 +47,7 @@ router.get(
 router.get(
   "/pdf/:shiftNr",
   validateParams(shiftRegistrationParamsSchema),
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   fetchShiftRegistrationPdf
 );
@@ -51,6 +55,7 @@ router.get(
 router.delete(
   "/:regId",
   validateParams(deleteRegistrationParamsSchema),
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   deleteShiftRegistration
 );
@@ -59,6 +64,7 @@ router.patch(
   "/:regId",
   validateParams(patchRegistrationParamsSchema),
   validateBody(patchRegistrationBodySchema),
+  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   patchRegistration
 );
