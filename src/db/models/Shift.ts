@@ -1,7 +1,9 @@
 import {
-  BelongsTo, BelongsToMany,
+  AllowNull,
+  BelongsTo,
   Column,
   DataType,
+  Default,
   ForeignKey,
   HasMany,
   Model,
@@ -39,6 +41,16 @@ export class Shift extends Model {
 
   @Column(DataType.INTEGER.UNSIGNED)
   public length: number;
+
+  @Default(20)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public boySlots: number;
+
+  @Default(20)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public girlSlots: number;
 
   @HasMany(() => Registration)
   public registrations?: Registration[];
