@@ -89,6 +89,7 @@ export const patchRegistrationFunc = async (
       }
     }
 
+    // TODO: reflect the registration update in the shift campers list.
     registration.isRegistered = req.body.registered;
   }
 

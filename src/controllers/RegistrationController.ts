@@ -23,7 +23,7 @@ import GlobalStore from "../utilities/GlobalStore";
 
 import AccessController, { shiftPermissions } from "./AccessController";
 import BillBuilder from "./billGenerator";
-import { generatePDF } from "./listGenerator";
+import { generateShiftCamperListPDF } from "../utils/listGenerator";
 
 dotenv.config();
 
@@ -201,7 +201,7 @@ class RegistrationController {
       });
     });
 
-    return generatePDF(shiftNr, entries);
+    return generateShiftCamperListPDF(shiftNr, entries);
   };
 
   public static patchRegistration = async (
