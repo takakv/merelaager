@@ -10,6 +10,7 @@ import { Registration } from "../../db/models/Registration";
 import { Permission } from "../../db/models/Permission";
 import { Role } from "../../db/models/Role";
 import { Child } from "../../db/models/Child";
+import { Shift } from "../../db/models/Shift";
 import Entity = Express.Entity;
 
 /**
@@ -83,7 +84,15 @@ export const patchRegistrationFunc = async (
         },
       });
 
-      if (registrationCount >= 18) {
+      const totalSlots: Shift = await Shift.findByPk(registration.shiftNr, {
+        attributes: ["boySlots", "girlSlots"],
+      });
+
+      const remainingSlots =
+        (gender === "M" ? totalSlots.boySlots : totalSlots.girlSlots) -
+        registrationCount;
+
+      if (remainingSlots <= 0) {
         res.sendStatus(StatusCodes.CONFLICT);
         return;
       }
