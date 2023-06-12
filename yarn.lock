@@ -412,7 +412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qrcode@npm:^1.4.2":
+"@types/qrcode@npm:^1.5.0":
   version: 1.5.0
   resolution: "@types/qrcode@npm:1.5.0"
   dependencies:
@@ -3417,7 +3417,7 @@ __metadata:
     "@types/nodemailer": ^6.4.4
     "@types/pdfkit": ^0.12.6
     "@types/pdfmake": ^0.2.2
-    "@types/qrcode": ^1.4.2
+    "@types/qrcode": ^1.5.0
     "@types/swagger-jsdoc": ^6.0.1
     "@types/swagger-ui-express": ^4.1.3
     "@types/uuid": ^9.0.0
