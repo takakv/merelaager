@@ -13,6 +13,7 @@ const getPermissionRoleNames = (): string[] => {
     Constants.SHIFT_ROLE_BOSS,
     Constants.SHIFT_ROLE_INSTRUCTOR,
     Constants.SHIFT_ROLE_HELPER,
+    Constants.SHIFT_ROLE_REG_VIEWER_BASIC,
   ];
 };
 
@@ -143,5 +144,15 @@ export const matchPermissionsToRoles = async (): Promise<void> => {
         },
       });
     }
+  }
+
+  // Registration viewer permissions.
+  for (const permission of [Constants.PERMISSION_VIEW_REG_BASIC]) {
+    await RolePermission.findOrCreate({
+      where: {
+        roleId: roleDbLinks[Constants.SHIFT_ROLE_REG_VIEWER_BASIC],
+        permissionId: permissionDbLinks[permission],
+      },
+    });
   }
 };

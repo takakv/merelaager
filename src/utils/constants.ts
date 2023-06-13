@@ -3,6 +3,7 @@ class Constants {
   static SHIFT_ROLE_BOSS = "boss";
   static SHIFT_ROLE_INSTRUCTOR = "instructor";
   static SHIFT_ROLE_HELPER = "helper";
+  static SHIFT_ROLE_REG_VIEWER_BASIC = "reg-viewer-basic";
 
   static PERMISSION_REG_PF = "registration.";
   static PERMISSION_CAMPER_PF = "camper.";
