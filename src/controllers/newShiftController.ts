@@ -26,12 +26,11 @@ export const populate = async () => {
 
   // Fetch all registered campers.
   const registrations = await Registration.findAll({
-    where: { isRegistered: true, shiftNr: 3 },
+    where: { isRegistered: true },
   });
 
   // Associate all registered campers with shifts.
   for (const registration of registrations) {
-    console.log(registration.childId);
     const { shiftNr } = registration;
 
     const child: Child = await Child.findOne({
@@ -47,7 +46,11 @@ export const populate = async () => {
         childId: child.id,
         shiftNr,
         parentNotes: registration.addendum,
+        isActive: true,
       });
+    } else if (!shiftEntry.isActive) {
+      shiftEntry.isActive = true;
+      await shiftEntry.save();
     }
   }
 };
