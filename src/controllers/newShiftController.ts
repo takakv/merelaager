@@ -17,7 +17,7 @@ export const populate = async () => {
   const dbShiftData = await ShiftData.findAll();
   for (const entry of dbShiftData) {
     const registration = await Registration.findOne({
-      where: { childId: entry.childId },
+      where: { childId: entry.childId, shiftNr: entry.shiftNr },
     });
     if (!registration || !registration.isRegistered) {
       await entry.destroy();
