@@ -26,7 +26,7 @@ export const populate = async () => {
 
   // Fetch all registered campers.
   const registrations = await Registration.findAll({
-    where: { isRegistered: true },
+    where: { isRegistered: true, shiftNr: 3 },
   });
 
   // Associate all registered campers with shifts.
