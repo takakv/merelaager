@@ -14,8 +14,20 @@ import {
 } from "../routes/Support Files/shiftAuth";
 
 export const populate = async () => {
+  const dbShiftData = await ShiftData.findAll();
+  for (const entry of dbShiftData) {
+    const registration = await Registration.findOne({
+      where: { childId: entry.childId },
+    });
+    if (!registration.isRegistered) {
+      await entry.destroy();
+    }
+  }
+
   // Fetch all registered campers.
-  const registrations = await Registration.findAll();
+  const registrations = await Registration.findAll({
+    where: { isRegistered: true },
+  });
 
   // Associate all registered campers with shifts.
   for (const registration of registrations) {
@@ -35,8 +47,6 @@ export const populate = async () => {
         shiftNr,
         parentNotes: registration.addendum,
       });
-    } else if (shiftEntry && !registration.isRegistered) {
-      await shiftEntry.destroy();
     }
   }
 };
