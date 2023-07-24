@@ -6,6 +6,7 @@ import PermissionController, {
 } from "../../controllers/permissionController";
 import { StatusCodes } from "http-status-codes";
 import { matchPermissionsToRoles } from "../../db/db.seeder";
+import { populate } from "../../controllers/newShiftController";
 
 const router = express.Router();
 
@@ -19,9 +20,10 @@ router.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.post("/register", async (req, res) => {
   try {
-    await newShiftData.populate();
+    await populate();
     res.sendStatus(201);
   } catch (e) {
     console.error(e);

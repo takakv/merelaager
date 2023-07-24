@@ -13,7 +13,7 @@ import {
   requireShiftBoss,
 } from "../routes/Support Files/shiftAuth";
 
-exports.populate = async () => {
+export const populate = async () => {
   // Fetch all registered campers.
   const registrations = await Registration.findAll({
     where: { isRegistered: true },
