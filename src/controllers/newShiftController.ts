@@ -29,10 +29,9 @@ export const populate = async () => {
     where: { isRegistered: true },
   });
 
-  console.log(registrations);
-
   // Associate all registered campers with shifts.
   for (const registration of registrations) {
+    console.log(registrations);
     const { shiftNr } = registration;
 
     const child: Child = await Child.findOne({
