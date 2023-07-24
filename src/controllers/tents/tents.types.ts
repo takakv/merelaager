@@ -10,3 +10,22 @@ export interface FetchTentRequestSchema extends ValidatedRequestSchema {
     tentId: number;
   };
 }
+
+export const tentScoreParamsSchema: ObjectSchema = joi.object({
+  tentId: joi.number().required(),
+});
+
+export const tentScoreBodySchema: ObjectSchema = joi.object({
+  shiftNr: joi.number().required(),
+  score: joi.number().required(),
+});
+
+export interface TentScoreRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Params]: {
+    tentId: number;
+  };
+  [ContainerTypes.Body]: {
+    shiftNr: number;
+    score: number;
+  };
+}
