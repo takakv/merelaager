@@ -41,7 +41,7 @@ export const populate = async () => {
       where: { childId: child.id, shiftNr },
     });
 
-    if (!shiftEntry && registration.isRegistered) {
+    if (!shiftEntry) {
       await ShiftData.create({
         childId: child.id,
         shiftNr,
