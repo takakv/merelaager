@@ -19,7 +19,7 @@ export const populate = async () => {
     const registration = await Registration.findOne({
       where: { childId: entry.childId },
     });
-    if (!registration.isRegistered) {
+    if (!registration || !registration.isRegistered) {
       await entry.destroy();
     }
   }
