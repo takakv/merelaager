@@ -15,9 +15,7 @@ import {
 
 export const populate = async () => {
   // Fetch all registered campers.
-  const registrations = await Registration.findAll({
-    where: { isRegistered: true },
-  });
+  const registrations = await Registration.findAll();
 
   // Associate all registered campers with shifts.
   for (const registration of registrations) {
@@ -27,14 +25,19 @@ export const populate = async () => {
       where: { id: registration.childId },
     });
 
-    await ShiftData.findOrCreate({
+    const shiftEntry = await ShiftData.findOne({
       where: { childId: child.id, shiftNr },
-      defaults: {
+    });
+
+    if (!shiftEntry && registration.isRegistered) {
+      await ShiftData.create({
         childId: child.id,
         shiftNr,
         parentNotes: registration.addendum,
-      },
-    });
+      });
+    } else if (shiftEntry && !registration.isRegistered) {
+      await shiftEntry.destroy();
+    }
   }
 };
 
