@@ -17,6 +17,7 @@ import { Permission } from "./models/Permission";
 import { Role } from "./models/Role";
 import { RolePermission } from "./models/RolePermission";
 import { UserShiftRole } from "./models/UserShiftRole";
+import { TentScores } from "./models/TentScores";
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     Role,
     RolePermission,
     UserShiftRole,
+    TentScores,
   ],
   logging: false,
   // models: [__dirname + "/models"],
