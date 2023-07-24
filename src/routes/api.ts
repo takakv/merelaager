@@ -47,6 +47,10 @@ import registrationRoutes from "./registration.routes";
 
 router.use("/registrations", registrationRoutes);
 
+import tentRoutes from "./tents.routes";
+
+router.use("/tents", tentRoutes);
+
 import campers from "./api/campers";
 
 router.use("/campers", campers);
