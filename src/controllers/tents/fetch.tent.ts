@@ -5,6 +5,7 @@ import Entity = Express.Entity;
 import { ShiftData } from "../../db/models/ShiftData";
 import { User } from "../../db/models/User";
 import { Child } from "../../db/models/Child";
+import { TentScores } from "../../db/models/TentScores";
 
 export const fetchTentFunc = async (
   req: ValidatedRequest<FetchTentRequestSchema>,
@@ -25,5 +26,19 @@ export const fetchTentFunc = async (
     children.push(tmp.name);
   }
 
-  res.json(children);
+  const grades: { score: number; date: Date }[] = [];
+  const dbGrades = await TentScores.findAll({
+    where: {
+      shiftNr: currentShift,
+      tentNr: tentId,
+    },
+  });
+  for (const grade of dbGrades) {
+    grades.push({
+      score: grade.score,
+      date: grade.createdAt as Date,
+    });
+  }
+
+  res.json({ names: children, grades });
 };
