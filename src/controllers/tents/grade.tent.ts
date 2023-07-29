@@ -12,7 +12,7 @@ export const gradeTentFunc = async (
   const { tentId } = req.params;
   const { shiftNr, score } = req.body;
 
-  if (score < 1 || score > 5) {
+  if (score < 1 || score > 10) {
     res.sendStatus(StatusCodes.BAD_REQUEST);
     return;
   }
