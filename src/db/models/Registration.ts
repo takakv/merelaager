@@ -30,7 +30,6 @@ interface RegistrationAttributes {
   city: string;
   county: string;
   country: string;
-  billNr: number;
   contactName: string;
   contactNumber: string;
   contactEmail: string;
@@ -109,10 +108,6 @@ export class Registration
   @Default("Eesti")
   @Column(DataType.STRING)
   public country: string;
-
-  @Default(null)
-  @Column(DataType.INTEGER.UNSIGNED)
-  public billNr: number;
 
   @ForeignKey(() => Bill)
   @AllowNull(true)

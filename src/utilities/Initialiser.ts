@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import { Registration } from "../db/models/Registration";
 import GlobalStore from "./GlobalStore";
 import MailService from "../controllers/MailService";
+import { Bill } from "../db/models/Bill";
+import { col, fn } from "sequelize";
 
 dotenv.config();
 
@@ -17,11 +19,8 @@ class Initialiser {
   };
 
   public static initBillNumber = async () => {
-    const previousBill = await Registration.findOne({
-      order: [["billNr", "DESC"]],
-      attributes: ["billNr"],
-    });
-    const prevNr = previousBill.billNr ?? new Date().getUTCFullYear() * 1000;
+    const prevNr: number = await Bill.max("id");
+    //const prevNr = previousBill.billNr ?? new Date().getUTCFullYear() * 1000;
     GlobalStore.billNumber = prevNr + 1;
   };
 
@@ -59,11 +58,16 @@ class Initialiser {
     this.initMailService();
 
     this.setUnlocked();
-    console.log(`Registration is unlocked? ${GlobalStore.registrationUnlocked}`);
     console.log(
-      `Unlocks at: ${GlobalStore.registrationUnlockTime.toLocaleString("en-GB", {
-        timeZone: "Europe/Tallinn",
-      })} (Estonian time)`
+      `Registration is unlocked? ${GlobalStore.registrationUnlocked}`
+    );
+    console.log(
+      `Unlocks at: ${GlobalStore.registrationUnlockTime.toLocaleString(
+        "en-GB",
+        {
+          timeZone: "Europe/Tallinn",
+        }
+      )} (Estonian time)`
     );
   };
 }
