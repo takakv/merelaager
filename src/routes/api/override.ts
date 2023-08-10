@@ -7,6 +7,7 @@ import PermissionController, {
 import { StatusCodes } from "http-status-codes";
 import { matchPermissionsToRoles } from "../../db/db.seeder";
 import { populate } from "../../controllers/newShiftController";
+import { migrateBills } from "../../migrations/bills.migrate";
 
 const router = express.Router();
 
@@ -73,6 +74,12 @@ router.post("/acgroup", (req: TypedRequestBody<ACRequest>, res: Response) => {
 router.post("/permissions/init", (req: Request, res: Response) => {
   PermissionController.initDB()
     .then((code) => res.sendStatus(code))
+    .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
+});
+
+router.post("/migrate/bills", (req: Request, res: Response) => {
+  migrateBills()
+    .then(() => res.sendStatus(StatusCodes.NO_CONTENT))
     .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
 });
 
