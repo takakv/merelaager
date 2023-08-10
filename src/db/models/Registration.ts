@@ -13,6 +13,7 @@ import {
 } from "sequelize-typescript";
 import { Child } from "./Child";
 import { Shift } from "./Shift";
+import { Bill } from "./Bill";
 
 interface RegistrationAttributes {
   id: number;
@@ -112,6 +113,14 @@ export class Registration
   @Default(null)
   @Column(DataType.INTEGER.UNSIGNED)
   public billNr: number;
+
+  @ForeignKey(() => Bill)
+  @AllowNull(true)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public billId!: number;
+
+  @BelongsTo(() => Bill)
+  public bill?: Bill;
 
   @AllowNull(false)
   @Column(DataType.STRING)

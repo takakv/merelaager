@@ -2,10 +2,12 @@ import {
   AutoIncrement,
   Column,
   DataType,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+import { Registration } from "./Registration";
 
 @Table({ tableName: "bills" })
 export class Bill extends Model {
@@ -22,4 +24,7 @@ export class Bill extends Model {
 
   @Column
   isPaid: boolean;
+
+  @HasOne(() => Registration)
+  registration?: Registration;
 }
