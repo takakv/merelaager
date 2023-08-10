@@ -37,7 +37,7 @@ const prepareRegistrationEntry = (
     entry.contactName = data.contactName;
     entry.contactEmail = data.contactEmail;
     entry.contactPhone = data.contactNumber;
-    entry.billNr = data.billNr;
+    entry.billNr = data.billId;
     entry.pricePaid = data.pricePaid;
     entry.priceToPay = data.priceToPay;
     return entry;
@@ -50,7 +50,7 @@ const prepareRegistrationEntry = (
   }
 
   if (approvePm(permissions, Constants.PERMISSION_VIEW_REG_PRICE)) {
-    entry.billNr = data.billNr;
+    entry.billNr = data.billId;
     entry.pricePaid = data.pricePaid;
     entry.priceToPay = data.priceToPay;
   }
