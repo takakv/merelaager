@@ -1,7 +1,9 @@
 import {
+  AllowNull,
   AutoIncrement,
   Column,
   DataType,
+  Default,
   HasOne,
   Model,
   PrimaryKey,
@@ -16,12 +18,16 @@ export class Bill extends Model {
   @Column(DataType.INTEGER.UNSIGNED)
   id!: number;
 
+  @AllowNull(false)
   @Column
   contactName: string;
 
+  @AllowNull(false)
   @Column
   billTotal: number;
 
+  @AllowNull(false)
+  @Default(false)
   @Column
   isPaid: boolean;
 

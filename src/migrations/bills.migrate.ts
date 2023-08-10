@@ -23,5 +23,10 @@ export const migrateBills = async () => {
       registration.billId = bill.id;
       await registration.save();
     }
+
+    if (bill.isPaid === null) {
+      bill.isPaid = registration.priceToPay === registration.pricePaid;
+      await bill.save();
+    }
   }
 };
