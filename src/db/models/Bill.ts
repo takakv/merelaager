@@ -5,7 +5,6 @@ import {
   DataType,
   Default,
   HasMany,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
