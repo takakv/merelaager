@@ -1,19 +1,17 @@
 import express, { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+
+import { matchPermissionsToRoles } from "../../db/db.seeder";
+
+import { populate } from "../../controllers/newShiftController";
+import { updateCurrentYear } from "../../controllers/recordController";
 import PermissionController, {
   createPermission,
   ACRequest,
   createACGroup,
 } from "../../controllers/permissionController";
-import { StatusCodes } from "http-status-codes";
-import { matchPermissionsToRoles } from "../../db/db.seeder";
-import { populate } from "../../controllers/newShiftController";
-import { migrateBills } from "../../migrations/bills.migrate";
 
 const router = express.Router();
-
-const newShiftData = require("../../controllers/newShiftController");
-const records = require("../../controllers/recordController");
-
 router.use((req: Request, res: Response, next: NextFunction) => {
   if (!("token" in req.body)) return res.sendStatus(StatusCodes.UNAUTHORIZED);
   if (req.body.token !== process.env.API_OVERRIDE)
@@ -25,16 +23,16 @@ router.use((req: Request, res: Response, next: NextFunction) => {
 router.post("/register", async (req, res) => {
   try {
     await populate();
-    res.sendStatus(201);
+    res.sendStatus(StatusCodes.CREATED);
   } catch (e) {
     console.error(e);
-    res.sendStatus(500);
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 });
 
 router.post("/records/", async (req, res) => {
   try {
-    const tmp = await records.updateCurrentYear();
+    const tmp = await updateCurrentYear();
     if (tmp) res.sendStatus(201);
     else res.sendStatus(500);
   } catch (e) {
