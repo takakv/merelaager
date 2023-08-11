@@ -9,7 +9,7 @@ export const migrateBills = async () => {
 
   for (const registration of registrations) {
     // Create bills based on existing registration bills.
-    const [bill, created] = await Bill.findOrCreate({
+    const [bill] = await Bill.findOrCreate({
       where: { id: registration.billNr },
       defaults: {
         id: registration.billNr,
@@ -19,7 +19,7 @@ export const migrateBills = async () => {
     });
 
     // Link registrations with bills.
-    if (created) {
+    if (!registration.billId) {
       registration.billId = bill.id;
       await registration.save();
     }

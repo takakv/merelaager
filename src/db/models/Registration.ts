@@ -24,6 +24,7 @@ interface RegistrationAttributes {
   regOrder: number;
   isOld: boolean;
   birthday: Date;
+  billNr: number;
   tsSize: string;
   addendum: string;
   road: string;
@@ -108,6 +109,10 @@ export class Registration
   @Default("Eesti")
   @Column(DataType.STRING)
   public country: string;
+
+  @Default(null)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public billNr: number;
 
   @ForeignKey(() => Bill)
   @AllowNull(true)

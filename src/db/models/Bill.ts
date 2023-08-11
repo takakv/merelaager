@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   Default,
+  HasMany,
   HasOne,
   Model,
   PrimaryKey,
@@ -31,6 +32,6 @@ export class Bill extends Model {
   @Column
   isPaid: boolean;
 
-  @HasOne(() => Registration)
-  registration?: Registration;
+  @HasMany(() => Registration)
+  registration?: Registration[];
 }
