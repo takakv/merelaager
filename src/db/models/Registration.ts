@@ -37,6 +37,7 @@ interface RegistrationAttributes {
   pricePaid: number;
   priceToPay: number;
   notifSent: boolean;
+  billId: number;
 }
 
 type RegistrationCreationAttributes = Optional<

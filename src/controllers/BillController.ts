@@ -8,6 +8,7 @@ import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
 import BillBuilder from "./billGenerator";
 import HttpError from "../routes/Support Files/Errors/HttpError";
+import { Bill } from "../db/models/Bill";
 
 class BillController {
   private static bulkQueryByEmail = async (contactEmail: string) => {
@@ -17,76 +18,66 @@ class BillController {
   private static queryByEmail = async (contactEmail: string) => {
     return Registration.findOne({
       where: { contactEmail },
-      attributes: ["contactName", "billNr"],
+      attributes: ["contactName", "billId"],
     });
-  };
-
-  private static getBillNr = async () => {
-    const previousBill = await Registration.findOne({
-      order: [["billNr", "DESC"]],
-      attributes: ["billNr"],
-    });
-    if (previousBill) {
-      return previousBill.billNr + 1;
-    }
-    return 0;
   };
 
   public static createBill = async (req: Request, res: Response) => {
-    const children = await this.bulkQueryByEmail(req.params.email);
+    const registrations = await this.bulkQueryByEmail(req.params.email);
 
-    if (!children.length) {
+    if (!registrations.length) {
       const err = new HttpError(StatusCodes.NOT_FOUND, "Unknown email address");
       res.status(err.httpCode).json(err.json());
       return;
     }
 
-    const campers: Registration[] = [];
+    const registeredCampers: Registration[] = [];
+    let billTotal = 0;
     let billNr: number;
 
-    children.forEach((child: Registration) => {
-      if (billNr === 0 && child.billNr) billNr = child.billNr;
-      if (child.isRegistered) campers.push(child);
+    registrations.forEach((child: Registration) => {
+      if (!billNr && child.billId) billNr = child.billId;
+      if (child.isRegistered) {
+        registeredCampers.push(child);
+        billTotal += child.priceToPay;
+      }
     });
 
-    if (!billNr) {
-      billNr = await this.getBillNr();
-      if (!billNr) {
-        const err = new HttpError(
-          StatusCodes.NOT_FOUND,
-          "No previous bill number found"
-        );
-        res.status(err.httpCode).json(err.json());
-        return;
-      }
-      for (const child of children) {
-        await child.update({ billNr });
-      }
-    }
-    if (campers.length) {
-      const contact = {
-        name: campers[0].contactName,
-        email: campers[0].contactEmail,
-      };
-
-      const billName = await BillBuilder.generatePdf(
-        campers,
-        contact,
-        billNr,
-        campers.length
+    if (!registeredCampers.length) {
+      const err = new HttpError(
+        StatusCodes.NOT_FOUND,
+        "No registered children associated with the email address"
       );
-
-      res.sendFile(`${billName}`, {
-        root: "./data/arved",
-      });
-      return;
+      res.status(err.httpCode).json(err.json());
     }
 
-    const err = new HttpError(
-      StatusCodes.NOT_FOUND,
-      "No registered children associated with the email address"
+    const contact = {
+      name: registeredCampers[0].contactName,
+      email: registeredCampers[0].contactEmail,
+    };
+
+    if (!billNr) {
+      const newBill = await Bill.create({
+        contactName: contact.name,
+        billTotal,
+      });
+      billNr = newBill.id;
+
+      for (const registration of registrations) {
+        await registration.update({ billId: billNr });
+      }
+    }
+
+    const billName = await BillBuilder.generatePdf(
+      registeredCampers,
+      contact,
+      billNr,
+      registeredCampers.length
     );
-    res.status(err.httpCode).json(err.json());
+
+    res.sendFile(`${billName}`, {
+      root: "./data/arved",
+    });
   };
 
   public static fetchBill = async (req: Request, res: Response) => {
