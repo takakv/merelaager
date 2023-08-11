@@ -77,10 +77,4 @@ router.post("/permissions/init", (req: Request, res: Response) => {
     .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
 });
 
-router.post("/migrate/bills", (req: Request, res: Response) => {
-  migrateBills()
-    .then(() => res.sendStatus(StatusCodes.NO_CONTENT))
-    .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
-});
-
 export default router;
