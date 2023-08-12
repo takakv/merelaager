@@ -1,23 +1,40 @@
 import express, { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-import { matchPermissionsToRoles } from "../../db/db.seeder";
+import { matchPermissionsToRoles } from "../db/db.seeder";
 
-import { populate } from "../../controllers/newShiftController";
-import { updateCurrentYear } from "../../controllers/recordController";
+import { populate } from "../controllers/newShiftController";
+import { updateCurrentYear } from "../controllers/recordController";
 import PermissionController, {
   createPermission,
   ACRequest,
   createACGroup,
-} from "../../controllers/permissionController";
+} from "../controllers/permissionController";
+import { validateBody } from "../middleware/reqvalidate.middleware";
+import {
+  overrideBodySchema,
+  OverrideRequestSchema,
+} from "../controllers/overrides/override.types";
+import { ValidatedRequest } from "express-joi-validation";
 
 const router = express.Router();
-router.use((req: Request, res: Response, next: NextFunction) => {
-  if (!("token" in req.body)) return res.sendStatus(StatusCodes.UNAUTHORIZED);
-  if (req.body.token !== process.env.API_OVERRIDE)
-    return res.sendStatus(StatusCodes.FORBIDDEN);
-  next();
-});
+
+// Ensure that the override is authorised.
+router.use(
+  validateBody(overrideBodySchema),
+  (
+    req: ValidatedRequest<OverrideRequestSchema>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { token } = req.body;
+
+    if (token !== parseInt(process.env.API_OVERRIDE, 10))
+      return res.sendStatus(StatusCodes.FORBIDDEN);
+
+    next();
+  }
+);
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.post("/register", async (req, res) => {
@@ -30,14 +47,15 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.post("/records/", async (req, res) => {
   try {
     const tmp = await updateCurrentYear();
-    if (tmp) res.sendStatus(201);
-    else res.sendStatus(500);
+    if (tmp) res.sendStatus(StatusCodes.CREATED);
+    else res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   } catch (e) {
     console.error(e);
-    res.sendStatus(500);
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 });
 

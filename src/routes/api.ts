@@ -16,7 +16,7 @@ import account from "./api/account";
 router.use("/su", account);
 router.use("/account", account);
 
-import override from "./api/override";
+import override from "./override.routes";
 
 router.use("/override", override);
 
@@ -24,6 +24,7 @@ import pub from "./api/public";
 
 router.use("/pb", pub);
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.post("/registrations", async (req: Request, res: Response) => {
   if (!req.body) return res.sendStatus(StatusCodes.BAD_REQUEST);
   await create(req, res);
@@ -76,12 +77,9 @@ import bills from "./api/bills";
 router.use("/bills", bills);
 
 import { fetch as fetchShirts } from "../controllers/shirtController";
-import register from "./register";
-import {
-  create,
-  registerChildren,
-} from "../controllers/registration/registrationController";
+import { create } from "../controllers/registration/registrationController";
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.get("/shirts/fetch/", async (req: Request, res: Response) => {
   const data = await fetchShirts();
   res.json(data);
