@@ -106,7 +106,7 @@ const unlocker = async (moment) => {
 };
 
 if (window.location.hostname === "merelaager.ee") {
-  unlocker("01 Jan 2023 12:00:00 UTC").then((res) =>
+  unlocker("01 Jan 2024 12:00:00 UTC").then((res) =>
     console.log(`Avatud: ${res ? "jah" : "ei"}`)
   );
 } else {
