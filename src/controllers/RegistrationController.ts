@@ -418,6 +418,7 @@ class RegistrationController {
       // a new bill can be sent for them.
       for (const camper of regCampers) {
         camper.notifSent = true;
+        camper.billId = billNr;
         try {
           await camper.save();
         } catch (e) {
