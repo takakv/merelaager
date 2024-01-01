@@ -4,7 +4,6 @@ import { Registration } from "../db/models/Registration";
 import GlobalStore from "./GlobalStore";
 import MailService from "../controllers/MailService";
 import { Bill } from "../db/models/Bill";
-import { col, fn } from "sequelize";
 
 dotenv.config();
 
@@ -19,8 +18,8 @@ class Initialiser {
   };
 
   public static initBillNumber = async () => {
-    const prevNr: number = await Bill.max("id");
-    //const prevNr = previousBill.billNr ?? new Date().getUTCFullYear() * 1000;
+    let prevNr: number = await Bill.max("id");
+    if (prevNr < 2000) prevNr = new Date().getUTCFullYear() * 1000;
     GlobalStore.billNumber = prevNr + 1;
   };
 

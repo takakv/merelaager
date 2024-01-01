@@ -155,7 +155,7 @@ class EmailBuilder {
                           <tbody>
                             <tr>
                               <td style="width:72px;">
-                                <img height="auto" src="https://merelaager.ee/media/img/ml_logo_slim.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="72" />
+                                <img height="auto" src="https://merelaager.ee/img/ml_logo_slim.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="72" />
                               </td>
                             </tr>
                           </tbody>
@@ -188,7 +188,8 @@ class EmailBuilder {
                             <tr>
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                                 <div style="font-family:Helvetica, Arial, sans-serif;font-size:15px;font-weight:300;line-height:24px;text-align:left;color:#000000;">
-                                  <p>Sellest aastast alates ei ole registreerimiskinnitus enam automaatne.</p>
+                                  <p>Tere!</p>
+                                  <p>Registreerimiskinnitus ei ole enam automaatne.</p>
                                   <p>Oleme ${
                                     campers.length > 1 ? "lapsed" : "lapse"
                                   } registreerinud reservnimekirja. Kui juhtaja koha kinnitab või põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
@@ -334,7 +335,7 @@ class EmailBuilder {
                           <tbody>
                             <tr>
                               <td style="width:72px;">
-                                <img height="auto" src="https://merelaager.ee/media/img/ml_logo_slim.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="72" />
+                                <img height="auto" src="https://merelaager.ee/img/ml_logo_slim.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="72" />
                               </td>
                             </tr>
                           </tbody>

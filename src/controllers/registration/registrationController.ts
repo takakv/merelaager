@@ -6,11 +6,10 @@ import { Registration } from "../../db/models/Registration";
 import { Child } from "../../db/models/Child";
 import { StatusCodes } from "http-status-codes";
 import { registrationTracker } from "../../channels/registrationTracker";
-
-dotenv.config();
-
 import { registrationPriceDiff, registrationPrices } from "./meta";
 import GlobalStore from "../../utilities/GlobalStore";
+
+dotenv.config();
 
 const maxBatchRegistrations = 4;
 
@@ -18,7 +17,7 @@ const parseIdCode = (code: string) => {
   if (code.length !== 11) return null;
   if (code[0] !== "5" && code[0] !== "6") return null;
 
-  const gender = code[0] === "5" ? "M" : "F";
+  const sex = code[0] === "5" ? "M" : "F";
 
   const year = parseInt(`20${code[1]}${code[2]}`);
   const month = parseInt(`${code[3]}${code[4]}`);
@@ -53,7 +52,7 @@ const parseIdCode = (code: string) => {
 
   const birthday = new Date(Date.UTC(fullYear, month - 1, day));
 
-  return { gender, birthday };
+  return { gender: sex, birthday };
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -63,7 +62,6 @@ export const create = async (req: Request, res: Response) => {
       console.log(req.body);
       console.log(response);
     }
-    if (response.ok) return res.redirect("../registreerimine/reserv/");
     return res.status(response.code).json(response);
   } catch (e) {
     console.error(e);
@@ -75,29 +73,29 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-interface payload {
-  name: string[];
-  idCode?: string[];
-  gender?: string[];
-  bDay?: string[];
-  useIdCode?: string[];
-  shiftNr: string[];
-  tsSize: string[];
-  "newcomer-1": string;
-  "newcomer-2": string;
-  "newcomer-3": string;
-  "newcomer-4": string;
-  road: string[];
-  city: string[];
-  county: string[];
-  country: string[];
-  addendum: string[];
-  childCount: string;
+type RegChildInfo = {
+  name: string;
+  idCode: string;
+  shift: number;
+  shirtSize: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  addendum: string;
+  isNew: boolean;
+  sex: string;
+  dob: string;
+  useIdCode: boolean;
+};
+
+type RegPayload = {
+  children: RegChildInfo[];
   contactName: string;
-  contactNumber: string;
   contactEmail: string;
-  backupTel?: string;
-}
+  contactNumber: string;
+  backupTel: string;
+};
 
 interface regEntry {
   regOrder: number;
@@ -123,7 +121,7 @@ const registerCampers = async (payloadData: unknown) => {
   const currentOrder = GlobalStore.registrationOrder;
   ++GlobalStore.registrationOrder;
 
-  const payload = payloadData as payload;
+  const payload = payloadData as RegPayload;
 
   const response = {
     ok: true,
@@ -138,13 +136,7 @@ const registerCampers = async (payloadData: unknown) => {
     return response;
   }
 
-  const childCount = parseInt(payload.childCount);
-  if (isNaN(childCount)) {
-    response.ok = false;
-    response.code = StatusCodes.BAD_REQUEST;
-    response.message = "Could not parse the number of children";
-    return response;
-  }
+  const childCount = payload.children.length;
   if (childCount < 1 || childCount > maxBatchRegistrations) {
     response.ok = false;
     response.code = StatusCodes.BAD_REQUEST;
@@ -152,36 +144,45 @@ const registerCampers = async (payloadData: unknown) => {
     return response;
   }
 
-  type ObjectKey = keyof typeof payload;
+  type ChildObjectKey = keyof RegChildInfo;
+  type PayloadObjectKey = keyof RegPayload;
 
-  const arrayKeys: ObjectKey[] = [
+  const arrayKeys: ChildObjectKey[] = [
     "name",
-    "shiftNr",
-    "tsSize",
+    "idCode",
+    "shift",
+    "shirtSize",
     "road",
     "city",
     "county",
     "country",
     "addendum",
+    "isNew",
+    "sex",
+    "dob",
+    "useIdCode",
   ];
 
-  for (const key of arrayKeys) {
-    if (
-      !payload.hasOwnProperty(key) ||
-      !Array.isArray(payload[key]) ||
-      payload[key].length > maxBatchRegistrations
-    ) {
-      response.ok = false;
-      response.code = StatusCodes.BAD_REQUEST;
-      response.message = `Property '${key}' is malformed or missing`;
-      return response;
-    }
-  }
+  /*
+                                            for (const key of arrayKeys) {
+                                              if (
+                                                !payload.hasOwnProperty(key) ||
+                                                !Array.isArray(payload.children[0][key]) ||
+                                                payload[key].length > maxBatchRegistrations
+                                              ) {
+                                                response.ok = false;
+                                                response.code = StatusCodes.BAD_REQUEST;
+                                                response.message = `Property '${key}' is malformed or missing`;
+                                                return response;
+                                              }
+                                            }
+                                             */
 
-  const stringKeys: ObjectKey[] = [
+  const stringKeys: PayloadObjectKey[] = [
     "contactName",
     "contactNumber",
     "contactEmail",
+    "backupTel",
   ];
 
   for (const key of stringKeys) {
@@ -196,8 +197,9 @@ const registerCampers = async (payloadData: unknown) => {
   const registrationEntries: regEntry[] = [];
 
   for (let i = 0; i < childCount; ++i) {
-    // TODO: implement registration without ID code
-    const parsedId = parseIdCode(payload.idCode[i]);
+    const childData = payload.children[i];
+
+    const parsedId = parseIdCode(childData.idCode.trim());
     if (!parsedId) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
@@ -205,7 +207,12 @@ const registerCampers = async (payloadData: unknown) => {
       return response;
     }
 
-    const childName = payload.name[i].trim();
+    const sex = childData.useIdCode ? parsedId.gender : childData.sex;
+    const birthday = childData.useIdCode
+      ? parsedId.birthday
+      : new Date(childData.dob);
+
+    const childName = childData.name.trim();
     if (!childName) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
@@ -221,23 +228,15 @@ const registerCampers = async (payloadData: unknown) => {
       attributes: ["id"],
       defaults: {
         name: childName,
-        gender: parsedId.gender,
+        gender: sex,
       },
     });
 
     const childId = childInstance.id;
-    let isOld = !created;
-    if (!payload.hasOwnProperty(`newcomer-${i + 1}`)) {
-      response.ok = false;
-      response.code = StatusCodes.BAD_REQUEST;
-      response.message = "Newcomer data malformed or missing";
-      return response;
-    }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    isOld = payload[`newcomer-${i + 1}`] !== "yes";
+    let isOld = !childData.isNew;
+    if (!isOld && !created) isOld = true;
 
-    const shiftNr = parseInt(payload.shiftNr[i], 10);
+    const shiftNr = childData.shift;
     if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 4) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
@@ -248,16 +247,16 @@ const registerCampers = async (payloadData: unknown) => {
     const registrationEntry: regEntry = {
       regOrder: currentOrder,
       childId: childId,
-      idCode: payload.idCode[i],
+      idCode: childData.idCode,
       shiftNr: shiftNr,
       isOld: isOld,
-      birthday: parsedId.birthday,
-      tsSize: payload.tsSize[i],
-      addendum: payload.addendum[i] === "" ? null : payload.addendum[i],
-      road: payload.road[i],
-      city: payload.city[i],
-      county: payload.county[i],
-      country: payload.country[i],
+      birthday: birthday,
+      tsSize: childData.shirtSize,
+      addendum: childData.addendum === "" ? null : childData.addendum,
+      road: childData.road,
+      city: childData.city,
+      county: childData.county,
+      country: childData.country,
       contactName: payload.contactName,
       contactNumber: payload.contactNumber,
       contactEmail: payload.contactEmail,
@@ -289,6 +288,7 @@ const registerCampers = async (payloadData: unknown) => {
     });
   } catch (e) {
     console.error(e);
+    console.log(`Email was: ${payload.contactEmail}`);
   }
   return response;
 };

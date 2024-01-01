@@ -3,28 +3,28 @@
     "name": "Sanna Aaslav-Kaasik",
     "email": "sanna@merelaager.ee",
     "phone": "5622 6906",
-    "price": 340,
-    "deadline": "2023-05-26"
+    "price": 320,
+    "deadline": "2024-05-25"
   },
   "2": {
     "name": "Markus Laurik",
     "email": "markus@merelaager.ee",
     "phone": "5694 0815",
     "price": 340,
-    "deadline": "2023-06-10"
+    "deadline": "2024-06-08"
   },
   "3": {
     "name": "Maria Maastik",
     "email": "maria@merelaager.ee",
-    "phone": "5665 8969",
+    "phone": "5681 6561",
     "price": 340,
-    "deadline": "2023-06-24"
+    "deadline": "2024-06-22"
   },
   "4": {
     "name": "Martin Reinok",
     "email": "martin@merelaager.ee",
     "phone": "5822 9985",
     "price": 340,
-    "deadline": "2023-07-08"
+    "deadline": "2024-07-06"
   }
 }
