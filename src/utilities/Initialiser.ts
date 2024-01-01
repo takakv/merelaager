@@ -24,9 +24,8 @@ class Initialiser {
   };
 
   public static setUnlocked = () => {
-    if (process.env.NODE_ENV === "dev" || process.env.UNLOCK) {
+    if (process.env.NODE_ENV === "dev" || process.env.UNLOCK === "true") {
       GlobalStore.registrationUnlocked = true;
-      console.log("Unlock reason: dev / command");
       return;
     }
 
@@ -35,14 +34,12 @@ class Initialiser {
 
     if (now > unlockTime) {
       GlobalStore.registrationUnlocked = true;
-      console.log("Unlock reason: time");
       return;
     }
 
     const eta = GlobalStore.registrationUnlockTime.getTime() - now;
     setTimeout(() => {
       GlobalStore.registrationUnlocked = true;
-      console.log("Unlock reason: ETA reached");
     }, eta);
   };
 
