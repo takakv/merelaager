@@ -1,26 +1,23 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import express, {Request, Response} from "express";
 
-import {
-  validateBody,
-  validateParams,
-} from "../middleware/reqvalidate.middleware";
+import {validateBody, validateParams,} from "../middleware/reqvalidate.middleware";
 
 import {
-  deleteRegistrationParamsSchema,
-  fetchRegistrationParamsSchema,
-  patchRegistrationBodySchema,
-  patchRegistrationParamsSchema,
-  shiftRegistrationParamsSchema,
+    deleteRegistrationParamsSchema,
+    fetchRegistrationParamsSchema,
+    patchRegistrationBodySchema,
+    patchRegistrationParamsSchema,
+    shiftRegistrationParamsSchema,
 } from "../controllers/registrations/registration.types";
 
 import {
-  deleteShiftRegistration,
-  fetchRegistration,
-  fetchRegistrations,
-  fetchShiftRegistrationPdf,
-  fetchShiftRegistrations,
-  patchRegistration,
+    deleteShiftRegistration,
+    fetchRegistration,
+    fetchRegistrations,
+    fetchShiftRegistrationPdf,
+    fetchShiftRegistrations,
+    patchRegistration,
 } from "../controllers/registrations/registration.controller";
 import {StatusCodes} from "http-status-codes";
 import RegistrationController from "../controllers/RegistrationController";
@@ -77,13 +74,25 @@ router.post("/notify", (req: Request, res: Response) => {
   if (!shiftNr) return res.sendStatus(StatusCodes.BAD_REQUEST);
   shiftNr = parseInt(shiftNr as string);
   RegistrationController.sendConfirmationEmail(req.user, shiftNr as number)
-      .then(() => {
-        res.sendStatus(StatusCodes.OK);
-      })
-      .catch((e) => {
-        console.error(e);
-        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-      });
+    .then(() => {
+      res.sendStatus(StatusCodes.OK);
+    })
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
+});
+
+router.post("/relink", (req: Request, res: Response) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  RegistrationController.linkBillsAndReg()
+    .then(() => {
+      res.sendStatus(StatusCodes.OK);
+    })
+    .catch((e) => {
+      console.error(e);
+      res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
 });
 
 export default router;

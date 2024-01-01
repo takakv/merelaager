@@ -20,8 +20,7 @@ import PermReg from "../utilities/acl/PermReg";
 import GlobalStore from "../utilities/GlobalStore";
 
 import AccessController, { shiftPermissions } from "./AccessController";
-import BillBuilder from "./billGenerator";
-// import { generateShiftCamperListPDF } from "../utils/listGenerator";
+import BillBuilder from "./billGenerator"; // import { generateShiftCamperListPDF } from "../utils/listGenerator";
 import { Bill } from "../db/models/Bill";
 import Entity = Express.Entity;
 
@@ -426,6 +425,25 @@ class RegistrationController {
           break;
         }
       }
+    }
+  };
+
+  public static linkBillsAndReg = async () => {
+    const registrations = await Registration.findAll({
+      where: {
+        isRegistered: true,
+        notifSent: true,
+        billId: null,
+      },
+    });
+
+    for (const registration of registrations) {
+      const bill = await Bill.findOne({
+        where: { contactName: registration.contactName },
+      });
+
+      registration.billId = bill.id;
+      await registration.save();
     }
   };
 
