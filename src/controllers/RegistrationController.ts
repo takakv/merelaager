@@ -21,7 +21,7 @@ import GlobalStore from "../utilities/GlobalStore";
 
 import AccessController, { shiftPermissions } from "./AccessController";
 import BillBuilder from "./billGenerator";
-import { generateShiftCamperListPDF } from "../utils/listGenerator";
+// import { generateShiftCamperListPDF } from "../utils/listGenerator";
 import { Bill } from "../db/models/Bill";
 import Entity = Express.Entity;
 
