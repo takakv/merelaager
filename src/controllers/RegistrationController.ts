@@ -3,8 +3,6 @@ import { Request } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
 
-import Entity = Express.Entity;
-
 import { Registration } from "../db/models/Registration";
 import { Child } from "../db/models/Child";
 import { ShiftData } from "../db/models/ShiftData";
@@ -24,6 +22,8 @@ import GlobalStore from "../utilities/GlobalStore";
 import AccessController, { shiftPermissions } from "./AccessController";
 import BillBuilder from "./billGenerator";
 import { generateShiftCamperListPDF } from "../utils/listGenerator";
+import { Bill } from "../db/models/Bill";
+import Entity = Express.Entity;
 
 dotenv.config();
 
@@ -364,35 +364,32 @@ class RegistrationController {
       const shifts: number[] = [];
       let totalPrice = 0;
 
-      const tmpBillNr = GlobalStore.billNumber;
-      ++GlobalStore.billNumber;
-
-      let skipLoop = false;
-
+      let billNr = 0;
       for (const camper of campers) {
-        if (camper.isRegistered) {
-          regCampers.push(camper);
-          totalPrice += camper.priceToPay;
-
-          // Only mark registered campers as notified.
-          // As such, if another household member is subsequently registered
-          // a new bill can be sent for them.
-          camper.notifSent = true;
-        } else resCampers.push(camper);
+        if (camper.billId) {
+          billNr = camper.billId;
+        }
 
         if (!shifts.includes(camper.shiftNr)) shifts.push(camper.shiftNr);
 
-        camper.billNr = tmpBillNr;
-        try {
-          await camper.save();
-        } catch (e) {
-          console.log(e);
-          skipLoop = true;
-          break;
-        }
+        if (camper.isRegistered) {
+          regCampers.push(camper);
+          totalPrice += camper.priceToPay;
+        } else resCampers.push(camper);
       }
 
-      if (skipLoop) continue;
+      let bill: Bill;
+      if (billNr === 0) {
+        bill = await Bill.create({
+          contactName: campers[0].contactName,
+          billTotal: totalPrice,
+        });
+        billNr = bill.id;
+      } else {
+        bill = await Bill.findByPk(billNr);
+        bill.billTotal = totalPrice;
+        await bill.save();
+      }
 
       const contact = {
         name: campers[0].contactName,
@@ -402,7 +399,7 @@ class RegistrationController {
       const billName = await BillBuilder.generatePdf(
         regCampers,
         contact,
-        tmpBillNr,
+        billNr,
         regCampers.length
       );
 
@@ -413,8 +410,21 @@ class RegistrationController {
         shifts,
         totalPrice,
         billName,
-        tmpBillNr
+        billNr
       );
+
+      // Only mark registered campers as notified.
+      // As such, if another household member is subsequently registered
+      // a new bill can be sent for them.
+      for (const camper of regCampers) {
+        camper.notifSent = true;
+        try {
+          await camper.save();
+        } catch (e) {
+          console.error(e);
+          break;
+        }
+      }
     }
   };
 

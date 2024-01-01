@@ -2,10 +2,9 @@ import fs from "fs";
 import path from "path";
 import PDFDoc from "pdfkit";
 
+import { Registration } from "../db/models/Registration";
 import PDFDocument = PDFKit.PDFDocument;
 import PDFDocumentOptions = PDFKit.PDFDocumentOptions;
-
-import { Registration } from "../db/models/Registration";
 
 type Contact = {
   name: string;
@@ -131,13 +130,13 @@ class BillBuilder {
     }
 
     doc
-      .font("Helvetica-Bold")
+      .font(FONT_PRIMARY_BOLD)
       .text(
         `${billNr}`,
         doc.page.width - billDataRightOffset - billNrLength,
         billTop
       )
-      .font("Helvetica")
+      .font(FONT_PRIMARY)
       .text(billDate, doc.page.width - billDataRightOffset - billDateLength)
       .text(billDue, doc.page.width - billDataRightOffset - billDueLength);
 
@@ -167,6 +166,16 @@ class BillBuilder {
     doc.fontSize(10).font(FONT_PRIMARY);
 
     const counters = {
+      childShortOld: {
+        txt: "11päevane vahetus vanale olijale",
+        count: 0,
+        price: 200,
+      },
+      childShortNew: {
+        txt: "12päevane vahetus uuele tulijale",
+        count: 0,
+        price: 220,
+      },
       childOld: {
         txt: "12päevane vahetus vanale olijale",
         count: 0,
@@ -187,8 +196,13 @@ class BillBuilder {
     for (let i = 0; i < campers.length; ++i) {
       if (!campers[i].isRegistered) continue;
 
-      if (campers[i].isOld) ++counters.childOld.count;
-      else ++counters.childNew.count;
+      if (campers[i].isOld) {
+        if (campers[i].shiftNr === 1) ++counters.childShortOld.count;
+        else ++counters.childOld.count;
+      } else {
+        if (campers[i].shiftNr === 1) ++counters.childShortNew.count;
+        else ++counters.childNew.count;
+      }
 
       ++counters.booking.count;
     }
@@ -257,7 +271,7 @@ class BillBuilder {
     }
 
     // Footer
-    addBillFooter(doc, oneThird);
+    generateFooter(doc, oneThird);
 
     doc.save();
     doc.end();
@@ -273,13 +287,13 @@ class BillBuilder {
 
   public static getName = (child: Registration) => {
     const name = child.contactName.replace(/ /g, "_").toLowerCase();
-    return `${child.billNr}.pdf`;
+    return `${child.billId}.pdf`;
   };
 }
 
 export default BillBuilder;
 
-const addBillFooter = (doc: PDFDocument, oneThird: number) => {
+const generateFooter = (doc: PDFDocument, oneThird: number) => {
   doc
     .moveTo(SIDE_MARGIN, doc.page.height - 110)
     .lineTo(doc.page.width - SIDE_MARGIN, doc.page.height - 110)
