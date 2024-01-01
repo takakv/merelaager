@@ -5,7 +5,7 @@ class GlobalStore {
    * Time at which registration unlocks, if not already unlocked.
    */
   static registrationUnlockTime = new Date(
-    Date.parse("01 Jan 2024 08:09:00 UTC")
+    Date.parse("01 Jan 2024 11:59:59 UTC")
   );
   /**
    * The current registration order.
