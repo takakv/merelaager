@@ -8,10 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import { UserLogEntry } from "../logging/UserLogEntry";
 import { loggingActions, loggingModules } from "../logging/loggingModules";
 import Entity = Express.Entity;
-import {
-  approveRole,
-  requireShiftBoss,
-} from "../routes/Support Files/shiftAuth";
+import { approveRole } from "../routes/Support Files/shiftAuth";
 
 export const populate = async () => {
   const dbShiftData = await ShiftData.findAll();
@@ -102,9 +99,9 @@ export const patchCamper = async (req: Request, childId: number) => {
 
   const keys = Object.keys(req.body);
   const logObj = new UserLogEntry(
-    req.user.id,
+    req.user.userId,
     loggingModules.campers,
-    loggingActions.update
+    loggingActions.update,
   );
 
   for (const key of keys) {
