@@ -16,6 +16,7 @@ import {
   OverrideRequestSchema,
 } from "../controllers/overrides/override.types";
 import { ValidatedRequest } from "express-joi-validation";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -25,15 +26,15 @@ router.use(
   (
     req: ValidatedRequest<OverrideRequestSchema>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const { token } = req.body;
 
-    if (token !== parseInt(process.env.API_OVERRIDE, 10))
+    if (bcrypt.compareSync(token, process.env.API_OVERRIDE))
       return res.sendStatus(StatusCodes.FORBIDDEN);
 
     next();
-  }
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -78,7 +79,7 @@ router.post(
     createPermission(req.body)
       .then((code) => res.sendStatus(code))
       .catch(() => res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR));
-  }
+  },
 );
 
 router.post("/acgroup", (req: TypedRequestBody<ACRequest>, res: Response) => {

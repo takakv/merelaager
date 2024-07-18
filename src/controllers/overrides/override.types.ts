@@ -7,6 +7,6 @@ export const overrideBodySchema: ObjectSchema = joi.object({
 
 export interface OverrideRequestSchema extends ValidatedRequestSchema {
   [ContainerTypes.Body]: {
-    token: number;
+    token: string;
   };
 }
