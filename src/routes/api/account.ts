@@ -1,10 +1,12 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import {
-  createAccount,
   generateAccessDelegationLink,
   validateSignupToken,
 } from "../../controllers/accountController";
+import {validateBody} from "../../middleware/reqvalidate.middleware";
+import {accountCreationRequestSchema} from "../../controllers/account/account.types";
+import {createAccount} from "../../controllers/account/account.controller";
 
 const router = express.Router();
 
@@ -43,17 +45,12 @@ router.post("/chkusr/", async (req: Request, res: Response) => {
   else res.sendStatus(404);
 });
 
-router.post("/create/", async (req: Request, res: Response) => {
-  const { username, password, token, name, nickname } = req.body;
-  if (!username || !password || !token || !name)
-    return res.sendStatus(StatusCodes.BAD_REQUEST);
-  const result = await createAccount(username, password, token, name, nickname);
-  if (!result)
-    return res
-      .status(StatusCodes.OK)
-      .send("Konto loodud. Sisse saab logida: https://sild.merelaager.ee");
-  else res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(result);
-});
+router.post(
+    "/create",
+    validateBody(accountCreationRequestSchema),
+    // @ts-ignore
+    createAccount,
+);
 
 router.get("/reset/:token/", async (req: Request, res: Response) => {
   const isValid = await account.validateResetToken(req.params.token);
@@ -104,7 +101,7 @@ router.post("/allocate/", async (req: Request, res: Response) => {
     email,
     shiftNr,
     role,
-    req.user
+    req.user,
   );
   return res.sendStatus(statusCode);
 });

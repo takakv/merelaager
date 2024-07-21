@@ -216,7 +216,7 @@ export const generateAccessDelegationLink = async (
     return StatusCodes.BAD_REQUEST;
 
   // Allow adding only users of own shift.
-  if (shiftNr !== author.shift) return StatusCodes.FORBIDDEN;
+  // if (shiftNr !== author.shift) return StatusCodes.FORBIDDEN;
 
   let user = await User.findOne({ where: { email } });
   if (!user) {

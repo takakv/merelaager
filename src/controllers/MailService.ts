@@ -111,7 +111,7 @@ class MailService {
   }
 
   sendAccountCreationMail(email: string, token: string) {
-    const link = `https://merelaager.ee/api/account/create/${token}`;
+    const link = `https://sild.merelaager.ee/signup?email=${email}&token=${token}`;
     return this._transporter.sendMail({
       from: {
         name: "Merelaager - süsteem",
