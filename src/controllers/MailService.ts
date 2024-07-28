@@ -2,20 +2,37 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 import nodemailer, { Transporter } from "nodemailer";
+import EmailBuilder from "./mailService/boilerplate";
+import { Registration } from "../db/models/Registration";
 
 dotenv.config();
 
 const mg = require("nodemailer-mailgun-transport");
 
-const boilerplate = require("./mailService/boilerplate");
-
-const shiftDataPath = path.join(__dirname, "../../data/shiftdata.json");
-const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8"));
-
 export type contact = {
   name: string;
   email: string;
 };
+
+interface regEntry {
+  regOrder: number;
+  childId: number;
+  idCode: string;
+  shiftNr: number;
+  isOld: boolean;
+  birthday: Date;
+  tsSize: string;
+  addendum: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel: string;
+  priceToPay: number;
+}
 
 class MailService {
   private _transporter: Transporter;
@@ -32,17 +49,17 @@ class MailService {
     this._transporter = nodemailer.createTransport(mg(config));
   }
 
-  sendConfirmationMail(
-    campers,
-    names: string[],
+  public sendConfirmationMail(
     contact: contact,
-    price: number,
-    pdfName: string,
-    regCount: number,
+    regCampers: Registration[],
+    resCampers: Registration[],
+    shifts: number[],
+    totalPrice: number,
+    billName: string,
     billNr: number
   ) {
     const pdfPath = path.resolve(
-      path.join(__dirname, "../../data/arved", pdfName)
+      path.join(__dirname, "../../data/arved", billName)
     );
     return this._transporter.sendMail({
       from: {
@@ -51,7 +68,12 @@ class MailService {
       },
       to: contact.email,
       subject: "Broneeringu kinnitus",
-      html: boilerplate.getBoilerplate(campers, names, price, regCount), //generateHTML(campers, names, price, regCount),
+      html: EmailBuilder.getBoilerplate(
+        regCampers,
+        resCampers,
+        shifts,
+        totalPrice
+      ),
       attachments: [
         {
           filename: `arve_${billNr}.pdf`,
@@ -62,7 +84,7 @@ class MailService {
     });
   }
 
-  sendFailureMail(campers, contact: contact) {
+  sendFailureMail(campers: regEntry[], contact: contact) {
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",
@@ -70,7 +92,7 @@ class MailService {
       },
       to: contact.email,
       subject: "Reservnimekirja kandmise teade",
-      html: boilerplate.getFailed(campers),
+      html: EmailBuilder.getFailed(campers),
     });
   }
 
@@ -89,7 +111,7 @@ class MailService {
   }
 
   sendAccountCreationMail(email: string, token: string) {
-    const link = `https://merelaager.ee/api/account/create/${token}`;
+    const link = `https://sild.merelaager.ee/signup?email=${email}&token=${token}`;
     return this._transporter.sendMail({
       from: {
         name: "Merelaager - süsteem",

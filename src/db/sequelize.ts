@@ -1,18 +1,26 @@
 import { Sequelize } from "sequelize-typescript";
+import dotenv from "dotenv";
+
 import { Child } from "./models/Child";
 import { Record } from "./models/Record";
 import { Registration } from "./models/Registration";
 import { ResetToken } from "./models/ResetToken";
 import { ShiftData } from "./models/ShiftData";
-import { ShiftInfo } from "./models/ShiftInfo";
+import { Shift } from "./models/Shift";
 import { SignUpToken } from "./models/SignUpToken";
-import { Staff } from "./models/Staff";
+import { ShiftStaff } from "./models/ShiftStaff";
 import { Team } from "./models/Team";
 import { User } from "./models/User";
 import { EventInfo } from "./models/EventInfo";
 import { Document } from "./models/Document";
+import { Permission } from "./models/Permission";
+import { Role } from "./models/Role";
+import { RolePermission } from "./models/RolePermission";
+import { UserShiftRole } from "./models/UserShiftRole";
+import { TentScores } from "./models/TentScores";
+import { Bill } from "./models/Bill";
 
-require("dotenv").config();
+dotenv.config();
 
 const host = process.env.MYSQL_HOST;
 const user = process.env.MYSQL_USER;
@@ -30,12 +38,18 @@ export const sequelize = new Sequelize(dbname, user, pass, {
     Record,
     ResetToken,
     ShiftData,
-    ShiftInfo,
+    Shift,
     SignUpToken,
-    Staff,
+    ShiftStaff,
     User,
     EventInfo,
     Document,
+    Permission,
+    Role,
+    RolePermission,
+    UserShiftRole,
+    TentScores,
+    Bill,
   ],
   logging: false,
   // models: [__dirname + "/models"],

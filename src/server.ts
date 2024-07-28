@@ -1,6 +1,6 @@
 import { sequelize } from "./db/sequelize";
 import { runApp } from "./app";
-import { initialiseRegistration } from "./controllers/registration/registrationController";
+import Initialiser from "./utilities/Initialiser";
 
 (async () => {
   try {
@@ -13,6 +13,6 @@ import { initialiseRegistration } from "./controllers/registration/registrationC
     return;
   }
 
-  await initialiseRegistration();
+  await Initialiser.initAll();
   runApp();
 })();

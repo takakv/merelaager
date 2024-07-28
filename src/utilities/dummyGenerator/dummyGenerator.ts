@@ -1,74 +1,81 @@
-const fs = require("fs");
-const config = require("./configGetters");
-const dataGetters = require("./dataGetters");
+import { readFileSync, existsSync, unlinkSync, createWriteStream } from "fs";
+import { Gender, RandNames } from "./types";
 
-const getAuthentic = (names: any) => {
-  const lastNames = names.last;
-  const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
-};
+import DummyConf from "./DummyConf";
+import DataGetters from "./DataGetters";
 
-exports.generate = async (authentic: boolean, factor: number) => {
-  const names = JSON.parse(fs.readFileSync("./data/names.json", "utf-8"));
-  const path = "./data/files/regTest.jmx";
+const dc = DummyConf;
+const dg = DataGetters;
 
-  if (fs.existsSync(path)) fs.unlinkSync(path);
-  const stream = fs.createWriteStream(path, { flags: "a" });
+class DummyGenerator {
+  public static generate = async (authentic: boolean, factor: number) => {
+    const names = JSON.parse(
+      readFileSync("./data/names.json", "utf-8")
+    ) as RandNames;
+    const path = "./data/files/regTest.jmx";
 
-  const count = 22;
-  let authenticCount = 10;
+    if (existsSync(path)) unlinkSync(path);
+    const stream = createWriteStream(path, { flags: "a" });
 
-  stream.write(config.getConfigHeader());
+    const count = 22;
+    let authenticCount = 10;
 
-  const shifts = [1, 2, 3, 4, 5];
-  const genders = ["M", "F"];
+    stream.write(dc.getHeader());
 
-  if (authentic) {
-    if (factor > 10) {
-      [factor, authenticCount] = [authenticCount, factor];
-    }
-    // Attempt to generate authentic data.
-    for (let i = 0; i < factor; ++i) {
-      stream.write(config.getThreadGroup(i, "t"));
-      stream.write(config.getParallelHeader());
-      for (let i = 0; i < authenticCount; ++i) {
-        const lastNames = names.last;
-        const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const shifts = [1, 2, 3, 4];
+    const genders: Gender[] = ["M", "F"];
 
-        const res = dataGetters.getAccurate(names, lName);
-        let data = res.res;
-        const { childCount } = res;
-        data += dataGetters.getMeta(childCount, names.first, lName);
-
-        stream.write(config.getRequestSampler(data));
+    if (authentic) {
+      if (factor > 10) {
+        [factor, authenticCount] = [authenticCount, factor];
       }
-
-      stream.write(config.getParallelFooter());
-    }
-  } else {
-    // Generate separately 22 boys and 22 girls for each shift.
-    shifts.forEach((shift) => {
-      genders.forEach((gender) => {
-        stream.write(config.getThreadGroup(shift, gender));
-        stream.write(config.getParallelHeader());
-
-        for (let i = 1; i <= count; ++i) {
-          const simCount = 1; //Math.floor(300 / count / (2 * 5));
+      // Attempt to generate authentic data.
+      for (let i = 0; i < factor; ++i) {
+        stream.write(dc.getThreadGroup(i, "t"));
+        stream.write(dc.getParallelHeader());
+        for (let i = 0; i < authenticCount; ++i) {
           const lastNames = names.last;
           const lName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
-          let data = dataGetters.getData(names, simCount, lName, gender, shift);
-          data += dataGetters.getMeta(simCount, names.first, lName);
+          const res = dg.getAccurate(names, lName);
+          let data = res.res;
+          const { childCount } = res;
+          data += dg.getMeta(childCount, names.first, lName);
 
-          stream.write(config.getRequestSampler(data));
+          stream.write(dc.getRequestSampler(data));
         }
-        stream.write(config.getParallelFooter());
+
+        stream.write(dc.getParallelFooter());
+      }
+    } else {
+      // Generate separately 22 boys and 22 girls for each shift.
+      shifts.forEach((shift) => {
+        genders.forEach((gender) => {
+          stream.write(dc.getThreadGroup(shift, gender));
+          stream.write(dc.getParallelHeader());
+
+          for (let i = 1; i <= count; ++i) {
+            const simCount = 1; //Math.floor(300 / count / (2 * 5));
+            const lastNames = names.last;
+            const lName =
+              lastNames[Math.floor(Math.random() * lastNames.length)];
+
+            let data = dg.getData(names, simCount, lName, gender, shift);
+            data += dg.getMeta(simCount, names.first, lName);
+
+            stream.write(dc.getRequestSampler(data));
+          }
+          stream.write(dc.getParallelFooter());
+        });
       });
-    });
-  }
+    }
 
-  stream.write(config.getConfigFooter());
+    stream.write(dc.getFooter());
 
-  stream.end();
-  await new Promise((fulfill) => stream.on("finish", fulfill));
-  return path;
-};
+    stream.end();
+    await new Promise((fulfill) => stream.on("finish", fulfill));
+    return path;
+  };
+}
+
+export default DummyGenerator;

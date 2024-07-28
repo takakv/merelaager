@@ -17,14 +17,20 @@ export const fields = {
   birthday: document.getElementsByClassName("birthdayField"),
   shift: document.getElementsByClassName("shiftField"),
   shirtSize: document.getElementsByClassName("shirtSizeField"),
-  isNew: document.getElementsByClassName("newField"),
+  isNew: document.getElementsByClassName("newField-y"),
+  isOld: document.getElementsByClassName("newField-n"),
   road: document.getElementsByClassName("roadField"),
   city: document.getElementsByClassName("cityField"),
   country: document.getElementsByClassName("countryField"),
   county: document.getElementsByClassName("countyField"),
+  seniority: document.getElementsByClassName("nf")
 };
 
 export const priceDisplay = document.getElementById("payment-total");
-export const priceAffectingFields = [[...fields.shift], [...fields.isNew]];
+export const priceAffectingFields = [
+  [...fields.shift],
+  [...fields.isNew],
+  [...fields.isOld],
+];
 
 export const submitButton = document.getElementById("submitBtn");

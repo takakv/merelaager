@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 import MailService from "./MailService";
 import Entity = Express.Entity;
 import { StatusCodes } from "http-status-codes";
-import { roles, Staff } from "../db/models/Staff";
+import { roles, ShiftStaff } from "../db/models/ShiftStaff";
 import { getYear } from "../routes/Support Files/functions";
 
 const span48h = 1.728e8;
@@ -143,7 +143,7 @@ export const createAccount = async (
 
     // Check whether a staff entry exists. If not, create it and
     // associate it with the user.
-    const [staffEntry, created] = await Staff.findOrCreate({
+    const [staffEntry, created] = await ShiftStaff.findOrCreate({
       where: { name, shiftNr: creationInfo.shiftNr, year: getYear() },
       defaults: {
         name,
@@ -216,7 +216,7 @@ export const generateAccessDelegationLink = async (
     return StatusCodes.BAD_REQUEST;
 
   // Allow adding only users of own shift.
-  if (shiftNr !== author.shift) return StatusCodes.FORBIDDEN;
+  // if (shiftNr !== author.shift) return StatusCodes.FORBIDDEN;
 
   let user = await User.findOne({ where: { email } });
   if (!user) {

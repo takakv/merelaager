@@ -31,13 +31,11 @@ const generateRefreshToken = (userData: userData) => {
 };
 
 const populateInternalUser = async (req: Request, user: any) => {
-  req.user = user;
-  const dbUser = await User.findOne({
-    where: { username: user.username },
-  });
-  req.user.role = dbUser.role;
-  req.user.id = dbUser.id;
-  req.user.shift = dbUser.currentShift;
+  const dbUser = await User.findByPk(user.id);
+  if (!dbUser) {
+    return;
+  }
+  req.user.userId = user.id;
   req.user.isRoot = dbUser.role === rootRole;
 };
 

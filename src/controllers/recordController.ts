@@ -1,7 +1,7 @@
-import {Registration} from "../db/models/Registration";
-import {Record} from "../db/models/Record";
+import { Registration } from "../db/models/Registration";
+import { Record } from "../db/models/Record";
 
-exports.updateCurrentYear = async () => {
+export const updateCurrentYear = async () => {
   const registered = await Registration.findAll({
     where: { isRegistered: true },
   });

@@ -1,34 +1,18 @@
-import { Optional } from "sequelize";
 import {
-  AllowNull,
   AutoIncrement,
   BelongsTo,
   Column,
   DataType,
-  Default,
   ForeignKey,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+
 import { User } from "./User";
 
-interface DocumentAttributes {
-  id: number;
-  filename: string;
-  accessLevel: string;
-  name: string;
-  ownerId: number;
-}
-
-interface DocumentCreationAttributes
-  extends Optional<DocumentAttributes, "id"> {}
-
 @Table({ tableName: "documents" })
-export class Document
-  extends Model<DocumentAttributes, DocumentCreationAttributes>
-  implements DocumentAttributes
-{
+export class Document extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER.UNSIGNED)

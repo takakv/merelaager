@@ -12,7 +12,8 @@ import {
   Table,
 } from "sequelize-typescript";
 import { Child } from "./Child";
-import { ShiftInfo } from "./ShiftInfo";
+import { Shift } from "./Shift";
+import { Bill } from "./Bill";
 
 interface RegistrationAttributes {
   id: number;
@@ -29,17 +30,20 @@ interface RegistrationAttributes {
   city: string;
   county: string;
   country: string;
-  billNr: number;
   contactName: string;
   contactNumber: string;
   contactEmail: string;
   backupTel: string;
   pricePaid: number;
   priceToPay: number;
+  notifSent: boolean;
+  billId: number;
 }
 
-interface RegistrationCreationAttributes
-  extends Optional<RegistrationAttributes, "id" | "pricePaid"> {}
+type RegistrationCreationAttributes = Optional<
+  RegistrationAttributes,
+  "id" | "pricePaid"
+>;
 
 @Table({ tableName: "registrations" })
 export class Registration
@@ -62,13 +66,13 @@ export class Registration
   @Column(DataType.STRING)
   public idCode: string;
 
-  @ForeignKey(() => ShiftInfo)
+  @ForeignKey(() => Shift)
   @AllowNull(false)
   @Column(DataType.INTEGER.UNSIGNED)
   public shiftNr!: number;
 
-  @BelongsTo(() => ShiftInfo)
-  public shift?: ShiftInfo;
+  @BelongsTo(() => Shift)
+  public shift?: Shift;
 
   @AllowNull(false)
   @Default(false)
@@ -106,9 +110,13 @@ export class Registration
   @Column(DataType.STRING)
   public country: string;
 
-  @Default(null)
+  @ForeignKey(() => Bill)
+  @AllowNull(true)
   @Column(DataType.INTEGER.UNSIGNED)
-  public billNr: number;
+  public billId!: number;
+
+  @BelongsTo(() => Bill)
+  public bill?: Bill;
 
   @AllowNull(false)
   @Column(DataType.STRING)
@@ -134,27 +142,7 @@ export class Registration
   @Column(DataType.INTEGER.UNSIGNED)
   public priceToPay: number;
 
-  getRegistrationProperties() {
-    return {
-      childId: this.childId,
-      idCode: this.idCode,
-      shiftNr: this.shiftNr,
-      isRegistered: this.isRegistered,
-      regOrder: this.regOrder,
-      isOld: this.isOld,
-      birthday: this.birthday,
-      tsSize: this.tsSize,
-      addendum: this.addendum,
-      road: this.road,
-      city: this.city,
-      county: this.county,
-      country: this.country,
-      billNr: this.billNr,
-      contactName: this.contactName,
-      contactNumber: this.contactNumber,
-      contactEmail: this.contactEmail,
-      backupTel: this.backupTel,
-      priceToPay: this.priceToPay,
-    };
-  }
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  public notifSent: boolean;
 }

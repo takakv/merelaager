@@ -3,35 +3,28 @@
     "name": "Sanna Aaslav-Kaasik",
     "email": "sanna@merelaager.ee",
     "phone": "5622 6906",
-    "price": 240,
-    "deadline": "2022-05-25"
+    "price": 320,
+    "deadline": "2024-05-25"
   },
   "2": {
     "name": "Markus Laurik",
     "email": "markus@merelaager.ee",
     "phone": "5694 0815",
-    "price": 320,
-    "deadline": "2022-06-04"
+    "price": 340,
+    "deadline": "2024-06-08"
   },
   "3": {
-    "name": "Tiia Aasaru",
-    "email": "tiia@merelaager.ee",
-    "phone": "5648 0171",
-    "price": 200,
-    "deadline": "2022-06-17"
-  },
-  "4": {
     "name": "Maria Maastik",
     "email": "maria@merelaager.ee",
-    "phone": "5665 8969",
-    "price": 320,
-    "deadline": "2022-06-25"
+    "phone": "5681 6561",
+    "price": 340,
+    "deadline": "2024-06-22"
   },
-  "5": {
-    "name": "Leho Rohtla",
-    "email": "leho@merelaager.ee",
-    "phone": "518 6648",
-    "price": 320,
-    "deadline": "2022-07-08"
+  "4": {
+    "name": "Martin Reinok",
+    "email": "martin@merelaager.ee",
+    "phone": "5822 9985",
+    "price": 340,
+    "deadline": "2024-07-06"
   }
 }

@@ -8,12 +8,19 @@ import { StatusCodes } from "http-status-codes";
 import { UserLogEntry } from "../logging/UserLogEntry";
 import { loggingActions, loggingModules } from "../logging/loggingModules";
 import Entity = Express.Entity;
-import {
-  approveRole,
-  requireShiftBoss,
-} from "../routes/Support Files/shiftAuth";
+import { approveRole } from "../routes/Support Files/shiftAuth";
 
-exports.populate = async () => {
+export const populate = async () => {
+  const dbShiftData = await ShiftData.findAll();
+  for (const entry of dbShiftData) {
+    const registration = await Registration.findOne({
+      where: { childId: entry.childId, shiftNr: entry.shiftNr },
+    });
+    if (!registration || !registration.isRegistered) {
+      await entry.destroy();
+    }
+  }
+
   // Fetch all registered campers.
   const registrations = await Registration.findAll({
     where: { isRegistered: true },
@@ -27,14 +34,21 @@ exports.populate = async () => {
       where: { id: registration.childId },
     });
 
-    await ShiftData.findOrCreate({
+    const shiftEntry = await ShiftData.findOne({
       where: { childId: child.id, shiftNr },
-      defaults: {
+    });
+
+    if (!shiftEntry) {
+      await ShiftData.create({
         childId: child.id,
         shiftNr,
         parentNotes: registration.addendum,
-      },
-    });
+        isActive: true,
+      });
+    } else if (!shiftEntry.isActive) {
+      shiftEntry.isActive = true;
+      await shiftEntry.save();
+    }
   }
 };
 
@@ -85,9 +99,9 @@ export const patchCamper = async (req: Request, childId: number) => {
 
   const keys = Object.keys(req.body);
   const logObj = new UserLogEntry(
-    req.user.id,
+    req.user.userId,
     loggingModules.campers,
-    loggingActions.update
+    loggingActions.update,
   );
 
   for (const key of keys) {

@@ -8,6 +8,7 @@ import {
 const router = express.Router();
 
 // Fetch the team names and IDs for a given year and optionally shift.
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.get("/bulk/:year/:shiftNr?", async (req: Request, res: Response) => {
   const year = parseInt(req.params.year);
   const shiftNr = parseInt(req.params.shiftNr);

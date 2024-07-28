@@ -1,13 +1,16 @@
-import {User} from "../db/models/User";
-import {Staff} from "../db/models/Staff";
-import {ShiftInfo} from "../db/models/ShiftInfo";
-import {Request, Response} from "express";
-import {userIsRoot} from "../routes/Support Files/shiftAuth";
-import Entity = Express.Entity;
-import {UserData, UserShift} from "../routes/Support Files/users";
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 
-require("dotenv").config();
-const bcrypt = require("bcrypt");
+import { User } from "../db/models/User";
+import { ShiftStaff } from "../db/models/ShiftStaff";
+import { Shift } from "../db/models/Shift";
+import { Request, Response } from "express";
+import { userIsRoot } from "../routes/Support Files/shiftAuth";
+import { FrontEndUserData, UserShift } from "../routes/Support Files/users";
+import { StatusCodes } from "http-status-codes";
+import Entity = Express.Entity;
+
+dotenv.config();
 
 const getYear = () => {
   const now = new Date();
@@ -37,48 +40,11 @@ const createUser = async (data) => {
   }
 };
 
-// Fetches all users from the database.
-// No filters.
-exports.fetchAll = async () => {
-  const response = {isOk: false, code: 200, users: null};
-  let users;
-
-  try {
-    users = await User.findAll({
-      attributes: ["username", "name", "nickname", "role", "email"],
-    });
-  } catch (e) {
-    console.error(e);
-    response.code = 500;
-    return response;
-  }
-
-  if (!users) {
-    response.code = 404;
-    return response;
-  }
-
-  response.isOk = true;
-  response.users = [];
-
-  users.forEach((user) => {
-    response.users.push({
-      username: user.username,
-      name: user.name,
-      nickname: user.nickname,
-      role: user.role,
-      email: user.email,
-    });
-  });
-
-  return response;
-};
-
 exports.swapShift = async (userId: number, shiftNr: number, isBoss = false) => {
   let role = "root";
 
   if (!isBoss) {
-    const shiftInfo = await Staff.findOne({
+    const shiftInfo = await ShiftStaff.findOne({
       where: {
         userId,
         shiftNr,
@@ -113,17 +79,17 @@ exports.getInfo = async (userId: number) => {
   if (now.getMonth() === 11) ++year;
 
   if (user.role !== "root") {
-    const shiftInfo = await Staff.findAll({
-      where: {userId, year},
+    const shiftInfo = await ShiftStaff.findAll({
+      where: { userId, year },
     });
     if (!shiftInfo) return null;
-    shiftInfo.forEach((shift: Staff) => {
+    shiftInfo.forEach((shift: ShiftStaff) => {
       shifts.push(shift.shiftNr);
       if (shift.shiftNr === shiftNr) role = shift.role;
     });
     if (!shifts.includes(shiftNr)) return null;
   } else {
-    const allShifts = await ShiftInfo.findAll();
+    const allShifts = await Shift.findAll();
     allShifts.forEach((shift) => {
       shifts.push(shift.id);
     });
@@ -143,17 +109,17 @@ exports.validateShift = async (
   shiftNr: number,
   year = new Date().getFullYear()
 ) => {
-  const entry = await Staff.findOne({
-    where: {userId, shiftNr, year},
+  const entry = await ShiftStaff.findOne({
+    where: { userId, shiftNr, year },
     attributes: ["role"],
   });
 
-  if (entry) return {role: entry.role};
+  if (entry) return { role: entry.role };
   else return null;
 };
 
 exports.create = async (req: Request, res: Response) => {
-  const {username, password, email, name} = req.body;
+  const { username, password, email, name } = req.body;
 
   const isNew = !(await userExists(username));
   if (!isNew) {
@@ -176,81 +142,108 @@ exports.getShifts = async (userId: number) => {
   let year = now.getFullYear();
   if (now.getMonth() === 11) ++year;
 
-  const shiftInfo = await Staff.findAll({where: {userId, year}});
+  const shiftInfo = await ShiftStaff.findAll({ where: { userId, year } });
   console.log(shiftInfo);
 };
 
-const fetchShifts = async (userId: number, isRoot: boolean = false) => {
+const fetchShifts = async (userId: number, isRoot = false) => {
   const shifts: UserShift[] = [];
 
-  const currentShifts = await Staff.findAll({
-    where: {userId: userId, year: new Date().getUTCFullYear()},
+  const currentShifts = await ShiftStaff.findAll({
+    where: { userId: userId, year: new Date().getUTCFullYear() },
     attributes: ["shiftNr", "role"],
   });
 
   currentShifts.forEach((shift) =>
-    shifts.push({id: shift.shiftNr, role: shift.role})
+    shifts.push({ id: shift.shiftNr, role: shift.role })
   );
 
   if (!isRoot) return shifts;
 
-  const shiftCount = await ShiftInfo.count();
+  const shiftCount = await Shift.count();
   if (shiftCount === shifts.length) return shifts;
 
   // Populate the shift switcher with least-access.
   for (let i = 1; i <= shiftCount; ++i) {
-    if (!shifts.find(el => el.id === i))
-      shifts.push({id: i, role: "part"});
+    if (!shifts.find((el) => el.id === i)) shifts.push({ id: i, role: "part" });
   }
   return shifts;
+};
+
+type systemUser = {
+  username: string;
+  name: string;
+  nickname: string;
+  role: string;
+  email: string;
+};
+
+class UserController {
+  public static fetchAll = async () => {
+    const response: {
+      isOk: boolean;
+      code: number;
+      users: systemUser[];
+    } = { isOk: false, code: StatusCodes.OK, users: [] };
+
+    let users: User[];
+
+    try {
+      users = await User.findAll({
+        attributes: ["username", "name", "nickname", "role", "email"],
+      });
+    } catch (e) {
+      console.error(e);
+      response.code = StatusCodes.INTERNAL_SERVER_ERROR;
+      return response;
+    }
+
+    if (!users) {
+      response.code = StatusCodes.NOT_FOUND;
+      return response;
+    }
+
+    response.isOk = true;
+    response.users = [];
+
+    users.forEach((user) => {
+      response.users.push({
+        username: user.username,
+        name: user.name,
+        nickname: user.nickname,
+        role: user.role,
+        email: user.email,
+      });
+    });
+
+    return response;
+  };
+
+  public static fetchUser = async (entity: Entity, userId: number) => {
+    if (isNaN(userId)) return { statusCode: StatusCodes.BAD_REQUEST, data: {} };
+    const isRoot = userIsRoot(entity);
+
+    if (entity.id !== userId && !isRoot)
+      return { statusCode: StatusCodes.FORBIDDEN, data: {} };
+
+    const user = await User.findByPk(userId);
+    if (!user) return { statusCode: StatusCodes.NOT_FOUND, data: {} };
+
+    const shifts = await fetchShifts(userId, isRoot);
+
+    const userData: FrontEndUserData = {
+      name: user.nickname,
+      currentShift: user.currentShift,
+      isRoot: user.role === "root",
+      role: user.role,
+      shifts,
+    };
+
+    return {
+      statusCode: StatusCodes.OK,
+      data: userData,
+    };
+  };
 }
 
-export const fetchUser = async (entity: Entity, userId: number) => {
-  if (isNaN(userId)) return {statusCode: 400, data: {}};
-  const isRoot = userIsRoot(entity);
-
-  if (entity.id !== userId && !isRoot)
-    return {statusCode: 403, data: {}};
-
-  const user = await User.findByPk(userId);
-  if (!user) return {statusCode: 404, data: {}};
-
-  const shifts = await fetchShifts(userId, isRoot);
-
-  const userData: UserData = {
-    name: user.nickname,
-    currentShift: user.currentShift,
-    isRoot: user.role === "root",
-    role: user.role,
-    shifts,
-  };
-
-  return {
-    statusCode: 200,
-    data: userData,
-  };
-};
-
-export const updateCurrentShift = async (req: Request) => {
-  const newShift = parseInt(req.body.newShift);
-  if (isNaN(newShift)) return 400;
-
-  if (!userIsRoot(req.user)) {
-    const userInShift = await Staff.findOne({
-      where: {shiftNr: newShift, userId: req.user.id, year: getYear()},
-    });
-    if (!userInShift) return 403;
-  }
-
-  const user = await User.findByPk(req.user.id);
-  user.currentShift = newShift;
-
-  try {
-    await user.save();
-  } catch (e) {
-    console.error(e);
-    return 500;
-  }
-
-  return 204;
-};
+export default UserController;

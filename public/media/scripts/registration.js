@@ -106,7 +106,7 @@ const unlocker = async (moment) => {
 };
 
 if (window.location.hostname === "merelaager.ee") {
-  unlocker("01 Jan 2023 12:00:00 UTC").then((res) =>
+  unlocker("01 Jan 2024 12:00:00 UTC").then((res) =>
     console.log(`Avatud: ${res ? "jah" : "ei"}`)
   );
 } else {
@@ -138,9 +138,11 @@ const loadClock = async () => {
   return syncTime;
 };
 
+/*
 loadClock().then((time) => {
   console.log(`Server time: ${new Date(time).toISOString()}`);
   console.log(`Local time: ${new Date().toISOString()}`);
 });
+*/
 
 window.onunload = () => {};

@@ -1,56 +1,23 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import sequelize from "sequelize";
 import dotenv from "dotenv";
 
-import {Registration} from "../../db/models/Registration";
-import {Child} from "../../db/models/Child";
-import {StatusCodes} from "http-status-codes";
-import {registrationTracker} from "../../channels/registrationTracker";
+import { Registration } from "../../db/models/Registration";
+import { Child } from "../../db/models/Child";
+import { StatusCodes } from "http-status-codes";
+import { registrationTracker } from "../../channels/registrationTracker";
+import { registrationPriceDiff, registrationPrices } from "./meta";
+import GlobalStore from "../../utilities/GlobalStore";
 
 dotenv.config();
 
-import {eta, registrationPriceDiff, registrationPrices, unlockTime} from "./meta";
-
 const maxBatchRegistrations = 4;
-
-let unlocked: boolean = process.env.NODE_ENV === "dev";
-
-if (process.env.UNLOCK === "true") {
-  unlocked = true;
-} else if (process.env.NODE_ENV === "prod") {
-  setTimeout(() => {
-    unlocked = true;
-  }, eta);
-}
-
-let registrationOrder = 1;
-
-const initializeRegistrationOrder = async () => {
-  const prevReg = await Registration.findOne({
-    order: [["regOrder", "DESC"]],
-    attributes: ["regOrder"],
-  });
-  if (prevReg) registrationOrder = prevReg.regOrder + 1;
-};
-
-export const initialiseRegistration = async () => {
-  await initializeRegistrationOrder();
-  console.log(`Reg order: ${registrationOrder}`);
-
-  console.log(`Registration is unlocked? ${unlocked}`);
-  console.log(
-    `Unlock date: ${unlockTime.toLocaleString("en-GB", {
-      timeZone: "Europe/Tallinn",
-    })} (Estonian time)`
-  );
-  console.log(`Unlock delta: ${eta}`);
-};
 
 const parseIdCode = (code: string) => {
   if (code.length !== 11) return null;
   if (code[0] !== "5" && code[0] !== "6") return null;
 
-  const gender = code[0] === "5" ? "M" : "F";
+  const sex = code[0] === "5" ? "M" : "F";
 
   const year = parseInt(`20${code[1]}${code[2]}`);
   const month = parseInt(`${code[3]}${code[4]}`);
@@ -85,13 +52,16 @@ const parseIdCode = (code: string) => {
 
   const birthday = new Date(Date.UTC(fullYear, month - 1, day));
 
-  return {gender, birthday};
+  return { gender: sex, birthday };
 };
 
 export const create = async (req: Request, res: Response) => {
   try {
     const response = await registerCampers(req.body);
-    // if (response.ok) return res.redirect("../reserv/");
+    if (!response.ok) {
+      console.log(req.body);
+      console.log(response);
+    }
     return res.status(response.code).json(response);
   } catch (e) {
     console.error(e);
@@ -103,26 +73,29 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-interface payload {
-  name: string[];
-  idCode?: string[];
-  gender?: string[];
-  bDay?: string[];
-  useIdCode?: string[];
-  shiftNr: string[];
-  tsSize: string[];
-  newcomer?: string[];
-  road: string[];
-  city: string[];
-  county: string[];
-  country: string[];
-  addendum: string[];
-  childCount: string;
+type RegChildInfo = {
+  name: string;
+  idCode: string;
+  shift: number;
+  shirtSize: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  addendum: string;
+  isNew: boolean;
+  sex: string;
+  dob: string;
+  useIdCode: boolean;
+};
+
+type RegPayload = {
+  children: RegChildInfo[];
   contactName: string;
-  contactNumber: string;
   contactEmail: string;
-  backupTel?: string;
-}
+  contactNumber: string;
+  backupTel: string;
+};
 
 interface regEntry {
   regOrder: number;
@@ -145,10 +118,10 @@ interface regEntry {
 }
 
 const registerCampers = async (payloadData: unknown) => {
-  const currentOrder = registrationOrder;
-  ++registrationOrder;
+  const currentOrder = GlobalStore.registrationOrder;
+  ++GlobalStore.registrationOrder;
 
-  const payload = payloadData as payload;
+  const payload = payloadData as RegPayload;
 
   const response = {
     ok: true,
@@ -156,20 +129,14 @@ const registerCampers = async (payloadData: unknown) => {
     message: "",
   };
 
-  if (!unlocked) {
+  if (!GlobalStore.registrationUnlocked) {
     response.ok = false;
     response.code = StatusCodes.FORBIDDEN;
     response.message = "Registration not open";
     return response;
   }
 
-  const childCount = parseInt(payload.childCount);
-  if (isNaN(childCount)) {
-    response.ok = false;
-    response.code = StatusCodes.BAD_REQUEST;
-    response.message = "Could not parse the number of children";
-    return response;
-  }
+  const childCount = payload.children.length;
   if (childCount < 1 || childCount > maxBatchRegistrations) {
     response.ok = false;
     response.code = StatusCodes.BAD_REQUEST;
@@ -177,36 +144,45 @@ const registerCampers = async (payloadData: unknown) => {
     return response;
   }
 
-  type ObjectKey = keyof typeof payload;
+  type ChildObjectKey = keyof RegChildInfo;
+  type PayloadObjectKey = keyof RegPayload;
 
-  const arrayKeys: ObjectKey[] = [
+  const arrayKeys: ChildObjectKey[] = [
     "name",
-    "shiftNr",
-    "tsSize",
+    "idCode",
+    "shift",
+    "shirtSize",
     "road",
     "city",
     "county",
     "country",
     "addendum",
+    "isNew",
+    "sex",
+    "dob",
+    "useIdCode",
   ];
 
-  for (const key of arrayKeys) {
-    if (
-      !payload.hasOwnProperty(key) ||
-      !Array.isArray(payload[key]) ||
-      payload[key].length != maxBatchRegistrations
-    ) {
-      response.ok = false;
-      response.code = StatusCodes.BAD_REQUEST;
-      response.message = `Property '${key}' is malformed or missing`;
-      return response;
-    }
-  }
+  /*
+                                            for (const key of arrayKeys) {
+                                              if (
+                                                !payload.hasOwnProperty(key) ||
+                                                !Array.isArray(payload.children[0][key]) ||
+                                                payload[key].length > maxBatchRegistrations
+                                              ) {
+                                                response.ok = false;
+                                                response.code = StatusCodes.BAD_REQUEST;
+                                                response.message = `Property '${key}' is malformed or missing`;
+                                                return response;
+                                              }
+                                            }
+                                             */
 
-  const stringKeys: ObjectKey[] = [
+  const stringKeys: PayloadObjectKey[] = [
     "contactName",
     "contactNumber",
     "contactEmail",
+    "backupTel",
   ];
 
   for (const key of stringKeys) {
@@ -221,9 +197,9 @@ const registerCampers = async (payloadData: unknown) => {
   const registrationEntries: regEntry[] = [];
 
   for (let i = 0; i < childCount; ++i) {
+    const childData = payload.children[i];
 
-    // TODO: implement registration without ID code
-    const parsedId = parseIdCode(payload.idCode[i]);
+    const parsedId = parseIdCode(childData.idCode.trim());
     if (!parsedId) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
@@ -231,14 +207,19 @@ const registerCampers = async (payloadData: unknown) => {
       return response;
     }
 
-    const childName = payload.name[i].trim();
+    const sex = childData.useIdCode ? parsedId.gender : childData.sex;
+    const birthday = childData.useIdCode
+      ? parsedId.birthday
+      : new Date(childData.dob);
+
+    const childName = childData.name.trim();
     if (!childName) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
       response.message = "Child name is missing or empty";
       return response;
     }
-    const childInstance = await Child.findOrCreate({
+    const [childInstance, created] = await Child.findOrCreate({
       where: sequelize.where(
         sequelize.fn("LOWER", sequelize.col("name")),
         "LIKE",
@@ -247,26 +228,16 @@ const registerCampers = async (payloadData: unknown) => {
       attributes: ["id"],
       defaults: {
         name: childName,
-        gender: parsedId.gender,
+        gender: sex,
       },
     });
 
-    const childId = childInstance[0].id;
-    let isOld = !payload.newcomer;
-    if (!Array.isArray(payload.newcomer)) {
-      response.ok = false;
-      response.code = StatusCodes.BAD_REQUEST;
-      response.message = "Malformed newcomer data";
-      return response;
-    }
-    if (
-      !isOld &&
-      payload.newcomer.find((el: string) => el === `${i + 1}`) === undefined
-    )
-      isOld = true;
+    const childId = childInstance.id;
+    let isOld = !childData.isNew;
+    if (!isOld && !created) isOld = true;
 
-    const shiftNr = parseInt(payload.shiftNr[i], 10);
-    if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 5) {
+    const shiftNr = childData.shift;
+    if (isNaN(shiftNr) || shiftNr < 1 || shiftNr > 4) {
       response.ok = false;
       response.code = StatusCodes.BAD_REQUEST;
       response.message = "Illegal shift number";
@@ -276,36 +247,48 @@ const registerCampers = async (payloadData: unknown) => {
     const registrationEntry: regEntry = {
       regOrder: currentOrder,
       childId: childId,
-      idCode: payload.idCode[i],
+      idCode: childData.idCode,
       shiftNr: shiftNr,
       isOld: isOld,
-      birthday: parsedId.birthday,
-      tsSize: payload.tsSize[i],
-      addendum: payload.addendum[i] === "" ? null : payload.addendum[i],
-      road: payload.road[i],
-      city: payload.city[i],
-      county: payload.county[i],
-      country: payload.country[i],
+      birthday: birthday,
+      tsSize: childData.shirtSize,
+      addendum: childData.addendum === "" ? null : childData.addendum,
+      road: childData.road,
+      city: childData.city,
+      county: childData.county,
+      country: childData.country,
       contactName: payload.contactName,
       contactNumber: payload.contactNumber,
       contactEmail: payload.contactEmail,
       backupTel: payload.backupTel ?? null,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       priceToPay: isOld
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        ? registrationPrices[shiftNr] - registrationPriceDiff
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        : registrationPrices[shiftNr],
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          registrationPrices[shiftNr] - registrationPriceDiff
+        : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          registrationPrices[shiftNr],
     };
 
     registrationEntries.push(registrationEntry);
   }
   const createdData = await Registration.bulkCreate(registrationEntries);
   // Broadcast separately to ease parsing on client side.
-  createdData.forEach(entry => {
-    registrationTracker.broadcast(JSON.stringify({id: entry.id}), "registration-created");
-  })
+  createdData.forEach((entry) => {
+    registrationTracker.broadcast(
+      JSON.stringify({ id: entry.id }),
+      "registration-created"
+    );
+  });
+  try {
+    await GlobalStore.mailService.sendFailureMail(registrationEntries, {
+      name: payload.contactName,
+      email: payload.contactEmail,
+    });
+  } catch (e) {
+    console.error(e);
+    console.log(`Email was: ${payload.contactEmail}`);
+  }
   return response;
 };
