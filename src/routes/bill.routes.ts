@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import BillController from "../../controllers/BillController";
+import BillController from "../controllers/BillController";
 
 const router = express.Router();
 

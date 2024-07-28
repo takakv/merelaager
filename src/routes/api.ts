@@ -72,7 +72,7 @@ router.use("/staff", staff);
 // const users = require("./api/users");
 // router.use("/users", users);
 
-import bills from "./api/bills";
+import bills from "./bill.routes";
 
 router.use("/bills", bills);
 
