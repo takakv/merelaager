@@ -20,3 +20,26 @@ export interface AccountCreationRequestSchema extends ValidatedRequestSchema {
     token: string;
   };
 }
+
+export const initiatePasswordResetRequestSchema: ObjectSchema = joi.object({
+  email: joi.string().email().required(),
+});
+
+export interface InitiatePasswordResetRequestSchema
+  extends ValidatedRequestSchema {
+  [ContainerTypes.Body]: {
+    email: string;
+  };
+}
+
+export const passwordResetRequestSchema: ObjectSchema = joi.object({
+  password: joi.string().min(8).required(),
+  token: joi.string().required(),
+});
+
+export interface PasswordResetRequestSchema extends ValidatedRequestSchema {
+  [ContainerTypes.Body]: {
+    password: string;
+    token: string;
+  };
+}

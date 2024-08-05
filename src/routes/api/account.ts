@@ -4,9 +4,17 @@ import {
   generateAccessDelegationLink,
   validateSignupToken,
 } from "../../controllers/accountController";
-import {validateBody} from "../../middleware/reqvalidate.middleware";
-import {accountCreationRequestSchema} from "../../controllers/account/account.types";
-import {createAccount} from "../../controllers/account/account.controller";
+import { validateBody } from "../../middleware/reqvalidate.middleware";
+import {
+  accountCreationRequestSchema,
+  initiatePasswordResetRequestSchema,
+  passwordResetRequestSchema,
+} from "../../controllers/account/account.types";
+import {
+  createAccount,
+  initiatePasswordReset,
+  resetPassword,
+} from "../../controllers/account/account.controller";
 
 const router = express.Router();
 
@@ -46,10 +54,9 @@ router.post("/chkusr/", async (req: Request, res: Response) => {
 });
 
 router.post(
-    "/create",
-    validateBody(accountCreationRequestSchema),
-    // @ts-ignore
-    createAccount,
+  "/create",
+  validateBody(accountCreationRequestSchema),
+  createAccount,
 );
 
 router.get("/reset/:token/", async (req: Request, res: Response) => {
@@ -74,21 +81,17 @@ router.post("/cta/:shiftNr/:role?/", async (req: Request, res: Response) => {
   else res.sendStatus(400);
 });
 
-router.post("/pwd/reset", async (req: Request, res: Response) => {
-  if (!("email" in req.body)) res.sendStatus(StatusCodes.BAD_REQUEST);
-  const state = await account.resetPwd(req.body.email);
-  if (state) res.sendStatus(StatusCodes.OK);
-  else res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-});
+router.post(
+  "/pwd/reset",
+  validateBody(initiatePasswordResetRequestSchema),
+  initiatePasswordReset,
+);
 
-router.post("/reset", async (req: Request, res: Response) => {
-  if (!("token" in req.body)) res.status(400).send("Token puudub");
-  if (!("password" in req.body)) res.status(400).send("Salasõna puudub");
-
-  const state = await account.changePwd(req.body.password, req.body.token);
-  if (state) return res.status(200).send("Salasõna edukalt muudetud");
-  res.sendStatus(400);
-});
+router.post(
+  "/password",
+  validateBody(passwordResetRequestSchema),
+  resetPassword,
+);
 
 // ---------- AUTH ZONE ------------------------------
 router.use(jwt.verifyAccessToken);

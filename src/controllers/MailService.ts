@@ -56,10 +56,10 @@ class MailService {
     shifts: number[],
     totalPrice: number,
     billName: string,
-    billNr: number
+    billNr: number,
   ) {
     const pdfPath = path.resolve(
-      path.join(__dirname, "../../data/arved", billName)
+      path.join(__dirname, "../../data/arved", billName),
     );
     return this._transporter.sendMail({
       from: {
@@ -72,7 +72,7 @@ class MailService {
         regCampers,
         resCampers,
         shifts,
-        totalPrice
+        totalPrice,
       ),
       attachments: [
         {
@@ -97,7 +97,7 @@ class MailService {
   }
 
   sendPwdResetMail(email: string, token: string) {
-    const link = `https://merelaager.ee/api/su/reset/${token}`;
+    const link = `https://sild.merelaager.ee/reset?token=${token}`;
     return this._transporter.sendMail({
       from: {
         name: "Merelaager - süsteem",

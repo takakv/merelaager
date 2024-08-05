@@ -2,14 +2,14 @@ import { SignUpToken } from "../db/models/SignUpToken";
 import { User } from "../db/models/User";
 import { ResetToken } from "../db/models/ResetToken";
 import { v4 as uuidv4 } from "uuid";
-
-const bcrypt = require("bcrypt");
-
 import MailService from "./MailService";
-import Entity = Express.Entity;
 import { StatusCodes } from "http-status-codes";
 import { roles, ShiftStaff } from "../db/models/ShiftStaff";
 import { getYear } from "../routes/Support Files/functions";
+
+const bcrypt = require("bcrypt");
+
+import Entity = Express.Entity;
 
 const span48h = 1.728e8;
 
@@ -56,7 +56,7 @@ const getPwdHash = (password: string) => {
   return bcrypt.hashSync(password, parseInt(process.env.SALTR));
 };
 
-exports.changePwd = async (password: string, token: string) => {
+export const resetPasswordInternal = async (password: string, token: string) => {
   const userId = await validateResetToken(token);
   if (!userId) return false;
 
@@ -69,9 +69,12 @@ exports.changePwd = async (password: string, token: string) => {
   return true;
 };
 
-exports.resetPwd = async (email: string) => {
+export const initiatePasswordResetInternal = async (email: string) => {
   const user = await User.findOne({ where: { email }, attributes: ["id"] });
-  if (!user) return false;
+  if (!user) {
+    console.error(`User with email '${email}' not found'`);
+    return false;
+  }
 
   const uid = uuidv4();
 
@@ -112,7 +115,7 @@ export const createAccount = async (
   password: string,
   token: string,
   name: string,
-  nickname: string = null
+  nickname: string = null,
 ) => {
   const creationInfo = await SignUpToken.findByPk(token);
 
@@ -170,7 +173,7 @@ export const createAccount = async (
 const createSignupToken = async (
   email: string,
   shiftNr: number,
-  role: string
+  role: string,
 ) => {
   const token = uuidv4();
   try {
@@ -209,7 +212,7 @@ export const generateAccessDelegationLink = async (
   email: string,
   shiftNr: number,
   role: string,
-  author: Entity
+  author: Entity,
 ) => {
   if (!email || Number.isNaN(shiftNr)) return StatusCodes.BAD_REQUEST;
   if (!role || !Object.values(roles).includes(role))
