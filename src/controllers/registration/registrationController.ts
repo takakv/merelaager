@@ -56,6 +56,9 @@ const parseIdCode = (code: string) => {
 };
 
 export const create = async (req: Request, res: Response) => {
+  console.log("I am creating a set of registrations");
+  console.log(req.body);
+
   try {
     const response = await registerCampers(req.body);
     if (!response.ok) {
@@ -164,19 +167,19 @@ const registerCampers = async (payloadData: unknown) => {
   ];
 
   /*
-                                            for (const key of arrayKeys) {
-                                              if (
-                                                !payload.hasOwnProperty(key) ||
-                                                !Array.isArray(payload.children[0][key]) ||
-                                                payload[key].length > maxBatchRegistrations
-                                              ) {
-                                                response.ok = false;
-                                                response.code = StatusCodes.BAD_REQUEST;
-                                                response.message = `Property '${key}' is malformed or missing`;
-                                                return response;
-                                              }
-                                            }
-                                             */
+                                                for (const key of arrayKeys) {
+                                                  if (
+                                                    !payload.hasOwnProperty(key) ||
+                                                    !Array.isArray(payload.children[0][key]) ||
+                                                    payload[key].length > maxBatchRegistrations
+                                                  ) {
+                                                    response.ok = false;
+                                                    response.code = StatusCodes.BAD_REQUEST;
+                                                    response.message = `Property '${key}' is malformed or missing`;
+                                                    return response;
+                                                  }
+                                                }
+                                                 */
 
   const stringKeys: PayloadObjectKey[] = [
     "contactName",
@@ -223,7 +226,7 @@ const registerCampers = async (payloadData: unknown) => {
       where: sequelize.where(
         sequelize.fn("LOWER", sequelize.col("name")),
         "LIKE",
-        "%" + childName.toLowerCase() + "%"
+        "%" + childName.toLowerCase() + "%",
       ),
       attributes: ["id"],
       defaults: {
@@ -278,17 +281,19 @@ const registerCampers = async (payloadData: unknown) => {
   createdData.forEach((entry) => {
     registrationTracker.broadcast(
       JSON.stringify({ id: entry.id }),
-      "registration-created"
+      "registration-created",
     );
   });
-  try {
-    await GlobalStore.mailService.sendFailureMail(registrationEntries, {
-      name: payload.contactName,
-      email: payload.contactEmail,
-    });
-  } catch (e) {
-    console.error(e);
-    console.log(`Email was: ${payload.contactEmail}`);
-  }
+  /*
+      try {
+        await GlobalStore.mailService.sendFailureMail(registrationEntries, {
+          name: payload.contactName,
+          email: payload.contactEmail,
+        });
+      } catch (e) {
+        console.error(e);
+        console.log(`Email was: ${payload.contactEmail}`);
+      }
+      */
   return response;
 };

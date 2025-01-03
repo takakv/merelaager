@@ -1,28 +1,39 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import express, {Request, Response} from "express";
+import express, { type Request, type Response } from "express";
 
-import {validateBody, validateParams,} from "../middleware/reqvalidate.middleware";
+import authMiddleware from "../middleware/auth.middleware";
+import {
+  validateBody,
+  validateParams,
+} from "../middleware/reqvalidate.middleware";
 
 import {
-    deleteRegistrationParamsSchema,
-    fetchRegistrationParamsSchema,
-    patchRegistrationBodySchema,
-    patchRegistrationParamsSchema,
-    shiftRegistrationParamsSchema,
+  deleteRegistrationParamsSchema,
+  fetchRegistrationParamsSchema,
+  patchRegistrationBodySchema,
+  patchRegistrationParamsSchema,
+  registerBodySchema,
+  shiftRegistrationParamsSchema,
 } from "../controllers/registrations/registration.types";
 
 import {
-    deleteShiftRegistration,
-    fetchRegistration,
-    fetchRegistrations,
-    fetchShiftRegistrationPdf,
-    fetchShiftRegistrations,
-    patchRegistration,
+  deleteShiftRegistration,
+  fetchRegistration,
+  fetchRegistrations,
+  fetchShiftRegistrationPdf,
+  fetchShiftRegistrations,
+  patchRegistration,
 } from "../controllers/registrations/registration.controller";
-import {StatusCodes} from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 import RegistrationController from "../controllers/RegistrationController";
+import { create } from "../controllers/registration/registrationController";
 
 const router = express.Router();
+
+router.post("/register", validateBody(registerBodySchema), create);
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+router.use(authMiddleware);
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.get("/", fetchRegistrations);
@@ -32,7 +43,7 @@ router.get(
   validateParams(fetchRegistrationParamsSchema),
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  fetchRegistration
+  fetchRegistration,
 );
 
 router.get(
@@ -40,7 +51,7 @@ router.get(
   validateParams(shiftRegistrationParamsSchema),
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  fetchShiftRegistrations
+  fetchShiftRegistrations,
 );
 
 router.get(
@@ -48,7 +59,7 @@ router.get(
   validateParams(shiftRegistrationParamsSchema),
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  fetchShiftRegistrationPdf
+  fetchShiftRegistrationPdf,
 );
 
 router.delete(
@@ -56,7 +67,7 @@ router.delete(
   validateParams(deleteRegistrationParamsSchema),
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  deleteShiftRegistration
+  deleteShiftRegistration,
 );
 
 router.patch(
@@ -65,7 +76,7 @@ router.patch(
   validateBody(patchRegistrationBodySchema),
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  patchRegistration
+  patchRegistration,
 );
 
 router.post("/notify", (req: Request, res: Response) => {
