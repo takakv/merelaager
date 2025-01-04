@@ -1,50 +1,75 @@
-import joi, { ObjectSchema } from "joi";
-import { ContainerTypes, ValidatedRequestSchema } from "express-joi-validation";
+import joi, { type ObjectSchema } from "joi";
+import {
+  ContainerTypes,
+  type ValidatedRequestSchema,
+} from "express-joi-validation";
 
-type RegChildInfo = {
+const STRING_MAX = 255;
+
+type ChildInfo = {
   name: string;
-  idCode: string;
-  shift: number;
+  idCode?: string;
+  sex?: string;
+  dob?: Date;
+  addendum?: string;
+};
+
+type CampInfo = {
+  shiftNr: number;
+  isNew: boolean;
   shirtSize: string;
+};
+
+type AddressInfo = {
   road: string;
   city: string;
   county: string;
   country: string;
-  addendum: string;
-  isNew: boolean;
-  sex: string;
-  dob: string;
-  useIdCode: boolean;
 };
 
-export const registerBodySchema: ObjectSchema = joi.object({
-  children: joi
-    .array()
-    .items(
-      joi
-        .object({
-          name: joi.string().max(255),
-          idCode: joi.string().max(11),
-          shift: joi.number(),
-          shirtSize: joi.string(),
-          road: joi.string(),
-          city: joi.string(),
-          county: joi.string(),
-          country: joi.string(),
-          addendum: joi.string().allow("").max(255),
-          isNew: joi.boolean(),
-          sex: joi.string().allow(""),
-          dob: joi.string().allow(""),
-          useIdCode: joi.boolean(),
-        })
-        .options({ presence: "required" }),
-    )
-    .required(),
-  contactName: joi.string().max(255).required(),
-  contactEmail: joi.string().max(255).email().required(),
-  contactNumber: joi.string().max(25).required(),
-  backupTel: joi.string().allow("").max(25).required(),
-});
+type ParentInfo = {
+  contactName: string;
+  contactEmail: string;
+  contactNumber: string;
+  backupTel?: string;
+};
+
+type RegistrationRequest = ChildInfo & CampInfo & AddressInfo & ParentInfo;
+
+export const registerBodySchema = joi.array<RegistrationRequest>().items(
+  joi.object<RegistrationRequest>({
+    name: joi.string().required(),
+    // ID code is required unless sex and date of birth are specified.
+    idCode: joi
+      .string()
+      .min(11)
+      .max(11)
+      .when("sex", {
+        is: joi.any().valid(null, ""),
+        then: joi.required(),
+      })
+      .when("sex", { is: joi.any().valid(null, ""), then: joi.required() }),
+    sex: joi.allow("M", "F"),
+    dob: joi.date(),
+    addendum: joi.string().max(STRING_MAX),
+    shiftNr: joi.number().min(1).max(4).required(),
+    isNew: joi.boolean().required(),
+    shirtSize: joi.string().max(10).required(),
+    road: joi.string().max(STRING_MAX).required(),
+    city: joi.string().max(STRING_MAX).required(),
+    county: joi.string().max(STRING_MAX).required(),
+    country: joi.string().max(STRING_MAX).required(),
+    contactName: joi.string().max(STRING_MAX).required(),
+    contactEmail: joi.string().max(STRING_MAX).email().required(),
+    contactNumber: joi.string().max(25).required(),
+    backupTel: joi.string().max(25),
+  }),
+);
+
+export interface CreateRegistrationRequestSchema
+  extends ValidatedRequestSchema {
+  [ContainerTypes.Body]: RegistrationRequest[];
+}
 
 export const fetchRegistrationParamsSchema: ObjectSchema = joi.object({
   regId: joi.number().required(),

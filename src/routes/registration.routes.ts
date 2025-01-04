@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import express, { type Request, type Response } from "express";
+import express, {type Request, type Response} from "express";
 
 import authMiddleware from "../middleware/auth.middleware";
-import {
-  validateBody,
-  validateParams,
-} from "../middleware/reqvalidate.middleware";
+import {validateBody, validateParams,} from "../middleware/reqvalidate.middleware";
 
 import {
   deleteRegistrationParamsSchema,
@@ -17,6 +14,7 @@ import {
 } from "../controllers/registrations/registration.types";
 
 import {
+  createRegistrations,
   deleteShiftRegistration,
   fetchRegistration,
   fetchRegistrations,
@@ -24,13 +22,12 @@ import {
   fetchShiftRegistrations,
   patchRegistration,
 } from "../controllers/registrations/registration.controller";
-import { StatusCodes } from "http-status-codes";
+import {StatusCodes} from "http-status-codes";
 import RegistrationController from "../controllers/RegistrationController";
-import { create } from "../controllers/registration/registrationController";
 
 const router = express.Router();
 
-router.post("/register", validateBody(registerBodySchema), create);
+router.post("/register", validateBody(registerBodySchema), createRegistrations);
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.use(authMiddleware);

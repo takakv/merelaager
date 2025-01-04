@@ -167,19 +167,19 @@ const registerCampers = async (payloadData: unknown) => {
   ];
 
   /*
-                                                for (const key of arrayKeys) {
-                                                  if (
-                                                    !payload.hasOwnProperty(key) ||
-                                                    !Array.isArray(payload.children[0][key]) ||
-                                                    payload[key].length > maxBatchRegistrations
-                                                  ) {
-                                                    response.ok = false;
-                                                    response.code = StatusCodes.BAD_REQUEST;
-                                                    response.message = `Property '${key}' is malformed or missing`;
-                                                    return response;
+                                                  for (const key of arrayKeys) {
+                                                    if (
+                                                      !payload.hasOwnProperty(key) ||
+                                                      !Array.isArray(payload.children[0][key]) ||
+                                                      payload[key].length > maxBatchRegistrations
+                                                    ) {
+                                                      response.ok = false;
+                                                      response.code = StatusCodes.BAD_REQUEST;
+                                                      response.message = `Property '${key}' is malformed or missing`;
+                                                      return response;
+                                                    }
                                                   }
-                                                }
-                                                 */
+                                                   */
 
   const stringKeys: PayloadObjectKey[] = [
     "contactName",
@@ -285,15 +285,15 @@ const registerCampers = async (payloadData: unknown) => {
     );
   });
   /*
-      try {
-        await GlobalStore.mailService.sendFailureMail(registrationEntries, {
-          name: payload.contactName,
-          email: payload.contactEmail,
-        });
-      } catch (e) {
-        console.error(e);
-        console.log(`Email was: ${payload.contactEmail}`);
-      }
-      */
+        try {
+          await GlobalStore.mailService.sendFailureMail(registrationEntries, {
+            name: payload.contactName,
+            email: payload.contactEmail,
+          });
+        } catch (e) {
+          console.error(e);
+          console.log(`Email was: ${payload.contactEmail}`);
+        }
+        */
   return response;
 };
