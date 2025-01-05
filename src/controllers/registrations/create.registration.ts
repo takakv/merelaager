@@ -236,6 +236,5 @@ const sendRegistrationEmails = (
         console.error(err);
         console.log(`Email was:`, email);
       });
-    console.log(entries);
   }
 };

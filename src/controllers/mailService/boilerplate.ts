@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { Registration } from "../../db/models/Registration";
-import type {EmailReceiptInfo, RegistrationDbEntry} from "../registrations/registration.types";
+import type { EmailReceiptInfo } from "../registrations/registration.types";
 
 interface shiftData {
   name: string;
@@ -24,7 +24,23 @@ class EmailBuilder {
       if (!shifts.includes(campers[i].shiftNr)) shifts.push(campers[i].shiftNr);
     }
 
-    const multiple = campers.length > 1;
+    // For grammar: is there more than one kid?
+    const plural = campers.length > 1;
+
+    /*
+    // For grammar, is there more than one kid per shift?
+    let singleShift = true;
+    if (plural) {
+      const seenShifts: number[] = [];
+      for (const camper of campers) {
+        if (!seenShifts.includes(camper.shiftNr)) {
+          singleShift = false;
+          break;
+        }
+        seenShifts.push(camper.shiftNr);
+      }
+    }
+    */
 
     return `<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -170,9 +186,9 @@ class EmailBuilder {
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                                 <div style="font-family:Helvetica, Arial, sans-serif;font-size:15px;font-weight:300;line-height:24px;text-align:left;color:#000000;">
                                   <p>Tere!</p>
-                                  <p>Oleme ${multiple ? "lapsed" : "lapse"}</p>
+                                  <p>Oleme ${plural ? "lapsed" : "lapse"}</p>
                                   ${this.getChildList(campers)}
-                                  <p>registreerinud reservnimekirja. Kui juhtaja koha${multiple ? "d" : ""} kinnitab või põhinimekirjas koht${multiple ? "i" : ""} vabaneb, võtame Teiega esimesel võimalusel ühendust.</p>
+                                  <p>registreerinud reservnimekirja. Kui juhtaja koha kinnitab või põhinimekirjas koht vabaneb, võtame Teiega esimesel võimalusel ühendust.</p>
                                   <p>Parimate soovidega</p>
                                   <p>${this.getStaffContacts(shifts)}</p>
                                   <p style="font-size: 11px">Tegu on automaatvastusega, palume sellele meilile mitte vastata. Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</p>
