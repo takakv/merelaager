@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import nodemailer, { Transporter } from "nodemailer";
 import EmailBuilder from "./mailService/boilerplate";
 import { Registration } from "../db/models/Registration";
+import type { EmailReceiptInfo } from "./registrations/registration.types";
 
 dotenv.config();
 
@@ -13,26 +14,6 @@ export type contact = {
   name: string;
   email: string;
 };
-
-interface regEntry {
-  regOrder: number;
-  childId: number;
-  idCode: string;
-  shiftNr: number;
-  isOld: boolean;
-  birthday: Date;
-  tsSize: string;
-  addendum: string;
-  road: string;
-  city: string;
-  county: string;
-  country: string;
-  contactName: string;
-  contactNumber: string;
-  contactEmail: string;
-  backupTel: string;
-  priceToPay: number;
-}
 
 class MailService {
   private _transporter: Transporter;
@@ -84,15 +65,15 @@ class MailService {
     });
   }
 
-  sendFailureMail(campers: regEntry[], contact: contact) {
+  sendRegistrationReceipt(campers: EmailReceiptInfo[], email: string) {
     return this._transporter.sendMail({
       from: {
         name: "Merelaager",
         address: "no-reply@info.merelaager.ee",
       },
-      to: contact.email,
+      to: email,
       subject: "Reservnimekirja kandmise teade",
-      html: EmailBuilder.getFailed(campers),
+      html: EmailBuilder.getRegistrationReceipt(campers),
     });
   }
 

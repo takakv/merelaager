@@ -1,8 +1,7 @@
 import fs from "fs";
 import path from "path";
-import Campers from "../../routes/api/campers";
 import { Registration } from "../../db/models/Registration";
-import { RegistrationEntry } from "../../routes/Support Files/registrations";
+import type {EmailReceiptInfo, RegistrationDbEntry} from "../registrations/registration.types";
 
 interface shiftData {
   name: string;
@@ -17,33 +16,15 @@ const shiftData = JSON.parse(fs.readFileSync(shiftDataPath, "utf-8")) as {
   [key: number]: shiftData;
 };
 
-interface regEntry {
-  regOrder: number;
-  childId: number;
-  idCode: string;
-  shiftNr: number;
-  isOld: boolean;
-  birthday: Date;
-  tsSize: string;
-  addendum: string;
-  road: string;
-  city: string;
-  county: string;
-  country: string;
-  contactName: string;
-  contactNumber: string;
-  contactEmail: string;
-  backupTel: string;
-  priceToPay: number;
-}
-
 class EmailBuilder {
-  public static getFailed = (campers: regEntry[]) => {
+  public static getRegistrationReceipt = (campers: EmailReceiptInfo[]) => {
     const shifts: number[] = [];
 
     for (let i = 0; i < campers.length; ++i) {
       if (!shifts.includes(campers[i].shiftNr)) shifts.push(campers[i].shiftNr);
     }
+
+    const multiple = campers.length > 1;
 
     return `<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -189,10 +170,9 @@ class EmailBuilder {
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                                 <div style="font-family:Helvetica, Arial, sans-serif;font-size:15px;font-weight:300;line-height:24px;text-align:left;color:#000000;">
                                   <p>Tere!</p>
-                                  <p>Registreerimiskinnitus ei ole enam automaatne.</p>
-                                  <p>Oleme ${
-                                    campers.length > 1 ? "lapsed" : "lapse"
-                                  } registreerinud reservnimekirja. Kui juhtaja koha kinnitab või põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
+                                  <p>Oleme ${multiple ? "lapsed" : "lapse"}</p>
+                                  {${this.getChildList(campers)}
+                                  <p>registreerinud reservnimekirja. Kui juhtaja koha${multiple ? "d" : ""} kinnitab või põhinimekirjas koht${multiple ? "i" : ""} vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
                                   <p>Parimate soovidega</p>
                                   <p>${this.getStaffContacts(shifts)}</p>
                                   <p style="font-size: 11px">Tegu on automaatvastusega, palume sellele meilile mitte vastata. Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</p>
@@ -223,7 +203,7 @@ class EmailBuilder {
     regCampers: Registration[],
     resCampers: Registration[],
     shifts: number[],
-    totalPrice: number
+    totalPrice: number,
   ) => {
     const content = `<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -407,7 +387,7 @@ class EmailBuilder {
 
   private static getRegistered = (
     campers: Registration[],
-    shifts: number[]
+    shifts: number[],
   ) => {
     if (campers.length === 0) return "";
 
@@ -444,6 +424,18 @@ class EmailBuilder {
     response +=
       "<p>on reservnimekirjas. Kui põhinimekirjas koht vabaneb, võtame teiega esimesel võimalusel ühendust. " +
       "Palun võtke vahetuse juhatajaga ühendust, kui soovite registreerimise tühistada.</p>";
+
+    return response;
+  };
+
+  private static getChildList = (campers: EmailReceiptInfo[]) => {
+    let response = "<ul>";
+
+    for (let i = 0; i < campers.length; ++i) {
+      const camper = campers[i];
+      response += `<li>${camper.name} (${camper.shiftNr}. vahetus)</li>`;
+    }
+    response += "</ul>";
 
     return response;
   };

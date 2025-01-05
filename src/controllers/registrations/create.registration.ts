@@ -2,7 +2,11 @@ import type { Response } from "express";
 import type { ValidatedRequest } from "express-joi-validation";
 import { StatusCodes } from "http-status-codes";
 import sequelize from "sequelize";
-import { CreateRegistrationRequestSchema } from "./registration.types";
+import type {
+  CreateRegistrationRequestSchema,
+  EmailReceiptInfo,
+  RegistrationDbEntry,
+} from "./registration.types";
 import { Child } from "../../db/models/Child";
 import GlobalStore from "../../utilities/GlobalStore";
 import { Registration } from "../../db/models/Registration";
@@ -40,26 +44,6 @@ const parseIdCode = (code: string) => {
   const sex = code[0] === "5" ? "M" : "F";
   return { sex, dob };
 };
-
-interface RegistrationDbEntry {
-  regOrder: number;
-  childId: number;
-  idCode: string;
-  shiftNr: number;
-  isOld: boolean;
-  birthday: Date;
-  tsSize: string;
-  addendum: string;
-  road: string;
-  city: string;
-  county: string;
-  country: string;
-  contactName: string;
-  contactNumber: string;
-  contactEmail: string;
-  backupTel: string;
-  priceToPay: number;
-}
 
 type JSendData = {
   [key: string]: any;
@@ -120,6 +104,10 @@ export const createRegistrationsFunc = async (
   ++GlobalStore.registrationOrder;
 
   const registrationEntries: RegistrationDbEntry[] = [];
+
+  // Helpers for email receipts.
+  const camperBasicInfo: EmailReceiptInfo[] = [];
+  const registrationEmailChoices: boolean[] = [];
 
   for (const [index, entry] of body.entries()) {
     let { sex, dob } = entry;
@@ -191,6 +179,12 @@ export const createRegistrationsFunc = async (
     };
 
     registrationEntries.push(registrationEntry);
+    camperBasicInfo.push({
+      name: entry.name,
+      shiftNr: entry.shiftNr,
+      contactEmail: entry.contactEmail,
+    });
+    registrationEmailChoices.push(entry.sendEmail ?? false);
   }
 
   let registrationIds: number[] = [];
@@ -209,4 +203,39 @@ export const createRegistrationsFunc = async (
 
   resObj.data = { registrationIds };
   res.status(StatusCodes.CREATED).json(resObj);
+
+  if (registrationEmailChoices.includes(true)) {
+    sendRegistrationEmails(camperBasicInfo, registrationEmailChoices);
+  }
+};
+
+const sendRegistrationEmails = (
+  registrations: EmailReceiptInfo[],
+  emailChoices: boolean[],
+) => {
+  // Group children by email.
+  const childContacts: {
+    [key: string]: EmailReceiptInfo[];
+  } = {};
+
+  for (const [index, registration] of registrations.entries()) {
+    if (!emailChoices[index]) continue;
+
+    const { contactEmail } = registration;
+    if (!(contactEmail in childContacts)) {
+      childContacts[contactEmail] = [registration];
+    } else {
+      childContacts[contactEmail].push(registration);
+    }
+  }
+
+  for (const [email, entries] of Object.entries(childContacts)) {
+    GlobalStore.mailService
+      .sendRegistrationReceipt(entries, email)
+      .catch((err) => {
+        console.error(err);
+        console.log(`Email was:`, email);
+      });
+    console.log(entries);
+  }
 };

@@ -34,7 +34,15 @@ type ParentInfo = {
   backupTel?: string;
 };
 
-type RegistrationRequest = ChildInfo & CampInfo & AddressInfo & ParentInfo;
+type EmailStatus = {
+  sendEmail?: boolean;
+};
+
+type RegistrationRequest = ChildInfo &
+  CampInfo &
+  AddressInfo &
+  ParentInfo &
+  EmailStatus;
 
 export const registerBodySchema = joi.array<RegistrationRequest>().items(
   joi.object<RegistrationRequest>({
@@ -63,6 +71,7 @@ export const registerBodySchema = joi.array<RegistrationRequest>().items(
     contactEmail: joi.string().max(STRING_MAX).email().required(),
     contactNumber: joi.string().max(25).required(),
     backupTel: joi.string().max(25),
+    sendEmail: joi.boolean(),
   }),
 );
 
@@ -124,3 +133,29 @@ export interface PatchRegistrationRequestSchema extends ValidatedRequestSchema {
     priceToPay?: number;
   };
 }
+
+export interface RegistrationDbEntry {
+  regOrder: number;
+  childId: number;
+  idCode: string;
+  shiftNr: number;
+  isOld: boolean;
+  birthday: Date;
+  tsSize: string;
+  addendum: string;
+  road: string;
+  city: string;
+  county: string;
+  country: string;
+  contactName: string;
+  contactNumber: string;
+  contactEmail: string;
+  backupTel: string;
+  priceToPay: number;
+}
+
+export type EmailReceiptInfo = {
+  name: string;
+  shiftNr: number;
+  contactEmail: string;
+};
