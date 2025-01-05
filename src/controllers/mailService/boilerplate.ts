@@ -171,8 +171,8 @@ class EmailBuilder {
                                 <div style="font-family:Helvetica, Arial, sans-serif;font-size:15px;font-weight:300;line-height:24px;text-align:left;color:#000000;">
                                   <p>Tere!</p>
                                   <p>Oleme ${multiple ? "lapsed" : "lapse"}</p>
-                                  {${this.getChildList(campers)}
-                                  <p>registreerinud reservnimekirja. Kui juhtaja koha${multiple ? "d" : ""} kinnitab või põhinimekirjas koht${multiple ? "i" : ""} vabaneb, võtame teiega esimesel võimalusel ühendust.</p>
+                                  ${this.getChildList(campers)}
+                                  <p>registreerinud reservnimekirja. Kui juhtaja koha${multiple ? "d" : ""} kinnitab või põhinimekirjas koht${multiple ? "i" : ""} vabaneb, võtame Teiega esimesel võimalusel ühendust.</p>
                                   <p>Parimate soovidega</p>
                                   <p>${this.getStaffContacts(shifts)}</p>
                                   <p style="font-size: 11px">Tegu on automaatvastusega, palume sellele meilile mitte vastata. Küsimuste või murede korral pöörduge palun vahetuse juhataja poole.</p>
