@@ -10,6 +10,7 @@ import type {
 import { Child } from "../../db/models/Child";
 import GlobalStore from "../../utilities/GlobalStore";
 import { Registration } from "../../db/models/Registration";
+import type { JSendResponse } from "../../types/types";
 
 const validateDate = (year: number, month: number, date: number) => {
   if (month < 0 || month > 11 || date < 0) return false;
@@ -45,31 +46,21 @@ const parseIdCode = (code: string) => {
   return { sex, dob };
 };
 
-type JSendData = {
-  [key: string]: any;
-} | null;
+const computePrice = (shiftNr: number, isOld: boolean) => {
+  // TODO: fetch price dynamically.
+  const shiftPrices = [290, 350, 350, 350];
+  const seniorityDiscounts = [10, 20, 20, 20];
 
-type JSendSuccess = {
-  status: "success";
-  data: JSendData;
+  // This should never happen.
+  if (shiftNr < 1 || shiftNr > shiftPrices.length) {
+    return -1;
+  }
+
+  // The shift number is 1-indexed.
+  let price = shiftPrices[shiftNr - 1];
+  if (isOld) price -= seniorityDiscounts[shiftNr - 1];
+  return price;
 };
-
-type JSendFail = {
-  status: "fail";
-  data: JSendData;
-};
-
-interface JSendErrorData {
-  message: string;
-  code?: number;
-  data?: JSendData;
-}
-
-interface JSendError extends JSendErrorData {
-  status: "error";
-}
-
-type JSendResponse = JSendSuccess | JSendFail | JSendError;
 
 /**
  * Record camper registrations.
@@ -89,6 +80,7 @@ export const createRegistrationsFunc = async (
 
   const maxEntries = 8;
   if (req.body.length > maxEntries) {
+    console.log(req);
     resObj.status = "fail";
     resObj.data = {
       registrations: `The number of entries must not exceed ${maxEntries}`,
@@ -116,6 +108,7 @@ export const createRegistrationsFunc = async (
     if (entry.idCode) {
       const parsedData = parseIdCode(entry.idCode);
       if (parsedData.error) {
+        console.log(req);
         resObj.status = "fail";
         resObj.data = {};
         resObj.data[`[${index}].idCode`] = parsedData.error;
@@ -128,6 +121,7 @@ export const createRegistrationsFunc = async (
       sex = parsedData.sex;
       dob = parsedData.dob;
     } else if (sex === undefined || dob === undefined) {
+      console.log(req);
       // These should not be undefined since the request body has been validated.
       // But check in any case.
       resObj.status = "fail";
@@ -158,12 +152,15 @@ export const createRegistrationsFunc = async (
       },
     });
 
+    // TODO: check that the shift number exists.
+    const isOld = !entry.isNew;
+
     const registrationEntry: RegistrationDbEntry = {
       regOrder: currentOrder,
       childId: childInstance.id,
       idCode: entry.idCode || null,
       shiftNr: entry.shiftNr,
-      isOld: !entry.isNew,
+      isOld: isOld,
       birthday: dob,
       tsSize: entry.shirtSize,
       addendum: entry.addendum?.trim() || null,
@@ -175,8 +172,14 @@ export const createRegistrationsFunc = async (
       contactNumber: entry.contactNumber.trim(),
       contactEmail: entry.contactEmail.trim(),
       backupTel: entry.backupTel?.trim() || null,
-      priceToPay: 0,
+      priceToPay: computePrice(entry.shiftNr, isOld),
     };
+
+    // TODO: get rid of this check once shift number checking is implemented.
+    if (registrationEntry.priceToPay < 0) {
+      registrationEntry.priceToPay = 350;
+      console.error(registrationEntry, "Invalid shift identifier");
+    }
 
     registrationEntries.push(registrationEntry);
     camperBasicInfo.push({
@@ -193,6 +196,7 @@ export const createRegistrationsFunc = async (
     const createdData = await Registration.bulkCreate(registrationEntries);
     registrationIds = createdData.map((entry) => entry.id);
   } catch (err) {
+    console.log(req);
     console.error(err);
     const resErrObj = <JSendResponse>{
       status: "error",
