@@ -1,26 +1,12 @@
 {
   "name": "merelaager-api",
-  "version": "1.0.0",
-  "description": "API of merelaager",
-  "main": "server.js",
+  "private": true,
   "scripts": {
-    "start": "node ./build/server.js",
     "build": "tsc",
-    "serve": "webpack serve",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "start": "node ./build/server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/takakv/merelaager.git"
-  },
-  "author": "Taka Kv",
-  "license": "AGPL-3.0-only",
-  "bugs": {
-    "url": "https://github.com/takakv/merelaager/issues"
-  },
-  "homepage": "https://github.com/takakv/merelaager#readme",
   "dependencies": {
-    "@prisma/client": "^5.17.0",
     "bcrypt": "^5.1.1",
     "better-sse": "^0.12.1",
     "body-parser": "^1.20.2",
@@ -78,7 +64,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "2.29.1",
     "prettier": "^3.3.3",
-    "prisma": "^5.17.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.4"
   },
   "packageManager": "yarn@4.3.1"
