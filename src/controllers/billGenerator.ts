@@ -58,7 +58,7 @@ class BillBuilder {
     campers: Registration[],
     contact: Contact,
     billNr: number,
-    regCount: number
+    regCount: number,
   ) => {
     const name = contact.name.replace(/ /g, "_").toLowerCase();
     const doc = new PDFDoc(BILL_META);
@@ -75,7 +75,7 @@ class BillBuilder {
       "./media/files/bluelogo.png",
       doc.page.width - SIDE_MARGIN - LOGO_WIDTH,
       CONTENT_TOP / 2,
-      { width: LOGO_WIDTH }
+      { width: LOGO_WIDTH },
     );
 
     // Target name
@@ -107,7 +107,7 @@ class BillBuilder {
     const billDue = due.toLocaleDateString(DATE_LOCALE, DATE_OPTIONS);
     const billDeadline = finalDeadline.toLocaleDateString(
       DATE_LOCALE,
-      DATE_OPTIONS
+      DATE_OPTIONS,
     );
 
     const billNrLength = doc.widthOfString(`${billNr}`);
@@ -134,7 +134,7 @@ class BillBuilder {
       .text(
         `${billNr}`,
         doc.page.width - billDataRightOffset - billNrLength,
-        billTop
+        billTop,
       )
       .font(FONT_PRIMARY)
       .text(billDate, doc.page.width - billDataRightOffset - billDateLength)
@@ -143,14 +143,14 @@ class BillBuilder {
     if (!lenientDeadline)
       doc.text(
         billDeadline,
-        doc.page.width - billDataRightOffset - billFinalLength
+        doc.page.width - billDataRightOffset - billFinalLength,
       );
     doc.moveDown();
     doc
       .fontSize(10)
       .text(
         "Maksekorraldusel palume kindlasti märkida selgituseks makseteatise numbri ning lapse nime ja vahetuse.",
-        SIDE_MARGIN
+        SIDE_MARGIN,
       );
 
     // Main contents
@@ -167,24 +167,24 @@ class BillBuilder {
 
     const counters = {
       childShortOld: {
-        txt: "11päevane vahetus vanale olijale",
+        txt: "10päevane vahetus vanale olijale",
         count: 0,
-        price: 200,
+        price: 180,
       },
       childShortNew: {
-        txt: "12päevane vahetus uuele tulijale",
+        txt: "10päevane vahetus uuele tulijale",
         count: 0,
-        price: 220,
+        price: 190,
       },
       childOld: {
         txt: "12päevane vahetus vanale olijale",
         count: 0,
-        price: 220,
+        price: 230,
       },
       childNew: {
         txt: "12päevane vahetus uuele tulijale",
         count: 0,
-        price: 240,
+        price: 250,
       },
       booking: {
         txt: "Broneerimistasu",
@@ -308,7 +308,7 @@ const generateFooter = (doc: PDFDocument, oneThird: number) => {
       doc.page.height - 70,
       {
         width: oneThird,
-      }
+      },
     )
     .text("Reg nr. 80067875");
   doc
@@ -318,7 +318,7 @@ const generateFooter = (doc: PDFDocument, oneThird: number) => {
       doc.page.height - 70,
       {
         width: oneThird,
-      }
+      },
     )
     .text("+372 5628 6586");
   doc
@@ -329,7 +329,7 @@ const generateFooter = (doc: PDFDocument, oneThird: number) => {
       {
         align: "right",
         width: oneThird,
-      }
+      },
     )
     .text("HABAEE2X", {
       align: "right",
@@ -351,7 +351,7 @@ const generateFooter = (doc: PDFDocument, oneThird: number) => {
       doc.page.height - 90,
       {
         width: oneThird,
-      }
+      },
     );
 
   return doc;

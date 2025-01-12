@@ -14,7 +14,7 @@ const app = express();
 const allowedOrigins = [
   "https://sild.merelaager.ee",
   "https://merelaager.ee",
-  `http://localhost:8080`,
+  "http://localhost:8080",
 ];
 
 const corsOptions: cors.CorsOptions = {

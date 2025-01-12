@@ -19,28 +19,8 @@ class Initialiser {
 
   public static initBillNumber = async () => {
     let prevNr: number = await Bill.max("id");
-    if (prevNr < 2000) prevNr = new Date().getUTCFullYear() * 1000;
+    if (prevNr < 2025000) prevNr = new Date().getUTCFullYear() * 1000;
     GlobalStore.billNumber = prevNr + 1;
-  };
-
-  public static setUnlocked = () => {
-    if (process.env.NODE_ENV === "dev" || process.env.UNLOCK === "true") {
-      GlobalStore.registrationUnlocked = true;
-      return;
-    }
-
-    const now = Date.now();
-    const unlockTime = GlobalStore.registrationUnlockTime.getTime();
-
-    if (now > unlockTime) {
-      GlobalStore.registrationUnlocked = true;
-      return;
-    }
-
-    const eta = GlobalStore.registrationUnlockTime.getTime() - now;
-    setTimeout(() => {
-      GlobalStore.registrationUnlocked = true;
-    }, eta);
   };
 
   public static initMailService = () => {
@@ -55,19 +35,6 @@ class Initialiser {
     console.log(`Bill number: ${GlobalStore.billNumber}`);
 
     this.initMailService();
-
-    this.setUnlocked();
-    console.log(
-      `Registration is unlocked? ${GlobalStore.registrationUnlocked}`
-    );
-    console.log(
-      `Unlocks at: ${GlobalStore.registrationUnlockTime.toLocaleString(
-        "en-GB",
-        {
-          timeZone: "Europe/Tallinn",
-        }
-      )} (Estonian time)`
-    );
   };
 }
 
