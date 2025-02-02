@@ -62,6 +62,11 @@ export class Shift extends Model {
   @Column(DataType.INTEGER.UNSIGNED)
   public girlSlotsReserve: number;
 
+  @Default(20)
+  @AllowNull(false)
+  @Column(DataType.INTEGER.UNSIGNED)
+  public maxFreeDisplay: number;
+
   @HasMany(() => Registration)
   public registrations?: Registration[];
 }
